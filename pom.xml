@@ -6,9 +6,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wavemaker.runtime</groupId>
-    <artifactId>wavemaker-app-runtime</artifactId>
+    <artifactId>wavemaker-app-runtime-services</artifactId>
     <version>9.9.9</version>
-    <name>wavemaker-app-runtime</name>
+    <name>wavemaker-app-runtime-services</name>
     <packaging>pom</packaging>
 
     <properties>
@@ -68,29 +68,6 @@
     </modules>
 
     <profiles>
-        <profile>
-            <id>runtime</id>
-            <activation>
-                <property>
-                    <name>!project.props.file</name>
-                </property>
-            </activation>
-            <properties>
-                <project.props.file>${main.basedir}/build-helpers/filters/desktop-runtime-local.props
-                </project.props.file>
-            </properties>
-        </profile>
-        <profile>
-            <id>release-version-setter</id>
-            <activation>
-                <property>
-                    <name>!release.version</name>
-                </property>
-            </activation>
-            <properties>
-                <release.version>${project.version}</release.version>
-            </properties>
-        </profile>
         <profile>
             <id>Snapshot</id>
             <activation>
@@ -178,67 +155,6 @@
                         </plugin>
                     </reportPlugins>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/assembly/wm-application-descriptor.xml</descriptor>
-                        <descriptor>src/assembly/wm-mobile-descriptor.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>read environment properties</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>read-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <files>
-                                <file>${project.props.file}</file>
-                            </files>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>generate wavemaker-app-runtime component</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <target>
-                                <ant antfile="${basedir}/build.xml" target="run-js-commands-${wm_runtime_build_type}"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
