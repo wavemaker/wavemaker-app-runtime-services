@@ -28,6 +28,7 @@ public class AcceptLanguageHeaderBasedLocaleProvider extends DefaultLocaleProvid
                 while (locales.hasMoreElements()) {
                     localesList.add(locales.nextElement().toLanguageTag());
                 }
+                return localesList.toArray(new String[0]);
             }
         }
         return super.getLocales();
