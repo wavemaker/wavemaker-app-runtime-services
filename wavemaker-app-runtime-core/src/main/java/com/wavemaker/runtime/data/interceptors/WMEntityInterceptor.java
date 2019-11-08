@@ -1,23 +1,21 @@
 /**
  * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package com.wavemaker.runtime.data.interceptors;
 
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Map;
 
 import org.hibernate.EmptyInterceptor;
@@ -106,13 +104,20 @@ public class WMEntityInterceptor extends EmptyInterceptor {
         try {
             for (int i = 0; i < propertyNames.length; i++) {
                 final PropertyDescriptor descriptor = descriptorMap.get(propertyNames[i]);
-                if (descriptor != null && descriptor.getReadMethod() != null) {
+                if (descriptor != null && descriptor.getReadMethod() != null &&
+                        isNotCollectionType(descriptor)) {
                     final Object value = descriptor.getReadMethod().invoke(entity);
                     state[i] = value;
                 }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.state.parameters.update.error"), e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.state.parameters.update.error"),
+                    e);
         }
+    }
+
+    private boolean isNotCollectionType(final PropertyDescriptor descriptor) {
+        return !Collection.class.isAssignableFrom(descriptor.getPropertyType()) &&
+                !Map.class.isAssignableFrom(descriptor.getPropertyType());
     }
 }
