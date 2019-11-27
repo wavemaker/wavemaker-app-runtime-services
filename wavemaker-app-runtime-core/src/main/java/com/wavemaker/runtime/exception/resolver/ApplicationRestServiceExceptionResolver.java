@@ -37,6 +37,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.hibernate5.HibernateJdbcException;
 import org.springframework.orm.hibernate5.HibernateQueryException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -93,6 +94,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof ConstraintViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleMethodConstraintViolationException((ConstraintViolationException) ex, response);
+        } else if(ex instanceof AuthenticationException) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return handleUnAuthorizedException(ex, response);
         }
 
         //Hibernate jdbc exceptions
@@ -138,6 +142,12 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleException(ex, response);
         }
+    }
+
+    private ModelAndView handleUnAuthorizedException(Exception ex, HttpServletResponse response) {
+        String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
+        ErrorResponse errorResponse = getErrorResponse(MessageResource.create("com.wavemaker.unAuthorized"), msg);
+        return getModelAndView(errorResponse);
     }
 
     private ModelAndView handleMethodConstraintViolationException(ConstraintViolationException ex, HttpServletResponse response) {
