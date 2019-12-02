@@ -17,7 +17,7 @@ package com.wavemaker.runtime;
 
 import java.util.Map;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 public class SystemPropertyInitiliazingBean implements InitializingBean {

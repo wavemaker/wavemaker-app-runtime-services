@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.wavemaker.runtime.soap.SoapServiceSettings;
 import com.wavemaker.runtime.ws.JAXWSProperties;

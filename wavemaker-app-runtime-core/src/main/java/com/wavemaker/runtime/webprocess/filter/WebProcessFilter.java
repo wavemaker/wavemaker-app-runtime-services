@@ -41,5 +41,5 @@ public abstract class WebProcessFilter extends GenericFilterBean {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    public abstract String endProcess(HttpServletRequest request, HttpServletResponse response);
+    public abstract String endProcess(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }
