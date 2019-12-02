@@ -305,17 +305,18 @@
     <build>
         <plugins>
             <plugin>
+                <!--TODO need to generate this information in a better way-->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>dependency-list</id>
-                        <phase>prepare-package</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>list</goal>
                         </goals>
                         <configuration>
-                            <outputFile>${project.build.outputDirectory}/app-runtime-dependencies.txt</outputFile>
+                            <outputFile>src/main/resources/app-runtime-dependencies.txt</outputFile>
                             <includeScope>runtime</includeScope>
                         </configuration>
                     </execution>

@@ -131,7 +131,7 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
                 placeholder = value.substring(value.indexOf(this.placeholderPrefix) + 2, value.indexOf(this.placeholderSuffix));
             }
             String resolvedValue = resolvePlaceholder(placeholder, props, systemPropertiesMode);
-            if (org.apache.commons.lang.StringUtils.isNotBlank(resolvedValue)) {
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(resolvedValue)) {
                 entry.setValue(resolvedValue);
             }
         });

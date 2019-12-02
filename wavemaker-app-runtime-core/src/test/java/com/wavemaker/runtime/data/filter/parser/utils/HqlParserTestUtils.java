@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 
 import com.google.common.collect.ImmutableMap;
 import com.wavemaker.runtime.data.filter.parser.utils.dataprovider.FieldsMetadata;
@@ -26,11 +26,11 @@ public interface HqlParserTestUtils {
         for (String query : queryList) {
             if (includesValues) {
                 for (Object value : values) {
-                    queries.add(StrSubstitutor.replace(query, ImmutableMap.of("key", fieldName,
+                    queries.add(StringSubstitutor.replace(query, ImmutableMap.of("key", fieldName,
                             "value", getObjectValue(value))));
                 }
             } else {
-                queries.add(StrSubstitutor.replace(query, Collections.singletonMap("key", fieldName)));
+                queries.add(StringSubstitutor.replace(query, Collections.singletonMap("key", fieldName)));
             }
 
         }
