@@ -267,8 +267,9 @@ public class WMMultipartUtils {
                 contentType = new Tika().detect(filename);
             }
 
-            if (contentType == null)
+            if (contentType == null) {
                 contentType = getMatchingContentType(bytes, httpServletRequest);
+            }
 
             downloadResponse.setContents(new ByteArrayInputStream(bytes));
             downloadResponse.setContentType(contentType);

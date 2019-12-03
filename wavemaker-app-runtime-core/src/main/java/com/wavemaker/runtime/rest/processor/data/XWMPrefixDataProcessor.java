@@ -68,7 +68,7 @@ public class XWMPrefixDataProcessor implements HttpRequestDataProcessor {
     private void processXWMQueryParams(HttpRequestData httpRequestData) {
         HttpHeaders httpHeaders = httpRequestData.getHttpHeaders();
         MediaType contentType = httpHeaders.getContentType();
-        if (contentType != null && StringUtils.equalsIgnoreCase(HttpResponseUtils.toStringWithoutParameters(contentType), MediaType.APPLICATION_FORM_URLENCODED_VALUE) ) {
+        if (contentType != null && StringUtils.equalsIgnoreCase(HttpResponseUtils.toStringWithoutParameters(contentType), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
             MultiValueMap<String, String> queryParametersMap = httpRequestData.getQueryParametersMap();
             Iterator<Map.Entry<String, List<String>>> iterator = queryParametersMap.entrySet().iterator();
             while (iterator.hasNext()) {

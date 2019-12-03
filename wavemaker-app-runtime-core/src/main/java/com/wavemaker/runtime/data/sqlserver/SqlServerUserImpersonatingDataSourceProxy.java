@@ -90,7 +90,7 @@ public class SqlServerUserImpersonatingDataSourceProxy extends DelegatingDataSou
     }
 
     private Connection getAuditingConnectionProxy(Connection connection) throws SQLException {
-        return (Connection) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(), new Class[] { ConnectionProxy.class },
+        return (Connection) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(), new Class[]{ConnectionProxy.class},
             new AuditingInvocationHandler(connection));
     }
 

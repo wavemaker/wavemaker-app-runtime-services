@@ -67,8 +67,9 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
         }
         if (unprotectedMatchers != null && !unprotectedMatchers.isEmpty()) {
             for(RegexRequestMatcher unprotectedMatcher : unprotectedMatchers) {
-                if(unprotectedMatcher != null && unprotectedMatcher.matches(httpServletRequest))
+                if(unprotectedMatcher != null && unprotectedMatcher.matches(httpServletRequest)) {
                     return false;
+                }
             }
         }
         return true;

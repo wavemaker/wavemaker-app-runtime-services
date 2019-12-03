@@ -130,11 +130,11 @@ public class LoggingInitializationListener implements ServletContextListener {
         }
 
         properties.setProperty("log4j.appender.wmAppender", "org.apache.log4j.RollingFileAppender");
-        properties.setProperty("log4j.appender.wmAppender.encoding","UTF-8");
+        properties.setProperty("log4j.appender.wmAppender.encoding", "UTF-8");
         properties.setProperty("log4j.appender.wmAppender.File", System.getProperty("wm.apps.log",
                 System.getProperty("java.io.tmpdir") + "/apps.log"));
-        properties.setProperty("log4j.appender.wmAppender.layout","org.apache.log4j.PatternLayout");
-        properties.setProperty("log4j.appender.wmAppender.layout.ConversionPattern","%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} " +
+        properties.setProperty("log4j.appender.wmAppender.layout", "org.apache.log4j.PatternLayout");
+        properties.setProperty("log4j.appender.wmAppender.layout.ConversionPattern", "%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} " +
                 "-%X{X-WM-Request-Track-Id} %t %p [%c] - %m%n");
         properties.setProperty("log4j.appender.wmAppender.MaxFileSize", "10MB");
         properties.setProperty("log4j.appender.wmAppender.MaxBackupIndex", "5");

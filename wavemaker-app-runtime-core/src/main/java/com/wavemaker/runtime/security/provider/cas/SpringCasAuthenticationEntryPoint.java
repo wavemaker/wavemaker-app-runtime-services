@@ -70,7 +70,7 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
     public void afterPropertiesSet() throws Exception {
         Assert.hasLength(this.loginUrl, "loginUrl must be specified");
         Assert.notNull(this.serviceProperties, "serviceProperties must be specified");
-        Assert.notNull(this.serviceProperties.getService(),"serviceProperties.getService() cannot be null.");
+        Assert.notNull(this.serviceProperties.getService(), "serviceProperties.getService() cannot be null.");
     }
 
     public void commence(final HttpServletRequest servletRequest, final HttpServletResponse response,

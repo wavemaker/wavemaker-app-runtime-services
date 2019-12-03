@@ -42,8 +42,9 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
     }
 
     private RequestMatcher getOrRequestMatcher(List<String> urlPatterns) {
-        if (CollectionUtils.isEmpty(urlPatterns))
+        if (CollectionUtils.isEmpty(urlPatterns)) {
             return null;
+        }
 
         List<RequestMatcher> antPathRequestMatchers = new ArrayList<>();
         for (String pattern : urlPatterns) {

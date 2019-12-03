@@ -59,8 +59,12 @@ public class Aggregation {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Aggregation)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Aggregation)) {
+            return false;
+        }
         final Aggregation that = (Aggregation) o;
         return Objects.equals(getField(), that.getField()) &&
                 Objects.equals(getType(), that.getType()) &&

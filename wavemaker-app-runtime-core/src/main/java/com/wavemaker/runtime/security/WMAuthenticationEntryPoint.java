@@ -49,7 +49,7 @@ public class WMAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint
             response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
-            super.commence(request,response,authException);
+            super.commence(request, response, authException);
         }
     }
 

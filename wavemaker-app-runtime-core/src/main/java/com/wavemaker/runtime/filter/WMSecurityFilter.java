@@ -59,7 +59,7 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
                 super.doFilter(servletRequest, servletResponse, filterChain);
             }
         } finally {
-            SecurityContextHolder.clearContext();//Cleaning any Thread local map values if created
+            SecurityContextHolder.clearContext(); //Cleaning any Thread local map values if created
         }
     }
 

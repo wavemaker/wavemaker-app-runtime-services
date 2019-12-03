@@ -38,7 +38,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             "timeFormat"};
 
     private String applicationType = null;
-    private Map<String, Object> applicationProperties ;
+    private Map<String, Object> applicationProperties;
 
     @Autowired
     private QueryDesignService queryDesignService;

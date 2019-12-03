@@ -156,8 +156,9 @@ public class LoadKeyStore {
         } catch (MetadataProviderException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.read.idp.metadata"), e);
         } finally {
-            if (fileSystemMetadataProvider != null)
+            if (fileSystemMetadataProvider != null) {
                 fileSystemMetadataProvider.destroy();
+            }
         }
         final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
                 .getIDPSSODescriptor(SAMLConstants.SAML_2_0_PROTOCOL);

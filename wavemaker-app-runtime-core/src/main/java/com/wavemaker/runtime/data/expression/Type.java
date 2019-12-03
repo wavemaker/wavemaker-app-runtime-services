@@ -86,15 +86,17 @@ public enum Type implements Criteria {
             Criterion criterion;
             if (value instanceof Collection) {
                 Collection collection = (Collection) value;
-                if (collection.size() != 2)
+                if (collection.size() != 2) {
                     throw new IllegalArgumentException("Between expression should have a collection/array of values with just two entries.");
+                }
 
                 Iterator iterator = collection.iterator();
                 criterion = Restrictions.between(name, iterator.next(), iterator.next());
             } else if (value.getClass().isArray()) {
                 Object[] array = (Object[]) value;
-                if (array.length != 2)
+                if (array.length != 2) {
                     throw new IllegalArgumentException("Between expression should have a array/array of values with just two entries.");
+                }
 
                 criterion = Restrictions.between(name, array[0], array[1]);
             } else {

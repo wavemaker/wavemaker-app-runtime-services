@@ -40,7 +40,7 @@ public class WMCompositeAuthenticationEntryPoint implements AuthenticationEntryP
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof FormLoginEntryPoint || bean instanceof SSOEntryPoint ) {
+        if (bean instanceof FormLoginEntryPoint || bean instanceof SSOEntryPoint) {
             authenticationEntryPointList.add((AuthenticationEntryPoint) bean);
         }
         return bean;

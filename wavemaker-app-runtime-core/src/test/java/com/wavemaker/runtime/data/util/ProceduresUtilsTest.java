@@ -72,8 +72,7 @@ public class ProceduresUtilsTest {
 
     }
 
-    public void jdbcComplianceProcedure()
-    {
+    public void jdbcComplianceProcedure() {
         final String procedure1 = "sp_create_workorder_detail\n" +
                 ":workorder,\n" +
                 ":workorderType,\n" +
@@ -109,19 +108,19 @@ public class ProceduresUtilsTest {
         final String procedure9 = "update Register set name=:workorder where city=:workorderType and age =:typeid";
         final String jdbcComplianceProcedure9= "update Register set name=? where city=? and age =?";
 
-        final String[] namedParams = {"workorder","workorderType","typeid","workorder1"};
+        final String[] namedParams = {"workorder", "workorderType", "typeid", "workorder1"};
 
         final Set<String> namedParamSet  = new HashSet<>(Arrays.asList(namedParams));
 
-        Assert.assertEquals(jdbcComplianceProcedure1,ProceduresUtils.jdbcComplianceProcedure(procedure1,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure2,ProceduresUtils.jdbcComplianceProcedure(procedure2,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure3,ProceduresUtils.jdbcComplianceProcedure(procedure3,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure4,ProceduresUtils.jdbcComplianceProcedure(procedure4,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure5,ProceduresUtils.jdbcComplianceProcedure(procedure5,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure6,ProceduresUtils.jdbcComplianceProcedure(procedure6,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure7,ProceduresUtils.jdbcComplianceProcedure(procedure7,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure8,ProceduresUtils.jdbcComplianceProcedure(procedure8,namedParamSet));
-        Assert.assertEquals(jdbcComplianceProcedure9,ProceduresUtils.jdbcComplianceProcedure(procedure9,namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure1, ProceduresUtils.jdbcComplianceProcedure(procedure1, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure2, ProceduresUtils.jdbcComplianceProcedure(procedure2, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure3, ProceduresUtils.jdbcComplianceProcedure(procedure3, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure4, ProceduresUtils.jdbcComplianceProcedure(procedure4, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure5, ProceduresUtils.jdbcComplianceProcedure(procedure5, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure6, ProceduresUtils.jdbcComplianceProcedure(procedure6, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure7, ProceduresUtils.jdbcComplianceProcedure(procedure7, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure8, ProceduresUtils.jdbcComplianceProcedure(procedure8, namedParamSet));
+        Assert.assertEquals(jdbcComplianceProcedure9, ProceduresUtils.jdbcComplianceProcedure(procedure9, namedParamSet));
 
 
     }

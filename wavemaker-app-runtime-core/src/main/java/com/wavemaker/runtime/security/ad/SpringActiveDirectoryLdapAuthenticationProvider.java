@@ -184,7 +184,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("'memberOf' attribute values: {}",Arrays.asList(groups));
+            logger.debug("'memberOf' attribute values: {}", Arrays.asList(groups));
         }
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<>(groups.length);
@@ -200,7 +200,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         // TODO. add DNS lookup based on domain
         final String bindUrl = url;
 
-        Hashtable<String,String> env = new Hashtable<>();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         String principal = createPrincipal(username);
         env.put(Context.SECURITY_PRINCIPAL, principal);
@@ -394,7 +394,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     }
 
     static class ContextFactory {
-        DirContext createContext(Hashtable<?,?> env) throws NamingException {
+        DirContext createContext(Hashtable<?, ?> env) throws NamingException {
             return new InitialLdapContext(env, null);
         }
     }
