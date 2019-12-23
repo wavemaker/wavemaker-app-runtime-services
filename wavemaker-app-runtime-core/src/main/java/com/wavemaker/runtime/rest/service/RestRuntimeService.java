@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.comparator.UrlComparator;
+import com.wavemaker.commons.comparator.UrlStringComparator;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.commons.util.WMUtils;
@@ -56,10 +61,12 @@ import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
+import com.wavemaker.tools.apidocs.tools.core.model.auth.ApiKeyAuthDefinition;
 import com.wavemaker.tools.apidocs.tools.core.model.auth.BasicAuthDefinition;
 import com.wavemaker.tools.apidocs.tools.core.model.auth.OAuth2Definition;
 import com.wavemaker.tools.apidocs.tools.core.model.auth.SecuritySchemeDefinition;
 import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
+import com.wavemaker.tools.apidocs.tools.core.utils.PathUtils;
 
 /**
  * @author Uday Shankar
@@ -73,6 +80,8 @@ public class RestRuntimeService {
     @Autowired
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
 
+    private PathMatcher pathMatcher = new AntPathMatcher();
+
     @PostConstruct
     public void init() {
         restRuntimeServiceCacheHelper.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
@@ -80,11 +89,14 @@ public class RestRuntimeService {
 
 
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
-        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
+        Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
+        final Tuple.Three<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, pathAndOperation.v1,
+                SwaggerDocUtil.getOperationType(pathAndOperation.v2, pathAndOperation.v3.getOperationId()).toUpperCase(), httpRequestData);
         return new RestConnector().invokeRestCall(httpRequestDetails);
     }
 
-    public void executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public void executeRestCall(String serviceId, String path, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
         HttpRequestDataProcessorContext httpRequestDataProcessorContext = new HttpRequestDataProcessorContext(httpServletRequest, httpRequestData);
         List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors(serviceId);
@@ -93,12 +105,12 @@ public class RestRuntimeService {
             logger.debug("Executing the httpRequestDataProcessor {} on the context {}", httpRequestDataProcessor, context);
             httpRequestDataProcessor.process(httpRequestDataProcessorContext);
         }
-        executeRestCall(serviceId, operationId, httpRequestData, httpServletRequest, httpServletResponse, context);
+        executeRestCall(serviceId, path, httpRequestData, httpServletRequest, httpServletResponse, context);
     }
 
-    public void executeRestCall(String serviceId, String operationId, final HttpRequestData httpRequestData,
+    public void executeRestCall(String serviceId, String path, final HttpRequestData httpRequestData,
                                 final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) {
-        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, httpServletRequest.getMethod(), httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
         final RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
         List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();
@@ -152,21 +164,22 @@ public class RestRuntimeService {
         return httpRequestData;
     }
 
-    private HttpRequestDetails constructHttpRequest(String serviceId, String operationId, HttpRequestData httpRequestData) {
+    private HttpRequestDetails constructHttpRequest(String serviceId, String path, String method, HttpRequestData httpRequestData) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
-        final Tuple.Three<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
+        final Tuple.Two<String, Path> pathInfo = findPath(swagger, path);
 
 
         HttpHeaders httpHeaders = new HttpHeaders();
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> pathParameters = new HashMap<>();
-        filterAndApplyServerVariablesOnRequestData(httpRequestData, pathAndOperation.v3, httpHeaders, queryParameters, pathParameters);
+        Operation operation = PathUtils.getOperation(pathInfo.v2, method);
+        filterAndApplyServerVariablesOnRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
-        updateAuthorizationInfo(swagger.getSecurityDefinitions(), pathAndOperation.v3, queryParameters, httpHeaders, httpRequestData);
-        httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathAndOperation.v1, queryParameters, pathParameters));
-        httpRequestDetails.setMethod(SwaggerDocUtil.getOperationType(pathAndOperation.v2, operationId).toUpperCase());
+        updateAuthorizationInfo(swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
+        httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathInfo.v1, queryParameters, pathParameters));
+        httpRequestDetails.setMethod(method);
 
         httpRequestDetails.setHeaders(httpHeaders);
         httpRequestDetails.setBody(httpRequestData.getRequestBody());
@@ -184,6 +197,32 @@ public class RestRuntimeService {
         }
         throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"),
                 operationId);
+    }
+
+    private Tuple.Two<String, Path> findPath(Swagger swagger, String path) {
+        Map<String, Path> map = swagger.getPaths();
+
+        List<String> pathEntries = new ArrayList<>(map.keySet());
+        pathEntries.sort(new UrlComparator<String>() {
+            @Override
+            public String getUrlPattern(String s) {
+                return s;
+            }
+        });
+        pathEntries.sort(new UrlStringComparator<String>() {
+            @Override
+            public String getUrlPattern(String s) {
+                return s;
+            }
+        });
+
+        for (String pathString : pathEntries) {
+            if (pathMatcher.match(pathString, path)) {
+                return new Tuple.Two<>(pathString, map.get(pathString));
+            }
+        }
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"),
+                path);
     }
 
     private void filterAndApplyServerVariablesOnRequestData(
@@ -262,6 +301,17 @@ public class RestRuntimeService {
                         }
                     } else if (securitySchemeDefinition instanceof BasicAuthDefinition) {
                         sendAsAuthorizationHeader(httpHeaders, httpRequestData);
+                    } else if (securitySchemeDefinition instanceof ApiKeyAuthDefinition) {
+                        ApiKeyAuthDefinition apiKeyAuthDefinition = (ApiKeyAuthDefinition) securitySchemeDefinition;
+                        if (!apiKeyAuthDefinition.getVendorExtensions().isEmpty()) {
+                            String apiKey = apiKeyAuthDefinition.getVendorExtensions().get("x-value").toString();
+                            if (ParameterType.QUERY.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
+                                queryParameters.put(apiKeyAuthDefinition.getName(), apiKey);
+                            }
+                            if (ParameterType.HEADER.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
+                                httpHeaders.set(apiKeyAuthDefinition.getName(), apiKey);
+                            }
+                        }
                     }
 
                 }

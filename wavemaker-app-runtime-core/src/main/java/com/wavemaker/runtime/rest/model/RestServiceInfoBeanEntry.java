@@ -7,6 +7,15 @@ package com.wavemaker.runtime.rest.model;
 public class RestServiceInfoBeanEntry {
     private String url;
     private String httpMethod;
+    private String methodName;
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
 
     public String getUrl() {
         return url;
