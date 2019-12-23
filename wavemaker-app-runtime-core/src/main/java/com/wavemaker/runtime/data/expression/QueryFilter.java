@@ -82,28 +82,37 @@ public class QueryFilter {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         QueryFilter other = (QueryFilter) obj;
         if (attributeName == null) {
-            if (other.attributeName != null)
+            if (other.attributeName != null) {
                 return false;
-        } else if (!attributeName.equals(other.attributeName))
+            }
+        } else if (!attributeName.equals(other.attributeName)) {
             return false;
+        }
         if (attributeValue == null) {
-            if (other.attributeValue != null)
+            if (other.attributeValue != null) {
                 return false;
-        } else if (!attributeValue.equals(other.attributeValue))
+            }
+        } else if (!attributeValue.equals(other.attributeValue)) {
             return false;
+        }
         if (filterCondition == null) {
-            if (other.filterCondition != null)
+            if (other.filterCondition != null) {
                 return false;
-        } else if (!filterCondition.equals(other.filterCondition))
+            }
+        } else if (!filterCondition.equals(other.filterCondition)) {
             return false;
+        }
         return true;
     }
 

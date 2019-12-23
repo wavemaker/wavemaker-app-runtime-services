@@ -122,8 +122,12 @@ public class RuntimeQuery {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RuntimeQuery)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RuntimeQuery)) {
+            return false;
+        }
         final RuntimeQuery that = (RuntimeQuery) o;
         return isNativeSql() == that.isNativeSql() &&
                 Objects.equals(getQueryString(), that.getQueryString()) &&

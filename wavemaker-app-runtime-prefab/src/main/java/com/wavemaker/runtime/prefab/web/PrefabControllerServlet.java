@@ -196,8 +196,9 @@ public class PrefabControllerServlet extends DispatcherServlet {
         if (prefabContext == null) {
             String urlPath = urlPathHelper.getLookupPathForRequest(request);
             String prefabName = extractPrefabName(urlPath);
-            if (prefabName == null)
+            if (prefabName == null) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.url.for.accessing.prefab"), urlPath);
+            }
 
             PrefabRegistry prefabRegistry = getWebApplicationContext().getBean(PrefabRegistry.class);
             prefabContext = prefabRegistry.getPrefabContext(prefabName);

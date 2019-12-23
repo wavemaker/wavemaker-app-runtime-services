@@ -45,7 +45,7 @@ public enum JoinType {
 
     static {
         for (JoinType joinType : JoinType.values()) {
-            nameVsJoinType.put(joinType.getName(),joinType);
+            nameVsJoinType.put(joinType.getName(), joinType);
         }
     }
 

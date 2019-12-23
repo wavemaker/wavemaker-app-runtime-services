@@ -32,19 +32,19 @@ public class DataServiceUtilsTest {
     @Test
     public void umwrapTest() {
         Exception e = new DataServiceRuntimeException("test message");
-        RuntimeException e1 = new RuntimeException("abcd",e);
+        RuntimeException e1 = new RuntimeException("abcd", e);
         RuntimeException runtimeException= new RuntimeException("some cause");
         RuntimeException e2 = new RuntimeException("efgh", e1);
-        Exception e3 = new NullPointerException("Null Values") ;
+        Exception e3 = new NullPointerException("Null Values");
         InvalidDataAccessResourceUsageException invalid= new InvalidDataAccessResourceUsageException("Invalid data");
         RuntimeException rx= new IndexOutOfBoundsException("Check Array");
-        assertEquals(DataServiceUtils.unwrap(e),e);
-        assertEquals(DataServiceUtils.unwrap(e2),e);
-        assertEquals(DataServiceUtils.unwrap(rx),rx);
-        assertEquals(DataServiceUtils.unwrap(invalid),invalid);
-        assertEquals(DataServiceUtils.unwrap(e1),e);
-        assertEquals(DataServiceUtils.unwrap(runtimeException),runtimeException);
-        assertEquals(DataServiceUtils.unwrap(e3),e3);
+        assertEquals(DataServiceUtils.unwrap(e), e);
+        assertEquals(DataServiceUtils.unwrap(e2), e);
+        assertEquals(DataServiceUtils.unwrap(rx), rx);
+        assertEquals(DataServiceUtils.unwrap(invalid), invalid);
+        assertEquals(DataServiceUtils.unwrap(e1), e);
+        assertEquals(DataServiceUtils.unwrap(runtimeException), runtimeException);
+        assertEquals(DataServiceUtils.unwrap(e3), e3);
 
     }
 

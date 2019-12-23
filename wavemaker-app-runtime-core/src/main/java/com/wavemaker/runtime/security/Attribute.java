@@ -2,8 +2,6 @@ package com.wavemaker.runtime.security;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * Created by srujant on 14/11/18.
  */

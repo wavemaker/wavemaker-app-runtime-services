@@ -209,11 +209,13 @@ public class FileServiceManager {
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your .password file.
-        if (f.getAbsolutePath().indexOf(uploadDirectory.getAbsolutePath()) != 0)
+        if (f.getAbsolutePath().indexOf(uploadDirectory.getAbsolutePath()) != 0) {
             throw new Exception("File not in uploadDir");
+        }
 
-        if (!f.exists())
+        if (!f.exists()) {
             throw new Exception("File with name " + file + "  not found");
+        }
 
         return f;
     }

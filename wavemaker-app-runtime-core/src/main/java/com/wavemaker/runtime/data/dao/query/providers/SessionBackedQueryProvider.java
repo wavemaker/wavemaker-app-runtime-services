@@ -116,8 +116,7 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
     }
 
     private boolean queryExists(final NamedQueryRepository repository, final String countQueryName) {
-        return repository.getNamedQueryDefinition(countQueryName) != null || repository.getNamedSQLQueryDefinition
-                (countQueryName) != null;
+        return repository.getNamedQueryDefinition(countQueryName) != null || repository.getNamedSQLQueryDefinition(countQueryName) != null;
     }
 
     private boolean isMappedType(Class<?> type) {

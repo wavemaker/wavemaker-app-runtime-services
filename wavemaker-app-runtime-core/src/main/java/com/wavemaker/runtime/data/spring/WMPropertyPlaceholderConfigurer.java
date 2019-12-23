@@ -125,16 +125,22 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
         super.processProperties(beanFactory, props);
 
         props.entrySet().stream().forEach(entry -> {
+            String placeholder = (String) entry.getKey();
             String value = (String) entry.getValue();
             if (value.startsWith(this.placeholderPrefix) && value.endsWith(this.placeholderSuffix)) {
-                String placeholder = value.substring(value.indexOf(this.placeholderPrefix) + 2, value.indexOf(this.placeholderSuffix));
-                String resolvedValue = resolvePlaceholder(placeholder, props, systemPropertiesMode);
-                if (org.apache.commons.lang.StringUtils.isNotBlank(resolvedValue)) {
-                    entry.setValue(resolvedValue);
-                }
+                placeholder = value.substring(value.indexOf(this.placeholderPrefix) + 2, value.indexOf(this.placeholderSuffix));
+            }
+            String resolvedValue = resolvePlaceholder(placeholder, props, systemPropertiesMode);
+            if (org.apache.commons.lang.StringUtils.isNotBlank(resolvedValue)) {
+                entry.setValue(resolvedValue);
             }
         });
 
+        /**
+         * By default Spring PropertyPlaceholderConfigurer will not store the properties in the environment,
+         * Inorder to use the properties not only in the bean creation time but also to use in the runtime,
+         * we are storing the properties to the environment.
+         */
         if (environment instanceof ConfigurableEnvironment) {
             PropertiesPropertySource propertySource = new PropertiesPropertySource(beanName + "Properties", props);
             ((ConfigurableEnvironment) environment).getPropertySources().addFirst(propertySource);

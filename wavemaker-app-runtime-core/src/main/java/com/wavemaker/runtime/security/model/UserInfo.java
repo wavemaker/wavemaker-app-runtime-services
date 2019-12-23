@@ -26,7 +26,7 @@ public class UserInfo {
     private String userName;
     private String[] userRoles;
     private String landingPage;
-    private Map<String,Object> userAttributes;
+    private Map<String, Object> userAttributes;
 
     public String getUserId() {
         return userId;

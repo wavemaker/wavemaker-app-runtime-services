@@ -38,7 +38,7 @@ public class HttpRequestUtilTest {
         final HttpServletRequest request = getHttpServletRequest();
         final HttpServletResponse response = mock(HttpServletResponse.class);
         try {
-            when(response.getOutputStream()).thenReturn(getServletOutputStream());//append outputStream to response
+            when(response.getOutputStream()).thenReturn(getServletOutputStream()); //append outputStream to response
 
             HttpResponseDetails httpResponseDetails = getHttpResponseDetails(response);
             HttpRequestUtils.writeResponse(httpResponseDetails, response);

@@ -34,6 +34,6 @@ public class WMSQLServerDialect extends SQLServer2012Dialect {
         registerHibernateType(Types.NVARCHAR, StandardBasicTypes.STRING.getName());
 
         registerColumnType(Types.CHAR, "nchar(1)");
-        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime" );
+        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
     }
 }

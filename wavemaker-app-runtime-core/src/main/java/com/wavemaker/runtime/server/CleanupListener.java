@@ -288,7 +288,7 @@ public class CleanupListener implements ServletContextListener {
                         notificationEmitter.getClass().getName());
             }
             List listenerInfoList = (List) listenerListField
-                    .get(notificationEmitter);//This object would be List<ListenerInfo>
+                    .get(notificationEmitter); //This object would be List<ListenerInfo>
             for (Object o : listenerInfoList) {
                 Field listenerField = findField(o.getClass(), "listener");
                 if (listenerListField == null) {

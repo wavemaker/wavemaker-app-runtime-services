@@ -25,8 +25,7 @@ public class HqlFilterPropertyResolverImpl implements HqlFilterPropertyResolver 
     public Field findField(String propertyKey) {
         Optional<Field> optionalField = HqlPropertyResolver.findField(propertyKey, entity);
         if (!optionalField.isPresent()) {
-            throw new HqlGrammarException(MessageResource.create("Property {0} in the class {1} is not valid.")
-                    , propertyKey, entity.getName());
+            throw new HqlGrammarException(MessageResource.create("Property {0} in the class {1} is not valid."), propertyKey, entity.getName());
         }
         return optionalField.get();
     }
@@ -35,8 +34,7 @@ public class HqlFilterPropertyResolverImpl implements HqlFilterPropertyResolver 
     public JavaType findJavaType(Field field) {
         JavaType javaType = JavaTypeUtils.fromClassName(field.getType().getName()).orElse(null);
         if (javaType == null) {
-            throw new HqlGrammarException(MessageResource.create("The property {0} in the entity {1} is not a comparable data type.")
-                    , field, entity.getName());
+            throw new HqlGrammarException(MessageResource.create("The property {0} in the entity {1} is not a comparable data type."), field, entity.getName());
         }
         return javaType;
     }

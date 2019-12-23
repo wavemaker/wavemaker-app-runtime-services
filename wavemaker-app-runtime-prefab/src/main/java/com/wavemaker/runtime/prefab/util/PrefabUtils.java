@@ -89,15 +89,15 @@ public class PrefabUtils {
         return new File(prefabDirectory, prefabsConfig.getPrefabConfigDir());
     }
 
-    public File getPrefabBuildDirectory(final  File prefabDirectory){
-        return new File(prefabDirectory,prefabsConfig.getPrefabBuildDir());
+    public File getPrefabBuildDirectory(final File prefabDirectory) {
+        return new File(prefabDirectory, prefabsConfig.getPrefabBuildDir());
     }
 
     public boolean isDirContainsConfig(File directory) {
         File prefabConfigDirectory = new File(directory, prefabsConfig.getPrefabConfigDir());
         if (prefabConfigDirectory.exists() && prefabConfigDirectory.isDirectory()) {
             File[] files = prefabConfigDirectory.listFiles();
-            return files.length > 0;// Valid prefab config folder if it contains atleast one file
+            return files.length > 0; // Valid prefab config folder if it contains atleast one file
         }
         return false;
     }
@@ -106,7 +106,7 @@ public class PrefabUtils {
         File prefabLibDirectory = new File(directory, prefabsConfig.getPrefabLibDir());
         if (prefabLibDirectory.exists() && prefabLibDirectory.isDirectory()) {
             File[] files = prefabLibDirectory.listFiles();
-            return files.length > 0;// Valid prefab lib folder if it contains atleast one file
+            return files.length > 0; // Valid prefab lib folder if it contains atleast one file
         }
         return false;
     }
