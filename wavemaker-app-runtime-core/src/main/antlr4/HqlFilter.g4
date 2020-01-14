@@ -111,7 +111,6 @@ FUNCTION : 'current_date' |
              'current_timestamp' |
 //             'substring' |
 //             'trim' |
-//             'upper' |
 //             'length' |
 //             'locate' |
 //             'abs' |
@@ -134,6 +133,7 @@ FUNCTION : 'current_date' |
 //             'trunc' |
 //             'rtrim' |
 //             'sin' |
+             'upper' |
              'lower';
 
 
