@@ -785,7 +785,7 @@
             <id>central</id>
             <name>Maven Repository Switchboard</name>
             <layout>default</layout>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -794,7 +794,7 @@
         <repository>
             <id>spring-snapshot</id>
             <name>Spring Portfolio Snapshot Repository</name>
-            <url>http://s3.amazonaws.com/maven.springframework.org/snapshot</url>
+            <url>https://s3.amazonaws.com/maven.springframework.org/snapshot</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -804,7 +804,7 @@
         </repository>
         <repository>
             <id>java.net</id>
-            <url>http://download.java.net/maven/2</url>
+            <url>https://download.java.net/maven/2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -819,7 +819,7 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <url>http://s3.amazonaws.com/maven.wavemaker.com/release</url>
+            <url>https://s3.amazonaws.com/maven.wavemaker.com/release</url>
         </repository>
     </repositories>
 
@@ -827,7 +827,7 @@
         <pluginRepository>
             <id>autoincrement-versions-maven-plugin</id>
             <name>autoincrement-versions-maven-plugin</name>
-            <url>http://autoincrement-versions-maven-plugin.googlecode.com/svn/repo</url>
+            <url>https://autoincrement-versions-maven-plugin.googlecode.com/svn/repo</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
