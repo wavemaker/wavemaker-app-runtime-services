@@ -106,35 +106,35 @@ NOT : N O T ;
 NULL : N U L L ;
 
 //Hql Functions
-FUNCTION : 'current_date' |
-             'current_time' |
-             'current_timestamp' |
-//             'substring' |
-//             'trim' |
-//             'length' |
-//             'locate' |
-//             'abs' |
-//             'sqrt' |
-//             'bit_length' |
-//             'mod' |
-//             'coalesce' |
-//             'nullif' |
-//             'str' |
-//             'cast' |
-//             'extract' |
-//             'index' |
-//             'size' |
-//             'minelement' |
-//             'maxelement' |
-//             'minindex' |
-//             'maxindex' |
-//             'elements' |
-//             'sign' |
-//             'trunc' |
-//             'rtrim' |
-//             'sin' |
-             'upper' |
-             'lower';
+FUNCTION :  C U R R E N T US D A T E | // current_date
+            C U R R E N T US T I M E | //current_time
+            C U R R E N T US T I M E S T A M P | //current_timestamp
+//          S U B S T R I N G |  //substring
+//          T R I M |  //trim
+//          L E N G T H |  //length
+//          L O C A T E |  //locate
+//          A B S |  //abs
+//          S Q R T |  //sqrt
+//          B I T_ L E N G T H |  //bit_length
+//          M O D |  //mod
+//          C O A L E S C E |  //coalesce
+//          N U L L I F |  //nullif
+//          S T R |  //str
+//          C A S T |  //cast
+//          E X T R A C T |  //extract
+//          I N D E X |  //index
+//          S I Z E |  //size
+//          M I N E L E M E N T |  //minelement
+//          M A X E L E M E N T |  //maxelement
+//          M I N I N D E X |  //minindex
+//          M A X I N D E X |  //maxindex
+//          E L E M E N T S |  //elements
+//          S I G N |  //sign
+//          T R U N C |  //trunc
+//          R T R I M |  //rtrim
+//          S I N |  //sin
+            U P P E R | //upper
+            L O W E R; //lower
 
 
 OPERATOR : EQ | NE |  GT | LT | GE | LE ;
