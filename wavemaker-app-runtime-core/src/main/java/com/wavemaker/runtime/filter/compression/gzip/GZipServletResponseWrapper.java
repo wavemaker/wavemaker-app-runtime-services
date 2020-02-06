@@ -115,7 +115,6 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
     public void setContentLength(int len) {
         this.compressionEnabled = compressionEnabled && (len >= filterConfig.getMinCompressSize());
         this.originalContentLength = len;
-        super.setContentLength(len);
     }
 
     @Override
