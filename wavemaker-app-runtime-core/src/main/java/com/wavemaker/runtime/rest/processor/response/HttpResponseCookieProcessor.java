@@ -70,7 +70,7 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
         String newCookiePath = getCookiePath(httpServletRequest);
         if (StringUtils.isNotBlank(newCookiePath) && CollectionUtils.isNotEmpty(cookies)) {
             for (HttpCookie httpCookie : cookies) {
-                httpCookie.setPath(newCookiePath);//Updates path
+                httpCookie.setPath(newCookiePath); //Updates path
             }
             HttpResponseUtils.setCookies(httpResponseDetails, cookies);
         }

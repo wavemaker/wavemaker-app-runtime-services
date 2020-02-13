@@ -118,7 +118,7 @@ public class HttpRequestUtils {
         FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
         formHttpMessageConverter.setPartConverters(getPartConverters());
         try {
-            File file = File.createTempFile("requestBody",".tmp");
+            File file = File.createTempFile("requestBody", ".tmp");
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))){
                 httpOutputMessage.setOutputStream(outputStream);
                 formHttpMessageConverter.write(map, MediaType.valueOf(contentType), httpOutputMessage);

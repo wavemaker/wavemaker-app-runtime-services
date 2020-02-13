@@ -65,7 +65,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         Objects.requireNonNull(resultClass, "Result Class cannot be null");
         this.resultClass = resultClass;
 
-        initialize();//xxx lazy load?
+        initialize(); //xxx lazy load?
     }
 
     @Override

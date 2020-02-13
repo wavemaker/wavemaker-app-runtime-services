@@ -105,7 +105,7 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
                 prefabThreadLocalContextManager = getRootApplicationContext()
                         .getBean(PrefabThreadLocalContextManager.class);
             } catch (NoSuchBeanDefinitionException e) {
-                prefabThreadLocalContextManager = new PrefabThreadLocalContextManager();//To prevent this method being called every time
+                prefabThreadLocalContextManager = new PrefabThreadLocalContextManager(); //To prevent this method being called every time
             }
             this.prefabThreadLocalContextManager = prefabThreadLocalContextManager;
         }

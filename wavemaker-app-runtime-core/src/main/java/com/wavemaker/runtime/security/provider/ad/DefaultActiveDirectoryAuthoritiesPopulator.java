@@ -51,7 +51,7 @@ public class DefaultActiveDirectoryAuthoritiesPopulator implements ActiveDirecto
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("'{}' attribute values: {}" , groupRoleAttribute,  Arrays.asList(groups));
+            logger.debug("'{}' attribute values: {}", groupRoleAttribute, Arrays.asList(groups));
         }
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<>(groups.length);

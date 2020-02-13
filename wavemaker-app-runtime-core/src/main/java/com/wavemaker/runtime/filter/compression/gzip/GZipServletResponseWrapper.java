@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.springframework.util.MimeType;
 
 import com.wavemaker.runtime.filter.compression.CompressionFilterConfig;
@@ -78,8 +79,12 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
             exception2 = e;
         }
 
-        if(exception1 != null) throw exception1;
-        if(exception2 != null) throw exception2;
+        if(exception1 != null) {
+            throw exception1;
+        }
+        if(exception2 != null) {
+            throw exception2;
+        }
     }
 
     @Override
@@ -116,6 +121,17 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
     public void setContentType(String contentType) {
         this.compressionEnabled = compressionEnabled && isContentTypeMatched(contentType);
         super.setContentType(contentType);
+    }
+
+    @Override
+    public void addHeader(String name, String value) {
+        if (name.equals(HttpHeaders.CONTENT_TYPE)) {
+            setContentType(value);
+        } else if (name.equals(HttpHeaders.CONTENT_LENGTH)) {
+            setContentLength(Integer.parseInt(value));
+        } else {
+            super.setHeader(name, value);
+        }
     }
 
     private boolean isContentTypeMatched(String contentType) {

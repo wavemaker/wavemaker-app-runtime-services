@@ -63,7 +63,7 @@ public enum JavaType {
     DOUBLE(double.class.getName(), Double.class.getName(),
             new HibernateBackedJavaTypeConverter(DoubleType.INSTANCE.getJavaTypeDescriptor())),
     BIG_DECIMAL(BigDecimal.class.getName(),
-            new HibernateBackedJavaTypeConverter(BigDecimalType.INSTANCE.getJavaTypeDescriptor())),// OR NUMBER
+            new HibernateBackedJavaTypeConverter(BigDecimalType.INSTANCE.getJavaTypeDescriptor())), // OR NUMBER
     BOOLEAN(boolean.class.getName(), Boolean.class.getName(),
             new HibernateBackedJavaTypeConverter(BooleanType.INSTANCE.getJavaTypeDescriptor())),
     YES_OR_NO(boolean.class.getName(), Boolean.class.getName(),

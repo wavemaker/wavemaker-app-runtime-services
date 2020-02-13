@@ -151,11 +151,11 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
 
         private static String FRAME_ANCESTORS_HEADER = "frame-ancestors ";
 
-        private static final ContentSecurityPolicyHeaderWriter SELF_CONTENT_SECURITY_POLICY_HEADER_WRITER = new ContentSecurityPolicyHeaderWriter
-                (FRAME_ANCESTORS_HEADER + "'self'");
+        private static final ContentSecurityPolicyHeaderWriter SELF_CONTENT_SECURITY_POLICY_HEADER_WRITER = new ContentSecurityPolicyHeaderWriter(
+                FRAME_ANCESTORS_HEADER + "'self'");
 
-        private static final ContentSecurityPolicyHeaderWriter NONE_CONTENT_SECURITY_POLICY_HEADER_WRITER = new ContentSecurityPolicyHeaderWriter
-                (FRAME_ANCESTORS_HEADER + "'none'");
+        private static final ContentSecurityPolicyHeaderWriter NONE_CONTENT_SECURITY_POLICY_HEADER_WRITER = new ContentSecurityPolicyHeaderWriter(
+                FRAME_ANCESTORS_HEADER + "'none'");
 
         @Override
         protected void writeNonAllowFromHeader(FrameOptions.Mode mode, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {

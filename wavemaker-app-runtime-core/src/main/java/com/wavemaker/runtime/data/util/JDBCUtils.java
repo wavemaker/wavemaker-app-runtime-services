@@ -71,7 +71,7 @@ public class JDBCUtils {
         sqlTypeCodeVsJavaType.put(Types.DOUBLE, JavaType.DOUBLE);
         sqlTypeCodeVsJavaType.put(Types.NUMERIC, JavaType.BIG_DECIMAL);
         sqlTypeCodeVsJavaType.put(Types.DECIMAL, JavaType.BIG_DECIMAL);
-        sqlTypeCodeVsJavaType.put(Types.LONGVARCHAR,JavaType.TEXT);
+        sqlTypeCodeVsJavaType.put(Types.LONGVARCHAR, JavaType.TEXT);
         sqlTypeCodeVsJavaType.put(Types.LONGNVARCHAR, JavaType.TEXT);
         sqlTypeCodeVsJavaType.put(Types.VARCHAR, JavaType.STRING);
         sqlTypeCodeVsJavaType.put(Types.CHAR, JavaType.CHARACTER);

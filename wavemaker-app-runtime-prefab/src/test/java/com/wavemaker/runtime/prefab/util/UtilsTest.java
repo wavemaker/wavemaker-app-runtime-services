@@ -84,16 +84,14 @@ public class UtilsTest {
     @Test
     public void testGetPrefabLibDirectory() throws Exception {
         Assert.assertEquals(new File(SAMPLE_PREFAB_DIR, prefabsConfig.getPrefabLibDir()),
-                prefabUtils.getPrefabLibDirectory(new File
-                        (SAMPLE_PREFAB_DIR))
+                prefabUtils.getPrefabLibDirectory(new File(SAMPLE_PREFAB_DIR))
         );
     }
 
     @Test
     public void testGetPrefabConfigDirectory() throws Exception {
         Assert.assertEquals(new File(SAMPLE_PREFAB_DIR, prefabsConfig.getPrefabConfigDir()),
-                prefabUtils.getPrefabConfigDirectory(new File
-                        (SAMPLE_PREFAB_DIR))
+                prefabUtils.getPrefabConfigDirectory(new File(SAMPLE_PREFAB_DIR))
         );
     }
 
@@ -116,8 +114,7 @@ public class UtilsTest {
     @Test
     public void testConvertToURLS() throws Exception {
         File[] files = new File[]{getClassPathResourceAsFile(JAR_FILE)};
-        URL[] urls = Utils.convertToURLS(prefabUtils.getPrefabConfigDirectory(getClassPathResourceAsFile(SAMPLE_PREFAB_DIR))
-                , files);
+        URL[] urls = Utils.convertToURLS(prefabUtils.getPrefabConfigDirectory(getClassPathResourceAsFile(SAMPLE_PREFAB_DIR)), files);
         Assert.assertEquals((files.length + 1), urls.length);
         Assert.assertTrue(Arrays.asList(urls).contains(files[0].toURI().toURL()));
     }

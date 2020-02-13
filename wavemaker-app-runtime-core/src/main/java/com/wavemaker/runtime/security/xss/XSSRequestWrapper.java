@@ -41,8 +41,9 @@ public  class XSSRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String[] getParameterValues(String name) {
         String[] paramValues = super.getParameterValues(name);
-        if (paramValues == null)
+        if (paramValues == null) {
             return paramValues;
+        }
         int paramCount = paramValues.length;
         String[] escapedValues = new String[paramCount];
         for (int i = 0; i < paramCount; i++) {
