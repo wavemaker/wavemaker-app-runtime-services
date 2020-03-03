@@ -293,6 +293,10 @@ public class WMObjectMapper extends ObjectMapper {
         readMapper.registerModule(mapperModule);
     }
 
+    public void registerWriteModule(final Module mapperModule) {
+        writeMapper.registerModule(mapperModule);
+    }
+
     private static class WMObjectReadMapper extends ObjectMapper {
 
         WMObjectReadMapper() {
