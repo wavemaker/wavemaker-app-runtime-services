@@ -60,7 +60,7 @@ public class GZipServletOutputStreamWrapper extends ServletOutputStream {
             responseWrapper.setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
             outputStream = new GZIPOutputStream(outputStream);
         } else {
-            responseWrapper.setContentLength(responseWrapper.getOriginalContentLength());
+            responseWrapper.setContentLengthLong(responseWrapper.getOriginalContentLength());
         }
         streamInitialized = true;
     }
