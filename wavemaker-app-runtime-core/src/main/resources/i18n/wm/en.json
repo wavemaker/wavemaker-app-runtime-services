@@ -35,7 +35,7 @@
   "com.wavemaker.runtime.empty.default.headers" : "defaultHeaders can't be empty",
   "com.wavemaker.runtime.empty.header.prefix" : "headerPrefix should not be empty",
   "com.wavemaker.runtime.empty.object" : "object cannot be empty",
-  "com.wavemaker.runtime.empty.operationId" : "operationId is empty",
+  "com.wavemaker.runtime.empty.path" : "path is empty",
   "com.wavemaker.runtime.empty.serviceId" : "ServiceId is empty",
   "com.wavemaker.runtime.encryption.error" : "Error while encrypting value",
   "com.wavemaker.runtime.entity.not.found" : "No {0} found with id: {1}",

@@ -116,6 +116,6 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
         HeadersRequestCondition headers = new HeadersRequestCondition();
         ConsumesRequestCondition consumes = new ConsumesRequestCondition();
         ProducesRequestCondition produces = new ProducesRequestCondition();
-        return new RequestMappingInfo(patterns, methods, params, headers, consumes, produces, null);
+        return new RequestMappingInfo(restServiceEntry.getMethodName(), patterns, methods, params, headers, consumes, produces, null);
     }
 }
