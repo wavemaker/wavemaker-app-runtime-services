@@ -60,6 +60,7 @@
         <antlr.version>4.7.2</antlr.version>
         <wm.parser.directory>${project.build.sourceDirectory}/com/wavemaker/runtime/data/filter/parser/antlr4</wm.parser.directory>
         <xerces.version>2.12.0</xerces.version>
+        <jackson.dataFormat.yaml.version>2.9.9</jackson.dataFormat.yaml.version>
     </properties>
 
     <modules>
@@ -818,6 +819,12 @@
                 <groupId>xerces</groupId>
                 <artifactId>xercesImpl</artifactId>
                 <version>${xerces.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.dataFormat.yaml.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
