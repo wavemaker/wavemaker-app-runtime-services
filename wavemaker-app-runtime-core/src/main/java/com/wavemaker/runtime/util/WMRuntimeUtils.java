@@ -43,6 +43,7 @@ import org.springframework.util.ClassUtils;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.converters.WMYamlJackson2HttpMessageConverter;
 
 /**
  * @author Uday Shankar
@@ -81,6 +82,7 @@ public class WMRuntimeUtils {
         messageConverters.add(new SourceHttpMessageConverter<>());
         messageConverters.add(new AllEncompassingFormHttpMessageConverter());
         messageConverters.add(new FormHttpMessageConverter());
+        messageConverters.add(new WMYamlJackson2HttpMessageConverter());
         if (ROME_PRESENT) {
             messageConverters.add(new AtomFeedHttpMessageConverter());
             messageConverters.add(new RssChannelHttpMessageConverter());
