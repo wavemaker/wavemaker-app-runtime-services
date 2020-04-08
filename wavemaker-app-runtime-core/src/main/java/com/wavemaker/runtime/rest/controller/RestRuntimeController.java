@@ -43,14 +43,13 @@ public class RestRuntimeController {
         if (StringUtils.isBlank(serviceId)) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.serviceId"));
         }
-        final String operationId = split[2];
-        if (StringUtils.isBlank(operationId)) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.operationId"));
+        final String path = pathInfo.replaceFirst("/" + serviceId, "");
+        if (StringUtils.isBlank(path)) {
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.path"));
         }
 
         try {
-
-            restRuntimeService.executeRestCall(serviceId, operationId, httpServletRequest, httpServletResponse);
+            restRuntimeService.executeRestCall(serviceId, path, httpServletRequest, httpServletResponse);
         }catch (WMRuntimeException e) {
             throw e;
         } catch (Throwable e) {

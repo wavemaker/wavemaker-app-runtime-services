@@ -261,12 +261,23 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         if (serviceDefinitions != null) {
             for (ServiceDefinition serviceDefinition : serviceDefinitions) {
                 if (valueLess) {
-                    serviceDefinitionsMap.put(serviceDefinition.getId(), null);
+                    serviceDefinitionsMap.put(serviceDefinition.getId(), buildValueLessServiceDef(serviceDefinition));
                 } else {
                     serviceDefinitionsMap.put(serviceDefinition.getId(), serviceDefinition);
                 }
             }
         }
+    }
+
+    private ServiceDefinition buildValueLessServiceDef(ServiceDefinition serviceDefinition) {
+        return ServiceDefinition.getNewInstance()
+                .addId(serviceDefinition.getId())
+                .addController(serviceDefinition.getController())
+                .addType(serviceDefinition.getType())
+                .addCrudOperationId(serviceDefinition.getCrudOperationId())
+                .addOperationType(serviceDefinition.getOperationType())
+                .addService(serviceDefinition.getService())
+                .addWmServiceOperationInfo(null);
     }
 
     private void loadServiceDefinitions(ExecutorService executor) {
