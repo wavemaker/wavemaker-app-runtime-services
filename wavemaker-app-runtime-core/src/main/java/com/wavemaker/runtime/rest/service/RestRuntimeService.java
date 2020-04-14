@@ -16,9 +16,12 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -197,8 +200,9 @@ public class RestRuntimeService {
     }
 
     private Tuple.Two<String, Path> findPath(Swagger swagger, String path) {
-        Map<String, Tuple.Two<String, Path>> operationRelativePaths = buildServiceOperationRelativePathsMap(swagger.getBasePath(), swagger.getPaths());
-        List<String> pathEntries = new ArrayList<>(operationRelativePaths.keySet());
+        Map<String, Path> map = swagger.getPaths();
+
+        List<String> pathEntries = new ArrayList<>(map.keySet());
         pathEntries.sort(new UrlComparator<String>() {
             @Override
             public String getUrlPattern(String s) {
@@ -214,28 +218,11 @@ public class RestRuntimeService {
 
         for (String pathString : pathEntries) {
             if (pathMatcher.match(pathString, path)) {
-                return operationRelativePaths.get(pathString);
+                return new Tuple.Two<>(pathString, map.get(pathString));
             }
         }
         throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"),
                 path);
-    }
-
-    private Map<String, Tuple.Two<String, Path>> buildServiceOperationRelativePathsMap(final String swaggerBasePath, Map<String, Path> paths) {
-
-        return paths.entrySet().parallelStream().collect(Collectors.toMap(stringPathEntry -> {
-            Path path = stringPathEntry.getValue();
-            String pathBasePath = path.getBasePath();
-            String basPath = swaggerBasePath;
-            if (swaggerBasePath == null) {
-                return pathBasePath + path.getRelativePath();
-            } else if (swaggerBasePath.endsWith("/") && pathBasePath.startsWith("/")) {
-                basPath = swaggerBasePath.substring(0, swaggerBasePath.length() - 1);
-            }
-            return basPath + pathBasePath + path.getRelativePath();
-        }, stringPathEntry ->
-                new Tuple.Two<>(stringPathEntry.getKey(), stringPathEntry.getValue())
-        ));
     }
 
     private void filterAndApplyServerVariablesOnRequestData(
