@@ -24,7 +24,7 @@ import com.wavemaker.commons.model.security.PathEntry;
  */
 public class CorsBeanPostProcessor implements BeanPostProcessor {
 
-    private static final String DEFAULT_ALLOWED_METHODS = "GET,HEAD,POST";
+    private static final String DEFAULT_ALLOWED_METHODS = "*";
     private static final String DEFAULT_ALLOWED_HEADERS = "*";
     private static final String DEFAULT_EXPOSED_HEADERS = "";
     private static final long DEFAULT_MAX_AGE = 1600;
