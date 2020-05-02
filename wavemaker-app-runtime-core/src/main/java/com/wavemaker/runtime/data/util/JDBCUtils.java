@@ -15,9 +15,6 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +24,6 @@ import org.hibernate.dialect.OracleTypesHelper;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.commons.util.StringUtils;
-import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
 import com.wavemaker.runtime.data.model.JavaType;
 
 public class JDBCUtils {
@@ -94,37 +88,6 @@ public class JDBCUtils {
     }
 
     private JDBCUtils() {
-    }
-
-    public static void loadDriver(String driverClassName) {
-        ClassLoaderUtils.loadClass(driverClassName);
-    }
-
-    public static Connection getConnection(String url, String username, String password, String driverClassName) {
-        try {
-            loadDriver(driverClassName);
-            return DriverManager.getConnection(url, username, password);
-        } catch (SQLException ex) {
-            //wrt to MySQL the cause of the SQLException is set to null; the actual exception is set in a cause filed in MySQLException; hence you need to get the message from the sqlexception itself..
-            if (ex.getCause() != null) {
-                throw new DataServiceRuntimeException(ex.getCause().getMessage(), ex);
-            } else if (ex.getMessage() != null) {
-                throw new DataServiceRuntimeException(ex.getMessage(), ex);
-            }
-            throw new DataServiceRuntimeException(ex, MessageResource.DATABASE_CONNECTION_EXCEPTION);
-        }
-    }
-
-    public static String getMySQLDatabaseName(String connectionUrl) {
-        String s = StringUtils.fromFirstOccurrence(connectionUrl, "?", -1);
-        int i = s.lastIndexOf("/");
-        if (i <= 0 || i == s.length() - 1) {
-            return null;
-        }
-        if (s.charAt(i - 1) == '/') {
-            return null;
-        }
-        return s.substring(i + 1);
     }
 
     public static int getSqlTypeCode(JavaType javaType) {
