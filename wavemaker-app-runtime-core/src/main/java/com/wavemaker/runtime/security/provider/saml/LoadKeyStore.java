@@ -134,7 +134,10 @@ public class LoadKeyStore {
             FileDownload fileDownload = new FileDownload();
             idpMetadataFile = fileDownload.download(idpMetadataUrl, new File(filePath));
         } catch (WMRuntimeException e) {
-            logger.info("Failed to download metadata file for url {}", idpMetadataUrl, e);
+            logger.warn("Failed to download metadata file for url {}", idpMetadataUrl, e);
+            if (!idpMetadataFile.exists()) {
+                throw e;
+            }
         }
         return readMetadataFile(idpMetadataFile);
     }
@@ -163,8 +166,11 @@ public class LoadKeyStore {
         final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
                 .getIDPSSODescriptor(SAMLConstants.SAML_2_0_PROTOCOL);
         final List<KeyDescriptor> keyDescriptors = idpssoDescriptor.getKeyDescriptors();
+        logger.info("Size of the keyDescriptors is : {}", keyDescriptors.size());
         for (KeyDescriptor keyDescriptor : keyDescriptors) {
-            if (UsageType.SIGNING == keyDescriptor.getUse()) {
+            UsageType usageType = keyDescriptor.getUse();
+            logger.info("KeyDescriptor usage type is {}", usageType);
+            if (UsageType.SIGNING == usageType) {
                 final KeyInfo keyInfo = keyDescriptor.getKeyInfo();
                 final X509Data x509Data = keyInfo.getX509Datas().get(0);
                 final org.opensaml.xml.signature.X509Certificate x509Certificate = x509Data.getX509Certificates()
@@ -172,7 +178,7 @@ public class LoadKeyStore {
                 return com.wavemaker.commons.util.StringUtils.removeLineFeed(x509Certificate.getValue());
             }
         }
-        return null;
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.publicKey.not.found"), idpMetadataFile.getName());
     }
 
     private String createIdpCertificate(final String idpPublicKey) {
