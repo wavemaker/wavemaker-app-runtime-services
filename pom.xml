@@ -65,9 +65,6 @@
     <modules>
         <module>wavemaker-app-runtime-prefab</module>
         <module>wavemaker-app-runtime-core</module>
-        <module>wavemaker-app-runtime-connector-app-integration</module>
-        <module>wavemaker-app-runtime-connector-api</module>
-        <module>wavemaker-app-runtime-connector-impl</module>
     </modules>
 
     <profiles>
@@ -404,6 +401,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.retry</groupId>
                 <artifactId>spring-retry</artifactId>
@@ -415,20 +413,6 @@
                 <artifactId>spring-data-jpa</artifactId>
                 <version>${spring.data.jpa.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-jpa</artifactId>
-                <version>${spring.data.jpa.version}</version>
-            </dependency>
-
-            <!-- Connector runtime -->
-            <dependency>
-                <artifactId>wavemaker-connector-runtime</artifactId>
-                <groupId>com.wavemaker.connector</groupId>
-                <version>${project.version}</version>
-            </dependency>
-
 
             <!-- Spring Social -->
             <dependency>

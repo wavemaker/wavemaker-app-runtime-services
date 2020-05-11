@@ -200,10 +200,6 @@
 
     <bean id="webProcessController" class="com.wavemaker.runtime.webprocess.controller.WebProcessController"/>
 
-    <bean id="connectorBeanFactoryPostProcessor" class="com.wavemaker.runtime.connector.processor.ConnectorBeanFactoryPostProcessor"/>
-
-    <bean id="WMConnectorClassLoaderProvider" class="com.wavemaker.runtime.connector.classloader.WMConnectorClassLoaderProvider"/>
-
     <bean id="requestTrackingFilter" class="com.wavemaker.commons.web.filter.RequestTrackingFilter">
         <property name="requestTrackingHeaderName" value="X-WM-Request-Track-Id"/>
         <property name="requestTrackingIdPrefix" value="app"/>
