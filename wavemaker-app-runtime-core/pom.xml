@@ -39,7 +39,11 @@
             <artifactId>spring-security-oauth2-jose</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.wavemaker.runtime.connector</groupId>
+            <artifactId>wavemaker-app-runtime-connector-app-integration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -107,7 +111,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -242,6 +245,11 @@
         </dependency>
 
         <dependency>
+            <artifactId>wavemaker-connector-runtime</artifactId>
+            <groupId>com.wavemaker.connector</groupId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
@@ -315,7 +323,8 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>${basedir}/src/main/java/com/wavemaker/runtime/data/filter/parser/antlr4</directory>
+                            <directory>${basedir}/src/main/java/com/wavemaker/runtime/data/filter/parser/antlr4
+                            </directory>
                         </fileset>
                     </filesets>
                 </configuration>
