@@ -6,8 +6,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -43,7 +41,6 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
     public static final String DEFAULT_FILTER_PROCESSES_URI = "/login/oauth2/code/*";
     private static final String AUTHORIZATION_REQUEST_NOT_FOUND_ERROR_CODE = "authorization_request_not_found";
     private static final String CLIENT_REGISTRATION_NOT_FOUND_ERROR_CODE = "client_registration_not_found";
-    private static final Logger logger = LoggerFactory.getLogger(OpenIdLoginAuthenticationFilter.class);
     private ClientRegistrationRepository clientRegistrationRepository;
     private OAuth2AuthorizedClientService authorizedClientService;
     private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
@@ -114,21 +111,8 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
                 clientRegistration, new OAuth2AuthorizationExchange(authorizationRequest, authorizationResponse));
         authenticationRequest.setDetails(this.authenticationDetailsSource.buildDetails(request));
 
-        OAuth2LoginAuthenticationToken authenticationResult = null;
-        try {
-            authenticationResult =
-                    (OAuth2LoginAuthenticationToken) this.getAuthenticationManager().authenticate(authenticationRequest);
-        } catch (OAuth2AuthenticationException e) {
-            logger.error("Could not authenticate using OpenID", e);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("Could not authenticate the user : " + e.getError());
-            return authenticationResult;
-        } catch (Exception e) {
-            logger.error("Could not authenticate using OpenID", e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("Could not authenticate the user : Internal Server Error" + e.getLocalizedMessage());
-            return authenticationResult;
-        }
+        OAuth2LoginAuthenticationToken authenticationResult =
+                (OAuth2LoginAuthenticationToken) this.getAuthenticationManager().authenticate(authenticationRequest);
 
         OAuth2AuthenticationToken oauth2Authentication = new OAuth2AuthenticationToken(
                 authenticationResult.getPrincipal(),

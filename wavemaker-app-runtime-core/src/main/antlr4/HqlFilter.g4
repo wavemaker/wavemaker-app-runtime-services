@@ -22,15 +22,16 @@ condition : (comparison | between | in | notIn | like | notLike | isNull | isNot
 
 comparison :  OPERATOR (string | BOOLEAN_VALUE | number | NULL | function);
 between : BETWEEN ((number AND number) | (string AND string));
-in : IN BRAC_OPEN commaSeparatedValues BRAC_CLOSE;
-notIn : NOT IN BRAC_OPEN commaSeparatedValues BRAC_CLOSE;
+in : IN BRAC_OPEN (commaSeparatedStrings |  commaSeparatedNumbers) BRAC_CLOSE;
+notIn : NOT IN BRAC_OPEN (commaSeparatedStrings |  commaSeparatedNumbers) BRAC_CLOSE;
 like : LIKE string ;
 notLike : NOT LIKE string ;
 isNull : IS NULL;
 isNotNull : IS NOT NULL;
 
 //Comma saperated values
-commaSeparatedValues : (string|NUMBER_VALUE) (COMMA (string|NUMBER_VALUE))*;
+commaSeparatedStrings : string (COMMA string)*;
+commaSeparatedNumbers : NUMBER_VALUE (COMMA NUMBER_VALUE)*;
 
 
 //Handling hql functions

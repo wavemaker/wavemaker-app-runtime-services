@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,7 +66,6 @@ import com.wavemaker.tools.apidocs.tools.core.model.auth.BasicAuthDefinition;
 import com.wavemaker.tools.apidocs.tools.core.model.auth.OAuth2Definition;
 import com.wavemaker.tools.apidocs.tools.core.model.auth.SecuritySchemeDefinition;
 import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
-import com.wavemaker.tools.apidocs.tools.core.model.parameters.RefParameter;
 import com.wavemaker.tools.apidocs.tools.core.utils.PathUtils;
 
 /**
@@ -175,8 +173,7 @@ public class RestRuntimeService {
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> pathParameters = new HashMap<>();
         Operation operation = PathUtils.getOperation(pathInfo.v2, method);
-        filterAndApplyServerVariablesOnRequestData(httpRequestData, swagger, operation,
-                httpHeaders, queryParameters, pathParameters);
+        filterAndApplyServerVariablesOnRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
@@ -229,12 +226,9 @@ public class RestRuntimeService {
     }
 
     private void filterAndApplyServerVariablesOnRequestData(
-            HttpRequestData httpRequestData, Swagger swagger, Operation operation, HttpHeaders headers,
+            HttpRequestData httpRequestData, Operation operation, HttpHeaders headers,
             Map<String, Object> queryParameters, Map<String, String> pathParameters) {
         for (Parameter parameter : operation.getParameters()) {
-            if (parameter instanceof RefParameter) {
-                parameter = swagger.getParameter(((RefParameter) parameter).getSimpleRef());
-            }
             String paramName = parameter.getName();
             String type = parameter.getIn().toUpperCase();
             Optional<String> variableValue = RestRequestUtils.findVariableValue(parameter);
@@ -310,7 +304,6 @@ public class RestRuntimeService {
                     } else if (securitySchemeDefinition instanceof ApiKeyAuthDefinition) {
                         ApiKeyAuthDefinition apiKeyAuthDefinition = (ApiKeyAuthDefinition) securitySchemeDefinition;
                         if (!apiKeyAuthDefinition.getVendorExtensions().isEmpty()) {
-                            //TODO :: need to remove this vendor extension (openapi 2.0 to 3.0).
                             String apiKey = apiKeyAuthDefinition.getVendorExtensions().get("x-value").toString();
                             if (ParameterType.QUERY.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
                                 queryParameters.put(apiKeyAuthDefinition.getName(), apiKey);

@@ -75,6 +75,5 @@
   "LABEL_MINDATE_VALIDATION_MESSAGE": "Bitte wählen Sie ein Datum, das größer oder gleich ist",
   "LABEL_MAXDATE_VALIDATION_MESSAGE": "Bitte wählen Sie ein Datum, das kleiner oder gleich ist",
   "LABEL_FILE_EXTENTION_VALIDATION_MESSAGE": "Erwartete Dateierweiterung ist",
-  "LABEL_FILE_EXCEED_VALIDATION_MESSAGE": "Dateigröße überschritten Limit. Die maximale Upload-Größe beträgt",
-  "MESSAGE_FOLDER_UPLOADS_NOT_ALLOWED": "Ordner-Uploads sind nicht zulässig"
+  "LABEL_FILE_EXCEED_VALIDATION_MESSAGE": "Dateigröße überschritten Limit. Die maximale Upload-Größe beträgt"
 }
