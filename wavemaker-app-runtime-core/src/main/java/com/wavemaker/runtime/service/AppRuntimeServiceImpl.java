@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.wavemaker.commons.i18n.FinalLocaleData;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.PropertiesFileUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
+import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.security.SecurityService;
 
@@ -68,6 +70,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 }
                 appProperties
                         .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
+                appProperties.put("isTestRuntime", RuntimeEnvironment.isTestRunEnvironment());
                 this.applicationProperties = appProperties;
             }
         }

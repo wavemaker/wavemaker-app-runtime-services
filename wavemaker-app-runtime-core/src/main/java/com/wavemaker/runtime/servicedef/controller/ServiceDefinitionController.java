@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.runtime.servicedef.model.ServiceDefinitionsWrapper;
 import com.wavemaker.runtime.servicedef.service.ServiceDefinitionService;
 
 /**
@@ -38,8 +39,8 @@ public class ServiceDefinitionController {
     private ServiceDefinitionService serviceDefinitionService;
 
     @RequestMapping(value = "/servicedefs", method = RequestMethod.GET)
-    public Map<String, ServiceDefinition> listServiceDefs() {
-        return serviceDefinitionService.listServiceDefs();
+    public ServiceDefinitionsWrapper listServiceDefinitionWrapper() {
+        return serviceDefinitionService.getServiceDefinitionWrapper();
     }
 
     @RequestMapping(value = "/prefabs/{prefabName}/servicedefs", method = RequestMethod.GET)
