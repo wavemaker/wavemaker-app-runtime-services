@@ -72,6 +72,8 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private Map<String, Map<String, OAuth2ProviderConfig>> securityDefinitions;
 
+    private Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions;
+
     @Autowired
     private PrefabManager prefabManager;
 
@@ -111,9 +113,17 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         }
     }
 
+    public ServiceDefinitionsWrapper getServiceDefinitionWrapperForPrefab(String prefabName) {
+        ServiceDefinitionsWrapper serviceDefinitionsWrapper = new ServiceDefinitionsWrapper();
+        Map<String, ServiceDefinition> serviceDefinitionMap = listPrefabServiceDefs(prefabName);
+        serviceDefinitionsWrapper.setServiceDefs(serviceDefinitionMap);
+        serviceDefinitionsWrapper.setSecurityDefinitions(prefabSecurityDefinitions.get(prefabName));
+        return serviceDefinitionsWrapper;
+    }
+
     public Map<String, ServiceDefinition> listPrefabServiceDefs(final String prefabName) {
         if (prefabServiceDefinitionsCache == null) {
-            loadPrefabsServiceDefinitions();
+            loadPrefabsServiceDefinitionWrapper();
         }
         Map<String, ServiceDefinition> serviceDefinitionMap = prefabServiceDefinitionsCache.get(prefabName);
         if (serviceDefinitionMap == null) {
@@ -191,20 +201,23 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         return authExpressionVsServiceDefinitions;
     }
 
-    private void loadPrefabsServiceDefinitions() {
+    private void loadPrefabsServiceDefinitionWrapper() {
 
         synchronized (this) {
             if (prefabServiceDefinitionsCache == null) {
                 final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
+                final Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions = new HashMap<>();
                 for (final Prefab prefab : prefabManager.getPrefabs()) {
-                    runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefs(prefab, prefabServiceDefinitionsCache));
+                    runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefsAndSecurityDefinitions(prefab, prefabServiceDefinitionsCache, prefabSecurityDefinitions));
                 }
                 this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
+                this.prefabSecurityDefinitions = prefabSecurityDefinitions;
             }
         }
     }
 
-    private synchronized void loadPrefabServiceDefs(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache) {
+    private synchronized void loadPrefabServiceDefsAndSecurityDefinitions(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache,
+                                                                          Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions) {
         if (prefabServiceDefinitionsCache.get(prefab.getName()) == null) {
             prefabServiceDefinitionsCache.put(prefab.getName(), new HashMap<>());
         }
@@ -213,6 +226,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             for (Resource resource : resources) {
                 prefabServiceDefinitionsCache.get(prefab.getName()).putAll(getServiceDefinition(resource));
             }
+            prefabSecurityDefinitions.put(prefab.getName(), OAuthProvidersImplicitHelper.getOAuth2ProviderWithImplicitFlow());
         } else {
             logger.warn("Service def resources does not exist for this project");
         }
@@ -293,7 +307,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private void loadServiceDefinitions(ExecutorService executor) {
         executor.execute(this::loadServiceDefinitions);
-        executor.execute(this::loadPrefabsServiceDefinitions);
+        executor.execute(this::loadPrefabsServiceDefinitionWrapper);
     }
 
 }

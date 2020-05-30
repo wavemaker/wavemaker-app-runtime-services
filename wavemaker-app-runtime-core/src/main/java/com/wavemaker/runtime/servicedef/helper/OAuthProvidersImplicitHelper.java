@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.servicedef.helper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,24 +26,33 @@ public class OAuthProvidersImplicitHelper {
     public static Map<String, Map<String, OAuth2ProviderConfig>> getOAuth2ProviderWithImplicitFlow() {
         PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
         Resource resource = patternResolver.getResource(OAUTH_PROVIDER_JSON_PATH);
-        if (resource.exists()) {
-            Map<String, Map<String, OAuth2ProviderConfig>> oauthProvidersMap = new HashMap<>();
-            try {
-                String oauthProviders = WMIOUtils.toString(resource.getInputStream());
-                if (oauthProviders != null) {
-                    List<OAuth2ProviderConfig> oAuth2ProviderConfigs = JSONUtils.toObject(oauthProviders, new TypeReference<List<OAuth2ProviderConfig>>() {
-                    });
-                    Map<String, OAuth2ProviderConfig> oAuth2ProviderConfigMap = oAuth2ProviderConfigs.stream()
-                            .filter(o -> o.getOauth2Flow() == OAuth2Flow.IMPLICIT)
-                            .collect(Collectors.toMap(OAuth2ProviderConfig::getProviderId, o -> o));
-
-                    oauthProvidersMap.put(OAUTH_PROVIDER, oAuth2ProviderConfigMap);
-                    return oauthProvidersMap;
-                }
-            } catch (IOException e) {
-                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.oauth2provider.failure"), e, resource.getFilename());
+        try {
+            if (resource.exists()) {
+                return getOAuth2ProvidersMap(resource.getInputStream());
             }
+        } catch (IOException e) {
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.oauth2provider.failure"), e, resource.getFilename());
         }
         return null;
+    }
+
+    public static Map<String, Map<String, OAuth2ProviderConfig>> getOAuth2ProvidersMap(InputStream inputStream) {
+        Map<String, Map<String, OAuth2ProviderConfig>> oauthProvidersMap = new HashMap<>();
+        String oauthProviders = WMIOUtils.toString(inputStream);
+        if (oauthProviders != null) {
+            List<OAuth2ProviderConfig> oAuth2ProviderConfigs = null;
+            try {
+                oAuth2ProviderConfigs = JSONUtils.toObject(oauthProviders, new TypeReference<List<OAuth2ProviderConfig>>() {
+                });
+            } catch (IOException e) {
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.oauth2provider.failure"), e);
+            }
+            Map<String, OAuth2ProviderConfig> oAuth2ProviderConfigMap = oAuth2ProviderConfigs.stream()
+                    .filter(o -> o.getOauth2Flow() == OAuth2Flow.IMPLICIT)
+                    .collect(Collectors.toMap(OAuth2ProviderConfig::getProviderId, o -> o));
+
+            oauthProvidersMap.put(OAUTH_PROVIDER, oAuth2ProviderConfigMap);
+        }
+        return oauthProvidersMap;
     }
 }
