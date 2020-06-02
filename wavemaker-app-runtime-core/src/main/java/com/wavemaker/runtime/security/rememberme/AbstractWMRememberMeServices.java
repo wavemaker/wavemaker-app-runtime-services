@@ -104,6 +104,7 @@ public abstract class AbstractWMRememberMeServices implements RememberMeServices
      * The returned username is then used to load the UserDetails object for the user, which in turn
      * is used to create a valid authentication token.
      */
+    @Override
     public Authentication autoLogin(HttpServletRequest request, HttpServletResponse response) {
         String rememberMeCookie = extractRememberMeCookie(request);
 
@@ -262,6 +263,7 @@ public abstract class AbstractWMRememberMeServices implements RememberMeServices
      * If it's present, or if <tt>alwaysRemember</tt> is set to true, calls <tt>onLoginSucces</tt>.
      * </p>
      */
+    @Override
     public final void loginSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication successfulAuthentication) {
 
