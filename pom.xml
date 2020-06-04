@@ -66,6 +66,9 @@
     <modules>
         <module>wavemaker-app-runtime-prefab</module>
         <module>wavemaker-app-runtime-core</module>
+        <module>wavemaker-app-runtime-connector-app-integration</module>
+        <module>wavemaker-app-runtime-connector-api</module>
+        <module>wavemaker-app-runtime-connector-impl</module>
     </modules>
 
     <profiles>
