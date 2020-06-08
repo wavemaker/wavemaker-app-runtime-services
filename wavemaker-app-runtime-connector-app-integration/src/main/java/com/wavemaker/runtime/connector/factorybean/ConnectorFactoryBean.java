@@ -13,7 +13,7 @@ import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 
 import com.wavemaker.runtime.connector.context.ConnectorContext;
-import com.wavemaker.runtime.connector.context.ConnectorContextBuilder;
+import com.wavemaker.runtime.connector.context.ConnectorContextProvider;
 import com.wavemaker.runtime.connector.configuration.ConnectorMetadata;
 
 /**
@@ -31,7 +31,7 @@ public class ConnectorFactoryBean<T> implements FactoryBean<T> {
     private String configurationId;
     private Properties connectorProperties;
     @Autowired
-    private ConnectorContextBuilder contextBuilder;
+    private ConnectorContextProvider contextProvider;
 
     public ConnectorFactoryBean(String connectorId, String configurationId, Class<T> serviceKlass, Properties properties) {
         this.connectorId = connectorId;
@@ -52,7 +52,7 @@ public class ConnectorFactoryBean<T> implements FactoryBean<T> {
                     try {
 
                         //step1 : get connector context which have connector impl classloader and metadata, and they are cached in builder
-                        ConnectorContext connectorContext = contextBuilder.build(connectorId, currentClassLoader);
+                        ConnectorContext connectorContext = contextProvider.get(connectorId, currentClassLoader);
 
                         //step2: set impl classloader to current thread
                         logger.info("Setting connector classloader {0} to current thread ", connectorContext.getClassLoader());
@@ -80,7 +80,7 @@ public class ConnectorFactoryBean<T> implements FactoryBean<T> {
         if (implBeanObject == null) {
             Class<?> aClass = connectorClassLoader.loadClass(CONNECTOR_MAIN_CLASS);
             Method getBeanMethod = aClass.getMethod("getBean", String.class, String.class, String.class, Properties.class, String.class);
-            implBeanObject = (T) getBeanMethod.invoke(null, connectorId, configurationId, connectorMetadata.getConfigurationclass(), connectorProperties, method.getDeclaringClass().getName());
+            implBeanObject = (T) getBeanMethod.invoke(null, connectorId, configurationId, connectorMetadata.getSpringConfigurationClass(), connectorProperties, method.getDeclaringClass().getName());
         }
         return implBeanObject;
     }

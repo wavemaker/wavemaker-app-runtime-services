@@ -9,7 +9,7 @@ public class ConnectorMetadata {
     private String version;
     private String name;
     private String description;
-    private String configurationclass;
+    private String springConfigurationClass;
 
     public String getName() {
         return name;
@@ -27,12 +27,12 @@ public class ConnectorMetadata {
         this.description = description;
     }
 
-    public String getConfigurationclass() {
-        return configurationclass;
+    public String getSpringConfigurationClass() {
+        return springConfigurationClass;
     }
 
-    public void setConfigurationclass(String configurationclass) {
-        this.configurationclass = configurationclass;
+    public void setSpringConfigurationClass(String springConfigurationClass) {
+        this.springConfigurationClass = springConfigurationClass;
     }
 
     public String getVersion() {

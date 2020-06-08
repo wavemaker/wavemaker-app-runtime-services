@@ -50,6 +50,8 @@
 
         <hikaricp.version>2.7.7</hikaricp.version>
 
+        <snake.yaml.version>1.21</snake.yaml.version>
+
         <jsoup.version>1.11.3</jsoup.version>
         <poi.version>4.0.1</poi.version>
         <poi.ooxml.version>4.0.1</poi.ooxml.version>
@@ -449,6 +451,11 @@
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>
                 <version>${hikaricp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snake.yaml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>

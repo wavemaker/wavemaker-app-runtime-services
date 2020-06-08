@@ -2,18 +2,14 @@ package com.wavemaker.runtime.connector.cache;
 
 import java.util.Objects;
 
-import org.springframework.lang.NonNull;
-
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
  * @since 3/6/20
  */
 public class ConnectorConfiguration {
 
-    @NonNull
     private String connectorId;
 
-    @NonNull
     private String configurationId;
 
     public ConnectorConfiguration(String connectorId, String configurationId) {
