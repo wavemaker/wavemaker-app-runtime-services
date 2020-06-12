@@ -298,11 +298,16 @@ public class RestRuntimeService {
                     SecuritySchemeDefinition securitySchemeDefinition = securitySchemeDefinitionMap.get(security.getKey());
                     if (securitySchemeDefinition instanceof OAuth2Definition) {
                         OAuth2Definition oAuth2Definition = (OAuth2Definition) securitySchemeDefinition;
-                        if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
-                            queryParameters.put(oAuth2Definition.getAccessTokenParamName(), httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
-                                    .getAccessTokenParamName()));
-                        }
-                        if (ParameterType.HEADER.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
+                        if (oAuth2Definition.getSendAccessTokenAs() != null) {
+                            if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
+                                queryParameters.put(oAuth2Definition.getAccessTokenParamName(), httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
+                                        .getAccessTokenParamName()));
+                            }
+                            if (ParameterType.HEADER.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
+                                sendAsAuthorizationHeader(httpHeaders, httpRequestData);
+                            }
+                        } else {
+                            //Todo :: fix for QUERY type.
                             sendAsAuthorizationHeader(httpHeaders, httpRequestData);
                         }
                     } else if (securitySchemeDefinition instanceof BasicAuthDefinition) {
