@@ -14,7 +14,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 
 import com.wavemaker.runtime.connector.context.ConnectorContext;
 import com.wavemaker.runtime.connector.context.ConnectorContextProvider;
-import com.wavemaker.runtime.connector.configuration.ConnectorMetadata;
+import com.wavemaker.runtime.connector.metadata.ConnectorMetadata;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>

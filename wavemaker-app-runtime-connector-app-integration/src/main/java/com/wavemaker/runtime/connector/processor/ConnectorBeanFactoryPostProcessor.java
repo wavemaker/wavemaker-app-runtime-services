@@ -38,7 +38,8 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
 
     public static final String APP_PROPERTIES = "/app.properties";
     public static final String CONNECTOR_PROPERTY_PREFIX = "connector.";
-    public static final String CONNECTOR_PROPERTY_SEPERATOR = ".";
+    public static final String CONNECTOR_PROPERTY_SEPARATOR = ".";
+    public static final String DEFAULT_CONNECTOR_CONFIGURATION_ID = "default";
     private static final Logger logger = LoggerFactory.getLogger(ConnectorBeanFactoryPostProcessor.class);
     private ClassLoader wmAppBaseClassLoader;
 
@@ -71,21 +72,22 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                             if (annotation.annotationType().equals(WMConnector.class)) {
                                 logger.info("Identified a connector declaration {0} in class {1}", field.getType().getName(), beanClassName);
                                 WMConnector wmConnector = (WMConnector) annotation;
-                                String qualifierName = findQualifierName(field.getAnnotations(), wmConnector.name());
-                                if (!doesBeanDefinitionExist(beanFactory, field.getType(), qualifierName)) {
+                                String qualifierName = findQualifierName(field.getAnnotations());
+                                String connectorBeanName = qualifierName == null ? field.getType().getSimpleName() : qualifierName;
+                                String configurationId = qualifierName == null ? DEFAULT_CONNECTOR_CONFIGURATION_ID : qualifierName;
+                                if (!doesBeanDefinitionExist(beanFactory, field.getType(), connectorBeanName)) {
                                     AnnotatedGenericBeanDefinition bd = new AnnotatedGenericBeanDefinition(ConnectorFactoryBean.class);
                                     ConstructorArgumentValues values = new ConstructorArgumentValues();
                                     values.addIndexedArgumentValue(0, wmConnector.name());
-                                    values.addIndexedArgumentValue(1, qualifierName);
+                                    values.addIndexedArgumentValue(1, configurationId);
                                     values.addIndexedArgumentValue(2, field.getType());
-                                    Properties properties = loadProperties(qualifierName, wmConnector.name());
+                                    Properties properties = loadProperties(wmConnector.name(), configurationId);
                                     values.addIndexedArgumentValue(3, properties);
-                                    boolean primary = qualifierName.equals(wmConnector.name()) ? true : false;
+                                    boolean primary = configurationId.equals(DEFAULT_CONNECTOR_CONFIGURATION_ID) ? true : false;
                                     // when there are two beans of same connector with one has qualifier and one doesn't
                                     bd.setPrimary(primary);
                                     bd.setConstructorArgumentValues(values);
-                                    // if bean have qualifier then bean name is qualifiername, if it doesn't have qualifier then assigning bean class name as bean name.
-                                    String connectorBeanName = primary ? field.getType().getSimpleName() : qualifierName;
+                                    // if bean have qualifier then bean name is qualifier name, if it doesn't have qualifier then assigning bean class name as bean name.
                                     ((DefaultListableBeanFactory) beanFactory)
                                             .registerBeanDefinition(connectorBeanName, bd);
                                     logger.info("Bean definition is loaded for connector {0} in bean class {1}", field.getType().getName(), beanClassName);
@@ -120,15 +122,16 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
         return true;
     }
 
-    private String findQualifierName(Annotation[] annotations, String defaultName) {
+    private String findQualifierName(Annotation[] annotations) {
         String value = null;
         for (Annotation annotation : annotations) {
             if (annotation.annotationType().equals(Qualifier.class)) {
                 Qualifier qualifier = (Qualifier) annotation;
                 value = qualifier.value();
+                break;
             }
         }
-        return value == null ? defaultName : value;
+        return value;
     }
 
     private Properties loadProperties(String connectorName, String connectorId) {
@@ -143,7 +146,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
             throw new RuntimeException("Failed to read app.properties file from classpath", e);
         }
         Properties filteredProperties = new Properties();
-        String prefix = CONNECTOR_PROPERTY_PREFIX + connectorId + CONNECTOR_PROPERTY_SEPERATOR + connectorName + CONNECTOR_PROPERTY_SEPERATOR;
+        String prefix = CONNECTOR_PROPERTY_PREFIX + connectorName + CONNECTOR_PROPERTY_SEPARATOR + connectorId + CONNECTOR_PROPERTY_SEPARATOR;
         for (String key : prop.stringPropertyNames()) {
             if (key.startsWith(prefix)) {
                 filteredProperties.setProperty(key.substring(prefix.length()), environment.getProperty(key));

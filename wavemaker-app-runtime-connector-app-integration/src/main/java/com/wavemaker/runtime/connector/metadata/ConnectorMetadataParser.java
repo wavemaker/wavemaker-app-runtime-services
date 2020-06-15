@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.connector.configuration;
+package com.wavemaker.runtime.connector.metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
