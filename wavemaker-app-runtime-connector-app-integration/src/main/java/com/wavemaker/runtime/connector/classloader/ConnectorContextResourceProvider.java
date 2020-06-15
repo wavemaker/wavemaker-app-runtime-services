@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.runtime.connector.exception.ConnectorDoesNotExist;
-import com.wavemaker.runtime.connector.configuration.ConnectorMetadata;
-import com.wavemaker.runtime.connector.configuration.ConnectorMetadataParser;
+import com.wavemaker.runtime.connector.metadata.ConnectorMetadata;
+import com.wavemaker.runtime.connector.metadata.ConnectorMetadataParser;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>

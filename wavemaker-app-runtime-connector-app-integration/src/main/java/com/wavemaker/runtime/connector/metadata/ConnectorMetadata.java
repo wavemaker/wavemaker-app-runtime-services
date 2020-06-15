@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.connector.configuration;
+package com.wavemaker.runtime.connector.metadata;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>

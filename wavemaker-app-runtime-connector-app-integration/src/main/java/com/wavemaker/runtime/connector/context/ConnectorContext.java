@@ -1,6 +1,6 @@
 package com.wavemaker.runtime.connector.context;
 
-import com.wavemaker.runtime.connector.configuration.ConnectorMetadata;
+import com.wavemaker.runtime.connector.metadata.ConnectorMetadata;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
