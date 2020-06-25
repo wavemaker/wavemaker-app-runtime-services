@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -40,7 +41,7 @@ import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
  */
 public class RestRuntimeServiceCacheHelper {
 
-    private Map<String, Swagger> serviceIdVsSwaggerCache = new WeakHashMap<>();
+    private Map<String, Swagger> serviceIdVsSwaggerCache = Collections.synchronizedMap(new WeakHashMap<>());
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
 
 
