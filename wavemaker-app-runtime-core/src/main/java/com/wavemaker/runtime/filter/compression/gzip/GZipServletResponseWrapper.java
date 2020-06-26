@@ -135,7 +135,7 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
         } else if (name.equals(HttpHeaders.CONTENT_LENGTH)) {
             setContentLength(Integer.parseInt(value));
         } else {
-            super.setHeader(name, value);
+            super.addHeader(name, value);
         }
     }
 
