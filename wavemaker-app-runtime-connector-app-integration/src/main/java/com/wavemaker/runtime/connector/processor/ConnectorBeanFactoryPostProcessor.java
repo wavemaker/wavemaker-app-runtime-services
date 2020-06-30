@@ -8,6 +8,8 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -25,6 +28,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotationMetadata;
 
 import com.wavemaker.runtime.connector.annotation.WMConnector;
 import com.wavemaker.runtime.connector.factorybean.ConnectorFactoryBean;
@@ -40,9 +44,14 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
     public static final String CONNECTOR_PROPERTY_PREFIX = "connector.";
     public static final String CONNECTOR_PROPERTY_SEPARATOR = ".";
     public static final String DEFAULT_CONNECTOR_CONFIGURATION_ID = "default";
+    public static final List<String> WHITELISTED_PACKAGE_PREFIX = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(ConnectorBeanFactoryPostProcessor.class);
-    private ClassLoader wmAppBaseClassLoader;
 
+    static {
+        WHITELISTED_PACKAGE_PREFIX.add("org.springframework.");
+    }
+
+    private ClassLoader wmAppBaseClassLoader;
     private Environment environment;
 
     @Override
@@ -57,7 +66,12 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
             Thread.currentThread().setContextClassLoader(appClassLoader);
             for (String beanName : beanDefinitionNames) {
                 Class<?> aClass = null;
-                String beanClassName = beanFactory.getBeanDefinition(beanName).getBeanClassName();
+                String beanClassName = getBeanClassName(beanName, beanFactory);
+                if (beanClassName == null && execludeWhiteListBean(beanName)) {
+                    continue;
+                } else if (beanClassName == null) {
+                    throw new RuntimeException("Unable to derive bean class name from bean definition for bean name" + beanName);
+                }
                 try {
                     aClass = appClassLoader.loadClass(beanClassName);
                 } catch (ClassNotFoundException e) {
@@ -104,6 +118,15 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
         }
 
         logger.info("Loaded connectors proxy bean definitions");
+    }
+
+    private boolean execludeWhiteListBean(String beanName) {
+        for (String packagePrefix : WHITELISTED_PACKAGE_PREFIX) {
+            if (beanName.startsWith(packagePrefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean doesBeanDefinitionExist(ConfigurableListableBeanFactory beanFactory, Class<?> type, String beanName) {
@@ -177,6 +200,25 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
             }
             return wmAppBaseClassLoader;
         }
+    }
+
+    private String getBeanClassName(String beanName, ConfigurableListableBeanFactory beanFactory) {
+        BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+        String beanClassName = beanDefinition.getBeanClassName();
+        if (beanClassName != null) {
+            return beanClassName;
+        } else if (beanDefinition instanceof AnnotatedBeanDefinition) {
+            AnnotationMetadata metadata = ((AnnotatedBeanDefinition) beanDefinition).getMetadata();
+            beanClassName = metadata.getClassName();
+        } else {
+            beanClassName = beanDefinition.getBeanClassName();
+            while (beanClassName == null && beanDefinition.getParentName() != null) {
+                BeanDefinition parentBeanDefinition = beanFactory.getBeanDefinition(beanDefinition.getParentName());
+                beanClassName = parentBeanDefinition.getBeanClassName();
+                beanDefinition = parentBeanDefinition;
+            }
+        }
+        return beanClassName;
     }
 
     @Override
