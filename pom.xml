@@ -29,6 +29,7 @@
         <spring.data.jpa.version>2.0.10.RELEASE</spring.data.jpa.version>
         <spring.retry.version>1.2.2.RELEASE</spring.retry.version>
         <spring.social.version>1.1.5.RELEASE</spring.social.version>
+        <spring.session.bom.version>Dragonfruit-RELEASE</spring.session.bom.version>
 
         <aspectjweaver.version>1.9.3</aspectjweaver.version>
 
@@ -404,6 +405,14 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-bom</artifactId>
                 <version>${spring.security.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.session</groupId>
+                <artifactId>spring-session-bom</artifactId>
+                <version>${spring.session.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -835,6 +844,11 @@
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
                 <version>${jackson.dataformat.yaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.session</groupId>
+                <artifactId>spring-session-core</artifactId>
             </dependency>
         </dependencies>
     </dependencyManagement>
