@@ -13,6 +13,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.auth.oauth2.OAuth2Flow;
 import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
@@ -48,6 +49,14 @@ public class OAuthProvidersHelper {
             }
             oAuth2ProviderConfigs.forEach(provider -> provider.setClientSecret(null));
             Map<String, OAuth2ProviderConfig> oAuth2ProviderConfigMap = oAuth2ProviderConfigs.stream()
+                    .filter(oAuth2ProviderConfig -> {
+                        if (oAuth2ProviderConfig.getOauth2Flow() == OAuth2Flow.IMPLICIT) {
+                            return true;
+                        } else {
+                            return oAuth2ProviderConfig.getoAuth2Pkce() != null &&
+                                    oAuth2ProviderConfig.getoAuth2Pkce().isEnabled();
+                        }
+                    })
                     .collect(Collectors.toMap(OAuth2ProviderConfig::getProviderId, o -> o));
 
             oauthProvidersMap.put(OAUTH_PROVIDER, oAuth2ProviderConfigMap);
