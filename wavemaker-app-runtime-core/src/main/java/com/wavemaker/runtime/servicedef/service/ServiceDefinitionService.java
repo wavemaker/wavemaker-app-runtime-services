@@ -48,7 +48,7 @@ import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
 import com.wavemaker.runtime.security.SecurityService;
-import com.wavemaker.runtime.servicedef.helper.OAuthProvidersImplicitHelper;
+import com.wavemaker.runtime.servicedef.helper.OAuthProvidersHelper;
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 import com.wavemaker.runtime.servicedef.model.ServiceDefinitionsWrapper;
 import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
@@ -88,7 +88,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     public ServiceDefinitionsWrapper getServiceDefinitionWrapper() {
         ServiceDefinitionsWrapper serviceDefinitionsWrapper = new ServiceDefinitionsWrapper();
         if (securityDefinitions == null) {
-            securityDefinitions = OAuthProvidersImplicitHelper.getOAuth2ProviderWithImplicitFlow();
+            securityDefinitions = OAuthProvidersHelper.getOAuth2ProviderWithImplicitFlow();
         }
         serviceDefinitionsWrapper.setSecurityDefinitions(securityDefinitions);
         serviceDefinitionsWrapper.setServiceDefs(listServiceDefs());
@@ -226,7 +226,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             for (Resource resource : resources) {
                 prefabServiceDefinitionsCache.get(prefab.getName()).putAll(getServiceDefinition(resource));
             }
-            prefabSecurityDefinitions.put(prefab.getName(), OAuthProvidersImplicitHelper.getOAuth2ProviderWithImplicitFlow());
+            prefabSecurityDefinitions.put(prefab.getName(), OAuthProvidersHelper.getOAuth2ProviderWithImplicitFlow());
         } else {
             logger.warn("Service def resources does not exist for this project");
         }
