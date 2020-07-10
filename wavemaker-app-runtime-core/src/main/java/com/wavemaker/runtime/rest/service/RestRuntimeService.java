@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -61,6 +62,7 @@ import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
+import com.wavemaker.tools.apidocs.tools.core.model.SecurityRequirement;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 import com.wavemaker.tools.apidocs.tools.core.model.auth.ApiKeyAuthDefinition;
 import com.wavemaker.tools.apidocs.tools.core.model.auth.BasicAuthDefinition;
@@ -180,7 +182,7 @@ public class RestRuntimeService {
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
-        updateAuthorizationInfo(swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
+        updateAuthorizationInfo(swagger, operation, queryParameters, httpHeaders, httpRequestData);
         httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathInfo.v1, queryParameters, pathParameters));
         httpRequestDetails.setMethod(method);
 
@@ -288,9 +290,16 @@ public class RestRuntimeService {
         }
     }
 
-    private void updateAuthorizationInfo(Map<String, SecuritySchemeDefinition> securitySchemeDefinitionMap, Operation operation, Map<String, Object> queryParameters, HttpHeaders httpHeaders, HttpRequestData httpRequestData) {
+    private void updateAuthorizationInfo(Swagger swagger, Operation operation, Map<String, Object> queryParameters, HttpHeaders httpHeaders,
+                                         HttpRequestData httpRequestData) {
         //check basic auth is there for operation
         List<Map<String, List<String>>> securityMap = operation.getSecurity();
+        if (securityMap == null) {
+            List<Map<String, List<String>>> rootLevelSecurityRequirements = swagger.getSecurityRequirement().stream().map(SecurityRequirement::getRequirements).
+                    collect(Collectors.toList());
+            securityMap = rootLevelSecurityRequirements;
+        }
+        Map<String, SecuritySchemeDefinition> securitySchemeDefinitionMap = swagger.getSecurityDefinitions();
         if (securityMap != null) {
             for (Map<String, List<String>> securityList : securityMap) {
                 for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
