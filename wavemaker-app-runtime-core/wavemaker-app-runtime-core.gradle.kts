@@ -32,7 +32,7 @@ dependencies {
     implementation("rome:rome:0.9")
     implementation("org.apache.poi:poi:3.17")
     implementation("org.apache.poi:poi-ooxml:3.17") {
-        exclude(group = "com.github.virtuald")
+        exclude("com.github.virtuald", "curvesapi")
     }
     implementation("org.apache.tika:tika-core:1.17")
     implementation("net.sf.jmimemagic:jmimemagic:0.1.5")
