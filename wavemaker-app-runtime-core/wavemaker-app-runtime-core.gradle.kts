@@ -37,7 +37,7 @@ dependencies {
     implementation("org.apache.tika:tika-core:1.20")
     implementation("org.apache.poi:poi:4.0.1")
     implementation("org.apache.poi:poi-ooxml:4.0.1") {
-        exclude(group = "com.github.virtuald")
+        exclude("com.github.virtuald", "curvesapi")
     }
     implementation("org.owasp.antisamy:antisamy:1.5.8")
     implementation("org.freemarker:freemarker:2.3.28")
