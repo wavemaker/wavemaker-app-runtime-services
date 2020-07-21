@@ -92,7 +92,8 @@ publishing {
                 withXml {
                     updateGeneratedPom(asNode(), mapOf(
                             "compile" to configurations.implementation.get().dependencies + configurations.api.get().dependencies + wavemakerAppRuntimeExtraDependencies.dependencies,
-                            "provided" to configurations.compileOnly.get().dependencies
+                            "provided" to configurations.compileOnly.get().dependencies,
+                            "runtime" to configurations.runtimeOnly.get().dependencies
                     ))
                 }
             }
