@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.connector.factorybean;
 
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
@@ -64,6 +65,9 @@ public class ConnectorFactoryBean<T> implements FactoryBean<T> {
                         //step4: execute bean method
                         return method.invoke(implBeanObject, methodArgs);
 
+                    } catch (InvocationTargetException e) {
+                        logger.error("Exception during intercepting api invocation for connector {0} ", connectorId);
+                        throw new RuntimeException("Exception during intercepting connector api invocation ", e.getTargetException());
                     } catch (Exception e) {
                         logger.error("Exception during intercepting api invocation for connector {0} ", connectorId);
                         throw new RuntimeException("Exception during intercepting connector api invocation ", e);
