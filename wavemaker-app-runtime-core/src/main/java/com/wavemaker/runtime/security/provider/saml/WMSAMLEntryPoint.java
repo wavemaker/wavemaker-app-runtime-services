@@ -73,7 +73,7 @@ public class WMSAMLEntryPoint extends SAMLEntryPoint implements SSOEntryPoint {
         HttpServletRequestAdapter requestAdapter = (HttpServletRequestAdapter) context.getInboundMessageTransport();
         HttpServletRequest request = requestAdapter.getWrappedRequest();
         StringBuffer requestURL = request.getRequestURL();
-        logger.debug("Request URL is {} and RelayState is {}", requestURL.toString());
+        logger.debug("Request URL is {}", requestURL.toString());
 
         try {
             URL incomingRequestUrl = new URL(requestURL.toString());
@@ -83,14 +83,7 @@ public class WMSAMLEntryPoint extends SAMLEntryPoint implements SSOEntryPoint {
             int indexOfPath = requestURL.indexOf(incomingRequestUrlPath);
             StringBuffer requestUrlBeforePath = requestURL.delete(indexOfPath, requestURL.length());
 
-            String[] partsInPath = StringUtils.split(incomingRequestUrlPath, "/");
-
-            // taking first 2 parts from incomingRequestUrlPath. viz. run-xxx id and app name.
-            String appRuntimePath = partsInPath[0];
-            if (SAMLConfig.ValidateType.RELAXED == samlConfig.getValidateType()) {
-                appRuntimePath = appRuntimePath.concat("/").concat(partsInPath[1]);
-            }
-            String appUrl = requestUrlBeforePath.toString().concat("/").concat(appRuntimePath);
+            String appUrl = requestUrlBeforePath.toString().concat(request.getContextPath());
             logger.debug("URL incomingRequestUrlPath constructed for application is {}", appUrl);
 
             String redirectPage = request.getParameter("redirectPage");
