@@ -58,8 +58,8 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
         String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
         ServletContext servletContext = beanFactory.getBean(ServletContext.class);
         ClassLoader appClassLoader = servletContext.getClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(appClassLoader);
+        if(appClassLoader == Thread.currentThread().getContextClassLoader())
+        {
             for (String beanName : beanDefinitionNames) {
                 Class<?> aClass = null;
                 String beanClassName = getBeanClassName(beanName, beanFactory);
@@ -105,12 +105,9 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                             }
                         }
 
-                    }
+                    } }
 
-                }
             }
-        } finally {
-            Thread.currentThread().setContextClassLoader(appClassLoader);
         }
 
         logger.info("Loaded connectors proxy bean definitions");
