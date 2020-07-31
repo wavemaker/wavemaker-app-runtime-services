@@ -1,16 +1,12 @@
 package com.wavemaker.runtime.connector.processor;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import javax.servlet.ServletContext;
 
@@ -60,8 +56,8 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
         logger.info("Loading connectors proxy bean definition in bean factory post processor");
 
         String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
-        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        ClassLoader appClassLoader = getWMAppBaseClassLoader(beanFactory, currentClassLoader);
+        ServletContext servletContext = beanFactory.getBean(ServletContext.class);
+        ClassLoader appClassLoader = servletContext.getClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(appClassLoader);
             for (String beanName : beanDefinitionNames) {
@@ -114,7 +110,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                 }
             }
         } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
+            Thread.currentThread().setContextClassLoader(appClassLoader);
         }
 
         logger.info("Loaded connectors proxy bean definitions");
@@ -176,30 +172,6 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
             }
         }
         return filteredProperties;
-    }
-
-    private ClassLoader getWMAppBaseClassLoader(ConfigurableListableBeanFactory beanFactory, ClassLoader currentClassLoader) {
-        synchronized (this) {
-            if (wmAppBaseClassLoader == null) {
-                ServletContext servletContext = beanFactory.getBean(ServletContext.class);
-                try {
-                    URL url = servletContext.getResource("/WEB-INF/lib/");
-                    String path = url.getPath();
-                    File[] fList = new File(path).listFiles();
-                    URL[] urls = new URL[fList.length];
-                    int i = 0;
-                    for (File file : fList) {
-                        urls[i] = file.toURI().toURL();
-                        i++;
-                    }
-                    wmAppBaseClassLoader = new URLClassLoader(urls, currentClassLoader);
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException("Failed to build application class loader ", e);
-                }
-
-            }
-            return wmAppBaseClassLoader;
-        }
     }
 
     private String getBeanClassName(String beanName, ConfigurableListableBeanFactory beanFactory) {
