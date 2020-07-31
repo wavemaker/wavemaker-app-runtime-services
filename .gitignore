@@ -10,10 +10,6 @@ target/
 *#*
 *~
 
-src/main/webapp/node_modules
-src/main/webapp/components
-src/main/webapp/application
-src/main/webapp/editor
-src/main/webapp/mobile
-src/main/webapp/tp
-src/main/webapp/tmp
+build/
+wavemaker-app-runtime-core/build/
+wavemaker-app-runtime-prefab/build/
