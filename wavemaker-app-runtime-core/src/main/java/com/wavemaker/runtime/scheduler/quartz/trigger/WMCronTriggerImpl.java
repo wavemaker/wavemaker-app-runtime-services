@@ -30,8 +30,8 @@ import com.wavemaker.commons.WMRuntimeException;
 public class WMCronTriggerImpl extends CronTriggerImpl{
     public static final int REPEAT_INDEFINITELY = -1;
 
-    private int repeatCount = 0;
-    private int timesTriggered = 0;
+    private int repeatCount;
+    private int timesTriggered;
 
     /**
      * <p>

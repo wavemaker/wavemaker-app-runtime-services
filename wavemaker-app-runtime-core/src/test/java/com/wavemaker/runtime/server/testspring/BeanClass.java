@@ -17,7 +17,7 @@ package com.wavemaker.runtime.server.testspring;
 
 public class BeanClass {
 
-    String name = null;
+    String name;
 
     public String getName() {
         return this.name;

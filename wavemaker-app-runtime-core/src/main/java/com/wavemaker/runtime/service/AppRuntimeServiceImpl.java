@@ -22,7 +22,7 @@ import com.wavemaker.runtime.util.MultipartQueryUtils;
 public class AppRuntimeServiceImpl implements AppRuntimeService {
 
     private static final String APP_PROPERTIES = ".wmproject.properties";
-    private String applicationType = null;
+    private String applicationType;
     @Autowired
     private QueryDesignService queryDesignService;
 

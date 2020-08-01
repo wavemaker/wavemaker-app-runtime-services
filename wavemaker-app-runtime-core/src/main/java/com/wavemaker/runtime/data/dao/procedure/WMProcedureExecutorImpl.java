@@ -46,8 +46,8 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
     private Map<String, RuntimeProcedure> procedureMap;
 
-    private HibernateTemplate template = null;
-    private String serviceId = null;
+    private HibernateTemplate template;
+    private String serviceId;
 
     public HibernateTemplate getTemplate() {
         return template;

@@ -74,7 +74,7 @@ public abstract class AbstractWMRememberMeServices implements RememberMeServices
     private boolean alwaysRemember;
     private String key;
     private int tokenValiditySeconds = TWO_WEEKS_S;
-    private Boolean useSecureCookie = null;
+    private Boolean useSecureCookie;
     private Method setHttpOnlyMethod;
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 

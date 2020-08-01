@@ -67,9 +67,9 @@ public class ImageUnitsConverter {
 
     public static class ClientAnchorDetail {
 
-        private int fromIndex = 0;
-        private int toIndex = 0;
-        private int inset = 0;
+        private int fromIndex;
+        private int toIndex;
+        private int inset;
 
 
         public ClientAnchorDetail(int fromIndex, int toIndex, int inset) {

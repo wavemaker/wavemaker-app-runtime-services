@@ -32,7 +32,7 @@ import org.springframework.web.filter.GenericFilterBean;
  */
 public class WMXContentTypeOptionsFilter extends GenericFilterBean {
 
-    private XContentTypeOptionsHeaderWriter xContentTypeOptionsHeaderWriter = null;
+    private XContentTypeOptionsHeaderWriter xContentTypeOptionsHeaderWriter;
 
     @Override
     protected void initFilterBean() throws ServletException {

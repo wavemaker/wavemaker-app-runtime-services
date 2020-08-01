@@ -34,13 +34,13 @@ import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
  */
 public class WMAppContext implements ApplicationContextAware, ServletContextAware {
 
-    private String applicationHostUrl = null;
+    private String applicationHostUrl;
 
-    private int applicationHostPort = 0;
+    private int applicationHostPort;
 
-    private boolean secured = false;
+    private boolean secured;
 
-    private boolean initialized = false;
+    private boolean initialized;
 
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
 

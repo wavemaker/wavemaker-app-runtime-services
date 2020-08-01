@@ -28,7 +28,7 @@ public class CustomProcedure {
 
 	@NotBlank
 	@NotEmpty
-    private String procedureStr = null;
+    private String procedureStr;
 
     private List<CustomProcedureParam> procedureParams = new ArrayList<>();
 

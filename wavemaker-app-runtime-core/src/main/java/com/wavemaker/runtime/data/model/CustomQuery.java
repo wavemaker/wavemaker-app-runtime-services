@@ -25,9 +25,9 @@ public class CustomQuery {
 
 	@NotBlank
 	@NotEmpty
-    private String queryStr = null;
+    private String queryStr;
 
-    private boolean nativeSql = false;
+    private boolean nativeSql;
 
     private List<CustomQueryParam> queryParams = new ArrayList<>();
 

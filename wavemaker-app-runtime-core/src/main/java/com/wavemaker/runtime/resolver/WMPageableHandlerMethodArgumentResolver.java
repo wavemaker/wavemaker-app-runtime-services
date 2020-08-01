@@ -64,7 +64,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
     private String prefix = DEFAULT_PREFIX;
     private String qualifierDelimiter = DEFAULT_QUALIFIER_DELIMITER;
     private int maxPageSize = DEFAULT_MAX_PAGE_SIZE;
-    private boolean oneIndexedParameters = false;
+    private boolean oneIndexedParameters;
 
     /**
      * Constructs an instance of this resolved with a default {@link SortHandlerMethodArgumentResolver}.

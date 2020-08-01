@@ -17,7 +17,7 @@ package com.wavemaker.runtime.security;
 
 public class Book {
 
-    private int value = 0;
+    private int value;
 
     public Book() {
     }

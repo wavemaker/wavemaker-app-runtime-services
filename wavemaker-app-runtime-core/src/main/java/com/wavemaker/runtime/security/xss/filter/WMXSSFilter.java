@@ -36,7 +36,7 @@ import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
  */
 public class WMXSSFilter extends GenericFilterBean {
 
-    private XXssProtectionHeaderWriter xXssProtectionHeaderWriter = null;
+    private XXssProtectionHeaderWriter xXssProtectionHeaderWriter;
 
     @Override
     protected void initFilterBean() throws ServletException {

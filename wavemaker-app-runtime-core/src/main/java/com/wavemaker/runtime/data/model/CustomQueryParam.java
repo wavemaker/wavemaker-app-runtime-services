@@ -17,10 +17,10 @@ package com.wavemaker.runtime.data.model;
 
 public class CustomQueryParam {
 
-	private String paramName = null;
-    private String paramType = null;
-    private Object paramValue = null;
-    private boolean isList = false;
+	private String paramName;
+    private String paramType;
+    private Object paramValue;
+    private boolean isList;
         
 	public CustomQueryParam() {
 		super();

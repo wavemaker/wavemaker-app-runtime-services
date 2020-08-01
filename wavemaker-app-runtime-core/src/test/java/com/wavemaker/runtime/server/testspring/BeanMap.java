@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class BeanMap {
 
-    public Map<String, Object> mapping = null;
+    public Map<String, Object> mapping;
 
     public Map<String, Object> getMapping() {
         return this.mapping;

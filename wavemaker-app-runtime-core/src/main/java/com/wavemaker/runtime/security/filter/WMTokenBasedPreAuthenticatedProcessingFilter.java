@@ -71,7 +71,7 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
     private AuthenticationManager authenticationManager;
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
-    private ApplicationEventPublisher eventPublisher = null;
+    private ApplicationEventPublisher eventPublisher;
 
     private boolean continueFilterChainOnUnsuccessfulAuthentication = true;
 
