@@ -16,7 +16,7 @@ public class GZipServletOutputStreamWrapper extends ServletOutputStream {
 
     private GZipServletResponseWrapper responseWrapper;
     private OutputStream outputStream;
-    private boolean streamInitialized = false;
+    private boolean streamInitialized;
 
     public GZipServletOutputStreamWrapper(GZipServletResponseWrapper responseWrapper, OutputStream outputStream) throws IOException {
         this.responseWrapper = responseWrapper;

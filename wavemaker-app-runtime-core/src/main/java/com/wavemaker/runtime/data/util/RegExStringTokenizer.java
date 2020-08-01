@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class RegExStringTokenizer {
 
     private final List<String> tokens;
-    private int index = 0;
+    private int index;
 
     public RegExStringTokenizer(String input, String regex) {
         Pattern pattern = Pattern.compile(regex);

@@ -45,12 +45,12 @@ import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 public class SSLSecureFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(SSLSecureFilter.class);
     private SSLConfig sslConfig = new SSLConfig();
-    private List<URLPattern> excludedUrlsList = null;
+    private List<URLPattern> excludedUrlsList;
     @Autowired
     private WMAppSecurityConfig wmAppSecurityConfig;
 
     @Override
-    protected void initFilterBean() throws ServletException {
+    protected void initFilterBean() {
         SSLConfig sslConfig = wmAppSecurityConfig.getSslConfig();
         if (sslConfig != null) {
             this.sslConfig = sslConfig;

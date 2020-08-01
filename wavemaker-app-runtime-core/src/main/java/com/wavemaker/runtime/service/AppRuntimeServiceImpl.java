@@ -39,7 +39,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             "dateFormat",
             "timeFormat"};
 
-    private String applicationType = null;
+    private String applicationType;
     private Map<String, Object> applicationProperties;
 
     @Autowired

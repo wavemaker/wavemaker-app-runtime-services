@@ -21,10 +21,10 @@ import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 public class CustomProcedureParam  {
 
 
-    private Object paramValue = null;
-    private String paramName = null;
-    private ProcedureParameterType procedureParamType = null;
-    private String valueType = null;
+    private Object paramValue;
+    private String paramName;
+    private ProcedureParameterType procedureParamType;
+    private String valueType;
 
 	public CustomProcedureParam() {
 		super();

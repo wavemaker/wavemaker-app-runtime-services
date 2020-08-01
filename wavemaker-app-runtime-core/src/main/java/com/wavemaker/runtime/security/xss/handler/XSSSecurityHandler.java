@@ -40,7 +40,7 @@ public class XSSSecurityHandler {
 
     private static final XSSSecurityHandler instance = new XSSSecurityHandler();
 
-    private boolean isInitialized = false;
+    private boolean isInitialized;
     private XSSSanitizer xssSanitizer;
     private XSSConfig xssConfig;
     private boolean xssEnabled;

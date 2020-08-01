@@ -20,7 +20,7 @@ import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
 public abstract class AbstractAuthenticationToken implements Authentication {
     private Collection<SimpleGrantedAuthority> authorities;
     private Object details;
-    private boolean authenticated = false;
+    private boolean authenticated;
 
     public AbstractAuthenticationToken() {
     }

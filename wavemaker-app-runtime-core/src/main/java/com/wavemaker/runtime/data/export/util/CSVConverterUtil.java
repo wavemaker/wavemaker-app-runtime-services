@@ -43,7 +43,7 @@ public class CSVConverterUtil {
     private DataFormatter formatter = new DataFormatter(true);
     private FormulaEvaluator evaluator;
     private ArrayList<ArrayList<String>> csvData;
-    private int maxRowWidth = 0;
+    private int maxRowWidth;
     private String separator = DEFAULT_SEPARATOR;
 
     private static final String DEFAULT_SEPARATOR = ",";

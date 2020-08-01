@@ -39,7 +39,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     private String authoritiesByUsernameQuery = "SELECT userid, role FROM User WHERE username = ?";
     private String rolePrefix = "ROLE_";
-    private boolean rolesByQuery = false;
+    private boolean rolesByQuery;
     private static final String LOGGED_IN_USERNAME = ":LOGGED_IN_USERNAME";
 
 

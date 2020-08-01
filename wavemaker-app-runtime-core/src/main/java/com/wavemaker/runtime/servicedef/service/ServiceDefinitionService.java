@@ -66,8 +66,8 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private ServiceDefinitionHelper serviceDefinitionHelper = new ServiceDefinitionHelper();
 
-    private MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions = null;
-    private Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = null;
+    private MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions;
+    private Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache;
     private Map<String, ServiceDefinition> baseServiceDefinitions;
 
     private Map<String, Map<String, OAuth2ProviderConfig>> securityDefinitions;

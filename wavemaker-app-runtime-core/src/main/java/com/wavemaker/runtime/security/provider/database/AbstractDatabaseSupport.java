@@ -28,7 +28,7 @@ public abstract class AbstractDatabaseSupport extends HibernateDaoSupport {
 
     protected TransactionTemplate transactionTemplate;
     protected PlatformTransactionManager transactionManager;
-    protected boolean hql = false;
+    protected boolean hql;
 
     public boolean isHql() {
         return hql;

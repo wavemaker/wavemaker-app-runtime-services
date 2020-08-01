@@ -66,8 +66,8 @@ public class WMObjectMapper extends ObjectMapper {
     private static WMObjectMapper instance = new WMObjectMapper();
     private static WMPropertyNamingStrategy PROPERTY_NAMING_STRATEGY = new WMPropertyNamingStrategy();
 
-    private WMObjectReadMapper readMapper = null;
-    private WMObjectWriteMapper writeMapper = null;
+    private WMObjectReadMapper readMapper;
+    private WMObjectWriteMapper writeMapper;
 
     protected WMObjectMapper() {
         readMapper = new WMObjectReadMapper();

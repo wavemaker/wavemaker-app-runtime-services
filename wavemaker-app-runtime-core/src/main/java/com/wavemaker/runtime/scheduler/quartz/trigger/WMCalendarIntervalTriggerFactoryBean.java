@@ -43,7 +43,7 @@ public class WMCalendarIntervalTriggerFactoryBean implements FactoryBean<Calenda
     private String startTime;
     private String endTime;
     private int repeatCount = WMCalendarIntervalTriggerImpl.REPEAT_INDEFINITELY;
-    private int repeatInterval = 0;
+    private int repeatInterval;
     private DateBuilder.IntervalUnit repeatIntervalUnit = DateBuilder.IntervalUnit.DAY;
     private TimeZone timeZone;
     private String calendarName;

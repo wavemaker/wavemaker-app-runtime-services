@@ -117,7 +117,7 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
     public static final class Builder<R> {
         private String queryString;
         private String countQueryString;
-        private boolean nativeSql = false;
+        private boolean nativeSql;
         private Class<R> responseType;
 
         private Builder(Class<R> responseType) {

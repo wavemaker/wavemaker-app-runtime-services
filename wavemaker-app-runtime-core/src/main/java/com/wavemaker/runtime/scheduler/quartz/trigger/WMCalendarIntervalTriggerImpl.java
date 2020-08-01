@@ -28,7 +28,7 @@ import com.wavemaker.commons.WMRuntimeException;
 public class WMCalendarIntervalTriggerImpl extends CalendarIntervalTriggerImpl {
     public static final int REPEAT_INDEFINITELY = -1;
 
-    private int repeatCount = 0;
+    private int repeatCount;
 
     /**
      * <p>
