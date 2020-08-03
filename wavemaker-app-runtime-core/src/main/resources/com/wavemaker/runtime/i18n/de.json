@@ -15,6 +15,8 @@
   "LABEL_COLLAPSE": "Zusammenbruch",
   "LABEL_CONTAINS": "Enthält",
   "LABEL_CONTAINS_IGNORECASE": "Enthält Groß- / Kleinschreibung ignorieren",
+  "LABEL_DOES_NOT_CONTAIN": "Beinhaltet nicht",
+  "LABEL_DOES_NOT_CONTAIN_IGNORECASE": "Enthält keinen Ignorierfall",
   "LABEL_DONE": "Erledigt",
   "LABEL_ENDS_WITH": "Endet mit",
   "LABEL_ENDS_WITH_IGNORECASE": "Endet mit Groß- / Kleinschreibung",
