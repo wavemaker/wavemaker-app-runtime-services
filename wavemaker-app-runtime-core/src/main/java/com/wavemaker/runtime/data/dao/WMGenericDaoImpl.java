@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,33 +14,6 @@
  * limitations under the License.
  */
 package com.wavemaker.runtime.data.dao;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.orm.hibernate5.HibernateCallback;
-import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -69,6 +42,31 @@ import com.wavemaker.runtime.data.util.HqlQueryHelper;
 import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.Id;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class WMGenericDaoImpl<E extends Serializable, I extends Serializable> implements
         WMGenericDao<E, I> {
@@ -110,7 +108,17 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     }
 
     public void update(E entity) {
-        getTemplate().update(entity);
+        Object entityId = null;
+        List<Method> methodsListWithIdAnnotation = MethodUtils.getMethodsListWithAnnotation(entity.getClass(), Id.class);
+        Method primaryKeyMethod = methodsListWithIdAnnotation.get(0);
+        try {
+            entityId = primaryKeyMethod.invoke(entity);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new WMRuntimeException("IllegalAccessException | InvocationTargetException during loading the entity into session before update.");
+        }
+        Serializable loadedObject = getTemplate().load(entity.getClass(), (Serializable) entityId);
+        BeanUtils.copyProperties(entity, loadedObject);
+        getTemplate().update(loadedObject);
         getTemplate().flush();
     }
 

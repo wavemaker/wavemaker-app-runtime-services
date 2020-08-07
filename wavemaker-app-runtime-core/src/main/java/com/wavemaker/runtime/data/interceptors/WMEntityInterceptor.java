@@ -12,112 +12,149 @@
  */
 package com.wavemaker.runtime.data.interceptors;
 
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 
+import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
+import org.hibernate.EntityMode;
+import org.hibernate.Interceptor;
+import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.data.replacers.EntityValueReplacer;
-import com.wavemaker.runtime.data.replacers.ListenerContext;
-import com.wavemaker.runtime.data.replacers.Scope;
-
-/**
- * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
- * @since 20/6/16
- */
 public class WMEntityInterceptor extends EmptyInterceptor {
+    private List<Interceptor> interceptors;
 
-    private InterceptorContext context;
-
-    public WMEntityInterceptor() {
-        this.context = new InterceptorContext();
+    @Override
+    public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
+        boolean result = false;
+        for (Interceptor interceptor : interceptors) {
+            result |= interceptor.onFlushDirty(entity, id, currentState, previousState, propertyNames, types);
+        }
+        return result;
     }
 
     @Override
-    public void onDelete(
-            final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
-            final Type[] types) {
-//        final EntityValueReplacer valueOverrider = getEntityValueOverrider(entity.getClass());
-//        valueOverrider.apply(new ListenerContext(entity, Scope.DELETE));
+    public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
+        boolean result = false;
+        for (Interceptor interceptor : interceptors) {
+            result |= interceptor.onSave(entity, id, state, propertyNames, types);
+        }
+        return result;
     }
 
     @Override
-    public boolean onFlushDirty(
-            final Object entity, final Serializable id, final Object[] currentState, final Object[] previousState,
-            final String[] propertyNames,
-            final Type[] types) {
-        final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
-        final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.UPDATE));
-        if (applied) {
-            updateState(entity, currentState, propertyNames, valueReplacer.getPropertyDescriptorMap());
+    public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.onDelete(entity, id, state, propertyNames, types);
         }
-
-        return applied;
     }
 
     @Override
-    public boolean onLoad(
-            final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
-            final Type[] types) {
-        final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
-        final Map<String, PropertyDescriptor> descriptorMap = valueReplacer.getPropertyDescriptorMap();
-        try {
-            for (int i = 0; i < propertyNames.length; i++) {
-                final String propertyName = propertyNames[i];
-                final PropertyDescriptor descriptor = descriptorMap.get(propertyName);
-                if (descriptor != null && descriptor.getWriteMethod() != null) {
-                    descriptor.getWriteMethod().invoke(entity, state[i]);
-                }
-            }
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.while.loading.entity"), e);
+    public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+        boolean result = false;
+        for (Interceptor interceptor : interceptors) {
+            result |= interceptor.onLoad(entity, id, state, propertyNames, types);
         }
-
-        final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.READ));
-        if (applied) {
-            updateState(entity, state, propertyNames, descriptorMap);
-        }
-        return applied;
+        return result;
     }
 
     @Override
-    public boolean onSave(
-            final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
-            final Type[] types) {
-        final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
-        final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.INSERT));
-        if (applied) {
-            updateState(entity, state, propertyNames, valueReplacer.getPropertyDescriptorMap());
+    public String onPrepareStatement(String sql) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.onPrepareStatement(sql);
         }
-        return applied;
+        return sql;
     }
 
-    private void updateState(
-            Object entity, Object[] state, String[] propertyNames, Map<String, PropertyDescriptor>
-            descriptorMap) {
-        try {
-            for (int i = 0; i < propertyNames.length; i++) {
-                final PropertyDescriptor descriptor = descriptorMap.get(propertyNames[i]);
-                if (descriptor != null && descriptor.getReadMethod() != null &&
-                        isNotCollectionType(descriptor)) {
-                    final Object value = descriptor.getReadMethod().invoke(entity);
-                    state[i] = value;
-                }
-            }
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.state.parameters.update.error"),
-                    e);
+    @Override
+    public void postFlush(Iterator entities) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.postFlush(entities);
+        }
+
+    }
+
+    @Override
+    public void preFlush(Iterator entities) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.preFlush(entities);
         }
     }
 
-    private boolean isNotCollectionType(final PropertyDescriptor descriptor) {
-        return !Collection.class.isAssignableFrom(descriptor.getPropertyType()) &&
-                !Map.class.isAssignableFrom(descriptor.getPropertyType());
+    @Override
+    public Boolean isTransient(Object entity) {
+        return super.isTransient(entity);
+    }
+
+    @Override
+    public Object instantiate(String entityName, EntityMode entityMode, Serializable id) {
+        return super.instantiate(entityName, entityMode, id);
+    }
+
+    @Override
+    public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
+        return super.findDirty(entity, id, currentState, previousState, propertyNames, types);
+    }
+
+    @Override
+    public String getEntityName(Object object) {
+        return super.getEntityName(object);
+    }
+
+    @Override
+    public Object getEntity(String entityName, Serializable id) {
+        return super.getEntity(entityName, id);
+    }
+
+    @Override
+    public void afterTransactionBegin(Transaction tx) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.afterTransactionBegin(tx);
+        }
+    }
+
+    @Override
+    public void afterTransactionCompletion(Transaction tx) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.afterTransactionCompletion(tx);
+        }
+    }
+
+    @Override
+    public void beforeTransactionCompletion(Transaction tx) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.beforeTransactionCompletion(tx);
+        }
+    }
+
+    @Override
+    public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.onCollectionRemove(collection, key);
+        }
+    }
+
+    @Override
+    public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.onCollectionRecreate(collection, key);
+        }
+    }
+
+    @Override
+    public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.onCollectionUpdate(collection, key);
+        }
+    }
+
+    public List<Interceptor> getInterceptors() {
+        return interceptors;
+    }
+
+    public void setInterceptors(List<Interceptor> interceptors) {
+        this.interceptors = interceptors;
     }
 }
