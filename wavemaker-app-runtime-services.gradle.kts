@@ -22,6 +22,7 @@ buildscript {
         set("junitVersion", "4.13")
         set("testngVersion", "7.3.0")
         set("servletVersion", "3.1.0")
+        set("log4j2Version", "2.13.3")
     }
 }
 
@@ -41,6 +42,7 @@ dependencies {
     api(enforcedPlatform("org.springframework.security:spring-security-bom:${project.extra["springSecurityVersion"]}"))
     api(enforcedPlatform("org.springframework.session:spring-session-bom:${project.extra["springSessionVersion"]}"))
     api(enforcedPlatform("com.fasterxml.jackson:jackson-bom:${project.extra["jacksonVersion"]}"))
+    api(enforcedPlatform("org.apache.logging.log4j:log4j-bom:${project.extra["log4j2Version"]}"))
     constraints {
         api("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-core:${project.extra["wavemakerApiDocsToolsVersion"]}")
         api("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-parser:${project.extra["wavemakerApiDocsToolsVersion"]}")
