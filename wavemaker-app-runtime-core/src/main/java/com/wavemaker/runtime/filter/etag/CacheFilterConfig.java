@@ -8,6 +8,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class CacheFilterConfig {
 
     private RequestMatcher cacheRequestMatcher;
+    private RequestMatcher cacheExclusionRequestMatcher;
     private RequestMatcher etagRequestMatcher;
 
     public CacheFilterConfig() {
@@ -29,4 +30,11 @@ public class CacheFilterConfig {
         this.etagRequestMatcher = etagRequestMatcher;
     }
 
+    public RequestMatcher getCacheExclusionRequestMatcher() {
+        return cacheExclusionRequestMatcher;
+    }
+
+    public void setCacheExclusionRequestMatcher(RequestMatcher cacheExclusionRequestMatcher) {
+        this.cacheExclusionRequestMatcher = cacheExclusionRequestMatcher;
+    }
 }

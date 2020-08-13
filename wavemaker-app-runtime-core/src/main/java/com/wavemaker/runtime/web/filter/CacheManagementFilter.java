@@ -31,11 +31,13 @@ public class CacheManagementFilter extends GenericFilterBean {
     private CacheFilterConfig cacheFilterConfig;
 
     private RequestMatcher cacheRequestMatcher;
+    private RequestMatcher cacheExclusionRequestMatcher;
     private RequestMatcher etagRequestMatcher;
 
     @PostConstruct
     private void init() {
         cacheRequestMatcher = cacheFilterConfig.getCacheRequestMatcher();
+        cacheExclusionRequestMatcher = cacheFilterConfig.getCacheExclusionRequestMatcher();
         etagRequestMatcher = cacheFilterConfig.getEtagRequestMatcher();
     }
 
@@ -43,7 +45,7 @@ public class CacheManagementFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (matches(httpServletRequest, cacheRequestMatcher)) {
+        if (matches(httpServletRequest, cacheRequestMatcher) && !matches(httpServletRequest,cacheExclusionRequestMatcher)) {
             httpServletResponse.addHeader("Cache-Control", "public, max-age=1296000");
             chain.doFilter(request, new HttpServletResponseWrapper(httpServletResponse) {
                 public void setHeader(String name, String value) {
