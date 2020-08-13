@@ -1,5 +1,3 @@
-import groovy.util.Node
-
 plugins {
     `java-library`
     `maven-publish`
@@ -7,14 +5,14 @@ plugins {
 
 group ="com.wavemaker.runtime"
 
-val wavemakerAppRuntimeExtraDependencies by configurations.creating
+val loggingCapabilityConfiguration by configurations.creating
+val runtimeLibDependencies by configurations.creating
 
 dependencies {
     implementation(platform(project(":wavemaker-app-runtime-services")))
     implementation(project(":wavemaker-commons-util"))
     implementation(project(":wavemaker-app-runtime-prefab"))
     implementation("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-core")
-    implementation("org.slf4j:slf4j-api")
     implementation("commons-io:commons-io")
     implementation("commons-lang:commons-lang")
     implementation("org.apache.commons:commons-lang3")
@@ -38,7 +36,6 @@ dependencies {
     implementation("net.sf.jmimemagic:jmimemagic:0.1.5")
     implementation("org.freemarker:freemarker:2.3.23")
     implementation("org.owasp.antisamy:antisamy:1.5.8")
-    implementation("log4j:log4j:1.2.17")
     compileOnly("javax.servlet:javax.servlet-api")
     compileOnly("org.springframework:spring-context-support")
     implementation("org.springframework.data:spring-data-commons")
@@ -57,7 +54,15 @@ dependencies {
     }
     testImplementation("junit:junit")
     testImplementation("org.testng:testng")
-    wavemakerAppRuntimeExtraDependencies("org.slf4j:slf4j-log4j12:1.7.29")
+
+    //Logging related dependencies
+    implementation("org.slf4j:slf4j-api")
+    implementation("log4j:log4j:1.2.17")
+    loggingCapabilityConfiguration("org.slf4j:slf4j-log4j12:1.7.29")
+
+    //runtime dependencies lib
+    runtimeLibDependencies(project(":wavemaker-app-runtime-core"))
+    runtimeLibDependencies(loggingCapabilityConfiguration)
 }
 
 java {
@@ -91,7 +96,7 @@ publishing {
             pom {
                 withXml {
                     updateGeneratedPom(asNode(), mapOf(
-                            "compile" to configurations.implementation.get().dependencies + configurations.api.get().dependencies + wavemakerAppRuntimeExtraDependencies.dependencies,
+                            "compile" to configurations.implementation.get().dependencies + configurations.api.get().dependencies + loggingCapabilityConfiguration.dependencies,
                             "provided" to configurations.compileOnly.get().dependencies,
                             "runtime" to configurations.runtimeOnly.get().dependencies
                     ))
