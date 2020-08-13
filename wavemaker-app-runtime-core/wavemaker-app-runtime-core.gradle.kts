@@ -6,7 +6,8 @@ plugins {
 
 group ="com.wavemaker.runtime"
 
-val wavemakerAppRuntimeExtraDependencies by configurations.creating
+val loggingCapabilityConfiguration by configurations.creating
+val runtimeLibDependencies by configurations.creating
 
 dependencies {
     implementation(platform(project(":wavemaker-app-runtime-services")))
@@ -14,7 +15,6 @@ dependencies {
     implementation(project(":wavemaker-app-runtime-prefab"))
     implementation(project(":wavemaker-app-runtime-connector-app-integration"))
     implementation("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-core")
-    implementation("org.slf4j:slf4j-api")
     implementation("commons-io:commons-io")
     implementation("org.apache.commons:commons-text")
     implementation("org.apache.commons:commons-lang3")
@@ -42,7 +42,6 @@ dependencies {
     implementation("org.owasp.antisamy:antisamy:1.5.8")
     implementation("org.freemarker:freemarker:2.3.28")
     implementation("rome:rome:0.9")
-    implementation("log4j:log4j:1.2.17")
     compileOnly("javax.servlet:javax.servlet-api")
     compileOnly("org.springframework:spring-context-support")
     compileOnly("org.springframework.security:spring-security-cas")
@@ -71,7 +70,20 @@ dependencies {
     runtimeOnly("org.antlr:antlr4-runtime:4.7.2")
     // The below dependency is adding antlr4 and its transitive depedencies as well, removing them using exclude for runtime configuration
     antlr("org.antlr:antlr4:4.7.2")
-    wavemakerAppRuntimeExtraDependencies("org.slf4j:slf4j-log4j12:1.7.29")
+
+    //Logging related dependencies
+    implementation("org.slf4j:slf4j-api")
+    implementation("log4j:log4j:1.2.17")
+    loggingCapabilityConfiguration("org.slf4j:slf4j-log4j12:1.7.29")
+
+    //runtime dependencies lib
+    runtimeLibDependencies(project(":wavemaker-app-runtime-core"))
+    runtimeLibDependencies(loggingCapabilityConfiguration)
+    runtimeLibDependencies("org.hibernate:hibernate-core") {
+        version {
+            strictly("5.2.17.WM")
+        }
+    }
 }
 
 configurations {
@@ -110,7 +122,7 @@ publishing {
             pom {
                 withXml {
                     updateGeneratedPom(asNode(), mapOf(
-                        "compile" to configurations.implementation.get().dependencies + configurations.api.get().dependencies + wavemakerAppRuntimeExtraDependencies.dependencies,
+                        "compile" to configurations.implementation.get().dependencies + configurations.api.get().dependencies + loggingCapabilityConfiguration.dependencies,
                         "provided" to configurations.compileOnly.get().dependencies,
                         "runtime" to configurations.runtimeOnly.get().dependencies
                     ))
