@@ -24,15 +24,24 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
     @Value("${app.build.ui.ng.args}")
     private String buildArgs;
 
+    private List<String> angularCachedContentPath = Arrays.asList("/ng-bundle/**");
+
+    private List<String> angularCacheExclusionPath = Arrays.asList("/ng-bundle/path_mapping.json");
+
+    private List<String> etagContentPath = Arrays.asList("/**");
+
+
+
     @Override
     public CacheFilterConfig getObject() throws Exception {
         CacheFilterConfig cacheFilterConfig = new CacheFilterConfig();
         if ("angular".equals(buildMode) && StringUtils.isNotBlank(buildArgs)) {
             if (buildArgs.contains("--prod=true")) {
-                cacheFilterConfig.setCacheRequestMatcher(getOrRequestMatcher(Arrays.asList("/ng-bundle/**")));
+                    cacheFilterConfig.setCacheRequestMatcher(getOrRequestMatcher(angularCachedContentPath));
+                    cacheFilterConfig.setCacheExclusionRequestMatcher(getOrRequestMatcher(angularCacheExclusionPath));
             }
         }
-        cacheFilterConfig.setEtagRequestMatcher(getOrRequestMatcher(Arrays.asList("/**")));
+        cacheFilterConfig.setEtagRequestMatcher(getOrRequestMatcher(etagContentPath));
         return cacheFilterConfig;
     }
 
@@ -53,4 +62,16 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
         return new OrRequestMatcher(antPathRequestMatchers);
     }
 
+    // Access the below setters from spring xml if required
+    public void setAngularCachedContentPath(List<String> angularCachedContentPath) {
+        this.angularCachedContentPath = angularCachedContentPath;
+    }
+
+    public void setAngularCacheExclusionPath(List<String> angularCacheExclusionPath) {
+        this.angularCacheExclusionPath = angularCacheExclusionPath;
+    }
+
+    public void setEtagContentPath(List<String> etagContentPath) {
+        this.etagContentPath = etagContentPath;
+    }
 }
