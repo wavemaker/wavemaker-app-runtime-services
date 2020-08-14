@@ -29,7 +29,7 @@ public class WMObjectMapperTest {
 
         final String actual = objectMapper.writeValueAsString(users);
         String expected = "{\"content\":[{\"name\":\"user1\"},{\"name\":\"user2\"}],\"last\":false," +
-                "\"totalElements\":100,\"totalPages\":50,\"sort\":[],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0}\n";
+                "\"totalElements\":100,\"totalPages\":50,\"sort\":[],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0,\"empty\":false}\n";
         JSONAssert.assertEquals(expected, actual, true);
     }
 
@@ -42,7 +42,7 @@ public class WMObjectMapperTest {
 
         final String actual = objectMapper.writeValueAsString(users);
         String expected = "{\"content\":[{\"name\":\"user1\"},{\"name\":\"user2\"}],\"totalElements\":100," +
-                "\"totalPages\":50,\"last\":false,\"sort\":[{\"direction\":\"DESC\",\"property\":\"name\",\"ignoreCase\":false,\"nullHandling\":\"NATIVE\",\"ascending\":false}],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0}";
+                "\"totalPages\":50,\"last\":false,\"sort\":[{\"direction\":\"DESC\",\"property\":\"name\",\"ignoreCase\":false,\"nullHandling\":\"NATIVE\",\"ascending\":false}],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0,\"empty\":false}";
 
         JSONAssert.assertEquals(expected, actual, true);
     }

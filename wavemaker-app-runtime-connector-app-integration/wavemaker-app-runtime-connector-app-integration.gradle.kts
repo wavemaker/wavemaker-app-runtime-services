@@ -11,7 +11,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     implementation("org.springframework:spring-beans")
     implementation("org.springframework:spring-context")
-    implementation("org.yaml:snakeyaml:1.21")
+    implementation("org.yaml:snakeyaml:1.26")
     compileOnly("javax.servlet:javax.servlet-api")
 }
 
