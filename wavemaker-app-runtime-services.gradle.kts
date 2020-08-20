@@ -5,7 +5,7 @@ buildscript {
         set("commonsFileUploadVersion", "1.4")
         set("commonsCollections4Version", "4.4")
         set("commonsLang3Version", "3.10")
-        set("commonsTextVersion", "1.6")
+        set("commonsTextVersion", "1.9")
         set("slf4jVersion", "1.7.30")
         set("guavaVersion", "29.0-jre")
         set("springVersion", "5.2.7.RELEASE")
