@@ -42,7 +42,6 @@ dependencies {
     implementation("org.owasp.antisamy:antisamy:1.5.10")
     implementation("org.freemarker:freemarker:2.3.30")
     implementation("rome:rome:1.0")
-    implementation("log4j:log4j:1.2.17")
     compileOnly("javax.servlet:javax.servlet-api")
     compileOnly("org.springframework:spring-context-support")
     compileOnly("org.springframework.security:spring-security-cas")
@@ -74,8 +73,8 @@ dependencies {
 
     //Logging related dependencies
     implementation("org.slf4j:slf4j-api")
-    implementation("log4j:log4j:1.2.17")
-    loggingCapabilityConfiguration("org.slf4j:slf4j-log4j12:1.7.30")
+    implementation("org.apache.logging.log4j:log4j-core")
+    loggingCapabilityConfiguration("org.apache.logging.log4j:log4j-slf4j-impl")
 
     //runtime dependencies lib
     runtimeLibDependencies(project(":wavemaker-app-runtime-core"))

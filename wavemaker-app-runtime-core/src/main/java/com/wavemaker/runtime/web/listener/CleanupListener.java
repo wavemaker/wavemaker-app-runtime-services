@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.server;
+package com.wavemaker.runtime.web.listener;
 
 import java.beans.Introspector;
 import java.lang.management.GarbageCollectorMXBean;
@@ -74,7 +74,7 @@ import com.wavemaker.runtime.RuntimeEnvironment;
  */
 public class CleanupListener implements ServletContextListener {
 
-    private static Logger logger = LoggerFactory.getLogger(CleanupListener.class);
+    private static Logger logger;
 
     private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer
             .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
@@ -85,6 +85,7 @@ public class CleanupListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
+        init();
         //properties set to time out LDAP connections automatically
         System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
         System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
@@ -626,6 +627,12 @@ public class CleanupListener implements ServletContextListener {
             method.setAccessible(true);
         }
         return method;
+    }
+
+    public static void init() {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(CleanupListener.class);
+        }
     }
 
 }
