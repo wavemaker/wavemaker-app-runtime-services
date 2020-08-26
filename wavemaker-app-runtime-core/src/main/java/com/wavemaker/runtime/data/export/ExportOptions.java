@@ -7,7 +7,7 @@ import java.util.List;
 public class ExportOptions {
     private List<FieldInfo> fields = new ArrayList<>();
     private ExportType exportType;
-    private Integer exportSize = -1;
+    private Integer exportSize = Integer.MAX_VALUE;
     private String fileName;
 
     public ExportOptions(ExportType exportType) {
