@@ -62,6 +62,7 @@ import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.data.exception.BlobContentNotFoundException;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
+import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizer;
 
 /**
  * @author sunilp
@@ -94,7 +95,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof ConstraintViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleMethodConstraintViolationException((ConstraintViolationException) ex, response);
-        } else if(ex instanceof AuthenticationException) {
+        } else if (ex instanceof AuthenticationException) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return handleUnAuthorizedException(ex, response);
         }
@@ -274,10 +275,11 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     private ErrorResponse getErrorResponse(MessageResource messageResource, Object... args) {
         List<String> parameters = new ArrayList<>();
+        XSSEncodeSanitizer encodeSanitizer = new XSSEncodeSanitizer();
         if (args != null) {
             for (Object arg : args) {
                 if (arg != null) {
-                    parameters.add(arg.toString());
+                    parameters.add(encodeSanitizer.sanitizeRequestData(arg.toString()));
                     continue;
                 }
                 parameters.add(null);
