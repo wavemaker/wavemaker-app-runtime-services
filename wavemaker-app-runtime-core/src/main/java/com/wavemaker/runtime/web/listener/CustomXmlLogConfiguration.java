@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.zip.Deflater;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
@@ -13,8 +14,10 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.status.StatusLogger;
 
 public class CustomXmlLogConfiguration extends XmlConfiguration {
+    private static final Logger logger = StatusLogger.getLogger();
 
     private LoggerContext loggerContext;
 
@@ -26,6 +29,7 @@ public class CustomXmlLogConfiguration extends XmlConfiguration {
     @Override
     protected void doConfigure() {
         super.doConfigure();
+        logger.info("Configuring custom WaveMaker appenders and removing existing appenders");
         Configuration configuration = loggerContext.getConfiguration();
 
         /*
