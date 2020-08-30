@@ -41,7 +41,6 @@ dependencies {
     }
     implementation("org.owasp.antisamy:antisamy:1.5.10")
     implementation("org.freemarker:freemarker:2.3.30")
-    implementation("rome:rome:1.0")
     compileOnly("javax.servlet:javax.servlet-api")
     compileOnly("org.springframework:spring-context-support")
     compileOnly("org.springframework.security:spring-security-cas")
