@@ -168,13 +168,12 @@ public class RestRuntimeService {
 
     private HttpRequestDetails constructHttpRequest(String serviceId, String path, String method, HttpRequestData httpRequestData) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
-        final Tuple.Two<String, Path> pathInfo = findPath(swagger, path);
-
+        final Tuple.Two<String, Operation> pathInfo = findOperation(swagger, path, method);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> pathParameters = new HashMap<>();
-        Operation operation = PathUtils.getOperation(pathInfo.v2, method);
+        Operation operation = pathInfo.v2;
         filterAndApplyServerVariablesOnRequestData(httpRequestData, swagger, operation,
                 httpHeaders, queryParameters, pathParameters);
 
@@ -202,10 +201,10 @@ public class RestRuntimeService {
                 operationId);
     }
 
-    private Tuple.Two<String, Path> findPath(Swagger swagger, String path) {
-        Map<String, Path> map = swagger.getPaths();
+    private Tuple.Two<String, Operation> findOperation(Swagger swagger, String path, String method) {
+        Map<String, Path> swaggerPaths = swagger.getPaths();
 
-        List<String> pathEntries = new ArrayList<>(map.keySet());
+        List<String> pathEntries = new ArrayList<>(swaggerPaths.keySet());
         pathEntries.sort(new UrlComparator<String>() {
             @Override
             public String getUrlPattern(String s) {
@@ -221,7 +220,10 @@ public class RestRuntimeService {
 
         for (String pathString : pathEntries) {
             if (pathMatcher.match(pathString, path)) {
-                return new Tuple.Two<>(pathString, map.get(pathString));
+                Operation operation = PathUtils.getOperation(swaggerPaths.get(pathString), method);
+                if (operation != null) {
+                    return new Tuple.Two<>(pathString, operation);
+                }
             }
         }
         throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"),
