@@ -18,7 +18,6 @@ public class ConnectorImplFirstClassLoader extends URLClassLoader {
     public ConnectorImplFirstClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
         sysClzLoader = getSystemClassLoader();
-        logger.error("Intiated child first CL", new RuntimeException());
     }
 
     @Override
