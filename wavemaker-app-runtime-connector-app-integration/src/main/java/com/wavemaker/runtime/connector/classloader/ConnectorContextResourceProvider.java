@@ -33,7 +33,7 @@ public class ConnectorContextResourceProvider {
 
     public ClassLoader getClassLoader(String connectorId, ClassLoader appClassLoader) {
         logger.info("Building impl classloader for connector {0}", connectorId);
-        String dependenciesPath = connectorImplPath.replace("${0}", connectorId.toLowerCase());
+        String dependenciesPath = connectorImplPath.replace("${0}", connectorId);
         URL url;
         try {
             url = context.getResource(dependenciesPath);
@@ -48,7 +48,7 @@ public class ConnectorContextResourceProvider {
     }
 
     public ConnectorMetadata getConnectorMetadata(String connectorId) {
-        String resolvedPath = metadataFilePath.replace("${0}", connectorId.toLowerCase());
+        String resolvedPath = metadataFilePath.replace("${0}", connectorId);
         try {
             URL url = context.getResource(resolvedPath);
             return ConnectorMetadataParser.parser(url);
