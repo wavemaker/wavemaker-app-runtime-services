@@ -15,8 +15,12 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.wavemaker.runtime.RuntimeEnvironment;
 
@@ -28,10 +32,10 @@ public class LoadKeyStoreInitializer {
     private static final Logger logger = LoggerFactory.getLogger(LoadKeyStoreInitializer.class);
     private static final String SAML_HTTP_METADATA_PROVIDER_CLAZZ = "org.opensaml.saml2.metadata.provider.HTTPMetadataProvider";
 
-    public LoadKeyStoreInitializer() {
-        init();
-    }
+    @Autowired
+    private Environment environment;
 
+    @PostConstruct
     public void init() {
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             logger.info("saml keystore for profile does not load in test environment");
@@ -46,7 +50,7 @@ public class LoadKeyStoreInitializer {
             logger.info("saml classes not found in classpath.");
         }
         if (samlHttpMetadataProviderClazz != null) {
-            LoadKeyStore loadKeyStore = new LoadKeyStore();
+            LoadKeyStore loadKeyStore = new LoadKeyStore(environment);
             loadKeyStore.load();
         }
     }
