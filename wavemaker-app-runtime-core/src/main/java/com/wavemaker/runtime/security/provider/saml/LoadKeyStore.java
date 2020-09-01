@@ -71,6 +71,10 @@ public class LoadKeyStore {
 
     private Environment environment;
 
+    public LoadKeyStore(Environment environment) {
+        this.environment = environment;
+    }
+
     public void load() {
         final String idpMetadataUrl = environment.getProperty(PROVIDERS_SAML_IDP_METADATA_URL);
         final String idpMetadataFile = environment.getProperty(PROVIDERS_SAML_IDP_METADATA_FILE);
