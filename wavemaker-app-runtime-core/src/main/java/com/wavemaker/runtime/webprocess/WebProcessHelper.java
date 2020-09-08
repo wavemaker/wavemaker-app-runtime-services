@@ -16,7 +16,7 @@ public class WebProcessHelper {
     public static final String WEB_PROCESS_COOKIE_NAME = "WM_WEB_PROCESS";
     public static final String WEB_PROCESS_OUTPUT = "WEB_PROCESS_OUTPUT";
     public static final String UTF_8 = StandardCharsets.UTF_8.toString();
-    private static final String ENCRYPTION_ALG = "AES";
+    private static final String ENCRYPTION_ALG = "AES/GCM/NoPadding";
     private static final int WEB_PROCESS_COOKIE_MAX_AGE = 10 * 60 * 1000;
 
     public static Cookie getCookie(Cookie[] cookies, String cookieName) {

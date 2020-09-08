@@ -69,7 +69,7 @@ public class SSLSecureFilter extends GenericFilterBean {
             if (request.isSecure()) {
                 filterChain.doFilter(request, response);
             } else if (CoreFilterUtil.isExcluded(request, excludedUrlsList)) {
-                logger.debug("RequestURI {} is a excluded external request {}", request.getRequestURI());
+                logger.debug("RequestURI {}", request.getRequestURI());
                 filterChain.doFilter(request, response);
             } else {
                 String requestUri = request.getRequestURI();
