@@ -17,7 +17,7 @@ package com.wavemaker.runtime.data.model.queries;
 
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.replacers.providers.VariableType;

@@ -17,7 +17,7 @@ package com.wavemaker.runtime.data.model.returns;
 
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wavemaker.runtime.data.model.JavaType;
