@@ -26,12 +26,12 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
     private List<String> groupByFields;
     private List<Aggregation> aggregations;
 
-    public SelectQueryBuilder(final Class<?> entityClass, boolean hqlSanitize) {
-        super(entityClass, hqlSanitize);
+    public SelectQueryBuilder(final Class<?> entityClass) {
+        super(entityClass);
     }
 
-    public static SelectQueryBuilder newBuilder(Class<?> entity, boolean hqlSanitize) {
-        return new SelectQueryBuilder(entity, hqlSanitize);
+    public static SelectQueryBuilder newBuilder(Class<?> entity) {
+        return new SelectQueryBuilder(entity);
     }
 
 
