@@ -476,7 +476,7 @@ public class CleanupListener implements ServletContextListener {
                     try {
                         DriverManager.deregisterDriver(driver);
                     } catch (SQLException e1) {
-                        logger.warn("Failed to de-register driver ", driver.getClass().getCanonicalName(), e1);
+                        logger.warn("Failed to de-register driver {}", driver.getClass().getCanonicalName(), e1);
                     }
                 }
             }

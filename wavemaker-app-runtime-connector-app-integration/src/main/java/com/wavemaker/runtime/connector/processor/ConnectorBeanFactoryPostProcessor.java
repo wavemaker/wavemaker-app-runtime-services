@@ -86,7 +86,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                 try {
                     aClass = appClassLoader.loadClass(beanClassName);
                 } catch (ClassNotFoundException e) {
-                    logger.error("Failed to load bean class {0} ", beanClassName);
+                    logger.error("Failed to load bean class {} ", beanClassName);
                     throw new RuntimeException("Failed to load bean class " + beanClassName, e);
                 }
                 Field[] declaredFields = aClass.getDeclaredFields();
@@ -95,7 +95,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                         Annotation[] annotations = field.getType().getAnnotations();
                         for (Annotation annotation : annotations) {
                             if (annotation.annotationType().equals(WMConnector.class)) {
-                                logger.info("Identified a connector declaration {0} in class {1}", field.getType().getName(), beanClassName);
+                                logger.info("Identified a connector declaration {} in class {}", field.getType().getName(), beanClassName);
                                 WMConnector wmConnector = (WMConnector) annotation;
                                 String qualifierName = findQualifierName(field.getAnnotations());
                                 String connectorBeanName = qualifierName == null ? field.getType().getSimpleName() : qualifierName;
@@ -115,7 +115,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                                     // if bean have qualifier then bean name is qualifier name, if it doesn't have qualifier then assigning bean class name as bean name.
                                     ((DefaultListableBeanFactory) beanFactory)
                                             .registerBeanDefinition(connectorBeanName, bd);
-                                    logger.info("Bean definition is loaded for connector {0} in bean class {1}", field.getType().getName(), beanClassName);
+                                    logger.info("Bean definition is loaded for connector {} in bean class {}", field.getType().getName(), beanClassName);
                                 }
                             }
                         }

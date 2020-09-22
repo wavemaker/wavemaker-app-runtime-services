@@ -40,7 +40,7 @@ public class StringTypeConverter extends HibernateBackedJavaTypeConverter {
             if (byte[].class.equals(value.getClass())) {
                 convertedValue = new String(((byte[]) value));
             } else {
-                LOGGER.debug("Not a string instance type, using String.valueOf for conversion", e.getMessage());
+                LOGGER.debug("Not a string instance type, using String.valueOf for conversion {}", e.getMessage());
                 convertedValue = String.valueOf(value);
             }
         }

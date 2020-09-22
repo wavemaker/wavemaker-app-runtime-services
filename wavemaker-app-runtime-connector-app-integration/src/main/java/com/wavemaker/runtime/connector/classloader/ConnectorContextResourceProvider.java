@@ -47,7 +47,7 @@ public class ConnectorContextResourceProvider {
     }
 
     public ClassLoader getClassLoader(String connectorId, ClassLoader appClassLoader) {
-        logger.info("Building impl classloader for connector {0}", connectorId);
+        logger.info("Building impl classloader for connector {}", connectorId);
         String dependenciesPath = connectorImplPath.replace("${0}", connectorId);
         URL url;
         try {
@@ -56,7 +56,7 @@ public class ConnectorContextResourceProvider {
                 throw new ConnectorDoesNotExist("Connector " + connectorId + "does not exist");
             }
         } catch (MalformedURLException e) {
-            logger.error("Connector {0} directory does not exist ", connectorId);
+            logger.error("Connector {} directory does not exist ", connectorId);
             throw new ConnectorDoesNotExist("Connector {0} does not exist", e);
         }
         return buildClassLoader(connectorId, url, appClassLoader);
@@ -84,7 +84,7 @@ public class ConnectorContextResourceProvider {
             }
             return new ConnectorImplFirstClassLoader(urls, appClassLoader);
         } catch (MalformedURLException e) {
-            logger.error("Failed to build impl class cloader for connector {0} ", connectorId);
+            logger.error("Failed to build impl class cloader for connector {} ", connectorId);
             throw new ConnectorDoesNotExist("Failed to build impl class loader from connector " + connectorId, e);
         }
     }

@@ -112,7 +112,7 @@ public class CustomUriComponentsBuilder extends UriComponentsBuilder {
             }
             replacePath(path);
         } catch (UnsupportedEncodingException e) {
-            logger.error("Failed to decode path", path);
+            logger.error("Failed to decode path {}", path);
         }
 
 
