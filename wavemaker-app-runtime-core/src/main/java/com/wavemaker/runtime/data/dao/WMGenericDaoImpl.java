@@ -36,7 +36,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
@@ -78,9 +77,6 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     protected SortValidator sortValidator;
 
-    @Value("${app.db.hql.sanitize:true}")
-    protected boolean hqlSanitize;
-
     @Autowired
     private ExportedFileManager exportedFileManager;
 
@@ -99,7 +95,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         this.entityClass = (Class<E>) genericSuperclass.getActualTypeArguments()[0];
         this.sortValidator = new SortValidator();
 
-        queryGenerator = new SimpleEntitiyQueryGenerator<>(entityClass, hqlSanitize);
+        queryGenerator = new SimpleEntitiyQueryGenerator<>(entityClass);
     }
 
     @SuppressWarnings("unchecked")

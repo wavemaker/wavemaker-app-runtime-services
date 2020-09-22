@@ -29,8 +29,6 @@ import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryGrammarInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
-import com.wavemaker.runtime.data.filter.wmfunctions.WMQueryFunctionsHandlerInterceptor;
-import com.wavemaker.runtime.data.filter.wmfunctions.WMQueryFunctionsRemoverInterceptor;
 import com.wavemaker.runtime.data.periods.PeriodClause;
 
 /**
@@ -40,8 +38,6 @@ import com.wavemaker.runtime.data.periods.PeriodClause;
 public abstract class QueryBuilder<T extends QueryBuilder> {
 
     private static final QueryInterceptor legacyQueryFilterInterceptor = new LegacyQueryFilterInterceptor();
-    private static final QueryInterceptor WMQueryFunctionsHandlerInterceptor = new WMQueryFunctionsHandlerInterceptor();
-    private static final QueryInterceptor WMQueryFunctionsRemoverInterceptor = new WMQueryFunctionsRemoverInterceptor();
     private static final QueryInterceptor wmQueryGrammarInterceptor = new WMQueryGrammarInterceptor();
 
     protected final Class<?> entityClass;
@@ -50,18 +46,12 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
     private Map<String, Object> filterConditions = new HashMap<>();
     private String filter;
 
-    public QueryBuilder(final Class<?> entityClass, final boolean hqlSanitize) {
+    public QueryBuilder(final Class<?> entityClass) {
         this.entityClass = entityClass;
         this.interceptors = new ArrayList<>();
 
         interceptors.add(legacyQueryFilterInterceptor);
-
-        if (hqlSanitize) {
-            interceptors.add(WMQueryFunctionsRemoverInterceptor);
-            interceptors.add(wmQueryGrammarInterceptor);
-        } else {
-            interceptors.add(WMQueryFunctionsHandlerInterceptor);
-        }
+        interceptors.add(wmQueryGrammarInterceptor);
 
     }
 

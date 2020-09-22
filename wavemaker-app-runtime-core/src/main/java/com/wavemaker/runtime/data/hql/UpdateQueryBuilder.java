@@ -31,8 +31,8 @@ public class UpdateQueryBuilder extends QueryBuilder<UpdateQueryBuilder> {
 
     private Map<String, Object> setters = new HashMap<>();
 
-    public UpdateQueryBuilder(final Class<?> entityClass, boolean hqlSanitize) {
-        super(entityClass, hqlSanitize);
+    public UpdateQueryBuilder(final Class<?> entityClass) {
+        super(entityClass);
     }
 
     public UpdateQueryBuilder withSetter(String fieldName, Object value) {

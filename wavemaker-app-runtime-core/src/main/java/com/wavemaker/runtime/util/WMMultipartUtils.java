@@ -37,6 +37,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.mime.MimeType;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -64,16 +66,12 @@ import net.sf.jmimemagic.MagicParseException;
  */
 public class WMMultipartUtils {
 
+    public static final String WM_DATA_JSON = "wm_data_json";
+    public static final String BLOB = "Blob";
     private static final Logger LOGGER = LoggerFactory.getLogger(WMMultipartUtils.class);
-
     private static final int READ_LIMIT_FOR_CONTENT_TYPE = 2048;
     private static final int FILE_NAME_LENGTH = 12;
-
-    public static final String WM_DATA_JSON = "wm_data_json";
-
     private static final String BYTE_ARRAY = "byte[]";
-
-    public static final String BLOB = "Blob";
 
     public static <T> T toObject(MultipartHttpServletRequest multipartHttpServletRequest, Class<T> instance) {
         return toObject(multipartHttpServletRequest, instance, null);
@@ -120,6 +118,7 @@ public class WMMultipartUtils {
      * @param oldInstance : persisted instance.
      * @param newInstance : changes in the persisted instance.
      * @param <T>
+     *
      * @return returns newInstance with updated blob content
      */
     public static <T> T updateLobsContent(T oldInstance, T newInstance) {
@@ -211,7 +210,9 @@ public class WMMultipartUtils {
      * get a match from a stream of data
      *
      * @param data bytes of data
+     *
      * @return Guessed content type of given bytes
+     *
      * @throws MagicException Failed to Guess!
      */
     public static String guessContentType(byte[] data) throws MagicException {
@@ -222,7 +223,9 @@ public class WMMultipartUtils {
      * get a match from a stream of data
      *
      * @param data bytes of data
+     *
      * @return Guessed extension of given bytes
+     *
      * @throws MagicException Failed to Guess!
      */
     public static String guessExtension(byte[] data) throws MagicException {
@@ -262,13 +265,17 @@ public class WMMultipartUtils {
             String contentType = null;
             String filename = httpServletRequest.getParameter("filename");
             if (StringUtils.isBlank(filename)) {
-                filename = fieldName + new SecureRandom().nextInt(99);
+                filename = fieldName + System.currentTimeMillis();
             } else {
                 contentType = new Tika().detect(filename);
             }
 
             if (contentType == null) {
                 contentType = getMatchingContentType(bytes, httpServletRequest);
+            }
+            String fileExtension = getFileExtensionFromContentType(contentType);
+            if (StringUtils.isNotBlank(fileExtension)) {
+                filename += fileExtension;
             }
 
             downloadResponse.setContents(new ByteArrayInputStream(bytes));
@@ -279,6 +286,16 @@ public class WMMultipartUtils {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.response.construction.failed"), e, fieldName);
         }
         return downloadResponse;
+    }
+
+    private static String getFileExtensionFromContentType(String contentType) {
+        try {
+            MimeType mimeType = TikaConfig.getDefaultConfig().getMimeRepository().forName(contentType);
+            return mimeType.getExtension();
+        } catch (Exception e) {
+            LOGGER.warn("Could not get file extension for file type {}", contentType);
+            return "";
+        }
     }
 
     public static DownloadResponse buildDownloadResponse(
@@ -345,6 +362,7 @@ public class WMMultipartUtils {
      *
      * @param bytes              stream of bytes
      * @param httpServletRequest
+     *
      * @return content type for given bytes
      */
     private static String getMatchingContentType(byte[] bytes, HttpServletRequest httpServletRequest) {
