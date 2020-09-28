@@ -22,7 +22,7 @@ import java.util.Map;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-import com.wavemaker.commons.WMError;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.i18n.FinalLocaleData;
 import com.wavemaker.commons.i18n.LocaleMessageProviderImpl;
 import com.wavemaker.commons.json.JSONUtils;
@@ -45,7 +45,7 @@ public class WMAppLocaleMessageProviderImpl extends LocaleMessageProviderImpl {
                 FinalLocaleData localeData = JSONUtils.toObject(resource.getInputStream(), FinalLocaleData.class);
                 localeMessages.putAll(localeData.getMessages());
             } catch (IOException e) {
-                throw new WMError("Failed to read locale resources for locale " + locale, e);
+                throw new WMRuntimeException("Failed to read locale resources for locale " + locale, e);
             }
         }
         return localeMessages;
