@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.wavemaker.runtime</groupId>
         <artifactId>wavemaker-app-runtime-services</artifactId>
-        <version>10.5.6</version>
+        <version>10.5.6.ee</version>
     </parent>
 
     <artifactId>wavemaker-app-runtime-core</artifactId>
