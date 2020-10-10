@@ -1,7 +1,6 @@
 plugins {
-    `java-library`
+    `java-library-maven-publish`
     `antlr`
-    `maven-publish`
 }
 
 group ="com.wavemaker.runtime"
@@ -92,10 +91,6 @@ configurations {
     }
 }
 
-java {
-    withSourcesJar()
-}
-
 tasks {
     processResources {
         inputs.files(configurations.runtimeClasspath.get().files)
@@ -112,22 +107,7 @@ tasks {
     }
 }
 
-publishing {
-    configurePublicationToDist(this)
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = project.extensions.extraProperties.get("basename") as String
-            from(components["java"])
-            withoutBuildIdentifier()
-            pom {
-                withXml {
-                    updateGeneratedPom(asNode(), mapOf(
-                        "compile" to configurations.implementation.get().dependencies + configurations.api.get().dependencies + loggingCapabilityConfiguration.dependencies,
-                        "provided" to configurations.compileOnly.get().dependencies,
-                        "runtime" to configurations.runtimeOnly.get().dependencies
-                    ))
-                }
-            }
-        }
-    }
+javaLibraryMavenPublish {
+    scmUrl="git:https://github.com/wavemaker/wavemaker-app-runtime-services.git"
+    scopeMapping.get("compile")?.add(loggingCapabilityConfiguration.name)
 }
