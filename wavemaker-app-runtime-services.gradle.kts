@@ -1,6 +1,5 @@
 buildscript {
     extra.apply {
-        set("wavemakerApiDocsToolsVersion", "2.24")
         set("commonsIoVersion", "2.7")
         set("commonsFileUploadVersion", "1.4")
         set("commonsCollections4Version", "4.4")
@@ -43,8 +42,6 @@ dependencies {
     api(enforcedPlatform("com.fasterxml.jackson:jackson-bom:${project.extra["jacksonVersion"]}"))
     api(enforcedPlatform("org.apache.logging.log4j:log4j-bom:${project.extra["log4j2Version"]}"))
     constraints {
-        api("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-core:${project.extra["wavemakerApiDocsToolsVersion"]}")
-        api("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-parser:${project.extra["wavemakerApiDocsToolsVersion"]}")
         api("org.slf4j:slf4j-api:${project.extra["slf4jVersion"]}")
         api("org.apache.commons:commons-collections4:${project.extra["commonsCollections4Version"]}")
         api("commons-io:commons-io:${project.extra["commonsIoVersion"]}")

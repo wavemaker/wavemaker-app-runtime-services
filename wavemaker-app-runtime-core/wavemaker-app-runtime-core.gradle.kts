@@ -13,7 +13,7 @@ dependencies {
     implementation(project(":wavemaker-commons-util"))
     implementation(project(":wavemaker-app-runtime-prefab"))
     implementation(project(":wavemaker-app-runtime-connector-app-integration"))
-    implementation("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-core")
+    implementation(project(":wavemaker-tools-apidocs-core"))
     implementation("commons-io:commons-io")
     implementation("org.apache.commons:commons-text")
     implementation("org.apache.commons:commons-lang3")
@@ -40,6 +40,7 @@ dependencies {
     }
     implementation("org.owasp.antisamy:antisamy:1.5.10")
     implementation("org.freemarker:freemarker:2.3.30")
+    implementation("com.wordnik:swagger-annotations:1.3.10")
     compileOnly("javax.servlet:javax.servlet-api")
     compileOnly("org.springframework:spring-context-support")
     compileOnly("org.springframework.security:spring-security-cas")
