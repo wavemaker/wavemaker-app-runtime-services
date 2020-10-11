@@ -26,8 +26,7 @@ buildscript {
 }
 
 plugins {
-    `java-platform`
-    `maven-publish`
+    `java-platform-maven-publish`
 }
 
 javaPlatform {
@@ -65,12 +64,6 @@ dependencies {
     }
 }
 
-publishing {
-    configurePublicationToDist(this)
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = project.extensions.extraProperties.get("basename") as String
-            from(components["javaPlatform"])
-        }
-    }
+javaPlatformMavenPublish {
+    scmUrl="git:https://github.com/wavemaker/wavemaker-app-runtime-services.git"
 }
