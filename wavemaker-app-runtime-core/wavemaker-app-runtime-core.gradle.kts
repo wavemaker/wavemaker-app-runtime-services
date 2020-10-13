@@ -52,7 +52,7 @@ dependencies {
     compileOnly("org.springframework.social:spring-social-web:1.1.6.RELEASE")
     //TODO Need to add xalan and xml-apis exclusions for saml2-core
     compileOnly("org.springframework.security.extensions:spring-security-saml2-core")
-    compileOnly("net.sf.jasperreports:jasperreports:6.14.0") {
+    compileOnly("net.sf.jasperreports:jasperreports:6.15.0") {
         //TODO need to revisit this
         exclude(group = "com.lowagie")
     }
