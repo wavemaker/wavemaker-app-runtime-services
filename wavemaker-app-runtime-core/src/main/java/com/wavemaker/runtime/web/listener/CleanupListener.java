@@ -1,19 +1,19 @@
 /**
- * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.server;
+package com.wavemaker.runtime.web.listener;
 
 import java.beans.Introspector;
 import java.lang.management.GarbageCollectorMXBean;
@@ -74,7 +74,7 @@ import com.wavemaker.runtime.RuntimeEnvironment;
  */
 public class CleanupListener implements ServletContextListener {
 
-    private static Logger logger = LoggerFactory.getLogger(CleanupListener.class);
+    private static Logger logger;
 
     private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer
             .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
@@ -85,6 +85,7 @@ public class CleanupListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
+        init();
         //properties set to time out LDAP connections automatically
         System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
         System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
@@ -475,7 +476,7 @@ public class CleanupListener implements ServletContextListener {
                     try {
                         DriverManager.deregisterDriver(driver);
                     } catch (SQLException e1) {
-                        logger.warn("Failed to de-register driver ", driver.getClass().getCanonicalName(), e1);
+                        logger.warn("Failed to de-register driver {}", driver.getClass().getCanonicalName(), e1);
                     }
                 }
             }
@@ -626,6 +627,12 @@ public class CleanupListener implements ServletContextListener {
             method.setAccessible(true);
         }
         return method;
+    }
+
+    public static void init() {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(CleanupListener.class);
+        }
     }
 
 }

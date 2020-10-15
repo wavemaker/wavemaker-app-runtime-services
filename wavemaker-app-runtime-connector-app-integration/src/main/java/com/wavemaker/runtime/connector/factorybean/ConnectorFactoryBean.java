@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.wavemaker.runtime.connector.factorybean;
 
 
@@ -56,7 +71,7 @@ public class ConnectorFactoryBean<T> implements FactoryBean<T> {
                         ConnectorContext connectorContext = contextProvider.get(connectorId, currentClassLoader);
 
                         //step2: set impl classloader to current thread
-                        logger.info("Setting connector classloader {0} to current thread ", connectorContext.getClassLoader());
+                        logger.info("Setting connector classloader {} to current thread ", connectorContext.getClassLoader());
                         Thread.currentThread().setContextClassLoader(connectorContext.getClassLoader());
 
                         //step3: load connectormain which will build spring context and cache it for further request and get an instance of impl bean
@@ -66,10 +81,10 @@ public class ConnectorFactoryBean<T> implements FactoryBean<T> {
                         return method.invoke(implBeanObject, methodArgs);
 
                     } catch (InvocationTargetException e) {
-                        logger.error("Exception during intercepting api invocation for connector {0} ", connectorId);
+                        logger.error("Exception during intercepting api invocation for connector {} ", connectorId);
                         throw new RuntimeException("Exception during intercepting connector api invocation ", e.getTargetException());
                     } catch (Exception e) {
-                        logger.error("Exception during intercepting api invocation for connector {0} ", connectorId);
+                        logger.error("Exception during intercepting api invocation for connector {} ", connectorId);
                         throw new RuntimeException("Exception during intercepting connector api invocation ", e);
                     } finally {
                         Thread.currentThread().setContextClassLoader(currentClassLoader);

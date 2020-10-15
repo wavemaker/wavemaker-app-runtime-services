@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.wavemaker.runtime.connector.main;
 
 import java.util.Properties;
@@ -21,7 +36,7 @@ public class ConnectorMain {
 
     public static Object getBean(String connectorId, String configurationId, String connectorSpringConfigurationClass, Properties properties, String beanClassName) {
         ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration(connectorId, configurationId);
-        logger.info("Loading spring applicationContext from cache for connector {0} {1}", connectorId, configurationId);
+        logger.info("Loading spring applicationContext from cache for connector {} {}", connectorId, configurationId);
         if (ConnectorCache.get(connectorConfiguration) == null) {
             ConnectorCache.put(connectorConfiguration, prepareSpringContext(properties, connectorSpringConfigurationClass));
         }
@@ -34,7 +49,7 @@ public class ConnectorMain {
 
 
     private static ApplicationContext prepareSpringContext(Properties properties, String connectorSpringConfigurationClass) {
-        logger.info("Loading Impl Spring context from connector spring metadata class {0}", connectorSpringConfigurationClass);
+        logger.info("Loading Impl Spring context from connector spring metadata class {}", connectorSpringConfigurationClass);
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
         context.register(getImplSpringConfigClazz(connectorSpringConfigurationClass));
         context.getEnvironment().getPropertySources().addLast(new PropertiesPropertySource("connector", properties));

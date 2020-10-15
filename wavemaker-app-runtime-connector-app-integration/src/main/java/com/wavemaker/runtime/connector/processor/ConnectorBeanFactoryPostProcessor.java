@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.wavemaker.runtime.connector.processor;
 
 import java.io.IOException;
@@ -71,7 +86,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                 try {
                     aClass = appClassLoader.loadClass(beanClassName);
                 } catch (ClassNotFoundException e) {
-                    logger.error("Failed to load bean class {0} ", beanClassName);
+                    logger.error("Failed to load bean class {} ", beanClassName);
                     throw new RuntimeException("Failed to load bean class " + beanClassName, e);
                 }
                 Field[] declaredFields = aClass.getDeclaredFields();
@@ -80,7 +95,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                         Annotation[] annotations = field.getType().getAnnotations();
                         for (Annotation annotation : annotations) {
                             if (annotation.annotationType().equals(WMConnector.class)) {
-                                logger.info("Identified a connector declaration {0} in class {1}", field.getType().getName(), beanClassName);
+                                logger.info("Identified a connector declaration {} in class {}", field.getType().getName(), beanClassName);
                                 WMConnector wmConnector = (WMConnector) annotation;
                                 String qualifierName = findQualifierName(field.getAnnotations());
                                 String connectorBeanName = qualifierName == null ? field.getType().getSimpleName() : qualifierName;
@@ -100,7 +115,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                                     // if bean have qualifier then bean name is qualifier name, if it doesn't have qualifier then assigning bean class name as bean name.
                                     ((DefaultListableBeanFactory) beanFactory)
                                             .registerBeanDefinition(connectorBeanName, bd);
-                                    logger.info("Bean definition is loaded for connector {0} in bean class {1}", field.getType().getName(), beanClassName);
+                                    logger.info("Bean definition is loaded for connector {} in bean class {}", field.getType().getName(), beanClassName);
                                 }
                             }
                         }

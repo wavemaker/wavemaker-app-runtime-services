@@ -1,33 +1,32 @@
 buildscript {
     extra.apply {
-        set("wavemakerApiDocsToolsVersion", "2.24")
-        set("commonsIoVersion", "2.6")
+        set("commonsIoVersion", "2.8.0")
         set("commonsFileUploadVersion", "1.4")
-        set("commonsCollections4Version", "4.2")
-        set("commonsLang3Version", "3.9")
-        set("commonsTextVersion", "1.6")
-        set("slf4jVersion", "1.7.29")
-        set("guavaVersion", "27.0.1-jre")
-        set("springVersion", "5.1.4.RELEASE")
-        set("springSecurityVersion", "5.0.8.RELEASE")
-        set("springSessionVersion", "Dragonfruit-RELEASE")
+        set("commonsCollections4Version", "4.4")
+        set("commonsLang3Version", "3.11")
+        set("commonsTextVersion", "1.9")
+        set("slf4jVersion", "1.7.30")
+        set("guavaVersion", "29.0-jre")
+        set("springVersion", "5.2.9.RELEASE")
+        set("springSecurityVersion", "5.3.5.RELEASE")
+        set("springSessionVersion", "Dragonfruit-SR1")
         set("springSecuritySamlVersion", "1.0.3.RELEASE")
-        set("springDataCommonsVersion", "2.0.10.RELEASE")
-        set("hibernateVersion", "5.2.17.Final")
-        set("hibernateValidatorVersion", "5.4.2.Final")
-        set("httpClientVersion", "4.5.9")
-        set("hikariCPVersion","3.4.1")
-        set("jacksonVersion", "2.9.8")
+        set("springDataCommonsVersion", "2.3.4.RELEASE")
+        set("hibernateVersion", "5.4.20.Final")
+        set("hibernateValidatorVersion", "6.1.6.Final")
+        set("httpClientVersion", "4.5.13")
+        set("hikariCPVersion","3.4.5")
+        set("jacksonVersion", "2.11.3")
         set("mockitoVersion", "1.10.19")
-        set("junitVersion", "4.11")
-        set("testngVersion", "6.14.3")
+        set("junitVersion", "4.13")
+        set("testngVersion", "7.3.0")
         set("servletVersion", "3.1.0")
+        set("log4j2Version", "2.13.3")
     }
 }
 
 plugins {
-    `java-platform`
-    `maven-publish`
+    `java-platform-maven-publish`
 }
 
 javaPlatform {
@@ -41,9 +40,8 @@ dependencies {
     api(enforcedPlatform("org.springframework.security:spring-security-bom:${project.extra["springSecurityVersion"]}"))
     api(enforcedPlatform("org.springframework.session:spring-session-bom:${project.extra["springSessionVersion"]}"))
     api(enforcedPlatform("com.fasterxml.jackson:jackson-bom:${project.extra["jacksonVersion"]}"))
+    api(enforcedPlatform("org.apache.logging.log4j:log4j-bom:${project.extra["log4j2Version"]}"))
     constraints {
-        api("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-core:${project.extra["wavemakerApiDocsToolsVersion"]}")
-        api("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-parser:${project.extra["wavemakerApiDocsToolsVersion"]}")
         api("org.slf4j:slf4j-api:${project.extra["slf4jVersion"]}")
         api("org.apache.commons:commons-collections4:${project.extra["commonsCollections4Version"]}")
         api("commons-io:commons-io:${project.extra["commonsIoVersion"]}")
@@ -64,12 +62,6 @@ dependencies {
     }
 }
 
-publishing {
-    configurePublicationToDist(this)
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = project.extensions.extraProperties.get("basename") as String
-            from(components["javaPlatform"])
-        }
-    }
+javaPlatformMavenPublish {
+    scmUrl="git:https://github.com/wavemaker/wavemaker-app-runtime-services.git"
 }

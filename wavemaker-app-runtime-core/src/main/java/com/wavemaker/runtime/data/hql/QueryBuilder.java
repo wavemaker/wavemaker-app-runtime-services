@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.wavemaker.runtime.data.hql;
 
 import java.util.ArrayList;
@@ -14,8 +29,6 @@ import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryGrammarInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
-import com.wavemaker.runtime.data.filter.wmfunctions.WMQueryFunctionsHandlerInterceptor;
-import com.wavemaker.runtime.data.filter.wmfunctions.WMQueryFunctionsRemoverInterceptor;
 import com.wavemaker.runtime.data.periods.PeriodClause;
 
 /**
@@ -25,8 +38,6 @@ import com.wavemaker.runtime.data.periods.PeriodClause;
 public abstract class QueryBuilder<T extends QueryBuilder> {
 
     private static final QueryInterceptor legacyQueryFilterInterceptor = new LegacyQueryFilterInterceptor();
-    private static final QueryInterceptor WMQueryFunctionsHandlerInterceptor = new WMQueryFunctionsHandlerInterceptor();
-    private static final QueryInterceptor WMQueryFunctionsRemoverInterceptor = new WMQueryFunctionsRemoverInterceptor();
     private static final QueryInterceptor wmQueryGrammarInterceptor = new WMQueryGrammarInterceptor();
 
     protected final Class<?> entityClass;
@@ -35,18 +46,12 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
     private Map<String, Object> filterConditions = new HashMap<>();
     private String filter;
 
-    public QueryBuilder(final Class<?> entityClass, final boolean hqlSanitize) {
+    public QueryBuilder(final Class<?> entityClass) {
         this.entityClass = entityClass;
         this.interceptors = new ArrayList<>();
 
         interceptors.add(legacyQueryFilterInterceptor);
-
-        if (hqlSanitize) {
-            interceptors.add(WMQueryFunctionsRemoverInterceptor);
-            interceptors.add(wmQueryGrammarInterceptor);
-        } else {
-            interceptors.add(WMQueryFunctionsHandlerInterceptor);
-        }
+        interceptors.add(wmQueryGrammarInterceptor);
 
     }
 

@@ -1,12 +1,12 @@
 /**
- * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.sun.syndication.feed.impl.ToStringBean;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 
 /**
@@ -63,7 +62,6 @@ public class WMRequestFilter extends GenericFilterBean {
             httpRequestResponseHolderThreadLocal.remove();
             this.clearThreadLocalActivityCorrelator();
             this.clearThreadLocalServiceInterceptorFactory();
-            this.clearThreadLocalToStringBean();
             this.clearThreadLocalAbstractClassGenerator();
             this.cleanClassFactoryCache();
         }
@@ -107,27 +105,6 @@ public class WMRequestFilter extends GenericFilterBean {
             }
         } catch (Throwable e) {
             logger.warn("Failed to cleanup ServiceInterceptorFactory Thread Local value", e);
-        }
-    }
-
-    private void clearThreadLocalToStringBean() {
-        try {
-            String className = "com.sun.syndication.feed.impl.ToStringBean";
-            Class klass = ClassLoaderUtils.findLoadedClass(ToStringBean.class.getClassLoader(), className);
-            if (klass == null) {
-                klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
-            }
-            if (klass != null) {
-                Field prefixTLField = ToStringBean.class.getDeclaredField("PREFIX_TL");
-                prefixTLField.setAccessible(true);
-                ThreadLocal threadLocal = (ThreadLocal) prefixTLField.get(null);
-                if (threadLocal != null) {
-                    logger.debug("Removing the thread local value of the field PREFIX_TL in the class {}", className);
-                    threadLocal.remove();
-                }
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to cleanup ToStringBean Thread Local value", e);
         }
     }
 

@@ -1,12 +1,12 @@
 /**
- * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,12 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.wavemaker.runtime.RuntimeEnvironment;
 
@@ -28,10 +32,10 @@ public class LoadKeyStoreInitializer {
     private static final Logger logger = LoggerFactory.getLogger(LoadKeyStoreInitializer.class);
     private static final String SAML_HTTP_METADATA_PROVIDER_CLAZZ = "org.opensaml.saml2.metadata.provider.HTTPMetadataProvider";
 
-    public LoadKeyStoreInitializer() {
-        init();
-    }
+    @Autowired
+    private Environment environment;
 
+    @PostConstruct
     public void init() {
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             logger.info("saml keystore for profile does not load in test environment");
@@ -46,7 +50,7 @@ public class LoadKeyStoreInitializer {
             logger.info("saml classes not found in classpath.");
         }
         if (samlHttpMetadataProviderClazz != null) {
-            LoadKeyStore loadKeyStore = new LoadKeyStore();
+            LoadKeyStore loadKeyStore = new LoadKeyStore(environment);
             loadKeyStore.load();
         }
     }

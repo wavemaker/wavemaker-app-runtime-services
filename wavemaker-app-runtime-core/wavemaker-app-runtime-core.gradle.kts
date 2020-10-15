@@ -1,7 +1,6 @@
 plugins {
-    `java-library`
+    `java-library-maven-publish`
     `antlr`
-    `maven-publish`
 }
 
 group ="com.wavemaker.runtime"
@@ -14,7 +13,7 @@ dependencies {
     implementation(project(":wavemaker-commons-util"))
     implementation(project(":wavemaker-app-runtime-prefab"))
     implementation(project(":wavemaker-app-runtime-connector-app-integration"))
-    implementation("com.wavemaker.tools.apidocs:wavemaker-tools-apidocs-core")
+    implementation(project(":wavemaker-tools-apidocs-core"))
     implementation("commons-io:commons-io")
     implementation("org.apache.commons:commons-text")
     implementation("org.apache.commons:commons-lang3")
@@ -34,30 +33,30 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     implementation("org.apache.httpcomponents:httpclient")
     implementation("net.sf.jmimemagic:jmimemagic:0.1.5")
-    implementation("org.apache.tika:tika-core:1.20")
-    implementation("org.apache.poi:poi:4.0.1")
-    implementation("org.apache.poi:poi-ooxml:4.0.1") {
+    implementation("org.apache.tika:tika-core:1.24.1")
+    implementation("org.apache.poi:poi:4.1.2")
+    implementation("org.apache.poi:poi-ooxml:4.1.2") {
         exclude("com.github.virtuald", "curvesapi")
     }
-    implementation("org.owasp.antisamy:antisamy:1.5.8")
-    implementation("org.freemarker:freemarker:2.3.28")
-    implementation("rome:rome:0.9")
+    implementation("org.owasp.antisamy:antisamy:1.5.10")
+    implementation("org.freemarker:freemarker:2.3.30")
+    implementation("com.wordnik:swagger-annotations:1.3.10")
     compileOnly("javax.servlet:javax.servlet-api")
     compileOnly("org.springframework:spring-context-support")
     compileOnly("org.springframework.security:spring-security-cas")
     compileOnly("org.springframework.security:spring-security-ldap")
     compileOnly("org.springframework.security:spring-security-oauth2-client")
     compileOnly("org.springframework.security:spring-security-oauth2-jose")
-    compileOnly("org.springframework.social:spring-social-core:1.1.5.RELEASE")
-    compileOnly("org.springframework.social:spring-social-security:1.1.5.RELEASE")
-    compileOnly("org.springframework.social:spring-social-web:1.1.5.RELEASE")
+    compileOnly("org.springframework.social:spring-social-core:1.1.6.RELEASE")
+    compileOnly("org.springframework.social:spring-social-security:1.1.6.RELEASE")
+    compileOnly("org.springframework.social:spring-social-web:1.1.6.RELEASE")
     //TODO Need to add xalan and xml-apis exclusions for saml2-core
     compileOnly("org.springframework.security.extensions:spring-security-saml2-core")
-    compileOnly("net.sf.jasperreports:jasperreports:6.7.0") {
+    compileOnly("net.sf.jasperreports:jasperreports:6.15.0") {
         //TODO need to revisit this
         exclude(group = "com.lowagie")
     }
-    compileOnly("org.quartz-scheduler:quartz:2.3.0")
+    compileOnly("org.quartz-scheduler:quartz:2.3.2")
     runtimeOnly("com.zaxxer:HikariCP")
     runtimeOnly("org.springframework.security:spring-security-config") {
         because("Without this dependency namespaces in xml definitions were not working and ultimately deployment failed")
@@ -67,33 +66,30 @@ dependencies {
     testImplementation("org.mockito:mockito-all")
     testImplementation("org.skyscreamer:jsonassert:1.5.0")
     testImplementation("javax.servlet:javax.servlet-api")
-    runtimeOnly("org.antlr:antlr4-runtime:4.7.2")
+    runtimeOnly("org.antlr:antlr4-runtime:4.8-1")
     // The below dependency is adding antlr4 and its transitive depedencies as well, removing them using exclude for runtime configuration
-    antlr("org.antlr:antlr4:4.7.2")
+    antlr("org.antlr:antlr4:4.8-1")
 
     //Logging related dependencies
     implementation("org.slf4j:slf4j-api")
-    implementation("log4j:log4j:1.2.17")
-    loggingCapabilityConfiguration("org.slf4j:slf4j-log4j12:1.7.29")
+    implementation("org.apache.logging.log4j:log4j-core")
+    loggingCapabilityConfiguration("org.apache.logging.log4j:log4j-slf4j-impl")
 
     //runtime dependencies lib
     runtimeLibDependencies(project(":wavemaker-app-runtime-core"))
     runtimeLibDependencies(loggingCapabilityConfiguration)
-    runtimeLibDependencies("org.hibernate:hibernate-core") {
+    //TODO: To support DB2 implementation, the custom code needs to be updated as per the new hibernate library code
+    /*runtimeLibDependencies("org.hibernate:hibernate-core") {
         version {
             strictly("5.2.17.WM")
         }
-    }
+    }*/
 }
 
 configurations {
     runtime {
         exclude("org.antlr", "antlr4")
     }
-}
-
-java {
-    withSourcesJar()
 }
 
 tasks {
@@ -112,22 +108,7 @@ tasks {
     }
 }
 
-publishing {
-    configurePublicationToDist(this)
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = project.extensions.extraProperties.get("basename") as String
-            from(components["java"])
-            withoutBuildIdentifier()
-            pom {
-                withXml {
-                    updateGeneratedPom(asNode(), mapOf(
-                        "compile" to configurations.implementation.get().dependencies + configurations.api.get().dependencies + loggingCapabilityConfiguration.dependencies,
-                        "provided" to configurations.compileOnly.get().dependencies,
-                        "runtime" to configurations.runtimeOnly.get().dependencies
-                    ))
-                }
-            }
-        }
-    }
+javaLibraryMavenPublish {
+    scmUrl="git:https://github.com/wavemaker/wavemaker-app-runtime-services.git"
+    scopeMapping.get("compile")?.add(loggingCapabilityConfiguration.name)
 }

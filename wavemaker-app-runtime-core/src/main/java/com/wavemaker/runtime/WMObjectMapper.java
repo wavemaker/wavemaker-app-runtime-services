@@ -1,12 +1,12 @@
 /**
- * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * Copyright (C) 2020 WaveMaker, Inc.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -149,7 +149,7 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
-    public <T> T readValue(File src, TypeReference valueTypeRef)
+    public <T> T readValue(File src, TypeReference<T> valueTypeRef)
             throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
@@ -168,7 +168,7 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
-    public <T> T readValue(URL src, TypeReference valueTypeRef)
+    public <T> T readValue(URL src, TypeReference<T> valueTypeRef)
             throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
@@ -180,20 +180,17 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
-    public <T> T readValue(String content, Class<T> valueType)
-            throws IOException {
+    public <T> T readValue(String content, Class<T> valueType) throws JsonProcessingException {
         return readMapper.readValue(content, valueType);
     }
 
     @Override
-    public <T> T readValue(String content, TypeReference valueTypeRef)
-            throws IOException {
+    public <T> T readValue(String content, TypeReference<T> valueTypeRef) throws JsonProcessingException {
         return readMapper.readValue(content, valueTypeRef);
     }
 
     @Override
-    public <T> T readValue(String content, JavaType valueType)
-            throws IOException {
+    public <T> T readValue(String content, JavaType valueType) throws JsonProcessingException {
         return readMapper.readValue(content, valueType);
     }
 
@@ -204,7 +201,7 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
-    public <T> T readValue(Reader src, TypeReference valueTypeRef)
+    public <T> T readValue(Reader src, TypeReference<T> valueTypeRef)
             throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
@@ -222,7 +219,7 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
-    public <T> T readValue(InputStream src, TypeReference valueTypeRef)
+    public <T> T readValue(InputStream src, TypeReference<T> valueTypeRef)
             throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
@@ -242,7 +239,7 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
-    public <T> T readValue(byte[] src, TypeReference valueTypeRef)
+    public <T> T readValue(byte[] src, TypeReference<T> valueTypeRef)
             throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
@@ -250,7 +247,7 @@ public class WMObjectMapper extends ObjectMapper {
     @Override
     public <T> T readValue(
             byte[] src, int offset, int len,
-            TypeReference valueTypeRef)
+            TypeReference<T> valueTypeRef)
             throws IOException {
         return readMapper.readValue(src, offset, len, valueTypeRef);
     }

@@ -49,12 +49,6 @@
         <property name="sizeParameterName" value="size"/>
         <property name="oneIndexedParameters" value="true"/>
         <property name="maxPageSize" value="1000"/>
-        <property name="fallbackPageable">
-            <bean class="org.springframework.data.domain.PageRequest">
-                <constructor-arg value="0"/>
-                <constructor-arg value="20"/>
-            </bean>
-        </property>
     </bean>
 
 </beans>
