@@ -43,8 +43,8 @@ import com.wavemaker.commons.comparator.UrlStringComparator;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.commons.util.WMUtils;
+import com.wavemaker.runtime.commons.WebConstants;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
-import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -146,7 +146,7 @@ public class RestRuntimeService {
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails.toString());
+                logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails);
             }
             try {
                 HttpRequestUtils.writeResponse(httpResponseDetails, httpServletResponse);
@@ -275,16 +275,15 @@ public class RestRuntimeService {
 
     private void updateUrlWithQueryParameters(StringBuilder endpointAddressSb, Map<String, Object> queryParameters) {
         boolean first = true;
-        for (String queryParam : queryParameters.keySet()) {
-            Object val = queryParameters.get(queryParam);
-            String[] strings = WMUtils.getStringList(val);
+        for (Map.Entry<String, Object> queryParam : queryParameters.entrySet()) {
+            String[] strings = WMUtils.getStringList(queryParam.getValue());
             for (String str : strings) {
                 if (first) {
                     endpointAddressSb.append("?");
                 } else {
                     endpointAddressSb.append("&");
                 }
-                endpointAddressSb.append(queryParam).append("=").append(str);
+                endpointAddressSb.append(queryParam.getKey()).append("=").append(str);
                 first = false;
             }
         }
@@ -338,25 +337,12 @@ public class RestRuntimeService {
         if (authorizationHeaderValue == null) {
             throw new UnAuthorizedResourceAccessException("Authorization details are not specified in the request headers");
         }
-        httpHeaders.set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
+        httpHeaders.set(WebConstants.AUTHORIZATION, authorizationHeaderValue);
 
-    }
-
-    private Operation getOperation(Path path, String operationId) {
-        for (Operation operation : path.getOperations()) {
-            if (operation.getMethodName().equals(operationId)) {
-                return operation;
-            }
-        }
-        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"), operationId);
     }
 
     private String getNormalizedString(String str) {
         return (str != null) ? str.trim() : "";
-    }
-
-    private HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
-        return new RestConnector().invokeRestCall(httpRequestDetails);
     }
 
 }
