@@ -79,5 +79,7 @@
   "LABEL_FILE_EXTENTION_VALIDATION_MESSAGE": "Erwartete Dateierweiterung ist",
   "LABEL_FILE_EXCEED_VALIDATION_MESSAGE": "Dateigröße überschritten Limit. Die maximale Upload-Größe beträgt",
   "MESSAGE_FOLDER_UPLOADS_NOT_ALLOWED": "Ordner-Uploads sind nicht zulässig",
-  "MESSAGE_FILE_UPLOAD_FAILED": "Datei-Upload fehlgeschlagen"
+  "MESSAGE_FILE_UPLOAD_FAILED": "Datei-Upload fehlgeschlagen",
+  "LABEL_CLEAR_DATE": "klar",
+  "LABEL_TODAY_DATE": "Heute"
 }

@@ -79,5 +79,8 @@
   "LABEL_FILE_EXTENTION_VALIDATION_MESSAGE": "Expected file extension is",
   "LABEL_FILE_EXCEED_VALIDATION_MESSAGE": "File size exceeded limit. Max upload size is",
   "MESSAGE_FOLDER_UPLOADS_NOT_ALLOWED": "Folder uploads are not allowed",
-  "MESSAGE_FILE_UPLOAD_FAILED": "File upload failed"
+  "MESSAGE_FILE_UPLOAD_FAILED": "File upload failed",
+  "LABEL_CLEAR_DATE": "Clear",
+  "LABEL_TODAY_DATE": "Today"
+
 }
