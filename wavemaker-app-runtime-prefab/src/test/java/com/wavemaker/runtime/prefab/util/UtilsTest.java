@@ -47,16 +47,6 @@ public class UtilsTest {
     private PrefabsConfig prefabsConfig;
 
     @Test
-    public void testGetPathInContext() throws Exception {
-
-    }
-
-    @Test
-    public void testGetDirectory() throws Exception {
-
-    }
-
-    @Test
     public void testIsReadableJarFile() throws Exception {
         Assert.assertFalse(Utils.isReadableJarFile(new File("not/valid/path")));
         Assert.assertFalse(Utils.isReadableJarFile(new File("not_valid_test.jar")));
