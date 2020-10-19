@@ -105,8 +105,6 @@
 
     <bean id="oAuthServiceManager" class="com.wavemaker.runtime.auth.oauth2.service.OAuth2RuntimeServiceManager"/>
 
-    <bean id="dbReport" name="dbReport" class="com.wavemaker.runtime.report.generator.DBJasperReportGenerator"/>
-
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
     <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>

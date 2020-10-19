@@ -7,6 +7,7 @@ group ="com.wavemaker.runtime.connector"
 dependencies {
     implementation(platform(project(":wavemaker-app-runtime-services")))
     implementation(project(":wavemaker-app-runtime-connector-api"))
+    implementation(project(":wavemaker-commons-util"))
     implementation("org.slf4j:slf4j-api")
     implementation("org.springframework:spring-beans")
     implementation("org.springframework:spring-context")
