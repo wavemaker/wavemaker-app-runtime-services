@@ -77,6 +77,7 @@ public class RestRuntimeService {
 
     private static final String AUTHORIZATION = "authorization";
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
+    private static final String OPERATION_DOES_NOT_EXIST = "com.wavemaker.runtime.operation.doesnt.exist";
     private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
 
     @Autowired
@@ -197,7 +198,7 @@ public class RestRuntimeService {
                 }
             }
         }
-        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"),
+        throw new WMRuntimeException(MessageResource.create(OPERATION_DOES_NOT_EXIST),
                 operationId);
     }
 
@@ -226,7 +227,7 @@ public class RestRuntimeService {
                 }
             }
         }
-        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.operation.doesnt.exist"),
+        throw new WMRuntimeException(MessageResource.create(OPERATION_DOES_NOT_EXIST),
                 path);
     }
 
