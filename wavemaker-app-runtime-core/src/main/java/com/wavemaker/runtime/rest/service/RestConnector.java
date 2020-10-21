@@ -165,7 +165,7 @@ public class RestConnector {
             String passWord = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PASSWORD);
             int proxyPort = 0;
             if (port != null && !("".equals(port))) {
-                proxyPort = Integer.valueOf(port);
+                proxyPort = Integer.parseInt(port);
             }
             credentialsProvider.setCredentials(new AuthScope(hostName, proxyPort), new UsernamePasswordCredentials(userName, passWord));
         }

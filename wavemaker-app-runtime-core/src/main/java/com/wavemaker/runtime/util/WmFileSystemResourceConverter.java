@@ -40,6 +40,11 @@ public class WmFileSystemResourceConverter extends AbstractHttpMessageConverter<
     }
 
     @Override
+    protected boolean canRead(MediaType mediaType) {
+        return false;
+    }
+
+    @Override
     protected WmFileSystemResource readInternal(
             Class<? extends WmFileSystemResource> clazz, HttpInputMessage inputMessage) throws IOException {
         return null;

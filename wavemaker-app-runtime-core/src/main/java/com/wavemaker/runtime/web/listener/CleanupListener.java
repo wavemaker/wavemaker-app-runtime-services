@@ -297,11 +297,13 @@ public class CleanupListener implements ServletContextListener {
                             MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"),
                             o.getClass().getName());
                 }
-                NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
-                if (notificationListener.getClass().getClassLoader() == classLoader) {
-                    logger.info("Removing registered mBean notification listener {}",
-                            notificationListener.getClass().getName());
-                    notificationEmitter.removeNotificationListener(notificationListener);
+                if(listenerField != null) {
+                    NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
+                    if (notificationListener.getClass().getClassLoader() == classLoader) {
+                        logger.info("Removing registered mBean notification listener {}",
+                                notificationListener.getClass().getName());
+                        notificationEmitter.removeNotificationListener(notificationListener);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -431,16 +433,20 @@ public class CleanupListener implements ServletContextListener {
                 try {
                     if (thread.getName().startsWith("Thread-")) {
                         Field targetField = findField(Thread.class, "target");
-                        Runnable runnable = (Runnable) targetField.get(thread);
-                        if (runnable != null && runnable instanceof Connection) {
-                            logger.info("Interrupting LDAP connection thread");
-                            Connection conn = (Connection) runnable;
-                            WMIOUtils.closeSilently(conn.inStream);
-                            WMIOUtils.closeSilently(conn.outStream);
-                            Field parent = findField(Connection.class, "parent");
-                            LdapClient ldapClient = (LdapClient) parent.get(conn);
-                            ldapClient.closeConnection();
-                            LdapPoolManager.expire(3000);
+                        if(targetField != null) {
+                            Runnable runnable = (Runnable) targetField.get(thread);
+                            if (runnable != null && runnable instanceof Connection) {
+                                logger.info("Interrupting LDAP connection thread");
+                                Connection conn = (Connection) runnable;
+                                WMIOUtils.closeSilently(conn.inStream);
+                                WMIOUtils.closeSilently(conn.outStream);
+                                Field parent = findField(Connection.class, "parent");
+                                if(parent != null) {
+                                    LdapClient ldapClient = (LdapClient) parent.get(conn);
+                                    ldapClient.closeConnection();
+                                    LdapPoolManager.expire(3000);
+                                }
+                            }
                         }
                     }
                 } catch (Throwable t) {

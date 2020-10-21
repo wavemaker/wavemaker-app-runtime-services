@@ -47,20 +47,11 @@ dependencies {
     compileOnly("org.springframework.security:spring-security-ldap")
     compileOnly("org.springframework.security:spring-security-oauth2-client")
     compileOnly("org.springframework.security:spring-security-oauth2-jose")
-    compileOnly("org.springframework.social:spring-social-core:1.1.6.RELEASE")
-    compileOnly("org.springframework.social:spring-social-security:1.1.6.RELEASE")
-    compileOnly("org.springframework.social:spring-social-web:1.1.6.RELEASE")
     //TODO Need to add xalan and xml-apis exclusions for saml2-core
     compileOnly("org.springframework.security.extensions:spring-security-saml2-core")
-    compileOnly("net.sf.jasperreports:jasperreports:6.15.0") {
-        //TODO need to revisit this
-        exclude(group = "com.lowagie")
-    }
     compileOnly("org.quartz-scheduler:quartz:2.3.2")
     runtimeOnly("com.zaxxer:HikariCP")
-    runtimeOnly("org.springframework.security:spring-security-config") {
-        because("Without this dependency namespaces in xml definitions were not working and ultimately deployment failed")
-    }
+    runtimeOnly("org.springframework.security:spring-security-config")
     testImplementation("org.testng:testng")
     testImplementation("junit:junit")
     testImplementation("org.mockito:mockito-all")

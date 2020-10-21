@@ -8,7 +8,7 @@ buildscript {
         set("slf4jVersion", "1.7.30")
         set("guavaVersion", "29.0-jre")
         set("springVersion", "5.2.9.RELEASE")
-        set("springSecurityVersion", "5.3.5.RELEASE")
+        set("springSecurityVersion", "5.4.1")
         set("springSessionVersion", "Dragonfruit-SR1")
         set("springSecuritySamlVersion", "1.0.3.RELEASE")
         set("springDataCommonsVersion", "2.3.4.RELEASE")

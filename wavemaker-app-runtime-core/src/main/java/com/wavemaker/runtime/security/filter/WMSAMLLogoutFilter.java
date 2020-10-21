@@ -128,7 +128,7 @@ public class WMSAMLLogoutFilter extends LogoutFilter {
 
                     // Notify session participants using SAML Single Logout profile
                     SAMLCredential credential = getSamlCredentials();
-
+                    Assert.notNull(credential, "Saml Credential object is null"); // below Assert internally check still adding anothe Assert
                     Assert.isInstanceOf(SAMLCredential.class, credential, "Authentication object doesn't contain SAML credential, cannot perform global logout");
 
                     // Terminate the session first

@@ -52,8 +52,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             "activeTheme",
             "displayName",
             "dateFormat",
-            "timeFormat",
-            "stateHandler"};
+            "timeFormat"};
 
     private String applicationType;
     private Map<String, Object> applicationProperties;

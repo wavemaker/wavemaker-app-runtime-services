@@ -68,15 +68,17 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
 
     private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {
         logger.info("Adding CsrfCookie");
-        CsrfToken csrfToken = csrfTokenOptional.get();
-        Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
-        String contextPath = request.getContextPath();
-        if (StringUtils.isBlank(contextPath)) {
-            contextPath = "/";
+        if(csrfTokenOptional.isPresent()) {
+            CsrfToken csrfToken = csrfTokenOptional.get();
+            Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
+            String contextPath = request.getContextPath();
+            if (StringUtils.isBlank(contextPath)) {
+                contextPath = "/";
+            }
+            cookie.setPath(contextPath);
+            cookie.setSecure(request.isSecure());
+            response.addCookie(cookie);
         }
-        cookie.setPath(contextPath);
-        cookie.setSecure(request.isSecure());
-        response.addCookie(cookie);
     }
 
     public void setCsrfTokenRepository(CsrfTokenRepository csrfTokenRepository) {
