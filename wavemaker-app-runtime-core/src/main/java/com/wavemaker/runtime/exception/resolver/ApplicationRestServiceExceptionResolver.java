@@ -63,6 +63,7 @@ import com.wavemaker.runtime.data.exception.BlobContentNotFoundException;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizer;
+import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizerFactory;
 
 /**
  * @author sunilp
@@ -275,7 +276,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     private ErrorResponse getErrorResponse(MessageResource messageResource, Object... args) {
         List<String> parameters = new ArrayList<>();
-        XSSEncodeSanitizer encodeSanitizer = new XSSEncodeSanitizer();
+        XSSEncodeSanitizer encodeSanitizer = XSSEncodeSanitizerFactory.getInstance();
         if (args != null) {
             for (Object arg : args) {
                 if (arg != null) {

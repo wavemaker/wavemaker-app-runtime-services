@@ -24,7 +24,7 @@ import com.wavemaker.commons.model.security.XSSFilterStrategy;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.xss.sanitizer.DefaultXSSSanitizer;
-import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizer;
+import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizerFactory;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSWhiteListSanitizer;
 
@@ -94,7 +94,7 @@ public class XSSSecurityHandler {
     private void buildSanitizer(XSSFilterStrategy strategy) {
         switch (strategy) {
             case ENCODE:
-                xssSanitizer = new XSSEncodeSanitizer();
+                xssSanitizer = XSSEncodeSanitizerFactory.getInstance();
                 break;
             case WHITE_LIST:
                 xssSanitizer = new XSSWhiteListSanitizer(xssConfig.getPolicyFile());

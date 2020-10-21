@@ -20,21 +20,10 @@ import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
 
-import com.wavemaker.commons.model.security.XSSConfig;
-import com.wavemaker.runtime.WMAppContext;
-
 /**
  * Created by kishorer on 6/7/16.
  */
 public class XSSEncodeSanitizer implements XSSSanitizer {
-
-    private static final String XSS_CONFIG = "xssConfig";
-
-    private static XSSConfig xssConfig;
-
-    static {
-        xssConfig = WMAppContext.getInstance().getSpringBean(XSS_CONFIG);
-    }
 
     private static final CharSequenceTranslator UNESCAPE_HTML4 =
             new AggregateTranslator(
@@ -50,12 +39,19 @@ public class XSSEncodeSanitizer implements XSSSanitizer {
                     new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE())
             );
 
+    private final boolean dataBackwardCompatibility;
+
+    public XSSEncodeSanitizer(boolean dataBackwardCompatibility) {
+        this.dataBackwardCompatibility = dataBackwardCompatibility;
+    }
+
+
     @Override
     public String sanitizeRequestData(String data) {
         if (data == null) {
             return data;
         }
-        if (xssConfig.isDataBackwardCompatibility()) {
+        if (dataBackwardCompatibility) {
             data = UNESCAPE_HTML4.translate(data);
         }
         return ESCAPE_HTML4.translate(data);
