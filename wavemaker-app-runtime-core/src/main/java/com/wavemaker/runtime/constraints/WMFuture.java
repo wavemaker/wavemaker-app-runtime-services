@@ -22,7 +22,7 @@ import com.wavemaker.runtime.constraints.constraintvalidators.WMFutureValidatorF
 @Constraint(validatedBy = {WMFutureValidatorForDate.class})
 public @interface WMFuture {
 
-    String message() default "Date must be in future";
+    String message() default "must be in future";
 
     Class<?>[] groups() default {};
 

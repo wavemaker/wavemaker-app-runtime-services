@@ -21,7 +21,7 @@ import com.wavemaker.runtime.constraints.constraintvalidators.WMPastValidatorFor
 @Constraint(validatedBy = {WMPastValidatorForDate.class})
 public @interface WMPast {
 
-    String message() default "Date must be in past";
+    String message() default "must be in past";
 
     Class<?>[] groups() default {};
 
