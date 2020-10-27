@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -41,8 +42,13 @@ public class JdbcSessionScriptInitializer {
     public void initializeScript() {
         try {
             ResultSet resultSet;
+            String tableName = "SPRING_SESSION";
             try (Connection connection = dataSource.getTargetDataSource().getConnection()) {
-                resultSet = connection.getMetaData().getTables(null, null, "SPRING_SESSION", null);
+                if ("PostgreSQL".equals(connection.getMetaData().getDatabaseProductName())) {
+                    //PostgreSQL is storing tableNames in lower case so getTables check also need to be done on the lowercase
+                    tableName = StringUtils.lowerCase(tableName);
+                }
+                resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, tableName, new String[]{"TABLE"});
             }
             if (resultSet.next()) {
                 LOGGER.debug("Skipping SPRING_SESSION table creation as it already exists");
