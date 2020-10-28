@@ -32,6 +32,16 @@
         <property name="writeAcceptCharset" value="false"/>
     </bean>
 
+    <bean id="wMRequestResponseBodyMethodProcessor" class="com.wavemaker.runtime.security.xss.WMRequestResponseBodyMethodProcessor">
+        <constructor-arg>
+            <list>
+                <ref bean="stringHttpMessageConverter"/>
+                <ref bean="wmCompositeHttpMessageConverter"/>
+                <ref bean="mappingJackson2HttpMessageConverter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
 
     <bean id="mappingJackson2HttpMessageConverter"
           class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.runtime.auth.oauth2.service.OAuth2RuntimeServiceManager;
+import com.wavemaker.runtime.security.xss.XssDisable;
 
 /**
  * Created by srujant on 18/7/17.
@@ -37,6 +38,7 @@ public class OAuth2RuntimeIntegrationController {
     private OAuth2RuntimeServiceManager oAuth2RuntimeServiceManager;
 
 
+    @XssDisable
     @RequestMapping(value = "authorizationUrl", method = RequestMethod.GET)
     public String getAuthorizationUrl(@PathVariable("providerId") String providerId, @RequestParam(name = "key", required = false) String key, @RequestParam
             (name = "requestSourceType", required = false) String requestSourceType, HttpServletRequest httpServletRequest) {
