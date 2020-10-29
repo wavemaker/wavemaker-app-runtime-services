@@ -37,35 +37,37 @@ public class ConnectorImplFirstClassLoader extends URLClassLoader {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        // has the class loaded already?
-        Class<?> loadedClass = findLoadedClass(name);
-        if (loadedClass == null) {
-            try {
-                if (sysClzLoader != null) {
-                    loadedClass = sysClzLoader.loadClass(name);
+        synchronized(this.getClassLoadingLock(name)) {
+            // has the class loaded already?
+            Class<?> loadedClass = findLoadedClass(name);
+            if (loadedClass == null) {
+                try {
+                    if (sysClzLoader != null) {
+                        loadedClass = sysClzLoader.loadClass(name);
+                    }
+                } catch (ClassNotFoundException ex) {
+                    // class not found in system class loader... silently skipping
                 }
-            } catch (ClassNotFoundException ex) {
-                // class not found in system class loader... silently skipping
+
+                try {
+                    // find the class from given jar urls as in first constructor parameter.
+                    if (loadedClass == null) {
+                        loadedClass = findClass(name);
+                    }
+                } catch (ClassNotFoundException e) {
+                    // class is not found in the given urls.
+                    // Let's try it in parent classloader.
+                    // If class is still not found, then this method will throw class not found ex.
+                    loadedClass = super.loadClass(name, resolve);
+                }
+
+
             }
 
-            try {
-                // find the class from given jar urls as in first constructor parameter.
-                if (loadedClass == null) {
-                    loadedClass = findClass(name);
-                }
-            } catch (ClassNotFoundException e) {
-                // class is not found in the given urls.
-                // Let's try it in parent classloader.
-                // If class is still not found, then this method will throw class not found ex.
-                loadedClass = super.loadClass(name, resolve);
+            if (resolve) {      // marked to resolve
+                resolveClass(loadedClass);
             }
-
-
+            return loadedClass;
         }
-
-        if (resolve) {      // marked to resolve
-            resolveClass(loadedClass);
-        }
-        return loadedClass;
     }
 }
