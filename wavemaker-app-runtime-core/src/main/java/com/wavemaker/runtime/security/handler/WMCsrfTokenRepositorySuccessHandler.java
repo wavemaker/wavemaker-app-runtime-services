@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -43,6 +44,9 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
     private static final Logger logger = LoggerFactory.getLogger(WMCsrfTokenRepositorySuccessHandler.class);
 
     private CsrfTokenRepository csrfTokenRepository;
+
+    @Value("${general.cookie.maxAge}")
+    private int cookieMaxAge;
 
     public WMCsrfTokenRepositorySuccessHandler(CsrfTokenRepository csrfTokenRepository) {
         this.csrfTokenRepository = csrfTokenRepository;
@@ -77,6 +81,7 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
             }
             cookie.setPath(contextPath);
             cookie.setSecure(request.isSecure());
+            cookie.setMaxAge(cookieMaxAge);
             response.addCookie(cookie);
         }
     }
