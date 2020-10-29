@@ -16,16 +16,14 @@ public class WMHandlerMethodReturnValueHandlerConfig implements InitializingBean
     @Autowired
     private RequestMappingHandlerAdapter requestMappingHandlerMapping;
 
-    @Autowired
-    private WMRequestResponseBodyMethodProcessor wmRequestResponseBodyMethodProcessor;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         List<HandlerMethodReturnValueHandler> returnValueHandlers = requestMappingHandlerMapping.getReturnValueHandlers();
         List<HandlerMethodReturnValueHandler> customReturnValueHandlers = new ArrayList<>();
         for(HandlerMethodReturnValueHandler handler : returnValueHandlers) {
             if(handler instanceof RequestResponseBodyMethodProcessor) {
-                customReturnValueHandlers.add(wmRequestResponseBodyMethodProcessor);
+                customReturnValueHandlers.add(new WMRequestResponseBodyMethodProcessor(
+                        requestMappingHandlerMapping.getMessageConverters()));
             } else {
                 customReturnValueHandlers.add(handler);
             }

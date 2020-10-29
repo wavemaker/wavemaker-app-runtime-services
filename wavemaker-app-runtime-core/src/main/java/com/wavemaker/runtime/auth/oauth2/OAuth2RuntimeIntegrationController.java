@@ -45,6 +45,7 @@ public class OAuth2RuntimeIntegrationController {
         return oAuth2RuntimeServiceManager.getAuthorizationUrl(providerId, requestSourceType, key, httpServletRequest);
     }
 
+    @XssDisable
     @RequestMapping(value = "callback", method = RequestMethod.GET, produces = "text/html")
     public String callBack(@PathVariable("providerId") String providerId, @RequestParam(name = "redirect_url", required = false) String redirectUrl,
                            @RequestParam(name = "code") String code, @RequestParam(name = "state", required = false) String state, HttpServletRequest
