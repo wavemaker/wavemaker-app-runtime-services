@@ -82,7 +82,7 @@ public class ConnectorContextResourceProvider {
                 urls[i] = file.toURI().toURL();
                 i++;
             }
-            return new ConnectorImplFirstClassLoader(urls, appClassLoader);
+            return new ConnectorFirstClassLoader(urls, appClassLoader);
         } catch (MalformedURLException e) {
             logger.error("Failed to build impl class cloader for connector {} ", connectorId);
             throw new ConnectorDoesNotExist("Failed to build impl class loader from connector " + connectorId, e);

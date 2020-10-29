@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
  * @since 3/5/20
  */
-public class ConnectorImplFirstClassLoader extends URLClassLoader {
+public class ConnectorFirstClassLoader extends URLClassLoader {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConnectorImplFirstClassLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectorFirstClassLoader.class);
     private final ClassLoader sysClzLoader;
 
-    public ConnectorImplFirstClassLoader(URL[] urls, ClassLoader parent) {
+    public ConnectorFirstClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
         sysClzLoader = getSystemClassLoader();
     }
