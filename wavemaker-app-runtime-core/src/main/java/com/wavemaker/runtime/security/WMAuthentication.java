@@ -78,6 +78,10 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         return attributes;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public String getUserId() {
         return userId;
     }
