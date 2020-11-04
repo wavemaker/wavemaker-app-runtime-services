@@ -22,6 +22,7 @@ buildscript {
         set("junitVersion", "4.11")
         set("testngVersion", "6.14.3")
         set("servletVersion", "3.1.0")
+        set("commonsHttpClientVersion", "3.1")
     }
 }
 
@@ -48,6 +49,7 @@ dependencies {
         api("commons-io:commons-io:${project.extra["commonsIoVersion"]}")
         api("commons-fileupload:commons-fileupload:${project.extra["commonsFileUploadVersion"]}")
         api("org.apache.commons:commons-lang3:${project.extra["commonsLang3Version"]}")
+        api("commons-httpclient:commons-httpclient:${project.extra["commonsHttpClientVersion"]}")
         api("commons-lang:commons-lang:${project.extra["commonsLangVersion"]}")
         api("com.google.guava:guava:${project.extra["guavaVersion"]}")
         api("org.springframework.data:spring-data-commons:${project.extra["springDataCommonsVersion"]}")

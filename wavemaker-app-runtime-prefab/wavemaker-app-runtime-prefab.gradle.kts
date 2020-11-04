@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":wavemaker-commons-util"))
     implementation("org.slf4j:slf4j-api")
     implementation("org.apache.commons:commons-lang3")
+    implementation("commons-httpclient:commons-httpclient")
     implementation("commons-collections:commons-collections")
     implementation("org.springframework:spring-webmvc")
     compileOnly("javax.servlet:javax.servlet-api")
