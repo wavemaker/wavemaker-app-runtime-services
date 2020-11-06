@@ -92,11 +92,16 @@ public class RestRuntimeService {
 
 
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
+        return executeRestCall(serviceId, operationId, httpRequestData, null);
+    }
+
+    public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData,
+                                               HttpServletRequest httpServletRequest) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         final Tuple.Three<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, pathAndOperation.v1,
                 SwaggerDocUtil.getOperationType(pathAndOperation.v2, pathAndOperation.v3.getOperationId()).toUpperCase(), httpRequestData);
-        return new RestConnector().invokeRestCall(httpRequestDetails);
+        return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, httpServletRequest, "");
     }
 
     public void executeRestCall(String serviceId, String path, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -114,6 +119,16 @@ public class RestRuntimeService {
     public void executeRestCall(String serviceId, String path, final HttpRequestData httpRequestData,
                                 final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) {
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, httpServletRequest.getMethod(), httpRequestData);
+        HttpResponseDetails httpResponseDetails = executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, httpServletRequest, context);
+        try {
+            HttpRequestUtils.writeResponse(httpResponseDetails, httpServletResponse);
+        } catch (IOException e) {
+            throw new WMRuntimeException(e);
+        }
+    }
+
+    public HttpResponseDetails executeRestCallWithProcessors(String serviceId, HttpRequestDetails httpRequestDetails, final HttpRequestData httpRequestData,
+                                                             final HttpServletRequest httpServletRequest, final String context) {
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
         final RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
         List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();
@@ -126,8 +141,8 @@ public class RestRuntimeService {
             logger.debug("Rest service request details {}", httpRequestDetails);
         }
 
+        HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
         new RestConnector().invokeRestCall(httpRequestDetails, response -> {
-            HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
             try {
                 httpResponseDetails.setStatusCode(response.getRawStatusCode());
                 httpResponseDetails.setBody(response.getBody());
@@ -149,12 +164,8 @@ public class RestRuntimeService {
             if (logger.isDebugEnabled()) {
                 logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails);
             }
-            try {
-                HttpRequestUtils.writeResponse(httpResponseDetails, httpServletResponse);
-            } catch (IOException e) {
-                throw new WMRuntimeException(e);
-            }
         });
+        return httpResponseDetails;
     }
 
     private HttpRequestData constructRequestData(HttpServletRequest httpServletRequest) {
