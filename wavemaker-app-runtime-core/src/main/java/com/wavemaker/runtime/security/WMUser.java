@@ -32,7 +32,7 @@ import org.springframework.security.core.userdetails.User;
 public class WMUser extends User implements WMUserDetails {
 
     private String userLongName;
-    private int tenantId;
+    private Object tenantId;
     private String userId;
     private long loginTime;
     private Map<String, Object> customAttributes;
@@ -55,7 +55,7 @@ public class WMUser extends User implements WMUserDetails {
      * @deprecated  use WMUserBuilder to create this class objects
      */
     @Deprecated
-    public WMUser(String userId, String username, String password, String userLongName, int tenantId, Collection<String> roles) {
+    public WMUser(String userId, String username, String password, String userLongName, Object tenantId, Collection<String> roles) {
         this(userId, username, password, userLongName, tenantId, true, true, true, true, getGrantedAuthorities(roles), System.currentTimeMillis());
     }
 
@@ -63,7 +63,7 @@ public class WMUser extends User implements WMUserDetails {
      * @deprecated  use WMUserBuilder to create this class objects
      */
     @Deprecated
-    public WMUser(String userId, String username, String password, String userLongName, int tenantId, boolean enabled, boolean accountNonExpired,
+    public WMUser(String userId, String username, String password, String userLongName, Object tenantId, boolean enabled, boolean accountNonExpired,
                   boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long loggedInAt) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authoritiesMapper.mapAuthorities(authorities));
         this.userId = userId;
@@ -97,7 +97,7 @@ public class WMUser extends User implements WMUserDetails {
     }
 
     @Override
-    public int getTenantId() {
+    public Object getTenantId() {
         return this.tenantId;
     }
 

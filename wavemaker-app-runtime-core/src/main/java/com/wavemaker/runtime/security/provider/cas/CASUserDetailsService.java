@@ -20,18 +20,33 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.wavemaker.runtime.security.WMUser;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
+import com.wavemaker.runtime.security.core.TenantIdProvider;
 
 /**
  * Created by ArjunSahasranam on 5/16/16.
  */
 public class CASUserDetailsService implements UserDetailsService {
 
+    private TenantIdProvider tenantIdProvider;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
         long loginTime = System.currentTimeMillis();
-        return new WMUser("", username, "", username, 0, true, true, true, true, AuthorityUtils.NO_AUTHORITIES,
+        if (tenantIdProvider != null) {
+            Object tenantId = tenantIdProvider.loadTenantId(new DefaultAuthenticationContext(username));
+            return new WMUser("", username, "", username, tenantId, true, true, true, true, AuthorityUtils.NO_AUTHORITIES,
+                    loginTime);
+        }
+        return new WMUser("", username, "", username, null, true, true, true, true, AuthorityUtils.NO_AUTHORITIES,
                 loginTime);
     }
 
+    public TenantIdProvider getTenantIdProvider() {
+        return tenantIdProvider;
+    }
+
+    public void setTenantIdProvider(TenantIdProvider tenantIdProvider) {
+        this.tenantIdProvider = tenantIdProvider;
+    }
 }

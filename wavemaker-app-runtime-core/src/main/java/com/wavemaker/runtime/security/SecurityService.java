@@ -35,6 +35,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.model.security.LoginConfig;
 import com.wavemaker.commons.model.security.RoleConfig;
@@ -77,10 +78,10 @@ public class SecurityService {
     /**
      * This method is deprecated. You can set custom attributes in successhandlers.
      */
-    @Deprecated
+    /*@Deprecated
     public static int getTenantId() {
         return 0;
-    }
+    }*/
 
 
     /**
@@ -181,6 +182,7 @@ public class SecurityService {
             wmCurrentUser.setUserName(getUserName());
             wmCurrentUser.setUserRoles(getUserRoles());
             wmCurrentUser.setLoginTime(getLoginTime());
+            wmCurrentUser.setTenantId(getTenantId());
         }
         return wmCurrentUser;
     }
@@ -199,6 +201,11 @@ public class SecurityService {
             return authentication.getName();
         }
         return null;
+    }
+
+    public Object getTenantId(){
+        WMAuthentication wmAuthentication = (WMAuthentication)getAuthenticatedAuthentication();
+        return wmAuthentication.getTenantId();
     }
 
     /**
@@ -346,4 +353,13 @@ public class SecurityService {
         //DUMMY METHOD to redirect to default sso entry point...
         //When this method is invoked, the sso Filter is intercepted and sends the user to the default sso Login page through its AuthenticationEntryPoint.
     }
+
+    public Object getTenantIdOfUser() {
+        WMCurrentUser loggedInUser = getLoggedInUser();
+        if (loggedInUser.isSecurityEnabled() && loggedInUser.isAuthenticated()) {
+            return loggedInUser.getTenantId();
+        }
+        throw new WMRuntimeException("User not authenticated");
+    }
+
 }

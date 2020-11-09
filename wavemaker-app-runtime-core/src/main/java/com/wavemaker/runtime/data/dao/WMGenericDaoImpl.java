@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,12 +31,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.Id;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -106,9 +111,20 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     }
 
     public void update(E entity) {
-        getTemplate().update(entity);
+        Object entityId = null;
+        List<Method> methodsListWithIdAnnotation = MethodUtils.getMethodsListWithAnnotation(entity.getClass(), Id.class);
+        Method primaryKeyMethod = methodsListWithIdAnnotation.get(0);
+        try {
+            entityId = primaryKeyMethod.invoke(entity);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new WMRuntimeException("IllegalAccessException | InvocationTargetException during loading the entity into session before update.");
+        }
+        Serializable loadedObject = getTemplate().load(entity.getClass(), (Serializable) entityId);
+        BeanUtils.copyProperties(entity, loadedObject);
+        getTemplate().update(loadedObject);
         getTemplate().flush();
     }
+
 
     public void delete(E entity) {
         getTemplate().delete(entity);

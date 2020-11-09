@@ -29,6 +29,8 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import com.wavemaker.runtime.security.WMUser;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
+import com.wavemaker.runtime.security.core.TenantIdProvider;
 
 /**
  * Created by ArjunSahasranam on 23/11/16.
@@ -38,6 +40,7 @@ public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(WMSAMLUserDetailsService.class);
 
     private String roleAttributeName;
+    private TenantIdProvider tenantIdProvider;
 
     @Override
     public Object loadUserBySAML(final SAMLCredential credential) {
@@ -56,7 +59,13 @@ public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
             authorities = AuthorityUtils.NO_AUTHORITIES;
         }
 
-        return new WMUser("", username, "", username, 0, true, true, true, true, authorities,
+        if (tenantIdProvider != null) {
+            Object tenantId = tenantIdProvider.loadTenantId(new DefaultAuthenticationContext(username));
+            new WMUser("", username, "", username, tenantId, true, true, true, true, authorities,
+                    System.currentTimeMillis());
+        }
+
+        return new WMUser("", username, "", username, null, true, true, true, true, authorities,
                 System.currentTimeMillis());
     }
 
@@ -66,5 +75,13 @@ public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
 
     public void setRoleAttributeName(final String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
+    }
+
+    public TenantIdProvider getTenantIdProvider() {
+        return tenantIdProvider;
+    }
+
+    public void setTenantIdProvider(TenantIdProvider tenantIdProvider) {
+        this.tenantIdProvider = tenantIdProvider;
     }
 }

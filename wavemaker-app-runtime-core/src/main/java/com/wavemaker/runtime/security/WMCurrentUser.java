@@ -20,7 +20,7 @@ package com.wavemaker.runtime.security;
  */
 public class WMCurrentUser {
 
-    private int tenantId;
+    private Object tenantId;
 
     private String userId;
 
@@ -34,11 +34,11 @@ public class WMCurrentUser {
 
     private long loginTime;
 
-    public int getTenantId() {
+    public Object getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(int tenantId) {
+    public void setTenantId(Object tenantId) {
         this.tenantId = tenantId;
     }
 

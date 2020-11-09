@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.security.provider.database.users;
+package com.wavemaker.runtime.data.exception;
 
-import java.util.List;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+public class EntityNotAuthorizedException extends WMRuntimeException {
 
-/**
- * Created by ArjunSahasranam on 15/3/16.
- */
-public interface UserProvider {
-    UserDetails loadUser(String username);
+    private static final long serialVersionUID = 1L;
 
-    UserDetails createUserDetails(String username, UserDetails user, List<GrantedAuthority> dbAuths,Object tenantId);
+    public EntityNotAuthorizedException() {
+        super();
+    }
+
+    public EntityNotAuthorizedException(MessageResource resource) {
+        super(resource);
+    }
+
+    public EntityNotAuthorizedException(MessageResource resource, Object... args) {
+        super(resource, args);
+    }
+
 }

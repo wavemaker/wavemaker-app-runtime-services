@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.security.authenticationToken.AbstractAuthenticationToken;
 import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
+import com.wavemaker.runtime.security.openId.WMOidcUser;
 
 /**
  * Created by srujant on 13/8/18.
@@ -40,6 +41,7 @@ public class WMAuthentication extends AbstractAuthenticationToken {
     private String principal;
     private long loginTime;
     private String userId;
+    private Object tenantId;
 
     @JsonIgnore
     private transient Authentication authenticationSource;
@@ -55,10 +57,15 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         if (authenticationSource.getPrincipal() instanceof WMUser) {
             WMUser wmUser = (WMUser) authenticationSource.getPrincipal();
             this.userId = wmUser.getUserId();
+            this.tenantId = wmUser.getTenantId();
             Map<String, Object> customAttributes = wmUser.getCustomAttributes();
             for (Map.Entry<String, Object> entry : customAttributes.entrySet()) {
                 addAttribute(entry.getKey(), entry.getValue(), Attribute.AttributeScope.ALL);
             }
+        }
+        else if(authenticationSource.getPrincipal() instanceof WMOidcUser){
+            WMOidcUser wmOidcUser = (WMOidcUser) authenticationSource.getPrincipal();
+            this.tenantId = wmOidcUser.getTenantId();
         }
         setAuthenticated(true);
         this.loginTime = System.currentTimeMillis();
@@ -100,6 +107,14 @@ public class WMAuthentication extends AbstractAuthenticationToken {
 
     public void addAttribute(String key, Object value, Attribute.AttributeScope scope) {
         attributes.put(key, new Attribute(scope, value));
+    }
+
+    public Object getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Object tenantId) {
+        this.tenantId = tenantId;
     }
 
     private Set<SimpleGrantedAuthority> mapAuthorities(

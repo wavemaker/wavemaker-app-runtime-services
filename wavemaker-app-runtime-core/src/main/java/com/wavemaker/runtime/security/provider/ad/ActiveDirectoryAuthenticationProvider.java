@@ -21,6 +21,8 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.wavemaker.runtime.security.ad.SpringActiveDirectoryLdapAuthenticationProvider;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
+import com.wavemaker.runtime.security.core.TenantIdProvider;
 
 /**
  * @author Arjun Sahasranam
@@ -29,6 +31,7 @@ public class ActiveDirectoryAuthenticationProvider extends SpringActiveDirectory
 
 
     private ActiveDirectoryAuthoritiesPopulator authoritiesPopulator;
+    private TenantIdProvider tenantIdProvider;
 
     /**
      * @param domain the domain name (may be null or empty)
@@ -57,11 +60,28 @@ public class ActiveDirectoryAuthenticationProvider extends SpringActiveDirectory
         return authoritiesPopulator.getGrantedAuthorities(userData, username);
     }
 
+    @Override
+    public Object getTenantId(String username) {
+        if (tenantIdProvider != null) {
+            return tenantIdProvider.loadTenantId(new DefaultAuthenticationContext(username));
+        } else {
+            return null;
+        }
+    }
+
     public ActiveDirectoryAuthoritiesPopulator getAuthoritiesPopulator() {
         return authoritiesPopulator;
     }
 
     public void setAuthoritiesPopulator(ActiveDirectoryAuthoritiesPopulator authoritiesPopulator) {
         this.authoritiesPopulator = authoritiesPopulator;
+    }
+
+    public TenantIdProvider getTenantIdProvider() {
+        return tenantIdProvider;
+    }
+
+    public void setTenantIdProvider(TenantIdProvider tenantIdProvider) {
+        this.tenantIdProvider = tenantIdProvider;
     }
 }

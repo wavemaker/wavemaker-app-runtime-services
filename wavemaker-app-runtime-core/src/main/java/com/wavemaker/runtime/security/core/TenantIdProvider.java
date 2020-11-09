@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.security.provider.database.users;
+package com.wavemaker.runtime.security.core;
 
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-/**
- * Created by ArjunSahasranam on 15/3/16.
- */
-public interface UserProvider {
-    UserDetails loadUser(String username);
-
-    UserDetails createUserDetails(String username, UserDetails user, List<GrantedAuthority> dbAuths,Object tenantId);
+public interface TenantIdProvider {
+    Object loadTenantId(AuthenticationContext authenticationContext);
 }

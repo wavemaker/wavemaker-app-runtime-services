@@ -25,6 +25,7 @@ import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
+import com.wavemaker.runtime.security.core.TenantIdProvider;
 
 /**
  * @author Arjun Sahasranam
@@ -32,6 +33,7 @@ import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService {
 
     private AuthoritiesProvider authoritiesProvider;
+    private TenantIdProvider tenantIdProvider;
 
     public WMSAMLDatabaseUserDetailsService() {
     }
@@ -44,7 +46,11 @@ public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService 
         dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
 
         long loginTime = System.currentTimeMillis();
-        return new WMUser("", username, "", username, 0, true, true, true, true, dbAuthsSet, loginTime);
+        if (tenantIdProvider != null) {
+            Object tenantId = tenantIdProvider.loadTenantId(new DefaultAuthenticationContext(username));
+            return new WMUser("", username, "", username, tenantId, true, true, true, true, dbAuthsSet, loginTime);
+        }
+        return new WMUser("", username, "", username, null, true, true, true, true, dbAuthsSet, loginTime);
     }
 
     public AuthoritiesProvider getAuthoritiesProvider() {
@@ -55,5 +61,11 @@ public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService 
         this.authoritiesProvider = authoritiesProvider;
     }
 
+    public TenantIdProvider getTenantIdProvider() {
+        return tenantIdProvider;
+    }
 
+    public void setTenantIdProvider(TenantIdProvider tenantIdProvider) {
+        this.tenantIdProvider = tenantIdProvider;
+    }
 }

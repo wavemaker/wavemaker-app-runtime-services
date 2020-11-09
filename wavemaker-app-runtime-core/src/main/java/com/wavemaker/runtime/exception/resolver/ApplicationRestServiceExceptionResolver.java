@@ -60,6 +60,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.data.exception.BlobContentNotFoundException;
+import com.wavemaker.runtime.data.exception.EntityNotAuthorizedException;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizer;
@@ -126,6 +127,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         else if (ex instanceof EntityNotFoundException || ex instanceof BlobContentNotFoundException) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return handleWMExceptions((WMRuntimeException) ex, MessageResource.ENTITY_NOT_FOUND);
+        } else if(ex instanceof EntityNotAuthorizedException){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return handleWMExceptions((WMRuntimeException) ex, MessageResource.ENTITY_NOT_AUTHORIZED);
         } else if (ex instanceof InvalidInputException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleWMExceptions((WMRuntimeException) ex, MessageResource.INVALID_INPUT, ex.getMessage());

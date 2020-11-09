@@ -61,9 +61,10 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
-import org.springframework.security.ldap.authentication.AbstractLdapAuthenticationProvider;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import com.wavemaker.runtime.security.provider.ldap.WMAbstractLdapAuthenticationProvider;
 
 /**
  * Specialized LDAP authentication provider which uses Active Directory configuration conventions.
@@ -101,7 +102,7 @@ import org.springframework.util.StringUtils;
  * @author Rob Winch
  * @since 3.1
  */
-public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLdapAuthenticationProvider {
+public class SpringActiveDirectoryLdapAuthenticationProvider extends WMAbstractLdapAuthenticationProvider {
     private static final Pattern SUB_ERROR_CODE = Pattern.compile(".*data\\s([0-9a-f]{3,4}).*");
 
     // Error codes
@@ -391,6 +392,12 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
      */
     public void setConvertSubErrorCodesToExceptions(boolean convertSubErrorCodesToExceptions) {
         this.convertSubErrorCodesToExceptions = convertSubErrorCodesToExceptions;
+    }
+
+    @Override
+    public Object getTenantId(String username) {
+        //implemented in ActiveDirectoryAuthenticationProvider
+        return null;
     }
 
     static class ContextFactory {

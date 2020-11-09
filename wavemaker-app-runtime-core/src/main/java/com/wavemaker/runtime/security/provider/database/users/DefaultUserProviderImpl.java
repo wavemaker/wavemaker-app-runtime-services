@@ -54,11 +54,11 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
 
     public UserDetails createUserDetails(
             String username, UserDetails userDetails,
-            List<GrantedAuthority> combinedAuthorities) {
+            List<GrantedAuthority> combinedAuthorities,Object tenantId) {
         WMUserDetails wmUserDetails = (WMUserDetails) userDetails;
         return new WMUser(wmUserDetails.getUserId(), wmUserDetails.getUsername(), wmUserDetails.getPassword(),
                 wmUserDetails.getUserLongName(),
-                wmUserDetails.getTenantId(), wmUserDetails.isEnabled(), true, true, true, combinedAuthorities,
+                tenantId, wmUserDetails.isEnabled(), true, true, true, combinedAuthorities,
                 wmUserDetails.getLoginTime());
     }
 

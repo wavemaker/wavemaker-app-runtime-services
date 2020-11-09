@@ -28,13 +28,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
+import com.wavemaker.runtime.security.core.TenantIdProvider;
 import com.wavemaker.runtime.security.provider.database.users.UserProvider;
 
 
 /**
  * @author Arjun Sahasranam
- *
- *         Runs both native sql and hql queries.
+ * <p>
+ * Runs both native sql and hql queries.
  */
 public class DatabaseUserDetailsService implements UserDetailsService {
 
@@ -44,6 +45,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
     private UserProvider userProvider;
     private AuthoritiesProvider authoritiesProvider;
+    private TenantIdProvider tenantIdProvider;
 
     public DatabaseUserDetailsService() {
     }
@@ -67,7 +69,11 @@ public class DatabaseUserDetailsService implements UserDetailsService {
             }
         }
 
-        return userProvider.createUserDetails(username, user, new ArrayList<>(dbAuthsSet));
+        Object tenantId = null;
+        if (tenantIdProvider != null) {
+            tenantId = tenantIdProvider.loadTenantId(new DefaultAuthenticationContext(user.getUsername()));
+        }
+        return userProvider.createUserDetails(username, user, new ArrayList<>(dbAuthsSet), tenantId);
 
     }
 
@@ -86,6 +92,14 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     public void setAuthoritiesProvider(
             final AuthoritiesProvider authoritiesProvider) {
         this.authoritiesProvider = authoritiesProvider;
+    }
+
+    public TenantIdProvider getTenantIdProvider() {
+        return tenantIdProvider;
+    }
+
+    public void setTenantIdProvider(TenantIdProvider tenantIdProvider) {
+        this.tenantIdProvider = tenantIdProvider;
     }
 }
 
