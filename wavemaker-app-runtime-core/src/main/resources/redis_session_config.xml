@@ -4,7 +4,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration" id="redisHttpSessionConfiguration"/>
+    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration" id="redisHttpSessionConfiguration">
+        <property name="maxInactiveIntervalInSeconds" value="#{${general.session.timeout} * 60}"/>
+    </bean>
     <bean id="lettuceConnectionFactory" class="org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory">
         <property name="hostName" value="${session.redis.host}"/>
         <property name="port" value="${session.redis.port}"/>
