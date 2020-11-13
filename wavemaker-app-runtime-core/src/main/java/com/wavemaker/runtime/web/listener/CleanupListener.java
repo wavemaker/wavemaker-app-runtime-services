@@ -219,13 +219,27 @@ public class CleanupListener implements ServletContextListener {
      * To stop mysql thread, if any and resolve issue of "Abandoned connection cleanup thread" not stopping
      */
     private static void shutDownMySQLThreadIfAny(ClassLoader classLoader) {
+        //For older versions of mysql driver(version 5)
         String className = "com.mysql.jdbc.AbandonedConnectionCleanupThread";
         try {
             Class<?> klass = ClassLoaderUtils.findLoadedClass(classLoader, className);
             if (klass != null && klass.getClassLoader() == classLoader) {
                 //Shutdown the thread only if the class is loaded by web-app
-                logger.info("Shutting down mysql AbandonedConnectionCleanupThread");
+                logger.info("Shutting down mysql thread {}", className);
                 klass.getMethod("shutdown").invoke(null);
+            }
+        } catch (Throwable e) {
+            logger.warn("Failed to shutdown mysql thread {}", className, e);
+        }
+
+        //For latest version of mysql driver(version 8+)
+        className = "com.mysql.cj.jdbc.AbandonedConnectionCleanupThread";
+        try {
+            Class<?> klass = ClassLoaderUtils.findLoadedClass(classLoader, className);
+            if (klass != null && klass.getClassLoader() == classLoader) {
+                //Shutdown the thread only if the class is loaded by web-app
+                logger.info("Shutting down mysql thread {}", className);
+                klass.getMethod("checkedShutdown").invoke(null);
             }
         } catch (Throwable e) {
             logger.warn("Failed to shutdown mysql thread {}", className, e);
