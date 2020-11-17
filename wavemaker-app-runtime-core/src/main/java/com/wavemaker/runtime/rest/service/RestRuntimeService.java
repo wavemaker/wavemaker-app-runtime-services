@@ -43,6 +43,8 @@ import com.wavemaker.commons.comparator.UrlStringComparator;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.commons.util.WMUtils;
+import com.wavemaker.commons.web.filter.RequestTrackingFilter;
+import com.wavemaker.commons.web.filter.ServerTimingMetric;
 import com.wavemaker.runtime.commons.WebConstants;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -79,6 +81,9 @@ public class RestRuntimeService {
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
     private static final String OPERATION_DOES_NOT_EXIST = "com.wavemaker.runtime.operation.doesnt.exist";
     private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
+
+    @Autowired
+    private RequestTrackingFilter requestTrackingFilter;
 
     @Autowired
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
@@ -137,12 +142,15 @@ public class RestRuntimeService {
             httpRequestProcessor.process(httpRequestProcessorContext);
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Rest service request details {}", httpRequestDetails);
-        }
+        logger.debug("Rest service request details {}", httpRequestDetails);
 
         HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
+        long start = System.currentTimeMillis();
         new RestConnector().invokeRestCall(httpRequestDetails, response -> {
+            long processingTime = System.currentTimeMillis() - start;
+            logger.info("Time taken by the rest server endpoint is {}", processingTime);
+            requestTrackingFilter.addServerTimingMetrics(new ServerTimingMetric("rest-server", processingTime, "Time taken by rest server"));
+
             try {
                 httpResponseDetails.setStatusCode(response.getRawStatusCode());
                 httpResponseDetails.setBody(response.getBody());
@@ -161,9 +169,7 @@ public class RestRuntimeService {
                 httpResponseProcessor.process(httpResponseProcessorContext);
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails);
-            }
+            logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails);
         });
         return httpResponseDetails;
     }
