@@ -149,7 +149,7 @@ public class RestRuntimeService {
         new RestConnector().invokeRestCall(httpRequestDetails, response -> {
             long processingTime = System.currentTimeMillis() - start;
             logger.info("Time taken by the rest server endpoint is {}", processingTime);
-            requestTrackingFilter.addServerTimingMetrics(new ServerTimingMetric("rest-server", processingTime, "Time taken by rest server"));
+            requestTrackingFilter.addServerTimingMetrics(new ServerTimingMetric("rest-server", processingTime, null));
 
             try {
                 httpResponseDetails.setStatusCode(response.getRawStatusCode());
