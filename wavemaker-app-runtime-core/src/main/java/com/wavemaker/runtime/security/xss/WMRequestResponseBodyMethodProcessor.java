@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,13 +50,6 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         super(converters, manager, requestResponseBodyAdvice);
     }
 
-
-
-
-
-
-
-
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws IOException, HttpMediaTypeNotAcceptableException, HttpMessageNotWritableException {
         Method method = returnType.getMethod();
@@ -68,7 +60,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
                 .anyMatch(an -> an instanceof XssDisable);
 
         if (!xssDisable) {
-            ResponseTuple encodeResult = encode(returnValue, new HashSet<>());
+            ResponseTuple encodeResult = encode(returnValue, new ArrayList());
             if(encodeResult.modified) {
                 returnValue = encodeResult.value;
             }
@@ -76,11 +68,11 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         super.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
     }
 
-    private ResponseTuple encode(Object value, Set<Object> manipulatedObjects) {
+    private ResponseTuple encode(Object value, List<Object> manipulatedObjects) {
         Object encoded = value;
         boolean modified = false;
 
-        if (value != null && !(value instanceof Number) && !(manipulatedObjects.contains(value) || isExcludedClass(value))) {
+        if (value != null && !(value instanceof Number) && !(containsInList(value, manipulatedObjects) || isExcludedClass(value))) {
             final Class<?> valueClass = value.getClass();
 
             if (valueClass == char[].class) {
@@ -105,7 +97,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
     }
 
     private boolean encodeArray(
-            final Object[] valueArray, final Set<Object> manipulatedObjects) {
+            final Object[] valueArray, final List<Object> manipulatedObjects) {
         boolean modified = false;
         for (int i = 0; i < valueArray.length; i++) {
             final Object obj = valueArray[i];
@@ -119,7 +111,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
     }
 
 
-    private ResponseTuple encodeCustomClass(Object object, Set<Object> manipulatedObjects) {
+    private ResponseTuple encodeCustomClass(Object object, List<Object> manipulatedObjects) {
         AtomicBoolean modified = new AtomicBoolean(false);
         if(object instanceof Page) {
             ((Page) object).getContent().forEach(obj -> {
@@ -177,5 +169,14 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
             this.value = value;
             this.modified = modified;
         }
+    }
+
+    private boolean containsInList(Object value, List<Object> manipulatedObjects) {
+        for(Object obj : manipulatedObjects) {
+            if(obj == value) {
+                return true;
+            }
+        }
+        return false;
     }
 }
