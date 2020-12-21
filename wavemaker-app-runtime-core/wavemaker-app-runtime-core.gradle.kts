@@ -32,7 +32,9 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     implementation("org.apache.httpcomponents:httpclient")
-    implementation("net.sf.jmimemagic:jmimemagic:0.1.5")
+    implementation("net.sf.jmimemagic:jmimemagic:0.1.5") {
+        exclude("log4j", "log4j")
+    }
     implementation("org.apache.tika:tika-core:1.24.1")
     implementation("org.apache.poi:poi:4.1.2")
     implementation("org.apache.poi:poi-ooxml:4.1.2") {
