@@ -18,6 +18,7 @@ package com.wavemaker.runtime.security.handler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,8 +50,8 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
         authentication = new WMAuthentication(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         try {
-            invokeDefaultAuthenticationSuccessHandlers(request, response, authentication);
             invokeCustomWMAuthenticationSuccessHandler(request, response, (WMAuthentication) authentication);
+            invokeDefaultAuthenticationSuccessHandlers(request, response, authentication);
             invokeRedirectionHandler(request, response, (WMAuthentication) authentication);
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
