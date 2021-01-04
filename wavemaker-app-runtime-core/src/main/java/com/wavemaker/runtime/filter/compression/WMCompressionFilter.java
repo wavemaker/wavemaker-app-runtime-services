@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.util.FileValidationUtils;
 import com.wavemaker.runtime.filter.compression.gzip.GZipServletResponseWrapper;
 
 /**
@@ -59,7 +60,8 @@ public class WMCompressionFilter extends GenericFilterBean {
             for (String encodingType : BUILD_TIME_ENCODINGS) {
                 if (supportedEncodings.toLowerCase().contains(encodingType)) {
                     String generatedCompressedFile = accessingResource.replaceAll("(.*)(\\..*)", "$1." + encodingType + "$2");
-                    File compressedFile = new File(getServletContext().getRealPath(generatedCompressedFile));
+                    File compressedFile = new File(getServletContext().getRealPath(
+                            FileValidationUtils.validateFilePath(generatedCompressedFile)));
                     if (compressedFile.exists() && compressedFile.isFile()) {
                         processedCompressedFile = true;
                         RequestDispatcher requestDispatcher = httpServletRequest.getRequestDispatcher("/" + generatedCompressedFile);

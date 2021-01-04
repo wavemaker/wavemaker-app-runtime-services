@@ -171,7 +171,8 @@ public class FileServiceManager {
     public boolean deleteFile(String file, String relativePath, File uploadDirectory) {
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
 
-        File f = (file.startsWith("/")) ? new File(file) : new File(relativeUploadDirectory, file);
+        File f = (file.startsWith("/")) ? new File(FileValidationUtils.validateFilePath(file)) : new File(relativeUploadDirectory,
+                FileValidationUtils.validateFilePath(file));
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your operating system, or your .password file.
@@ -205,7 +206,8 @@ public class FileServiceManager {
      */
     public File downloadFile(String file, String relativePath, File uploadDirectory) throws Exception {
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
-        File f = (file.startsWith("/")) ? new File(file) : new File(relativeUploadDirectory, file);
+        File f = (file.startsWith("/")) ? new File(FileValidationUtils.validateFilePath(file)) : new File(relativeUploadDirectory,
+                FileValidationUtils.validateFilePath(file));
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your .password file.

@@ -68,7 +68,7 @@ public class PrefabWebContentServlet extends HttpServlet {
 
         InputStream inputStream = null;
         try {
-            inputStream = getServletContext().getResourceAsStream(prefabResourceUpdatedPath);
+            inputStream = getServletContext().getResourceAsStream(FileValidationUtils.validateFilePath(prefabResourceUpdatedPath));
             ServletOutputStream outputStream = response.getOutputStream();
             WMIOUtils.copy(inputStream, outputStream);
         } finally {

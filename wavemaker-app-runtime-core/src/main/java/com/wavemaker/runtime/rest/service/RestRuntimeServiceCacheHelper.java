@@ -27,6 +27,7 @@ import java.util.WeakHashMap;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.util.FileValidationUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
@@ -49,7 +50,7 @@ public class RestRuntimeServiceCacheHelper {
         if (!serviceIdVsSwaggerCache.containsKey(serviceId)) {
             InputStream stream = null;
             try {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiTarget.json");
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(FileValidationUtils.validateFilePath(serviceId + "_apiTarget.json"));
                 Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(stream);
                 Swagger swaggerDoc = JSONUtils.toObject(reader, Swagger.class);
                 serviceIdVsSwaggerCache.put(serviceId, swaggerDoc);
