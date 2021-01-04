@@ -22,8 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 
+import com.wavemaker.commons.auth.openId.OpenIdConstants;
 import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
@@ -55,7 +57,9 @@ public class OpenIdAuthenticationEntryPoint implements SSOEntryPoint {
 
     private String createRedirectUrl(HttpServletRequest request) {
         String serviceUrl = HttpRequestUtils.getServiceUrl(request);
-        return new StringBuilder(serviceUrl).append("/auth/oauth2/").append(providerId).toString();
+        StringBuilder stringBuilder = new StringBuilder(serviceUrl).append("/auth/oauth2/").append(providerId);
+        return StringUtils.isNotEmpty(request.getParameter(OpenIdConstants.REDIRECT_PAGE)) ? stringBuilder.append("?redirectPage=").append(request.getParameter(
+                OpenIdConstants.REDIRECT_PAGE)).toString() : stringBuilder.toString();
     }
 
     public String getProviderId() {

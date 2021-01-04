@@ -150,9 +150,14 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         additionalParameters.put(OpenIdConstants.REGISTRATION_ID, clientRegistration.getRegistrationId());
 
         Map<String, String> stateObject = new HashMap<>();
-        stateObject.put(OpenIdConstants.APP_PATH, appPath);
-        stateObject.put(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME, clientRegistration.getRegistrationId());
-        stateObject.put(OpenIdConstants.REDIRECT_URI, redirectUrl);
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            stateObject.put(OpenIdConstants.APP_PATH, appPath);
+            stateObject.put(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME, clientRegistration.getRegistrationId());
+            stateObject.put(OpenIdConstants.REDIRECT_URI, redirectUrl);
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(request.getParameter(OpenIdConstants.REDIRECT_PAGE))) {
+            stateObject.put(OpenIdConstants.REDIRECT_PAGE, request.getParameter(OpenIdConstants.REDIRECT_PAGE));
+        }
         String encodedState = OAuth2Helper.getStateParameterValue(stateObject);
 
         OAuth2AuthorizationRequest authorizationRequest = builder

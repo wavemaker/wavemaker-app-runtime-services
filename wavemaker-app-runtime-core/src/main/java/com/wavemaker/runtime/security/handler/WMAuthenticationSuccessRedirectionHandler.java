@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.handler;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
+import com.wavemaker.commons.auth.oauth2.OAuth2Helper;
+import com.wavemaker.commons.auth.openId.OpenIdConstants;
 import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
@@ -34,6 +37,13 @@ public class WMAuthenticationSuccessRedirectionHandler extends SavedRequestAware
     protected String determineTargetUrl(final HttpServletRequest request, final HttpServletResponse response) {
         String targetUrl = super.determineTargetUrl(request, response);
         String redirectPage = request.getParameter("redirectPage");
+
+        if (StringUtils.isEmpty(redirectPage) && StringUtils.isNotEmpty(request.getParameter(OpenIdConstants.STATE))) {
+            Map<String, String> scope = OAuth2Helper.getStateObject(request.getParameter(OpenIdConstants.STATE));
+            if (scope.get(OpenIdConstants.REDIRECT_PAGE)!= null) {
+                redirectPage = scope.get(OpenIdConstants.REDIRECT_PAGE);
+            }
+        }
         if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(targetUrl) && !StringUtils
                 .containsAny(targetUrl, '#', '?') && StringUtils.endsWith(targetUrl, "/")) {
             targetUrl += "#" + redirectPage;
