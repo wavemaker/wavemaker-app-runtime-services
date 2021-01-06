@@ -15,6 +15,12 @@ import org.springframework.security.web.firewall.FirewalledRequest;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
+
+/*
+* This filter wraps ServletRequest and ServletResponse objects with StrictHttpFirewall
+* FirewalledResponse validates and blocks any CRLF characters if added to response object.
+* */
+
 public class FirewallFilter implements Filter {
 
     private HttpFirewall firewall = new StrictHttpFirewall();

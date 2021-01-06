@@ -29,12 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.FileValidationUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 
 
 @Service
 public class FileServiceManager {
-
 
     /**
      * Delegate method for file service upload method. This method creates a unique file name from the filename
