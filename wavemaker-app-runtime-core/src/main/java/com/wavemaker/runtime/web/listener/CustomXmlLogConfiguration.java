@@ -52,7 +52,7 @@ public class CustomXmlLogConfiguration extends XmlConfiguration {
          * */
         PatternLayout layout = PatternLayout.newBuilder()
                 .withConfiguration(configuration)
-                .withPattern("%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} -%X{X-WM-Request-Track-Id} %t %p [%c] - %m%n")
+                .withPattern("%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} -%X{X-WM-Request-Track-Id} %t %p [%c] - %encode{%m}%n")
                 .build();
 
         getAppenders().keySet().forEach(this::removeAppender);
