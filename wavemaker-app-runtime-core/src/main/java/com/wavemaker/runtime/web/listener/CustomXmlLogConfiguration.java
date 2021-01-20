@@ -15,9 +15,6 @@
  */
 package com.wavemaker.runtime.web.listener;
 
-import java.util.Map;
-import java.util.zip.Deflater;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -30,6 +27,9 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.status.StatusLogger;
+
+import java.util.Map;
+import java.util.zip.Deflater;
 
 public class CustomXmlLogConfiguration extends XmlConfiguration {
     private static final Logger logger = StatusLogger.getLogger();
@@ -52,7 +52,7 @@ public class CustomXmlLogConfiguration extends XmlConfiguration {
          * */
         PatternLayout layout = PatternLayout.newBuilder()
                 .withConfiguration(configuration)
-                .withPattern("%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} -%X{X-WM-Request-Track-Id} %t %p [%c] - %m%n")
+                .withPattern("%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} -%X{X-WM-Request-Track-Id} %t %p [%c] - %encode{%m}%n")
                 .build();
 
         getAppenders().keySet().forEach(this::removeAppender);
