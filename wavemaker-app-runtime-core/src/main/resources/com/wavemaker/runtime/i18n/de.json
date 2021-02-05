@@ -59,6 +59,7 @@
   "MESSAGE_NO_DATA": "Keine Daten gefunden",
   "MESSAGE_PAGE_NOT_FOUND": "Die Seite, die Sie erreichen möchten, ist nicht verfügbar",
   "MESSAGE_SELECT_FIELD": "Feld auswählen",
+  "MESSAGE_REQUEST_LOCATION_PERMISSION": "Möchten Sie zur Seite Standorteinstellungen wechseln und die Berechtigung manuell aktivieren?",
   "LABEL_HIDE_NETWORK_INFO": "verbergen",
   "MESSAGE_SERVICE_NOT_AVAILABLE": "Der Service ist nicht erreichbar.",
   "LABEL_CONNECT_TO_SERVICE": "Verbinden",

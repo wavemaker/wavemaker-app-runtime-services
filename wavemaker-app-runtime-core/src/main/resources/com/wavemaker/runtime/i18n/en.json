@@ -59,6 +59,7 @@
   "MESSAGE_NO_DATA": "No data found",
   "MESSAGE_PAGE_NOT_FOUND": "The page you are trying to reach is not available",
   "MESSAGE_SELECT_FIELD": "Select Field",
+  "MESSAGE_REQUEST_LOCATION_PERMISSION": "Would you like to switch to the Location Settings page and enable permission manually?",
   "LABEL_HIDE_NETWORK_INFO": "Hide",
   "MESSAGE_SERVICE_NOT_AVAILABLE": "Service is not reachable.",
   "LABEL_CONNECT_TO_SERVICE": "Connect",
