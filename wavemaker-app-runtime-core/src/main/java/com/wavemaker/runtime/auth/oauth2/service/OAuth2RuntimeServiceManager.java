@@ -76,8 +76,9 @@ public class OAuth2RuntimeServiceManager {
                 });
             } catch (IOException e) {
                 throw new WMRuntimeException(e);
+            } finally {
+                WMIOUtils.closeSilently(oauthProvidersJsonFile);
             }
-
         }
     }
 

@@ -1,17 +1,13 @@
 /**
  * Copyright (C) 2020 WaveMaker, Inc.
  * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
+ * License at
  * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 package com.wavemaker.runtime.data.sqlserver;
 
@@ -27,7 +23,6 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.datasource.ConnectionProxy;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
-import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,7 +32,7 @@ import org.springframework.util.StringUtils;
 /**
  * DataSource proxy implementation that will allow impersonation of the currently authenticated user on MS SQLServer
  * when executing JDBC statements.
- * 
+ *
  * <p>
  * Impersonation of the current user is achieved by executing a SQLServer-specific
  * <code>EXECUTE AS USER='{username}'</code> statement, where {username} is the username for the currently authenticated
@@ -46,13 +41,13 @@ import org.springframework.util.StringUtils;
  * the username. If the {@link #setActiveDirectoryDomain(String) activeDirectoryDomain} property is set with a non-empty
  * value, the statement executed to prepare the connection will be in the form of
  * <code>EXECUTE AS USER='{activeDirectoryDomain}\{username}'</code>.
- * 
+ *
  * <p>
  * The <code>EXECUTE AS</code> statement will only be run when a connection is first requested at the start of a
  * Spring-managed transaction. When the transaction is completed and the connection is closed, (or released back to a
  * pool) a compensating <code>REVERT</code> statement will be executed that will return the connection to its original
  * state.
- * 
+ *
  * @author Jeremy Grelle
  */
 public class SqlServerUserImpersonatingDataSourceProxy extends DelegatingDataSource {
@@ -77,7 +72,7 @@ public class SqlServerUserImpersonatingDataSourceProxy extends DelegatingDataSou
     /**
      * Sets an Active Directory Domain name to be used as a prefix to the username when running an
      * <code>EXECUTE AS</code> statement to prepare a connection.
-     * 
+     *
      * @param activeDirectoryDomain the Active Directory Domain name
      */
     public void setActiveDirectoryDomain(String activeDirectoryDomain) {
@@ -91,7 +86,7 @@ public class SqlServerUserImpersonatingDataSourceProxy extends DelegatingDataSou
 
     private Connection getAuditingConnectionProxy(Connection connection) throws SQLException {
         return (Connection) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(), new Class[]{ConnectionProxy.class},
-            new AuditingInvocationHandler(connection));
+                new AuditingInvocationHandler(connection));
     }
 
     private class AuditingInvocationHandler implements InvocationHandler {
@@ -149,12 +144,8 @@ public class SqlServerUserImpersonatingDataSourceProxy extends DelegatingDataSou
         }
 
         private void executeStatement(String sql) throws SQLException {
-            Statement statement = null;
-            try {
-                statement = this.target.createStatement();
+            try (Statement statement = this.target.createStatement()) {
                 statement.execute(sql);
-            } finally {
-                JdbcUtils.closeStatement(statement);
             }
         }
     }
