@@ -52,5 +52,12 @@ public class WMWebSSOProfileConsumerImpl extends WebSSOProfileConsumerImpl {
             super.verifyAudience(context, audienceRestrictions);
         }
     }
+
+    @Override
+    public void setMaxAuthenticationAge(long maxAuthenticationAge) {
+        if (maxAuthenticationAge > 0) {
+            super.setMaxAuthenticationAge(maxAuthenticationAge);
+        }
+    }
 }
 
