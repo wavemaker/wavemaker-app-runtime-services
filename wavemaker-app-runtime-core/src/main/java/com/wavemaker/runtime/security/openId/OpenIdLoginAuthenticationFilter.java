@@ -141,7 +141,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
         } catch (Exception e) {
             logger.error("Could not authenticate using OpenID", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("Could not authenticate the user : Internal Server Error" + e.getLocalizedMessage());
+            response.getWriter().println("Could not authenticate the user");
             return authenticationResult;
         }
 
