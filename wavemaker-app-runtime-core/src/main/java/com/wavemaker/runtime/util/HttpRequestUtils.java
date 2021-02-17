@@ -71,7 +71,7 @@ public class HttpRequestUtils {
         String serviceHostUrl = requestURL.substring(0, requestURL.lastIndexOf(contextPath));
         return serviceHostUrl + contextPath;
     }
-    
+
     public static void writeResponse(HttpResponseDetails httpResponseDetails, HttpServletResponse httpServletResponse) throws IOException {
         httpServletResponse.setStatus(httpResponseDetails.getStatusCode());
         Map<String, List<String>> responseHeaders = httpResponseDetails.getHeaders();
@@ -175,6 +175,7 @@ public class HttpRequestUtils {
             if (StringUtils.isBlank(contextPath)) {
                 contextPath = "/";
             }
+            cookie.setSecure(request.isSecure());
             cookie.setPath(contextPath);
             response.addCookie(cookie);
         }

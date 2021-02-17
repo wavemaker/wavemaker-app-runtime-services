@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
@@ -42,6 +41,8 @@ import org.apache.tika.mime.MimeType;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.EncoderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -317,7 +318,7 @@ public class WMMultipartUtils {
             }
 
             if (StringUtils.isBlank(filename)) {
-                filename = RandomStringUtils.randomAlphanumeric(FILE_NAME_LENGTH);
+                filename = ESAPI.randomizer().getRandomString(FILE_NAME_LENGTH, EncoderConstants.CHAR_ALPHANUMERICS);
             }
 
             if (StringUtils.isBlank(contentType)) {
