@@ -1,0 +1,48 @@
+stages:
+        - jira_feature_dev
+        - jira_next_release
+        - jira_hotfix_release
+        - jira_verification_merge
+
+jira_feature_dev:
+  stage: jira_feature_dev
+  tags:
+      - jira
+  only:
+      - /^feature.*$/
+      - /^dev.*$/
+        
+  script:
+    - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_RELEASE_VERSION"
+    - python3 /home/gitlab-runner/jira-ci-scripts/jira_connection.py "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" 4 "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_RELEASE_VERSION"
+ 
+jira_next_release:
+  stage: jira_next_release
+  tags:
+      - jira
+  only:
+    - next-release
+
+  script:
+    - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_RELEASE_VERSION"
+    - python3 /home/gitlab-runner/jira-ci-scripts/jira_connection.py "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" 5 "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_RELEASE_VERSION"
+
+jira_hotfix_release:
+  stage: jira_hotfix_release
+  tags:
+      - jira
+  only:
+    - hotfix
+  script:
+    - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_HOT_FIX_VERSION"
+    - python3 /home/gitlab-runner/jira-ci-scripts/jira_connection.py "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" 5 "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_HOT_FIX_VERSION"
+
+jira_verification_merge:
+  stage: jira_verification_merge
+  tags:
+    - jira
+  only: [merge_requests]
+  script:
+    - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" "$NEXT_HOT_FIX_VERSION"
+    - python3 /home/gitlab-runner/jira-ci-scripts/verify_tickets_in_commits.py "$TOKEN" "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" "$CI_PROJECT_ID" "$GITLAB_TOKEN"
+
