@@ -29,12 +29,12 @@ public class MessageDigestUtil {
 
     public static String getDigestedData(String data) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
             digest.update(salt);
             digest.update(data.getBytes());
             return new String(Hex.encode(digest.digest()));
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("No MD5 algorithm available!");
+            throw new IllegalStateException("No SHA-256 algorithm available!");
         }
     }
 
