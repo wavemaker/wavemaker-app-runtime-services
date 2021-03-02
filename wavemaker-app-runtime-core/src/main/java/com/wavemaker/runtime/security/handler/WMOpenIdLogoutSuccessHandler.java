@@ -76,7 +76,7 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
         if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderInfoList())) {
             logoutUrl = openIdProviderRuntimeConfig.getOpenIdProviderInfoList().get(0).getLogoutUrl();
         }
-        if (StringUtils.isNotBlank(logoutUrl) && authentication != null) {
+        if (StringUtils.isNotBlank(logoutUrl) && (authentication != null && ((WMAuthentication) authentication).getAuthenticationSource() != null)) {
             StringBuilder targetUrl = new StringBuilder()
                     .append(logoutUrl).append(QUESTION_MARK)
                     .append(idTokenHintQueryParam(((OidcUser) ((WMAuthentication) authentication).getAuthenticationSource().getPrincipal())))
