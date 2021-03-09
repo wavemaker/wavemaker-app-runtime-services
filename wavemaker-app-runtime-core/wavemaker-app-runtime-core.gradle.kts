@@ -42,8 +42,9 @@ dependencies {
     }
     implementation("org.owasp.esapi:esapi:2.2.2.0") {
         exclude("log4j", "log4j")
+        exclude("org.owasp.antisamy","antisamy")
     }
-    implementation("org.owasp.antisamy:antisamy:1.5.13")
+    implementation("org.owasp.antisamy:antisamy:1.5.10")
     implementation("org.freemarker:freemarker:2.3.30")
     implementation("com.wordnik:swagger-annotations:1.3.10")
     compileOnly("javax.servlet:javax.servlet-api")
