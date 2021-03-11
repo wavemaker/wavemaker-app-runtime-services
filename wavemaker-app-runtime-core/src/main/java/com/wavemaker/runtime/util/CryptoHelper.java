@@ -1,17 +1,13 @@
 /**
  * Copyright (C) 2020 WaveMaker, Inc.
  * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
+ * License at
  * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 package com.wavemaker.runtime.util;
 
@@ -20,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.AlgorithmParameterSpec;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
@@ -30,8 +26,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -42,19 +38,26 @@ import com.wavemaker.commons.WMRuntimeException;
  */
 public class CryptoHelper {
 
-    // 8-byte Salt
-    private static final byte[] salt = {
-            (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
-            (byte) 0x56, (byte) 0x35, (byte) 0xE3, (byte) 0x03
-    };
+    private static byte[] salt = new byte[128];
+
+    private static byte iv[] = new byte[16];
+
+    static {
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(salt);
+        secureRandom.nextBytes(iv);
+    }
+
     // Iteration count
-    private static final int iterationCount = 19;
+    private static final int iterationCount = 12288;
 
     private String algorithm;
     private String key;
 
     private Cipher encrypter;
     private Cipher decrypter;
+
+    private static final int derivedKeyLength = 256;
 
     public CryptoHelper(String algorithm, String key) {
         this.algorithm = algorithm;
@@ -63,15 +66,15 @@ public class CryptoHelper {
 
     private Cipher getCipher(int mode) {
         //Key generation for enc and desc
-        KeySpec keySpec = new PBEKeySpec(key.toCharArray(), salt, iterationCount);
+        KeySpec keySpec = new PBEKeySpec(key.toCharArray(), salt, iterationCount, derivedKeyLength * 8);
         try {
             SecretKey key = SecretKeyFactory.getInstance(algorithm).generateSecret(keySpec);
             // Prepare the parameter to the ciphers
-            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
             //Enc process
             final Cipher cipher = Cipher.getInstance(key.getAlgorithm());
-            cipher.init(mode, key, paramSpec);
+            cipher.init(mode, key, ivParameterSpec, new SecureRandom());
 
             return cipher;
         } catch (InvalidKeySpecException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | NoSuchPaddingException | InvalidKeyException e) {

@@ -15,17 +15,18 @@
  */
 package com.wavemaker.runtime.webprocess;
 
-import com.wavemaker.runtime.WMObjectMapper;
-import com.wavemaker.runtime.webprocess.model.WebProcess;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+
+import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.webprocess.model.WebProcess;
 
 public class WebProcessHelper {
     public static final String WEB_PROCESS_COOKIE_NAME = "WM_WEB_PROCESS";
@@ -50,6 +51,7 @@ public class WebProcessHelper {
         cookie.setPath(request.getServletContext().getContextPath());
         cookie.setMaxAge(WEB_PROCESS_COOKIE_MAX_AGE);
         cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
         response.addCookie(cookie);
     }
 

@@ -15,6 +15,24 @@
  */
 package com.wavemaker.runtime.webprocess.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.http.entity.ContentType;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.EncoderConstants;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
 import com.wavemaker.commons.io.ClassPathFile;
@@ -26,21 +44,6 @@ import com.wavemaker.runtime.webprocess.WebProcessHelper;
 import com.wavemaker.runtime.webprocess.model.WebProcess;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.text.StringSubstitutor;
-import org.apache.http.entity.ContentType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @Api(value = "/webprocess", description = "Exposes APIs to work with webprocess")
@@ -60,7 +63,8 @@ public class WebProcessController {
             WebProcess webProcess = new WebProcess();
             webProcess.setProcessName(processName);
             webProcess.setHookUrl(hookUrl);
-            webProcess.setCommunicationKey(RandomStringUtils.randomAlphanumeric(ENCRYPTION_KEY_SIZE / 8));
+            webProcess.setCommunicationKey(ESAPI.randomizer()
+                    .getRandomString(ENCRYPTION_KEY_SIZE / 8, EncoderConstants.CHAR_ALPHANUMERICS));
             webProcess.setRequestSourceType(requestSourceType);
             String webProcessJSON = WebProcessHelper.encodeWebProcess(webProcess);
             WebProcessHelper.addWebProcessCookie(request, response, webProcessJSON);
@@ -86,7 +90,7 @@ public class WebProcessController {
             WebProcess webProcess = WebProcessHelper.decodeWebProcess(cookie.getValue());
             String processOutput = (String) request.getAttribute(WebProcessHelper.WEB_PROCESS_OUTPUT);
             processOutput = WebProcessHelper.encode(webProcess.getCommunicationKey(), processOutput);
-            String redirectUrl = "://services/webprocess/"+webProcess.getProcessName()+"?process_output=" + URLEncoder.encode(processOutput, WebProcessHelper.UTF_8);
+            String redirectUrl = "://services/webprocess/" + webProcess.getProcessName() + "?process_output=" + URLEncoder.encode(processOutput, WebProcessHelper.UTF_8);
             String urlScheme = "com.wavemaker.wavelens";
             if ("MOBILE".equals(webProcess.getRequestSourceType())) {
                 urlScheme = getCustomUrlScheme();
@@ -94,7 +98,7 @@ public class WebProcessController {
             Map<String, Object> input = new HashMap<>();
             input.put("appLink", urlScheme + redirectUrl);
             StringSubstitutor strSubstitutor = new StringSubstitutor(input);
-            String processResponse =  strSubstitutor.replace(new ClassPathFile(WEB_PROCESS_RESPONSE_TEMPLATE).getContent().asString());
+            String processResponse = strSubstitutor.replace(new ClassPathFile(WEB_PROCESS_RESPONSE_TEMPLATE).getContent().asString());
             response.setContentType(ContentType.TEXT_HTML.getMimeType());
             response.getWriter().write(processResponse);
         } else {
@@ -117,7 +121,7 @@ public class WebProcessController {
 
     private String getCustomUrlScheme() {
         if (customUrlScheme == null) {
-            synchronized(this) {
+            synchronized (this) {
                 InputStream inputStream = null;
                 try {
                     AppFileSystem appFileSystem = WMAppContext.getInstance().getSpringBean(AppFileSystem.class);

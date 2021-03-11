@@ -33,7 +33,7 @@ public @interface Encrypted {
     /**
      * Supported MessageDigest encryption algorithm
      */
-    String algorithm() default "PBEWithMD5AndDES";
+    String algorithm() default "PBEWithHmacSHA512AndAES_128";
 
     String key() default "wavemaker";
 }
