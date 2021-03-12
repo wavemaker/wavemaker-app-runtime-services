@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.http.entity.ContentType;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.EncoderConstants;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +38,7 @@ import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.app.AppFileSystem;
+import com.wavemaker.runtime.util.WMRandomUtils;
 import com.wavemaker.runtime.webprocess.WebProcessHelper;
 import com.wavemaker.runtime.webprocess.model.WebProcess;
 import com.wordnik.swagger.annotations.Api;
@@ -63,8 +62,7 @@ public class WebProcessController {
             WebProcess webProcess = new WebProcess();
             webProcess.setProcessName(processName);
             webProcess.setHookUrl(hookUrl);
-            webProcess.setCommunicationKey(ESAPI.randomizer()
-                    .getRandomString(ENCRYPTION_KEY_SIZE / 8, EncoderConstants.CHAR_ALPHANUMERICS));
+            webProcess.setCommunicationKey(WMRandomUtils.getRandomString(ENCRYPTION_KEY_SIZE / 8));
             webProcess.setRequestSourceType(requestSourceType);
             String webProcessJSON = WebProcessHelper.encodeWebProcess(webProcess);
             WebProcessHelper.addWebProcessCookie(request, response, webProcessJSON);
