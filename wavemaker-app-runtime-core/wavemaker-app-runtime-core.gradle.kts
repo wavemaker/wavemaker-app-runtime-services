@@ -5,8 +5,10 @@ plugins {
 
 group ="com.wavemaker.runtime"
 
-val loggingCapabilityConfiguration by configurations.creating
-val runtimeLibDependencies by configurations.creating
+val loggingCapabilityConfiguration: Configuration by configurations.creating
+val runtimeLibDependencies: Configuration by configurations.creating {
+    extendsFrom(loggingCapabilityConfiguration)
+}
 
 dependencies {
     implementation(platform(project(":wavemaker-app-runtime-services")))
@@ -74,7 +76,6 @@ dependencies {
 
     //runtime dependencies lib
     runtimeLibDependencies(project(":wavemaker-app-runtime-core"))
-    runtimeLibDependencies(loggingCapabilityConfiguration)
     //TODO: To support DB2 implementation, the custom code needs to be updated as per the new hibernate library code
     /*runtimeLibDependencies("org.hibernate:hibernate-core") {
         version {
