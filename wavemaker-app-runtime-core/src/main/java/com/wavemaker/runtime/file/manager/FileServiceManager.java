@@ -219,6 +219,10 @@ public class FileServiceManager {
             throw new Exception("File with name " + file + "  not found");
         }
 
+        if(!f.isFile()) {
+            throw new Exception("Is a directory");
+        }
+
         return f;
     }
 
