@@ -28,7 +28,7 @@ public class FirewallFilter implements Filter {
 
     private StrictHttpFirewall firewall = new StrictHttpFirewall();
 
-    @Value("${app.request.allowedHosts}")
+    @Value("${general.request.allowedHosts}")
     private String hosts;
 
     @PostConstruct
