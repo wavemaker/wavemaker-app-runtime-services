@@ -43,7 +43,7 @@ public class WMOpenIdAuthenticationSuccessHandler implements WMAuthenticationSuc
         authentication.addAttribute(OpenIdConstants.ID_TOKEN_VALUE, oidcUser.getIdToken().getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
         OAuth2AccessToken accessToken = oAuth2LoginAuthenticationToken.getAccessToken();
         if (accessToken != null) {
-            authentication.addAttribute(OpenIdConstants.ACCESS_TOKEN_VALUE, accessToken.toString(), Attribute.AttributeScope.SERVER_ONLY);
+            authentication.addAttribute(OpenIdConstants.ACCESS_TOKEN_VALUE, accessToken.getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
         }
     }
 }
