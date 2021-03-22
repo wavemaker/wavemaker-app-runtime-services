@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import com.wavemaker.commons.auth.openId.OpenIdConstants;
@@ -40,5 +41,9 @@ public class WMOpenIdAuthenticationSuccessHandler implements WMAuthenticationSuc
             authentication.addAttribute(entry.getKey(), entry.getValue(), Attribute.AttributeScope.ALL);
         });
         authentication.addAttribute(OpenIdConstants.ID_TOKEN_VALUE, oidcUser.getIdToken().getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
+        OAuth2AccessToken accessToken = oAuth2LoginAuthenticationToken.getAccessToken();
+        if (accessToken != null) {
+            authentication.addAttribute(OpenIdConstants.ACCESS_TOKEN_VALUE, accessToken.getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
+        }
     }
 }
