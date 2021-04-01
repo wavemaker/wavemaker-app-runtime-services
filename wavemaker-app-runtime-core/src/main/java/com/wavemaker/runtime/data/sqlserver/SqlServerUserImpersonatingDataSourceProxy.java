@@ -27,7 +27,6 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.datasource.ConnectionProxy;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
-import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -149,12 +148,8 @@ public class SqlServerUserImpersonatingDataSourceProxy extends DelegatingDataSou
         }
 
         private void executeStatement(String sql) throws SQLException {
-            Statement statement = null;
-            try {
-                statement = this.target.createStatement();
+            try (Statement statement = this.target.createStatement()) {
                 statement.execute(sql);
-            } finally {
-                JdbcUtils.closeStatement(statement);
             }
         }
     }

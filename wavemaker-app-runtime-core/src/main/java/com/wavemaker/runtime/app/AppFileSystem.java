@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.app;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -43,8 +44,8 @@ public class AppFileSystem implements ServletContextAware {
         return this.context.getRealPath("/");
     }
 
-    public InputStream getClasspathResourceStream(String resourcePath) {
-        return context.getClassLoader().getResourceAsStream(resourcePath);
+    public URL getClasspathResource(String resourcePath) {
+        return context.getClassLoader().getResource(resourcePath);
     }
 
     public InputStream getWebappResource(String resourcePath) {

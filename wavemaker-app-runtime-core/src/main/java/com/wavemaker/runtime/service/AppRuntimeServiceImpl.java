@@ -17,6 +17,7 @@ package com.wavemaker.runtime.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -73,8 +74,8 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     public Map<String, Object> getApplicationProperties() {
         synchronized (this) {
             if (applicationProperties == null) {
-                InputStream inputStream = appFileSystem.getClasspathResourceStream(APP_PROPERTIES);
-                Properties properties = PropertiesFileUtils.loadFromXml(inputStream);
+                URL classpathResourceStream = appFileSystem.getClasspathResource(APP_PROPERTIES);
+                Properties properties = PropertiesFileUtils.loadFromXml(classpathResourceStream);
                 Map<String, Object> appProperties = new HashMap<>();
                 for (String s : uiProperties) {
                     appProperties.put(s, properties.get(s));
@@ -95,8 +96,8 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     public String getApplicationType() {
         synchronized (this) {
             if (applicationType == null) {
-                InputStream inputStream = appFileSystem.getClasspathResourceStream(APP_PROPERTIES);
-                Properties properties = PropertiesFileUtils.loadFromXml(inputStream);
+                URL classpathResourceStream = appFileSystem.getClasspathResource(APP_PROPERTIES);
+                Properties properties = PropertiesFileUtils.loadFromXml(classpathResourceStream);
                 applicationType = properties.getProperty("type");
             }
         }
