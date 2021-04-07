@@ -10,7 +10,7 @@
     </bean>
 
     <alias name="${session.jdbc.serviceName}DataSource" alias="dataSource"/>
-    <bean class="org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration" id="jdbcHttpSessionConfiguration">
+    <bean class="org.springframework.session.jdbc.config.annotation.web.http.WMJdbcHttpSessionConfiguration" id="jdbcHttpSessionConfiguration">
         <property name="maxInactiveIntervalInSeconds" value="#{${general.session.timeout} * 60}"/>
         <property name="transactionManager" ref="jdbcSessionRepositoryTransactionManager"/>
     </bean>
