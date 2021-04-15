@@ -3,7 +3,7 @@ plugins {
     `antlr`
 }
 
-group ="com.wavemaker.runtime"
+group = "com.wavemaker.runtime"
 
 val loggingCapabilityConfiguration: Configuration by configurations.creating
 val runtimeLibDependencies: Configuration by configurations.creating {
@@ -42,7 +42,9 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:4.1.2") {
         exclude("com.github.virtuald", "curvesapi")
     }
-    implementation("org.owasp.antisamy:antisamy:1.5.10")
+    implementation("org.owasp.antisamy:antisamy:1.5.10") {
+        exclude("org.apache.xmlgraphics", "xmlgraphics-commons")
+    }
     implementation("org.freemarker:freemarker:2.3.30")
     implementation("com.wordnik:swagger-annotations:1.3.10")
     compileOnly("javax.servlet:javax.servlet-api")
@@ -93,10 +95,10 @@ tasks {
         doLast {
             var content = ""
             project.configurations.runtimeClasspath.get().resolvedConfiguration.resolvedArtifacts.forEach {
-                content+=it.moduleVersion.toString()+"\n"
+                content += it.moduleVersion.toString() + "\n"
             }
 
-            val resourcesDir : File = sourceSets.main.get().output.resourcesDir!!
+            val resourcesDir: File = sourceSets.main.get().output.resourcesDir!!
             resourcesDir.mkdirs()
             File(resourcesDir, "app-runtime-dependencies.txt").writeText(content)
         }
@@ -104,6 +106,6 @@ tasks {
 }
 
 javaLibraryMavenPublish {
-    scmUrl="git:https://github.com/wavemaker/wavemaker-app-runtime-services.git"
+    scmUrl = "git:https://github.com/wavemaker/wavemaker-app-runtime-services.git"
     scopeMapping.get("compile")?.add(loggingCapabilityConfiguration.name)
 }
