@@ -14,6 +14,12 @@
         <property name="maxInactiveIntervalInSeconds" value="#{${general.session.timeout} * 60}"/>
         <property name="transactionManager" ref="jdbcSessionRepositoryTransactionManager"/>
     </bean>
+
+    <bean id="sessionRegistry" class="org.springframework.session.security.SpringSessionBackedSessionRegistry">
+        <constructor-arg ref="sessionRepository"/>
+    </bean>
+
+
     <context:annotation-config/>
     <bean class="com.wavemaker.runtime.security.session.JdbcSessionScriptInitializer" id="jdbcSessionScriptInitializer"/>
 

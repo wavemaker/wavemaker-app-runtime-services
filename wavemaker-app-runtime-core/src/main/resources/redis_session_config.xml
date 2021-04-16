@@ -14,4 +14,8 @@
         <property name="password" value="${session.redis.password}"/>
     </bean>
 
+    <bean id="sessionRegistry" class="org.springframework.session.security.SpringSessionBackedSessionRegistry">
+        <constructor-arg ref="sessionRepository"/>
+    </bean>
+
 </beans>

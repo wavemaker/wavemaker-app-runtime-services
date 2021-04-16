@@ -8,4 +8,6 @@
         <property name="defaultMaxInactiveInterval" value="#{${general.session.timeout} * 60}"/>
     </bean>
 
+    <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl"/>
+
 </beans>
