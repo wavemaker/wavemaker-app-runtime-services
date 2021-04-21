@@ -19,9 +19,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.wavemaker.runtime.data.annotations.Encrypted;
 import com.wavemaker.runtime.data.annotations.WMValueInject;
-import com.wavemaker.runtime.data.replacers.providers.EncryptedValueProviderBuilder;
 import com.wavemaker.runtime.data.replacers.providers.VariableDefinedPropertyProvider;
 
 /**
@@ -36,8 +34,6 @@ public class ValueProviderFactory {
 
     static {
         annotationValueProviderBuilderMap = new HashMap<>();
-
-        annotationValueProviderBuilderMap.put(Encrypted.class, new EncryptedValueProviderBuilder());
         annotationValueProviderBuilderMap.put(WMValueInject.class,
                 new VariableDefinedPropertyProvider.VariableDefinedPropertyProviderBuilder());
     }
