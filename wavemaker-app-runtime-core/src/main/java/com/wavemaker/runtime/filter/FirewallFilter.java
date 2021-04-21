@@ -1,8 +1,10 @@
 package com.wavemaker.runtime.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
@@ -20,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.firewall.FirewalledRequest;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+
+import com.wavemaker.runtime.data.util.UrlParserUtils;
 
 
 /*
@@ -41,11 +45,17 @@ public class FirewallFilter implements Filter {
     @PostConstruct
     private void init() {
         logger.info("Allowed hostnames configured are {}", hosts);
-        String hostNamesLower = StringUtils.lowerCase(hosts);
-        allowedHosts = Arrays.asList(hostNamesLower.split(","));
+        List<String> sanitisedHosts = new ArrayList<>();
+        if(hosts != null && !hosts.isEmpty()) {
+            String hostNamesLower = StringUtils.lowerCase(hosts);
+            allowedHosts = Arrays.asList(hostNamesLower.split(","));
+            allowedHosts.stream().map(UrlParserUtils::trimUrlForHostName)
+                    .collect(Collectors.toCollection(() -> sanitisedHosts));
+        }
+
         firewall.setAllowedHostnames(hostName -> {
             if (hosts != null && !hosts.isEmpty()) {
-                return allowedHosts.contains(StringUtils.lowerCase(hostName));
+                return sanitisedHosts.contains(StringUtils.lowerCase(hostName));
             }
             return true;
         });
