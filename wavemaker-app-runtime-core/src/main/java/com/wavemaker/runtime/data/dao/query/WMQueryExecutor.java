@@ -25,7 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.data.export.ExportOptions;
+import com.wavemaker.runtime.data.export.DataExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.QueryProcedureInput;
@@ -48,6 +48,13 @@ public interface WMQueryExecutor {
     }
 
     <T> Page<T> executeNamedQuery(QueryProcedureInput<T> queryInput, Pageable pageable);
+
+    default <T> Page<T> executeNamedQuery(
+            String queryName, Map<String, Object> params, Class<T> returnType, String filterQuery, Pageable pageable) {
+        return executeNamedQuery(new QueryProcedureInput<>(queryName, params, returnType), filterQuery, pageable);
+    }
+
+    <T> Page<T> executeNamedQuery(QueryProcedureInput<T> queryInput, String filterQuery, Pageable pageable);
 
     default int executeNamedQueryForUpdate(String queryName, Map<String, Object> params) {
         return executeNamedQuery(new UpdatableQueryInput(queryName, params));
@@ -77,7 +84,7 @@ public interface WMQueryExecutor {
         try {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-                ExportOptions options = new ExportOptions(exportType, pageable.getPageSize());
+                DataExportOptions options = new DataExportOptions(exportType, pageable.getPageSize(), "");
 
                 exportNamedQueryData(new QueryProcedureInput<>(queryName, params, responseType), options, pageable,
                         outputStream);
@@ -92,6 +99,6 @@ public interface WMQueryExecutor {
     }
 
     <T> void exportNamedQueryData(
-            QueryProcedureInput<T> queryInput, ExportOptions exportOptions, Pageable pageable,
+            QueryProcedureInput<T> queryInput, DataExportOptions exportOptions, Pageable pageable,
             OutputStream outputStream);
 }

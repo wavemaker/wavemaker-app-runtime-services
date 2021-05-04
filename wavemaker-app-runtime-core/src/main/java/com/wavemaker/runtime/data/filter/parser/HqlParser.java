@@ -44,7 +44,7 @@ public class HqlParser {
         return hqlParserContext.toWMQueryInfo();
     }
 
-    private ParseTree getRootNode(String expression) {
+    public ParseTree getRootNode(String expression) {
         ANTLRInputStream in = new ANTLRInputStream(expression);
         HqlFilterLexer lexer = new HqlFilterLexer(in);
         lexer.removeErrorListeners();

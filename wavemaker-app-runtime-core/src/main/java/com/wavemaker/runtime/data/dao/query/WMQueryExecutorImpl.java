@@ -33,11 +33,12 @@ import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvide
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
 import com.wavemaker.runtime.data.dao.query.providers.SessionBackedQueryProvider;
+import com.wavemaker.runtime.data.dao.query.providers.SessionBackedRuntimeQueryProvider;
 import com.wavemaker.runtime.data.dao.query.types.SessionBackedParameterResolver;
 import com.wavemaker.runtime.data.dao.util.CustomQueryAdapter;
 import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
-import com.wavemaker.runtime.data.export.ExportOptions;
+import com.wavemaker.runtime.data.export.DataExportOptions;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.QueryProcedureInput;
 import com.wavemaker.runtime.data.model.UpdatableQueryInput;
@@ -68,9 +69,18 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public <T> Page<T> executeNamedQuery(final QueryProcedureInput<T> queryInput, final Pageable pageable) {
-
         SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryInput.getName(),
                 queryInput.getResponseType());
+        AppRuntimeParameterProvider parametersProvider = new AppRuntimeParameterProvider(
+                queryInput.getParameters(), parameterResolvers.getResolver(queryInput.getName()));
+
+        return template.execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider,
+                PageUtils.defaultIfNull(pageable)));
+    }
+
+    @Override
+    public <T> Page<T> executeNamedQuery(QueryProcedureInput<T> queryInput, String filterQuery, Pageable pageable) {
+        SessionBackedRuntimeQueryProvider<T> queryProvider = new SessionBackedRuntimeQueryProvider<>(queryInput.getName(), filterQuery, queryInput.getResponseType());
         AppRuntimeParameterProvider parametersProvider = new AppRuntimeParameterProvider(
                 queryInput.getParameters(), parameterResolvers.getResolver(queryInput.getName()));
 
@@ -119,13 +129,13 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public <T> void exportNamedQueryData(
-            final QueryProcedureInput<T> queryInput, final ExportOptions exportOptions, final Pageable pageable,
+            final QueryProcedureInput<T> queryInput, final DataExportOptions exportOptions, final Pageable pageable,
             final OutputStream outputStream) {
 
         final Pageable overridenPageable = PageUtils
                 .overrideExportSize(PageUtils.defaultIfNull(pageable), exportOptions.getExportSize());
 
-        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryInput.getName(),
+        SessionBackedRuntimeQueryProvider<T> queryProvider = new SessionBackedRuntimeQueryProvider<>(queryInput.getName(), exportOptions.getQuery(),
                 queryInput.getResponseType());
 
         AppRuntimeParameterProvider parameterProvider = new AppRuntimeParameterProvider(queryInput.getParameters(),
