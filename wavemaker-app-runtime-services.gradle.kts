@@ -12,7 +12,7 @@ buildscript {
         set("springSessionVersion", "Dragonfruit-SR1")
         set("springSecuritySamlVersion", "1.0.3.RELEASE")
         set("springDataCommonsVersion", "2.3.4.RELEASE")
-        set("hibernateVersion", "5.4.22.Final")
+        set("hibernateVersion", "5.4.31.Final")
         set("hibernateValidatorVersion", "6.1.6.Final")
         set("httpClientVersion", "4.5.13")
         set("hikariCPVersion","3.4.5")
