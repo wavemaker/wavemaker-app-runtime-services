@@ -15,27 +15,22 @@
  */
 package com.wavemaker.runtime.security.provider.saml.metadata;
 
-import java.io.File;
-import java.net.URISyntaxException;
-
+import com.wavemaker.commons.WMRuntimeInitException;
+import com.wavemaker.commons.model.security.saml.MetadataSource;
+import com.wavemaker.runtime.security.provider.saml.SAMLConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
-import org.opensaml.saml2.metadata.provider.FileBackedHTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.saml2.metadata.provider.*;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.wavemaker.commons.WMRuntimeInitException;
-import com.wavemaker.commons.model.security.saml.MetadataSource;
-import com.wavemaker.runtime.security.provider.saml.SAMLConfig;
-import com.wavemaker.runtime.security.provider.saml.SAMLConstants;
+import java.io.File;
+import java.net.URISyntaxException;
 
 /**
  * Created by arjuns on 24/3/17.
  */
-public class WMMetadataProviderFactory implements FactoryBean<AbstractMetadataProvider> {
+public class WMMetadataProviderFactory implements FactoryBean<MetadataProvider> {
 
     @Autowired
     private SAMLConfig samlConfig;
@@ -44,32 +39,25 @@ public class WMMetadataProviderFactory implements FactoryBean<AbstractMetadataPr
     private ParserPool parserPool;
 
     @Override
-    public AbstractMetadataProvider getObject() throws Exception {
+    public MetadataProvider getObject() throws Exception {
         try {
             MetadataSource metadataSource = samlConfig.getMetadataSource();
             checkInput(metadataSource.name(), "MetadataSource invalid.");
+            AbstractMetadataProvider metadataProvider;
             if (MetadataSource.URL == metadataSource) {
                 String idpMetadataUrl = samlConfig.getIdpMetadataUrl();
                 checkInput(idpMetadataUrl, "Url is invalid.");
-                FileBackedHTTPMetadataProvider fileBackedHTTPMetadataProvider = new FileBackedHTTPMetadataProvider(idpMetadataUrl, 15000,
-                        getFile(SAMLConstants.SAML_IDP_METADATA_BACKUP_LOCATION).getAbsolutePath());
-                fileBackedHTTPMetadataProvider.setParserPool(parserPool);
-                return fileBackedHTTPMetadataProvider;
+                metadataProvider = new HTTPMetadataProvider(idpMetadataUrl, 15000);
             } else {
-                if (MetadataSource.FILE == metadataSource) {
-                    String idpMetadataFileLocation = samlConfig.getIdpMetadataFileLocation();
-                    checkInput(idpMetadataFileLocation, "File is invalid");
-                    FilesystemMetadataProvider filesystemMetadataProvider = new FilesystemMetadataProvider(
-                            getFile(idpMetadataFileLocation));
-                    filesystemMetadataProvider.setParserPool(parserPool);
-                    return filesystemMetadataProvider;
-                }
+                String idpMetadataFileLocation = samlConfig.getIdpMetadataFileLocation();
+                checkInput(idpMetadataFileLocation, "File is invalid");
+                metadataProvider = new FilesystemMetadataProvider(getFile(idpMetadataFileLocation));
             }
+            metadataProvider.setParserPool(parserPool);
+            return metadataProvider;
         } catch (MetadataProviderException | URISyntaxException e) {
             throw new WMRuntimeInitException("Failed to create MetadataProvider bean", e.getMessage(), e);
         }
-
-        return null;
     }
 
     private void checkInput(final String input, String errorMessage) {

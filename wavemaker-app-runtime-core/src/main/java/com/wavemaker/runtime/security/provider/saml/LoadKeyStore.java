@@ -15,13 +15,25 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.WMIOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.opensaml.saml2.metadata.EntitiesDescriptor;
+import org.opensaml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml2.metadata.IDPSSODescriptor;
+import org.opensaml.saml2.metadata.KeyDescriptor;
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.xml.XMLObject;
+import org.opensaml.xml.security.credential.UsageType;
+import org.opensaml.xml.signature.KeyInfo;
+import org.opensaml.xml.signature.X509Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.security.saml.metadata.MetadataManager;
+
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,27 +44,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.opensaml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.saml2.metadata.KeyDescriptor;
-import org.opensaml.saml2.metadata.impl.EntityDescriptorImpl;
-import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.XMLObject;
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.security.credential.UsageType;
-import org.opensaml.xml.signature.KeyInfo;
-import org.opensaml.xml.signature.X509Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
-
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.model.security.saml.MetadataSource;
-import com.wavemaker.commons.util.WMIOUtils;
-import com.wavemaker.runtime.security.provider.saml.util.FileDownload;
 
 /**
  * Created by ArjunSahasranam on 28/11/16.
@@ -70,39 +61,33 @@ public class LoadKeyStore {
     private static final String KEY = "idpkey";
 
     private Environment environment;
+    private MetadataManager metadataManager;
 
-    public LoadKeyStore(Environment environment) {
+    public LoadKeyStore(Environment environment, MetadataManager metadataManager) {
         this.environment = environment;
+        this.metadataManager = metadataManager;
     }
 
     public void load() {
-        final String idpMetadataUrl = environment.getProperty(PROVIDERS_SAML_IDP_METADATA_URL);
-        final String idpMetadataFile = environment.getProperty(PROVIDERS_SAML_IDP_METADATA_FILE);
-        final String idpMetadataSource = environment.getProperty(PROVIDERS_SAML_IDP_METADATA_SOURCE);
         final String keyStoreFileName = environment.getProperty(PROVIDERS_SAML_KEY_STORE_FILE);
         final String keyStorePassword = environment.getProperty(PROVIDERS_SAML_KEY_STORE_PASSWORD);
 
         if (StringUtils.isNotBlank(keyStoreFileName) && StringUtils.isNotBlank(keyStorePassword)) {
             File keyStoreFile = new File(getFileURI("saml/" + keyStoreFileName));
-            InputStream resourceAsStream = null; // stream closed in load method.
+            InputStream resourceAsStream;
             try {
                 resourceAsStream = new FileInputStream(keyStoreFile);
             } catch (FileNotFoundException e) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.not.found"), e, keyStoreFileName);
             }
             final KeyStore keyStore = load(resourceAsStream, keyStorePassword);
-            String idpPublicKey = null;
-            if (MetadataSource.URL.name().equals(idpMetadataSource) && StringUtils.isNotBlank(idpMetadataUrl)) {
-                idpPublicKey = loadSAMLIdpMetadataFromUrl(idpMetadataUrl,
-                        new File(getFileURI("/saml/metadata/" + SAMLConstants.IDP_METADATA_XML)).getAbsolutePath());
-            } else if (MetadataSource.FILE.name().equals(idpMetadataSource) && StringUtils
-                    .isNotBlank(idpMetadataFile)) {
-                idpPublicKey = loadSAMLIdpMetadataFromFile(idpMetadataFile);
+            String idpPublicKey;
+            try {
+                XMLObject xmlObject = metadataManager.getAvailableProviders().iterator().next().getMetadata();
+                idpPublicKey = readIdpPublicKey(xmlObject);
+            } catch (MetadataProviderException e) {
+                throw new WMRuntimeException(e);
             }
-            if (idpPublicKey == null) {
-                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.publicKey.not.found"), keyStoreFile.getName());
-            }
-
             final boolean success = importCertificate(keyStore, KEY, idpPublicKey);
             if (success) {
                 saveKeyStore(keyStore, keyStoreFile, keyStorePassword);
@@ -115,57 +100,20 @@ public class LoadKeyStore {
     }
 
     private KeyStore load(InputStream keyStoreIS, String password) {
-        logger.info("load keystore");
-        KeyStore keystore = null;
         try {
-            keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            logger.info("loading keystore");
+            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             keystore.load(keyStoreIS, password.toCharArray());
+            return keystore;
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.creating.keystore"), e);
         } finally {
             WMIOUtils.closeSilently(keyStoreIS);
         }
-        return keystore;
     }
 
-    private String loadSAMLIdpMetadataFromUrl(final String idpMetadataUrl, String filePath) {
-        File idpMetadataFile = new File(filePath);
-        logger.info("load metadata for {}", idpMetadataUrl);
-        try {
-            FileDownload fileDownload = new FileDownload();
-            idpMetadataFile = fileDownload.download(idpMetadataUrl, new File(filePath));
-        } catch (WMRuntimeException e) {
-            logger.warn("Failed to download metadata file for url {}", idpMetadataUrl, e);
-            if (!idpMetadataFile.exists()) {
-                throw e;
-            }
-        }
-        return readMetadataFile(idpMetadataFile);
-    }
-
-    private String loadSAMLIdpMetadataFromFile(String idpMetadataFilePath) {
-        logger.info("load metadata for {}", idpMetadataFilePath);
-        File idpMetadataFile = new File(getFileURI(idpMetadataFilePath));
-        return readMetadataFile(idpMetadataFile);
-    }
-
-    private String readMetadataFile(File idpMetadataFile) {
-        XMLObject metadata = null;
-        FilesystemMetadataProvider fileSystemMetadataProvider = null;
-        try {
-            fileSystemMetadataProvider = new FilesystemMetadataProvider(idpMetadataFile);
-            fileSystemMetadataProvider.setParserPool(new BasicParserPool());
-            fileSystemMetadataProvider.initialize();
-            metadata = fileSystemMetadataProvider.getMetadata();
-        } catch (MetadataProviderException e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.read.idp.metadata"), e);
-        } finally {
-            if (fileSystemMetadataProvider != null) {
-                fileSystemMetadataProvider.destroy();
-            }
-        }
-        final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
-                .getIDPSSODescriptor(SAMLConstants.SAML_2_0_PROTOCOL);
+    private String readIdpPublicKey(XMLObject xmlObject) {
+        final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptor) xmlObject).getIDPSSODescriptor(SAMLConstants.SAML_2_0_PROTOCOL);
         final List<KeyDescriptor> keyDescriptors = idpssoDescriptor.getKeyDescriptors();
         logger.info("Size of the keyDescriptors is : {}", keyDescriptors.size());
         for (KeyDescriptor keyDescriptor : keyDescriptors) {
@@ -179,7 +127,7 @@ public class LoadKeyStore {
                 return com.wavemaker.commons.util.StringUtils.removeLineFeed(x509Certificate.getValue());
             }
         }
-        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.publicKey.not.found"), idpMetadataFile.getName());
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.publicKey.not.found"));
     }
 
     private String createIdpCertificate(final String idpPublicKey) {
@@ -229,10 +177,8 @@ public class LoadKeyStore {
     private URI getFileURI(String filePath) {
         final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         final URL resource = contextClassLoader.getResource(filePath);
-        URI uri = null;
         try {
-            uri = resource.toURI();
-            return uri;
+            return resource.toURI();
         } catch (URISyntaxException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.not.found"), e, filePath);
         }

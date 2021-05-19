@@ -15,14 +15,14 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
-import javax.annotation.PostConstruct;
-
+import com.wavemaker.runtime.RuntimeEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.saml.metadata.MetadataManager;
 
-import com.wavemaker.runtime.RuntimeEnvironment;
+import javax.annotation.PostConstruct;
 
 /**
  * Created by ArjunSahasranam on 24/11/16.
@@ -34,6 +34,9 @@ public class LoadKeyStoreInitializer {
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    private MetadataManager metadataManager;
 
     @PostConstruct
     public void init() {
@@ -50,7 +53,7 @@ public class LoadKeyStoreInitializer {
             logger.info("saml classes not found in classpath.");
         }
         if (samlHttpMetadataProviderClazz != null) {
-            LoadKeyStore loadKeyStore = new LoadKeyStore(environment);
+            LoadKeyStore loadKeyStore = new LoadKeyStore(environment, metadataManager);
             loadKeyStore.load();
         }
     }
