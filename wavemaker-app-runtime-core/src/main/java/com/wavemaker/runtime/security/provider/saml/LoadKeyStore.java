@@ -19,7 +19,6 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.opensaml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml2.metadata.KeyDescriptor;
@@ -51,10 +50,6 @@ import java.util.List;
 public class LoadKeyStore {
 
     private static final Logger logger = LoggerFactory.getLogger(LoadKeyStore.class);
-
-    private static final String PROVIDERS_SAML_IDP_METADATA_FILE = "providers.saml.idpMetadataFile";
-    private static final String PROVIDERS_SAML_IDP_METADATA_URL = "providers.saml.idpMetadataUrl";
-    private static final String PROVIDERS_SAML_IDP_METADATA_SOURCE = "providers.saml.idpMetadataSource";
 
     private static final String PROVIDERS_SAML_KEY_STORE_FILE = "providers.saml.keyStoreFile";
     private static final String PROVIDERS_SAML_KEY_STORE_PASSWORD = "providers.saml.keyStorePassword";
