@@ -54,6 +54,7 @@ public class WMMetadataProviderFactory implements FactoryBean<MetadataProvider> 
                 metadataProvider = new FilesystemMetadataProvider(getFile(idpMetadataFileLocation));
             }
             metadataProvider.setParserPool(parserPool);
+            metadataProvider.initialize();
             return metadataProvider;
         } catch (MetadataProviderException | URISyntaxException e) {
             throw new WMRuntimeInitException("Failed to create MetadataProvider bean", e.getMessage(), e);
