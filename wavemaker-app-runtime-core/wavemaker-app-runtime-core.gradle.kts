@@ -42,7 +42,10 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:4.1.2") {
         exclude("com.github.virtuald", "curvesapi")
     }
-    implementation("org.owasp.antisamy:antisamy:1.5.10")
+    implementation("org.owasp.antisamy:antisamy:1.6.3") {
+        exclude("org.slf4j", "slf4j-api")
+        exclude("org.slf4j", "slf4j-simple")
+    }
     implementation("org.freemarker:freemarker:2.3.30")
     implementation("com.wordnik:swagger-annotations:1.3.10")
     compileOnly("javax.servlet:javax.servlet-api")
