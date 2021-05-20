@@ -59,14 +59,16 @@ public class WMCompressionFilter extends GenericFilterBean {
             String accessingResource = httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());
             for (String encodingType : BUILD_TIME_ENCODINGS) {
                 if (supportedEncodings.toLowerCase().contains(encodingType)) {
-                    String generatedCompressedFile = accessingResource.replaceAll("(.*)(\\..*)", "$1." + encodingType + "$2");
-                    URL compressedResource = getServletContext().getResource(FileValidationUtils.validateFilePath(generatedCompressedFile));
-                    if (compressedResource != null && accessingResource.matches("(.*)(\\..*)")) {
-                        processedCompressedFile = true;
-                        RequestDispatcher requestDispatcher = httpServletRequest.getRequestDispatcher("/" + generatedCompressedFile);
-                        httpServletResponse.addHeader(HttpHeaders.CONTENT_ENCODING, encodingType);
-                        requestDispatcher.forward(httpServletRequest, httpServletResponse);
-                        break;
+                    if (accessingResource.matches("(.*)(\\..*)")) {
+                        String generatedCompressedFile = accessingResource.replaceAll("(.*)(\\..*)", "$1." + encodingType + "$2");
+                        URL compressedResource = getServletContext().getResource(FileValidationUtils.validateFilePath(generatedCompressedFile));
+                        if (compressedResource != null) {
+                            processedCompressedFile = true;
+                            RequestDispatcher requestDispatcher = httpServletRequest.getRequestDispatcher("/" + generatedCompressedFile);
+                            httpServletResponse.addHeader(HttpHeaders.CONTENT_ENCODING, encodingType);
+                            requestDispatcher.forward(httpServletRequest, httpServletResponse);
+                            break;
+                        }
                     }
                 }
             }
