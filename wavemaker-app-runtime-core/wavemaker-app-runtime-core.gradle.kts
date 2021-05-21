@@ -43,7 +43,6 @@ dependencies {
         exclude("com.github.virtuald", "curvesapi")
     }
     implementation("org.owasp.antisamy:antisamy:1.6.3") {
-        exclude("org.slf4j", "slf4j-api")
         exclude("org.slf4j", "slf4j-simple")
     }
     implementation("org.freemarker:freemarker:2.3.30")
