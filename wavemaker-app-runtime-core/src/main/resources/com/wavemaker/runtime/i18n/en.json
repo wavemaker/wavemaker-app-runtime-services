@@ -82,6 +82,9 @@
   "MESSAGE_FOLDER_UPLOADS_NOT_ALLOWED": "Folder uploads are not allowed",
   "MESSAGE_FILE_UPLOAD_FAILED": "File upload failed",
   "LABEL_CLEAR_DATE": "Clear",
-  "LABEL_TODAY_DATE": "Today"
-
+  "LABEL_TODAY_DATE": "Today",
+  "LABEL_LEFT_NAVIGATION": "Left navigation",
+  "LABEL_RIGHT_NAVIGATION": "Right navigation",
+  "LABEL_TOP_NAVIGATION": "Second level navigation",
+  "LABEL_PICTURE_PLACEHOLDER" : "Placeholder image"
 }
