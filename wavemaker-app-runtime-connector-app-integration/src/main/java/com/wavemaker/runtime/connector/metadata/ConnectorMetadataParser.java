@@ -42,7 +42,7 @@ public class ConnectorMetadataParser {
     public static ConnectorMetadata parser(InputStream is) {
         Yaml yaml = new Yaml(new Constructor(ConnectorMetadata.class));
         try {
-            return yaml.load(is);
+            return yaml.loadAs(is, ConnectorMetadata.class);
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to parse connector YAML file", e);
         } finally {
