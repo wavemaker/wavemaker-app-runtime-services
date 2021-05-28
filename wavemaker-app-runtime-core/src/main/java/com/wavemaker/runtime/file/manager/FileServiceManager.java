@@ -233,7 +233,8 @@ public class FileServiceManager {
             if (!relativePath.endsWith("/")) {
                 relativePath = relativePath + "/";
             }
-            relativeUploadDirectory = new File(uploadDirectory.getAbsolutePath(), relativePath);
+            relativeUploadDirectory = new File(uploadDirectory.getAbsolutePath(),
+                    FileValidationUtils.validateFilePath(relativePath));
 
             /* Find our upload directory, make sure it exists */
             if (!relativeUploadDirectory.exists()) {
