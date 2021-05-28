@@ -11,72 +11,72 @@ val runtimeLibDependencies: Configuration by configurations.creating {
 }
 
 dependencies {
-    implementation(platform(project(":wavemaker-app-runtime-services")))
-    implementation(project(":wavemaker-commons-util"))
-    implementation(project(":wavemaker-app-runtime-prefab"))
-    implementation(project(":wavemaker-app-runtime-connector-app-integration"))
-    implementation(project(":wavemaker-tools-apidocs-core"))
-    implementation("commons-io:commons-io")
-    implementation("org.apache.commons:commons-text")
-    implementation("org.apache.commons:commons-lang3")
-    implementation("commons-fileupload:commons-fileupload")
-    implementation("org.apache.commons:commons-collections4")
-    implementation("com.google.guava:guava")
-    implementation("org.springframework:spring-web")
-    implementation("org.springframework:spring-webmvc")
-    implementation("org.springframework.data:spring-data-jpa")
-    implementation("org.springframework.security:spring-security-core")
-    implementation("org.springframework.security:spring-security-web")
-    implementation("org.springframework.session:spring-session-core")
-    implementation("org.hibernate:hibernate-core")
-    implementation("org.hibernate:hibernate-validator")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-    implementation("org.apache.httpcomponents:httpclient")
-    implementation("net.sf.jmimemagic:jmimemagic:0.1.5") {
+    implementation(platform(projects.wavemakerAppRuntimeServices))
+    implementation(projects.wavemakerCommonsUtil)
+    implementation(projects.wavemakerAppRuntimePrefab)
+    implementation(projects.wavemakerAppRuntimeConnectorAppIntegration)
+    implementation(projects.wavemakerToolsApidocsCore)
+    implementation(libs.commons.io)
+    implementation(libs.commons.text)
+    implementation(libs.commons.lang3)
+    implementation(libs.commons.fileupload)
+    implementation(libs.commons.collections4)
+    implementation(libs.guava)
+    implementation(libs.spring.web)
+    implementation(libs.spring.webmvc)
+    implementation(libs.spring.data.jpa)
+    implementation(libs.spring.security.core)
+    implementation(libs.spring.security.web)
+    implementation(libs.spring.session.core)
+    implementation(libs.hibernate.core)
+    implementation(libs.hibernate.validator)
+    implementation(libs.jackson.dataformat.yaml)
+    implementation(libs.jackson.datatype.jsr310)
+    implementation(libs.jackson.datatype.hibernate5)
+    implementation(libs.apache.httpclient)
+    implementation(libs.jmimemagic) {
         exclude("log4j", "log4j")
     }
-    implementation("org.apache.tika:tika-core:1.24.1")
-    implementation("org.apache.poi:poi:4.1.2")
-    implementation("org.apache.poi:poi-ooxml:4.1.2") {
+    implementation(libs.tika.core)
+    implementation(libs.poi)
+    implementation(libs.poiOoxml) {
         exclude("com.github.virtuald", "curvesapi")
     }
-    implementation("org.owasp.antisamy:antisamy:1.6.3") {
+    implementation(libs.antisamy) {
         exclude("org.slf4j", "slf4j-simple")
     }
-    implementation("org.freemarker:freemarker:2.3.30")
-    implementation("com.wordnik:swagger-annotations:1.3.10")
-    compileOnly("javax.servlet:javax.servlet-api")
-    compileOnly("org.springframework:spring-context-support")
-    compileOnly("org.springframework.security:spring-security-cas")
-    compileOnly("org.springframework.security:spring-security-ldap")
-    compileOnly("org.springframework.security:spring-security-oauth2-client")
-    compileOnly("org.springframework.security:spring-security-oauth2-jose")
+    implementation(libs.freemarker)
+    implementation(libs.swagger.annotations)
+    compileOnly(libs.javax.servlet.api)
+    compileOnly(libs.spring.contextSupport)
+    compileOnly(libs.spring.security.cas)
+    compileOnly(libs.spring.security.ldap)
+    compileOnly(libs.spring.security.oauth2.client)
+    compileOnly(libs.spring.security.oauth2.jose)
     //TODO Need to add xalan and xml-apis exclusions for saml2-core
-    compileOnly("org.springframework.security.extensions:spring-security-saml2-core")
-    compileOnly("org.springframework.session:spring-session-jdbc")
-    compileOnly("org.quartz-scheduler:quartz:2.3.2")
-    runtimeOnly("com.zaxxer:HikariCP")
-    runtimeOnly("org.springframework.security:spring-security-config")
-    testImplementation("org.testng:testng")
-    testImplementation("junit:junit")
-    testImplementation("org.mockito:mockito-all")
-    testImplementation("org.skyscreamer:jsonassert:1.5.0")
-    testImplementation("javax.servlet:javax.servlet-api")
-    runtimeOnly("org.antlr:antlr4-runtime:4.8-1")
+    compileOnly(libs.springSecuritySaml2Core)
+    compileOnly(libs.spring.session.jdbc)
+    compileOnly(libs.quartzScheduler.quartz)
+    runtimeOnly(libs.hikariCP)
+    runtimeOnly(libs.spring.security.config)
+    testImplementation(libs.test.testng)
+    testImplementation(libs.test.junit4)
+    testImplementation(libs.test.mockito.all)
+    testImplementation(libs.test.jsonassert)
+    testImplementation(libs.javax.servlet.api)
+    runtimeOnly(libs.antlr4Runtime)
     // The below dependency is adding antlr4 and its transitive depedencies as well, removing them using exclude for runtime configuration
-    antlr("org.antlr:antlr4:4.8-1")
+    antlr(libs.antlr4)
 
     //Logging related dependencies
-    implementation("org.slf4j:slf4j-api")
-    implementation("org.apache.logging.log4j:log4j-core")
-    loggingCapabilityConfiguration("org.apache.logging.log4j:log4j-slf4j-impl")
+    implementation(libs.slf4j.api)
+    implementation(libs.log4j.core)
+    loggingCapabilityConfiguration(libs.log4j.slf4j.impl)
 
     //runtime dependencies lib
-    runtimeLibDependencies(project(":wavemaker-app-runtime-core"))
+    runtimeLibDependencies(projects.wavemakerAppRuntimeCore)
     //TODO: To support DB2 implementation, the custom code needs to be updated as per the new hibernate library code
-    /*runtimeLibDependencies("org.hibernate:hibernate-core") {
+    /*runtimeLibDependencies(libs.hibernate.core) {
         version {
             strictly("5.2.17.WM")
         }
@@ -84,7 +84,7 @@ dependencies {
 }
 
 configurations {
-    runtime {
+    runtimeOnly {
         exclude("org.antlr", "antlr4")
     }
 }
@@ -97,11 +97,20 @@ tasks {
             project.configurations.runtimeClasspath.get().resolvedConfiguration.resolvedArtifacts.forEach {
                 content+=it.moduleVersion.toString()+"\n"
             }
-
             val resourcesDir : File = sourceSets.main.get().output.resourcesDir!!
             resourcesDir.mkdirs()
             File(resourcesDir, "app-runtime-dependencies.txt").writeText(content)
         }
+        // Added these below task dependencies as the processResources depends on those too be finished first
+        // TODO need to remove the generation of app-runtime-dependencies.txt file, need to solve the use case in a better way
+        dependsOn(":wavemaker-commons-util:jar")
+        dependsOn(":wavemaker-app-runtime-prefab:jar")
+        dependsOn(":wavemaker-tools-apidocs-core:jar")
+        dependsOn(":wavemaker-app-runtime-connector-app-integration:jar")
+        dependsOn(":wavemaker-app-runtime-connector-api:jar")
+    }
+    withType<Jar>().configureEach { // This is added to make sourcesJar task depend on generateGrammarSource task
+        dependsOn(generateGrammarSource)
     }
 }
 
