@@ -21,7 +21,6 @@ import java.util.Map;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.query.Query;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -44,20 +43,6 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
 
     private static final StringTemplate QUERY_EXECUTOR_BEAN_ST = new StringTemplate("${serviceId}WMQueryExecutor");
     private static final StringTemplate SESSION_FACTORY_BEAN_ST = new StringTemplate("${serviceId}SessionFactory");
-
-    @Override
-    public List<ReturnProperty> extractMeta(final String serviceId, final RuntimeQuery query) {
-        List<ReturnProperty> meta;
-        if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
-            meta = DesignTimeServiceUtils.getMetaForDML();
-        } else if (!query.isNativeSql()) {
-            meta = executeInTransaction(serviceId, status -> extractMetaForHql(serviceId, query));
-        } else {
-            meta = testRunQuery(serviceId, query, PageRequest.of(0, 5, null)).getReturnProperties();
-        }
-
-        return meta;
-    }
 
     @Override
     public DesignServiceResponse testRunQuery(
