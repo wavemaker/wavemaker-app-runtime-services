@@ -57,6 +57,7 @@ dependencies {
     compileOnly("org.springframework.security.extensions:spring-security-saml2-core")
     compileOnly("org.springframework.session:spring-session-jdbc")
     compileOnly("org.quartz-scheduler:quartz:2.3.2")
+    //runtimeOnly("org.aspectj:aspectjweaver:1.9.6")
     runtimeOnly("com.zaxxer:HikariCP")
     runtimeOnly("org.springframework.security:spring-security-config")
     testImplementation("org.testng:testng")
