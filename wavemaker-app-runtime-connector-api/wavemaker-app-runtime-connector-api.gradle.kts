@@ -5,7 +5,7 @@ plugins {
 group ="com.wavemaker.runtime.connector"
 
 dependencies {
-    implementation(platform(project(":wavemaker-app-runtime-services")))
+    implementation(platform(projects.wavemakerAppRuntimeServices))
 }
 
 javaLibraryMavenPublish {
