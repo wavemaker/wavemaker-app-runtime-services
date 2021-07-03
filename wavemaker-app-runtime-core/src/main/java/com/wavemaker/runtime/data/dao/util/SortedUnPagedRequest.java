@@ -69,6 +69,11 @@ public class SortedUnPagedRequest implements Pageable {
         return new SortedUnPagedRequest(0, getPageSize(), getSort());
     }
 
+    @Override
+    public Pageable withPage(int pageNumber) {
+        return new SortedUnPagedRequest(getPageNumber(), getPageSize(), getSort());
+    }
+
     public boolean hasPrevious() {
         return page > 0;
     }
