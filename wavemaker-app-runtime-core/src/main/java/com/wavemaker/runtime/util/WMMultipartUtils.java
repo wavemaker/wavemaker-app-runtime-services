@@ -272,7 +272,7 @@ public class WMMultipartUtils {
                 contentType = getMatchingContentType(bytes, httpServletRequest);
             }
             String fileExtension = getFileExtensionFromContentType(contentType);
-            if (StringUtils.isNotBlank(fileExtension)) {
+            if (StringUtils.isNotBlank(fileExtension) && !filename.endsWith(fileExtension)) {
                 filename += fileExtension;
             }
 
