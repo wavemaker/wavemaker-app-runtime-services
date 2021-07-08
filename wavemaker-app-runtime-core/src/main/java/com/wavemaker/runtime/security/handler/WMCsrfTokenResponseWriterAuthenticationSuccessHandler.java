@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security.handler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
@@ -28,18 +29,13 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
-import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.model.LoginSuccessResponse;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
-import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
-import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;
-import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
-import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
-import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
+import static com.wavemaker.runtime.security.SecurityConstants.*;
 
 /**
  * Created by srujant on 19/11/18.
@@ -56,7 +52,7 @@ public class WMCsrfTokenResponseWriterAuthenticationSuccessHandler implements Au
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         Optional<CsrfToken> csrfTokenOptional = getCsrfToken(request);
         if (HttpRequestUtils.isAjaxRequest(request)) {
-            request.setCharacterEncoding(CommonConstants.UTF8);
+            request.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
             response.setHeader(CACHE_CONTROL, NO_CACHE);
             response.setDateHeader(EXPIRES, 0);

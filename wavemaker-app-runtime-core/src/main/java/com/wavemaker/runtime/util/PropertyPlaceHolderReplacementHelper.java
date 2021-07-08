@@ -18,7 +18,7 @@ package com.wavemaker.runtime.util;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -37,7 +37,7 @@ public class PropertyPlaceHolderReplacementHelper implements EnvironmentAware {
     }
 
     public Reader getPropertyReplaceReader(InputStream inputStream) {
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         return getPropertyReplaceReader(inputStreamReader);
     }
 

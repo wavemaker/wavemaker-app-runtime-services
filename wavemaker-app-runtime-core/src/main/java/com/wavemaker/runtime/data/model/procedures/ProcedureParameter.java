@@ -15,8 +15,6 @@
  */
 package com.wavemaker.runtime.data.model.procedures;
 
-import javax.validation.constraints.NotNull;
-
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 
 /**
@@ -25,10 +23,8 @@ import com.wavemaker.runtime.data.model.queries.QueryParameter;
  */
 public class ProcedureParameter extends QueryParameter {
 
-    @NotNull
     private ProcedureParameterType parameterType;
 
-    // Needed for jackson deserialization
     public ProcedureParameter() {
     }
 

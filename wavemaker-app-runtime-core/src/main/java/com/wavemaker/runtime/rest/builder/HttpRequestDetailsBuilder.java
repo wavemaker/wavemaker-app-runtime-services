@@ -17,7 +17,7 @@ package com.wavemaker.runtime.rest.builder;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.http.HttpRequest;
@@ -90,7 +90,7 @@ public class HttpRequestDetailsBuilder {
         HttpRequest httpRequest = new BasicHttpRequest(httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
         String authorization = null;
         try {
-            authorization = new BasicScheme(Charset.forName("UTF-8")).authenticate(credentials, httpRequest, null).getValue();
+            authorization = new BasicScheme(StandardCharsets.UTF_8).authenticate(credentials, httpRequest, null).getValue();
         } catch (AuthenticationException e) {
             throw new WMRuntimeException(e);
         }

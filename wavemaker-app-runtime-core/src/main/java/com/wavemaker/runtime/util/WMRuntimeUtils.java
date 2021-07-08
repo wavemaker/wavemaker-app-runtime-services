@@ -17,7 +17,7 @@ package com.wavemaker.runtime.util;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +40,6 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.converters.WMYamlJackson2HttpMessageConverter;
@@ -77,7 +76,7 @@ public class WMRuntimeUtils {
 
     static {
         messageConverters.add(new ByteArrayHttpMessageConverter());
-        messageConverters.add(new StringHttpMessageConverter(Charset.forName(CommonConstants.UTF8)));
+        messageConverters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         messageConverters.add(new ResourceHttpMessageConverter());
         messageConverters.add(new SourceHttpMessageConverter<>());
         messageConverters.add(new AllEncompassingFormHttpMessageConverter());

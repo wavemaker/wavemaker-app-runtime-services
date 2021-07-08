@@ -51,18 +51,17 @@ import com.wavemaker.runtime.connector.factorybean.ConnectorFactoryBean;
 
 public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcessor, EnvironmentAware {
 
-    public static final String APP_PROPERTIES = "/app.properties";
-    public static final String CONNECTOR_PROPERTY_PREFIX = "connector.";
-    public static final String CONNECTOR_PROPERTY_SEPARATOR = ".";
-    public static final String DEFAULT_CONNECTOR_CONFIGURATION_ID = "default";
-    public static final List<String> WHITELISTED_PACKAGE_PREFIX = new ArrayList<>();
+    private static final String APP_PROPERTIES = "/app.properties";
+    private static final String CONNECTOR_PROPERTY_PREFIX = "connector.";
+    private static final String CONNECTOR_PROPERTY_SEPARATOR = ".";
+    private static final String DEFAULT_CONNECTOR_CONFIGURATION_ID = "default";
+    private static final List<String> WHITELISTED_PACKAGE_PREFIX = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(ConnectorBeanFactoryPostProcessor.class);
 
     static {
         WHITELISTED_PACKAGE_PREFIX.add("org.springframework.");
     }
 
-    private ClassLoader wmAppBaseClassLoader;
     private Environment environment;
 
     @Override

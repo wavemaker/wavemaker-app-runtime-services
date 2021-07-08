@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,17 +31,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
-import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.WMObjectMapper;
 
-import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
-import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;
-import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
-import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
-import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
+import static com.wavemaker.runtime.security.SecurityConstants.*;
 
 /**
  * Created by kishorer on 4/7/16.
@@ -61,7 +57,7 @@ public class WMAppAccessDeniedHandler extends AccessDeniedHandlerImpl {
             List<ErrorResponse> errorResponseList = new ArrayList<>(1);
             errorResponseList.add(errorResponse);
             errorMap.put("errors", new ErrorResponses(errorResponseList));
-            request.setCharacterEncoding(CommonConstants.UTF8);
+            request.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setHeader(CACHE_CONTROL, NO_CACHE);
             response.setDateHeader(EXPIRES, 0);
             response.setHeader(PRAGMA, NO_CACHE);

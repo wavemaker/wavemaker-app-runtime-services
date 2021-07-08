@@ -17,6 +17,7 @@ package com.wavemaker.runtime.rest.service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.wavemaker.commons.CommonConstants;
 
 /**
  * Created by srujant on 19/4/17.
@@ -108,7 +107,7 @@ public class CustomUriComponentsBuilder extends UriComponentsBuilder {
     public UriComponentsBuilder path(String path) {
         try {
             if (path != null) {
-                path = URLDecoder.decode(path, CommonConstants.UTF8);
+                path = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
             }
             replacePath(path);
         } catch (UnsupportedEncodingException e) {
@@ -130,7 +129,7 @@ public class CustomUriComponentsBuilder extends UriComponentsBuilder {
                 String value = matcher.group(3);
                 try {
                     if (value != null) {
-                        value = URLDecoder.decode(value, CommonConstants.UTF8);
+                        value = URLDecoder.decode(value, StandardCharsets.UTF_8.name());
                     }
                 } catch (UnsupportedEncodingException e) {
                     logger.error("Failed to decode queryParams {}", query);
