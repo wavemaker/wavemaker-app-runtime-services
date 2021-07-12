@@ -15,14 +15,17 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.wavemaker.commons.model.security.CSRFConfig;
+import com.wavemaker.commons.model.security.LoginConfig;
+import com.wavemaker.commons.model.security.RoleConfig;
+import com.wavemaker.commons.model.security.RolesConfig;
+import com.wavemaker.commons.util.EncodeUtils;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
+import com.wavemaker.runtime.security.model.SecurityInfo;
+import com.wavemaker.runtime.security.model.UserInfo;
+import com.wavemaker.runtime.security.token.Token;
+import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -35,17 +38,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.wavemaker.commons.model.security.CSRFConfig;
-import com.wavemaker.commons.model.security.LoginConfig;
-import com.wavemaker.commons.model.security.RoleConfig;
-import com.wavemaker.commons.model.security.RolesConfig;
-import com.wavemaker.commons.util.EncodeUtils;
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
-import com.wavemaker.runtime.security.model.SecurityInfo;
-import com.wavemaker.runtime.security.model.UserInfo;
-import com.wavemaker.runtime.security.token.Token;
-import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
+import java.util.*;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -161,6 +154,16 @@ public class SecurityService {
             return customAttributes;
         }
         return null;
+    }
+
+    public boolean addAttribute(String key, Object value, Attribute.AttributeScope attributeScope) {
+        Authentication authentication = getAuthenticatedAuthentication();
+        if (authentication != null) {
+            WMAuthentication wmAuthentication = (WMAuthentication) authentication;
+            wmAuthentication.addAttribute(key, value, attributeScope);
+            return true;
+        }
+        return false;
     }
 
     /**

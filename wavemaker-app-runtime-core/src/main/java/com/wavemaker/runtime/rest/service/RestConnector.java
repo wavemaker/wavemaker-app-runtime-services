@@ -34,6 +34,7 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
@@ -62,9 +63,9 @@ import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
 public class RestConnector {
 
-
-    private static final int MAX_TOTAL = 100;
-    private static final int DEFAULT_MAX_PER_ROUTE = 50;
+    private static final boolean USE_SYSTEM_PROPERTIES = Boolean.getBoolean("app.rest.useSystemProperties");
+    private static final int MAX_TOTAL = Integer.getInteger("app.rest.maxTotalConnections", 100);
+    private static final int DEFAULT_MAX_PER_ROUTE = Integer.getInteger("app.rest.maxConnectionsPerRoute", 50);
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
     private static CloseableHttpClient defaultHttpClient;
 
@@ -140,10 +141,13 @@ public class RestConnector {
     private CloseableHttpClient getHttpClient() {
         synchronized (RestConnector.class) {
             if (defaultHttpClient == null) {
-                defaultHttpClient = HttpClients.custom()
+                HttpClientBuilder httpClientBuilder = HttpClients.custom()
                         .setDefaultCredentialsProvider(getCredentialProvider())
-                        .setConnectionManager(getConnectionManager())
-                        .build();
+                        .setConnectionManager(getConnectionManager());
+                if (USE_SYSTEM_PROPERTIES) {
+                    httpClientBuilder = httpClientBuilder.useSystemProperties();
+                }
+                defaultHttpClient = httpClientBuilder.build();
             }
         }
 
