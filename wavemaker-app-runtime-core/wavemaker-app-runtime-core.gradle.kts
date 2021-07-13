@@ -59,13 +59,15 @@ dependencies {
     compileOnly(libs.quartzScheduler.quartz)
     runtimeOnly(libs.hikariCP)
     runtimeOnly(libs.spring.security.config)
+    runtimeOnly(libs.aspectjrt)
+    runtimeOnly(libs.aspectjweaver)
     testImplementation(libs.test.testng)
     testImplementation(libs.test.junit4)
     testImplementation(libs.test.mockito.all)
     testImplementation(libs.test.jsonassert)
     testImplementation(libs.javax.servlet.api)
     runtimeOnly(libs.antlr4Runtime)
-    // The below dependency is adding antlr4 and its transitive depedencies as well, removing them using exclude for runtime configuration
+    // The below dependency is adding antlr4 and its transitive dependencies as well, removing them using exclude for runtime configuration
     antlr(libs.antlr4)
 
     //Logging related dependencies
