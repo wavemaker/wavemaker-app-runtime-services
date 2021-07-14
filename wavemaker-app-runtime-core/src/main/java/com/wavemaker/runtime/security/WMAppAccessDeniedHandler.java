@@ -15,26 +15,23 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.WMObjectMapper;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.wavemaker.runtime.security.SecurityConstants.*;
 
@@ -53,7 +50,6 @@ public class WMAppAccessDeniedHandler extends AccessDeniedHandlerImpl {
             MessageResource messageResource = MessageResource.ACCESS_DENIED;
             errorResponse.setMessageKey(messageResource.getMessageKey());
             errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
-            errorResponse.setParameters(Arrays.asList(exceptionMessage));
             List<ErrorResponse> errorResponseList = new ArrayList<>(1);
             errorResponseList.add(errorResponse);
             errorMap.put("errors", new ErrorResponses(errorResponseList));
