@@ -93,8 +93,10 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
 
         Query<R> hibernateQuery = createQuery(session, sortedQuery, responseType);
 
-        hibernateQuery.setFirstResult((int) pageable.getOffset());
-        hibernateQuery.setMaxResults(pageable.getPageSize());
+        if (!pageable.isUnpaged()) {
+            hibernateQuery.setFirstResult((int) pageable.getOffset());
+            hibernateQuery.setMaxResults(pageable.getPageSize());
+        }
 
         return hibernateQuery;
     }

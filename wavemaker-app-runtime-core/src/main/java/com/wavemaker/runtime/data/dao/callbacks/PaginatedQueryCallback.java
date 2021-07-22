@@ -18,8 +18,12 @@ package com.wavemaker.runtime.data.dao.callbacks;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.PersistenceException;
+
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +38,7 @@ import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
  */
 public class PaginatedQueryCallback<R> implements HibernateCallback<Page<R>> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaginatedQueryCallback.class);
     private final PaginatedQueryProvider<R> queryProvider;
     private final ParametersProvider parametersProvider;
     private final Pageable pageable;
@@ -50,13 +55,16 @@ public class PaginatedQueryCallback<R> implements HibernateCallback<Page<R>> {
     public Page<R> doInHibernate(final Session session) {
         final Optional<Query<Number>> countQuery = queryProvider.getCountQuery(session, parametersProvider);
         long count = Integer.MAX_VALUE;
-        if (countQuery.isPresent()) {
-            final Optional<Number> countOptional = countQuery.get().uniqueResultOptional();
+        try {
+            Optional<Number> countOptional = countQuery.flatMap(Query::uniqueResultOptional);
             if (countOptional.isPresent()) {
                 count = countOptional.get().longValue();
             }
+        } catch (PersistenceException e) {
+            LOGGER.warn("Count query execution failed, returning max value ERROR: {}", e.getMessage());
+        } catch (Exception e) {
+            LOGGER.warn("Count query execution failed, returning max value", e);
         }
-
         final Query<R> selectQuery = queryProvider.getQuery(session, pageable, parametersProvider);
         final List<R> result = selectQuery.list();
 
