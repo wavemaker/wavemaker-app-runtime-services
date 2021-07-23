@@ -58,7 +58,6 @@ import com.wavemaker.runtime.rest.service.RestConnector;
  */
 public class OAuth2RuntimeServiceManager {
 
-    private static RestConnector restConnector = new RestConnector();
     private static final String REDIRECT_URL = "/services/oauth2/${providerId}/callback";
     private String customUrlScheme;
 
@@ -130,7 +129,7 @@ public class OAuth2RuntimeServiceManager {
                 .setContentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .setRequestBody(requestBody).build();
 
-        HttpResponseDetails httpResponseDetails = restConnector.invokeRestCall(httpRequestDetails);
+        HttpResponseDetails httpResponseDetails = RestConnector.DEFAULT_INSTANCE.invokeRestCall(httpRequestDetails);
 
         if (httpResponseDetails.getStatusCode() == 200) {
             String response = WMIOUtils.toString(httpResponseDetails.getBody());

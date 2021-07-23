@@ -40,6 +40,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -63,11 +65,22 @@ import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
 public class RestConnector {
 
-    private static final boolean USE_SYSTEM_PROPERTIES = Boolean.getBoolean("app.rest.useSystemProperties");
-    private static final int MAX_TOTAL = Integer.getInteger("app.rest.maxTotalConnections", 100);
-    private static final int DEFAULT_MAX_PER_ROUTE = Integer.getInteger("app.rest.maxConnectionsPerRoute", 50);
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
-    private static CloseableHttpClient defaultHttpClient;
+
+    private CloseableHttpClient defaultHttpClient;
+    private HttpConfiguration httpConfiguration;
+
+    public static final RestConnector DEFAULT_INSTANCE = new RestConnector();
+
+    @Deprecated
+    public RestConnector() {
+        this(new StandardEnvironment());
+    }
+
+    public RestConnector(Environment environment) {
+        httpConfiguration = new HttpConfiguration(environment);
+        logger.info("Initialized http configuration {}", httpConfiguration);
+    }
 
     public void invokeRestCall(HttpRequestDetails httpRequestDetails, Consumer<ClientHttpResponse> extractDataConsumer) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
@@ -101,9 +114,9 @@ public class RestConnector {
         final RequestConfig requestConfig = RequestConfig.custom()
                 .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
                 .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
-                .setSocketTimeout((int) TimeUnit.MINUTES.toMillis(6))// 6 mins, something more than lb time out  
-                .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(30))
-                .setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(5))
+                .setSocketTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionSocketTimeoutInSeconds()))
+                .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionTimeoutInSeconds()))
+                .setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionRequestTimeoutInSeconds()))
                 .build();
 
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient) {
@@ -144,7 +157,7 @@ public class RestConnector {
                 HttpClientBuilder httpClientBuilder = HttpClients.custom()
                         .setDefaultCredentialsProvider(getCredentialProvider())
                         .setConnectionManager(getConnectionManager());
-                if (USE_SYSTEM_PROPERTIES) {
+                if (httpConfiguration.isUseSystemProperties()) {
                     httpClientBuilder = httpClientBuilder.useSystemProperties();
                 }
                 defaultHttpClient = httpClientBuilder.build();
@@ -183,8 +196,8 @@ public class RestConnector {
                 .build();
 
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);
-        poolingHttpClientConnectionManager.setMaxTotal(MAX_TOTAL);
-        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
+        poolingHttpClientConnectionManager.setMaxTotal(httpConfiguration.getMaxTotalConnections());
+        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(httpConfiguration.getMaxTotalConnectionsPerRoute());
         return poolingHttpClientConnectionManager;
     }
 
