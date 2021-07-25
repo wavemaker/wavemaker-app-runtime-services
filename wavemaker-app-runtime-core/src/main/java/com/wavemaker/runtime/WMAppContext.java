@@ -16,14 +16,12 @@
 package com.wavemaker.runtime;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ServletContextAware;
 
-import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
 
 /**
@@ -33,14 +31,6 @@ import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
  * @author Jeremy Grelle
  */
 public class WMAppContext implements ApplicationContextAware, ServletContextAware {
-
-    private String applicationHostUrl;
-
-    private int applicationHostPort;
-
-    private boolean secured;
-
-    private boolean initialized;
 
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
 
@@ -67,15 +57,6 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
         return servletContext;
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
-    }
-
-    public String getAppContextRoot() {
-        return getSpringBean(AppFileSystem.class).getAppContextRoot();
-    }
-
     public <T> T getSpringBean(String beanId) {
         ApplicationContext applicationContext = detectCurrentApplicationContext();
         return (T) applicationContext.getBean(beanId);
@@ -100,7 +81,7 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
 
     private PrefabThreadLocalContextManager getPrefabThreadLocalContextManager() {
         if (prefabThreadLocalContextManager == null) {//Locking not really needed
-            PrefabThreadLocalContextManager prefabThreadLocalContextManager = null;
+            PrefabThreadLocalContextManager prefabThreadLocalContextManager;
             try {
                 prefabThreadLocalContextManager = getRootApplicationContext()
                         .getBean(PrefabThreadLocalContextManager.class);
@@ -109,37 +90,16 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
             }
             this.prefabThreadLocalContextManager = prefabThreadLocalContextManager;
         }
-        return this.prefabThreadLocalContextManager;
+        return prefabThreadLocalContextManager;
     }
 
     private ApplicationContext getRootApplicationContext() {
         return rootApplicationContext;
     }
 
-    public void init(HttpServletRequest httpServletRequest) {
-        if (!initialized) {
-            applicationHostUrl = httpServletRequest.getServerName();
-            applicationHostPort = httpServletRequest.getServerPort();
-            secured = httpServletRequest.isSecure();
-            initialized = true;
-        }
-    }
-
-    public String getApplicationHostUrl() {
-        return applicationHostUrl;
-    }
-
-    public int getApplicationHostPort() {
-        return applicationHostPort;
-    }
-
-    public boolean isSecured() {
-        return secured;
-    }
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        this.rootApplicationContext = applicationContext;
+        rootApplicationContext = applicationContext;
     }
 
     @Override

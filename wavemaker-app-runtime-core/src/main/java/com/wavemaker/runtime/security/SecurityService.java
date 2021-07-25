@@ -15,6 +15,25 @@
  */
 package com.wavemaker.runtime.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.model.security.LoginConfig;
 import com.wavemaker.commons.model.security.RoleConfig;
@@ -26,19 +45,6 @@ import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -54,13 +60,11 @@ public class SecurityService {
 
     private Boolean securityEnabled;
 
+    @Autowired(required = false)
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
 
     @Autowired(required = false)
     private WMAppSecurityConfig wmAppSecurityConfig;
-
-    public SecurityService() {
-    }
 
     private static Authentication getAuthenticatedAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -175,7 +179,7 @@ public class SecurityService {
      */
     public WMCurrentUser getLoggedInUser() {
         WMCurrentUser wmCurrentUser = new WMCurrentUser();
-        Boolean securityEnabled = isSecurityEnabled();
+        boolean securityEnabled = isSecurityEnabled();
         boolean authenticated = isAuthenticated();
         wmCurrentUser.setSecurityEnabled(securityEnabled);
         wmCurrentUser.setAuthenticated(authenticated);
@@ -328,21 +332,12 @@ public class SecurityService {
     public Token generateUserAccessToken() {
         Authentication authentication = getAuthenticatedAuthentication();
         if (authentication != null) {
-            return getWmTokenBasedAuthenticationService().generateToken(authentication);
+            if (wmTokenBasedAuthenticationService == null) {
+                throw new AuthenticationServiceException("Token based Security is not enabled");
+            }
+            return wmTokenBasedAuthenticationService.generateToken(authentication);
         }
         throw new AuthenticationCredentialsNotFoundException("Require authentication to generate access token");
-    }
-
-
-    public WMTokenBasedAuthenticationService getWmTokenBasedAuthenticationService() {
-        if (wmTokenBasedAuthenticationService == null) {
-            try {
-                wmTokenBasedAuthenticationService = WMAppContext.getInstance().getSpringBean(WMTokenBasedAuthenticationService.class);
-            } catch (NoSuchBeanDefinitionException e) {
-                throw new AuthenticationServiceException("Security is not enabled");
-            }
-        }
-        return wmTokenBasedAuthenticationService;
     }
 
     public void ssoLogin() {

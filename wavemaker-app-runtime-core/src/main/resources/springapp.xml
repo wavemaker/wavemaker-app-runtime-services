@@ -17,7 +17,7 @@
     <import resource="config.xml"/>
     <import resource="springapp-mvc.xml"/>
 
-    <bean id="wmAppContext" class="com.wavemaker.runtime.WMAppContext" lazy-init="false"/>
+    <bean id="wmAppContext" class="com.wavemaker.runtime.WMAppContext"/>
 
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
