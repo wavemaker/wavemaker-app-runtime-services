@@ -31,6 +31,7 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
@@ -88,11 +89,16 @@ public class RestRuntimeService {
     @Autowired
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
 
+    @Autowired
+    private Environment environment;
+
     private PathMatcher pathMatcher = new AntPathMatcher();
+    private RestConnector restConnector;
 
     @PostConstruct
     public void init() {
         restRuntimeServiceCacheHelper.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
+        restConnector = new RestConnector(environment);
     }
 
 
@@ -146,7 +152,7 @@ public class RestRuntimeService {
 
         HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
         long start = System.currentTimeMillis();
-        new RestConnector().invokeRestCall(httpRequestDetails, response -> {
+        restConnector.invokeRestCall(httpRequestDetails, response -> {
             long processingTime = System.currentTimeMillis() - start;
             logger.info("Time taken by the rest server endpoint is {}", processingTime);
             requestTrackingFilter.addServerTimingMetrics(new ServerTimingMetric("rest-server", processingTime, null));
@@ -362,6 +368,5 @@ public class RestRuntimeService {
     private String getNormalizedString(String str) {
         return (str != null) ? str.trim() : "";
     }
-
 }
 
