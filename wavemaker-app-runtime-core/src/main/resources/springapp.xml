@@ -122,24 +122,12 @@
 
     <bean id="propertyPlaceHolderReplacementHelper" class="com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper"/>
 
-    <bean class="com.wavemaker.runtime.data.spring.WMPropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>
-                    classpath:app.properties
-                </value>
-            </list>
-        </property>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-    </bean>
-
     <bean id="compressionFilterConfig" class="com.wavemaker.runtime.filter.compression.CompressionFilterConfig">
         <property name="enableCompression" value="${app.web.compression.enabled}"/>
         <property name="minCompressSize" value="${app.web.compression.minsize}"/>
         <property name="includeMimeTypes" value="${app.web.compression.mimetypes.includePatterns}"/>
         <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.excludePatterns}"/>
     </bean>
-
 
     <bean id="serverVariableValueProvider" class="com.wavemaker.runtime.system.ServerVariableValueProvider"/>
 

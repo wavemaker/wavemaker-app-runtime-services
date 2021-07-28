@@ -18,6 +18,7 @@ package com.wavemaker.runtime.prefab.context;
 import javax.servlet.ServletContext;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.StandardServletEnvironment;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.wavemaker.runtime.prefab.core.Prefab;
@@ -31,6 +32,10 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
                                        final ServletContext servletContext) {
         setId(prefab.getName());
         setParent(parent);
+
+        // This removes the parent properties added and creates new property sources, as we want this context to have its own property sources and not get the parent properties
+        setEnvironment(new StandardServletEnvironment());
+
         ClassLoader prefabClassLoader = prefab.getClassLoader();
         setClassLoader(prefabClassLoader);
         setServletContext(servletContext);

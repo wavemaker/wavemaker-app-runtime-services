@@ -204,7 +204,7 @@ public class RestRuntimeService {
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
         updateAuthorizationInfo(swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
-        httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathInfo.v1, queryParameters, pathParameters));
+        httpRequestDetails.setEndpointAddress(getEndPointAddress(serviceId, swagger, pathInfo.v1, queryParameters, pathParameters));
         httpRequestDetails.setMethod(method);
 
         httpRequestDetails.setHeaders(httpHeaders);
@@ -286,10 +286,13 @@ public class RestRuntimeService {
         }
     }
 
-    private String getEndPointAddress(Swagger swagger, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
-        String scheme = swagger.getSchemes().get(0).toValue();
-        StringBuilder sb = new StringBuilder(scheme).append("://").append(swagger.getHost())
-                .append(getNormalizedString(swagger.getBasePath())).append(getNormalizedString(pathValue));
+    private String getEndPointAddress(String serviceId, Swagger swagger, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
+        String scheme = environment.getProperty(serviceId + ".scheme", swagger.getSchemes().get(0).toValue());
+        String host = environment.getProperty(serviceId + ".host", swagger.getHost());
+        String basePath = environment.getProperty(serviceId + ".basepath", swagger.getBasePath());
+
+        StringBuilder sb = new StringBuilder(scheme).append("://").append(host)
+                .append(getNormalizedString(basePath)).append(getNormalizedString(pathValue));
 
         updateUrlWithQueryParameters(sb, queryParameters);
 
