@@ -49,7 +49,7 @@ public class WMAppAccessDeniedHandler extends AccessDeniedHandlerImpl {
             ErrorResponse errorResponse = new ErrorResponse();
             MessageResource messageResource = MessageResource.ACCESS_DENIED;
             errorResponse.setMessageKey(messageResource.getMessageKey());
-            errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
+            errorResponse.setMessage(messageResource.getMessage(exceptionMessage));
             List<ErrorResponse> errorResponseList = new ArrayList<>(1);
             errorResponseList.add(errorResponse);
             errorMap.put("errors", new ErrorResponses(errorResponseList));
