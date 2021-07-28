@@ -251,7 +251,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             args = new Object[]{errorMsg};
         }
         ErrorResponse errorResponse = getErrorResponse(messageResource, args);
-        errorResponse.setMessage(messageResource.getMessage(args));
+        errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
         return getModelAndView(errorResponse);
     }
 
@@ -288,7 +288,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         }
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessageKey(messageResource.getMessageKey());
-        errorResponse.setMessage(messageResource.getMessage(args));
+        errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
         return errorResponse;
     }
 

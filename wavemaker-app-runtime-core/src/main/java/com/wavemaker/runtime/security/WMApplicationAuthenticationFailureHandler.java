@@ -11,16 +11,12 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.core.web.rest.ErrorResponse;
+import com.wavemaker.commons.core.web.rest.ErrorResponses;
+import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.security.handler.WMAuthenticationFailureHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -30,12 +26,14 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.core.web.rest.ErrorResponse;
-import com.wavemaker.commons.core.web.rest.ErrorResponses;
-import com.wavemaker.runtime.WMObjectMapper;
-import com.wavemaker.runtime.security.handler.WMAuthenticationFailureHandler;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.wavemaker.runtime.security.SecurityConstants.APPLICATION_JSON;
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
@@ -64,7 +62,7 @@ public class WMApplicationAuthenticationFailureHandler implements Authentication
             ErrorResponse errorResponse = new ErrorResponse();
             MessageResource messageResource = MessageResource.create("com.wavemaker.runtime.security.authentication.failed");
             errorResponse.setMessageKey(messageResource.getMessageKey());
-            errorResponse.setMessage(messageResource.getMessage(exceptionMessage));
+            errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
             List<ErrorResponse> errorResponseList = new ArrayList<>(1);
             errorResponseList.add(errorResponse);
             errorMap.put("errors", new ErrorResponses(errorResponseList));
