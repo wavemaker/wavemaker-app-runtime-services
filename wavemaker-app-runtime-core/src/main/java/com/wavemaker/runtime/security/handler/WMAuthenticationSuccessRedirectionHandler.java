@@ -55,7 +55,7 @@ public class WMAuthenticationSuccessRedirectionHandler extends SavedRequestAware
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
         Authentication sourceAuthentication = authentication.getAuthenticationSource();
         if (!HttpRequestUtils.isAjaxRequest(request)) {
-            super.onAuthenticationSuccess(request, response, sourceAuthentication);
+            onAuthenticationSuccess(request, response, sourceAuthentication);
         }
     }
 }

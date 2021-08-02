@@ -60,9 +60,6 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     private Map<String, Object> applicationProperties;
 
     @Autowired
-    private QueryDesignService queryDesignService;
-
-    @Autowired
     private ProcedureDesignService procedureDesignService;
 
     @Autowired

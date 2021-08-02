@@ -81,8 +81,6 @@
 
     <bean id="appFileSystem" class="com.wavemaker.runtime.app.AppFileSystem"/>
 
-    <bean id="queryDesignService" class="com.wavemaker.runtime.service.QueryDesignServiceImpl"/>
-
     <bean id="procedureDesignService" class="com.wavemaker.runtime.service.ProcedureDesignServiceImpl"/>
 
     <bean id="nonHistoryEntitiesFilter" class="com.wavemaker.runtime.data.util.NegatingTypeFilter">
@@ -212,6 +210,7 @@
 
     <beans profile="wm_preview">
         <bean id="querycontroller" class="com.wavemaker.runtime.controller.QueryTestRunController"/>
+        <bean id="queryDesignService" class="com.wavemaker.runtime.service.QueryDesignServiceImpl"/>
     </beans>
 
 </beans>
