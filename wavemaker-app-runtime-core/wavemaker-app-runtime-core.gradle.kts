@@ -56,7 +56,6 @@ dependencies {
     //TODO Need to add xalan and xml-apis exclusions for saml2-core
     compileOnly(libs.springSecuritySaml2Core)
     compileOnly(libs.spring.session.jdbc)
-    compileOnly(libs.quartzScheduler.quartz)
     runtimeOnly(libs.hikariCP)
     runtimeOnly(libs.spring.security.config)
     runtimeOnly(libs.aspectjrt)
