@@ -17,11 +17,13 @@ package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +50,7 @@ import com.wavemaker.commons.web.filter.RequestTrackingFilter;
 import com.wavemaker.commons.web.filter.ServerTimingMetric;
 import com.wavemaker.runtime.commons.WebConstants;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
+import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -203,7 +206,7 @@ public class RestRuntimeService {
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
-        updateAuthorizationInfo(swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
+        updateAuthorizationInfo(serviceId, swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
         httpRequestDetails.setEndpointAddress(getEndPointAddress(serviceId, swagger, pathInfo.v1, queryParameters, pathParameters));
         httpRequestDetails.setMethod(method);
 
@@ -287,9 +290,9 @@ public class RestRuntimeService {
     }
 
     private String getEndPointAddress(String serviceId, Swagger swagger, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
-        String scheme = environment.getProperty(serviceId + ".scheme", swagger.getSchemes().get(0).toValue());
-        String host = environment.getProperty(serviceId + ".host", swagger.getHost());
-        String basePath = environment.getProperty(serviceId + ".basepath", swagger.getBasePath());
+        String scheme = getPropertyValue(serviceId, RestConstants.SCHEME_KEY);
+        String host = getPropertyValue(serviceId, RestConstants.HOST_KEY);
+        String basePath = getPropertyValue(serviceId, RestConstants.BASE_PATH_KEY);
 
         StringBuilder sb = new StringBuilder(scheme).append("://").append(host)
                 .append(getNormalizedString(basePath)).append(getNormalizedString(pathValue));
@@ -316,7 +319,7 @@ public class RestRuntimeService {
         }
     }
 
-    private void updateAuthorizationInfo(Map<String, SecuritySchemeDefinition> securitySchemeDefinitionMap, Operation operation, Map<String, Object> queryParameters, HttpHeaders httpHeaders, HttpRequestData httpRequestData) {
+    private void updateAuthorizationInfo(String serviceId, Map<String, SecuritySchemeDefinition> securitySchemeDefinitionMap, Operation operation, Map<String, Object> queryParameters, HttpHeaders httpHeaders, HttpRequestData httpRequestData) {
         //check basic auth is there for operation
         List<Map<String, List<String>>> securityMap = operation.getSecurity();
         if (securityMap != null) {
@@ -326,34 +329,31 @@ public class RestRuntimeService {
                     SecuritySchemeDefinition securitySchemeDefinition = securitySchemeDefinitionMap.get(security.getKey());
                     if (securitySchemeDefinition instanceof OAuth2Definition) {
                         OAuth2Definition oAuth2Definition = (OAuth2Definition) securitySchemeDefinition;
-                        if (oAuth2Definition.getSendAccessTokenAs() != null) {
-                            if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
-                                queryParameters.put(oAuth2Definition.getAccessTokenParamName(), httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
-                                        .getAccessTokenParamName()));
-                            }
-                            if (ParameterType.HEADER.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
-                                sendAsAuthorizationHeader(httpHeaders, httpRequestData);
-                            }
+                        if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
+                            queryParameters.put(oAuth2Definition.getAccessTokenParamName(), httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
+                                    .getAccessTokenParamName()));
                         } else {
-                            //Todo :: fix for QUERY type.
                             sendAsAuthorizationHeader(httpHeaders, httpRequestData);
                         }
                     } else if (securitySchemeDefinition instanceof BasicAuthDefinition) {
                         sendAsAuthorizationHeader(httpHeaders, httpRequestData);
                     } else if (securitySchemeDefinition instanceof ApiKeyAuthDefinition) {
                         ApiKeyAuthDefinition apiKeyAuthDefinition = (ApiKeyAuthDefinition) securitySchemeDefinition;
-                        if (!apiKeyAuthDefinition.getVendorExtensions().isEmpty()) {
-                            //TODO :: need to remove this vendor extension (openapi 2.0 to 3.0).
-                            String apiKey = apiKeyAuthDefinition.getVendorExtensions().get("x-value").toString();
-                            if (ParameterType.QUERY.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
-                                queryParameters.put(apiKeyAuthDefinition.getName(), apiKey);
+                        String apiKeyName = apiKeyAuthDefinition.getName();
+                        String sanitizedApiKeyName = Arrays.stream(apiKeyName.split("\\W+")).collect(Collectors.joining());
+                        if (ParameterType.QUERY.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
+                            String value = getPropertyValue(serviceId, "apikey.query." + sanitizedApiKeyName);
+                            if (value != null) {
+                                queryParameters.put(apiKeyAuthDefinition.getName(), value);
                             }
-                            if (ParameterType.HEADER.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
-                                httpHeaders.set(apiKeyAuthDefinition.getName(), apiKey);
+                        }
+                        if (ParameterType.HEADER.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
+                            String value = getPropertyValue(serviceId, "apikey.header." + sanitizedApiKeyName);
+                            if (value != null) {
+                                httpHeaders.set(apiKeyAuthDefinition.getName(), value);
                             }
                         }
                     }
-
                 }
             }
         }
@@ -365,11 +365,15 @@ public class RestRuntimeService {
             throw new UnAuthorizedResourceAccessException("Authorization details are not specified in the request headers");
         }
         httpHeaders.set(WebConstants.AUTHORIZATION, authorizationHeaderValue);
-
     }
 
     private String getNormalizedString(String str) {
         return (str != null) ? str.trim() : "";
+    }
+
+    private String getPropertyValue(String serviceId, String key) {
+        String fullKey = serviceId + "." + key;
+        return environment.getProperty(fullKey);
     }
 }
 

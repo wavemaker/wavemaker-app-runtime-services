@@ -24,4 +24,8 @@ public class RestConstants extends WebConstants {
     public static final String X_WM_HEADER_PREFIX = "X-WM-";
     public static final String VARIABLE_TYPE = "VARIABLE_TYPE";
     public static final String VARIABLE_KEY = "VARIABLE_KEY";
+
+    public static final String HOST_KEY = "host";
+    public static final String BASE_PATH_KEY = "basepath";
+    public static final String SCHEME_KEY = "scheme";
 }
