@@ -19,6 +19,7 @@ dependencies {
         api(libs.slf4j.api)
         api(libs.commons.codec)
         api(libs.commons.collections4)
+        api(libs.commons.compress)
         api(libs.commons.configuration2)
         api(libs.commons.io)
         api(libs.commons.fileupload)
