@@ -51,7 +51,7 @@ public class RestRuntimeServiceCacheHelper {
             InputStream stream = null;
             try {
                 stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(FileValidationUtils.validateFilePath(serviceId + "_apiTarget.json"));
-                Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(stream);
+                Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(stream, WMAppContext.getInstance().getThreadLocalAwareEnvironment());
                 Swagger swaggerDoc = JSONUtils.toObject(reader, Swagger.class);
                 serviceIdVsSwaggerCache.put(serviceId, swaggerDoc);
             } catch (IOException e) {

@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 import com.wavemaker.commons.util.PatternMatchingReplaceReader;
@@ -28,21 +27,14 @@ import com.wavemaker.commons.util.PatternMatchingReplaceReader;
 /**
  * Created by srujant on 10/10/18.
  */
-public class PropertyPlaceHolderReplacementHelper implements EnvironmentAware {
+public class PropertyPlaceHolderReplacementHelper {
 
-    private Environment environment;
-
-    public Reader getPropertyReplaceReader(Reader reader) {
-        return new PatternMatchingReplaceReader(reader, "${", "}", key -> environment.getProperty(key));
+    public Reader getPropertyReplaceReader(Reader reader, Environment environment) {
+        return new PatternMatchingReplaceReader(reader, "${", "}", environment::getProperty);
     }
 
-    public Reader getPropertyReplaceReader(InputStream inputStream) {
+    public Reader getPropertyReplaceReader(InputStream inputStream, Environment environment) {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return getPropertyReplaceReader(inputStreamReader);
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
+        return getPropertyReplaceReader(inputStreamReader, environment);
     }
 }

@@ -154,9 +154,8 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                 putElements(authExpressionVsServiceDefinitions.get("permitAll"), baseServiceDefinitions, false);
                 putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
                 Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
-                authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s -> {
-                    putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true);
-                });
+                authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s ->
+                        putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
             }
         }
     }
@@ -238,7 +237,8 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private Map<String, ServiceDefinition> getServiceDefinition(Resource resource) {
         try {
-            Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream());
+            Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream(),
+                    WMAppContext.getInstance().getThreadLocalAwareEnvironment());
             return serviceDefinitionHelper.build(reader);
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
