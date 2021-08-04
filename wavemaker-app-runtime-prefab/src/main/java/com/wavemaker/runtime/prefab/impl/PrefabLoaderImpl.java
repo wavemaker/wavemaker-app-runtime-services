@@ -31,11 +31,11 @@ import org.springframework.stereotype.Service;
 
 import com.wavemaker.runtime.prefab.config.PrefabsConfig;
 import com.wavemaker.runtime.prefab.core.PrefabFactory;
+import com.wavemaker.runtime.prefab.core.PrefabInstaller;
 import com.wavemaker.runtime.prefab.core.PrefabLoader;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.event.PrefabEvent;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
-import com.wavemaker.runtime.prefab.event.PrefabsUnloadedEvent;
 import com.wavemaker.runtime.prefab.util.PrefabConstants;
 import com.wavemaker.runtime.prefab.util.PrefabUtils;
 import com.wavemaker.runtime.prefab.util.Utils;
@@ -66,6 +66,9 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
     @Autowired
     private PrefabFactory prefabFactory;
 
+    @Autowired
+    private PrefabInstaller prefabInstaller;
+
     /**
      * @return the prefabManager
      */
@@ -83,7 +86,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
     public synchronized void loadPrefabs() {
         LOGGER.info("Context refreshed, (re)loading prefabs");
 
-        publishEvent(new PrefabsUnloadedEvent(context));
+        prefabInstaller.uninstallPrefabs();
 
         for (File prefabDir : readPrefabDirs()) {
             try {
@@ -92,6 +95,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
                 LOGGER.warn("Prefab: [{}] could not be loaded", prefabDir.getName(), e);
             }
         }
+        prefabInstaller.installPrefabs();
 
         publishEvent(new PrefabsLoadedEvent(context));
     }
@@ -113,7 +117,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
                 loadPrefabs();
             }
         } else if ((event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) && event.getSource() == context) {
-            publishEvent(new PrefabsUnloadedEvent(context));
+            prefabInstaller.uninstallPrefabs();
         }
     }
 

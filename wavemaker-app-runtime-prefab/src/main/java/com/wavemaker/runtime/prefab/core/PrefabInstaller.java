@@ -25,9 +25,9 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public interface PrefabInstaller {
 
-    public void installPrefabs();
+    void installPrefabs();
 
-    public void uninstallPrefabs();
+    void uninstallPrefabs();
 
     /**
      * Installs the given {@link Prefab} by adding to the context of the
@@ -35,6 +35,6 @@ public interface PrefabInstaller {
      * 
      * @param prefab {@link Prefab} to be installed
      */
-    public void installPrefab(Prefab prefab);
+    void installPrefab(Prefab prefab);
 
 }

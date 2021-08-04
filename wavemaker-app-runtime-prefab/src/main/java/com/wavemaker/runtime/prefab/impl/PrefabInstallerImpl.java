@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
@@ -34,9 +33,6 @@ import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabInstaller;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.core.PrefabRegistry;
-import com.wavemaker.runtime.prefab.event.PrefabEvent;
-import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
-import com.wavemaker.runtime.prefab.event.PrefabsUnloadedEvent;
 
 /**
  * Default implementation of {@link PrefabInstaller}. Hooks to the {@link ApplicationContext} of
@@ -47,8 +43,7 @@ import com.wavemaker.runtime.prefab.event.PrefabsUnloadedEvent;
  * @author Dilip Kumar
  */
 @Service
-public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextAware,
-        ApplicationListener<PrefabEvent>, ServletContextAware {
+public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextAware, ServletContextAware {
 
     private static final Logger logger = LoggerFactory.getLogger(PrefabInstallerImpl.class);
 
@@ -106,17 +101,6 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
      */
     public PrefabRegistry getPrefabRegistry() {
         return prefabRegistry;
-    }
-
-    @Override
-    public void onApplicationEvent(final PrefabEvent event) {
-        if (event instanceof PrefabsLoadedEvent) {
-            if (event.getSource() == context) {
-                installPrefabs();
-            }
-        } else if (event instanceof PrefabsUnloadedEvent && event.getSource() == context) {
-                uninstallPrefabs();
-        }
     }
 
     /**

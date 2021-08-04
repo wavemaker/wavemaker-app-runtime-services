@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -89,6 +87,12 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionService.class);
 
+    @Override
+    public void onApplicationEvent(final PrefabsLoadedEvent event) {
+        loadServiceDefinitions();
+        loadPrefabsServiceDefinitions();
+    }
+
     public ServiceDefinitionsWrapper getServiceDefinitionWrapper() {
         ServiceDefinitionsWrapper serviceDefinitionsWrapper = new ServiceDefinitionsWrapper();
         if (securityDefinitions == null) {
@@ -100,10 +104,6 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     public Map<String, ServiceDefinition> listServiceDefs() {
-        if (authExpressionVsServiceDefinitions == null) {
-            loadServiceDefinitions();
-        }
-
         if (securityService.isSecurityEnabled() && securityService.isAuthenticated()) {
             Map<String, ServiceDefinition> serviceDefinitionsMap = new HashMap<>(baseServiceDefinitions);
             putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), serviceDefinitionsMap, false);
@@ -119,16 +119,13 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     public ServiceDefinitionsWrapper getServiceDefinitionWrapperForPrefab(String prefabName) {
         ServiceDefinitionsWrapper serviceDefinitionsWrapper = new ServiceDefinitionsWrapper();
-        Map<String, ServiceDefinition> serviceDefinitionMap = listPrefabServiceDefs(prefabName);
+        Map<String, ServiceDefinition> serviceDefinitionMap = listPrefabServiceDefinitions(prefabName);
         serviceDefinitionsWrapper.setServiceDefs(serviceDefinitionMap);
         serviceDefinitionsWrapper.setSecurityDefinitions(prefabSecurityDefinitions.get(prefabName));
         return serviceDefinitionsWrapper;
     }
 
-    public Map<String, ServiceDefinition> listPrefabServiceDefs(final String prefabName) {
-        if (prefabServiceDefinitionsCache == null) {
-            loadPrefabsServiceDefinitionWrapper();
-        }
+    public Map<String, ServiceDefinition> listPrefabServiceDefinitions(final String prefabName) {
         Map<String, ServiceDefinition> serviceDefinitionMap = prefabServiceDefinitionsCache.get(prefabName);
         if (serviceDefinitionMap == null) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.prefab.name"), prefabName);
@@ -137,27 +134,22 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private void loadServiceDefinitions() {
-
-        synchronized (this) {
-            if (authExpressionVsServiceDefinitions == null) {
-                Map<String, ServiceDefinition> serviceDefinitionsCache = new HashMap<>();
-                Resource[] resources = getServiceDefResources(false);
-                if (resources != null) {
-                    for (Resource resource : resources) {
-                        serviceDefinitionsCache.putAll(getServiceDefinition(resource));
-                    }
-                } else {
-                    logger.warn("Service def resources does not exist for this project");
-                }
-                this.authExpressionVsServiceDefinitions = constructAuthVsServiceDefinitions(serviceDefinitionsCache);
-                this.baseServiceDefinitions = new HashMap<>();
-                putElements(authExpressionVsServiceDefinitions.get("permitAll"), baseServiceDefinitions, false);
-                putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
-                Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
-                authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s ->
-                        putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
+        Map<String, ServiceDefinition> serviceDefinitionsCache = new HashMap<>();
+        Resource[] resources = getServiceDefResources(false);
+        if (resources != null) {
+            for (Resource resource : resources) {
+                serviceDefinitionsCache.putAll(getServiceDefinition(resource));
             }
+        } else {
+            logger.warn("Service def resources does not exist for this project");
         }
+        this.authExpressionVsServiceDefinitions = constructAuthVsServiceDefinitions(serviceDefinitionsCache);
+        this.baseServiceDefinitions = new HashMap<>();
+        putElements(authExpressionVsServiceDefinitions.get("permitAll"), baseServiceDefinitions, false);
+        putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
+        Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
+        authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s ->
+                putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
     }
 
     //TODO find a better way to fix it, read intercept urls from json instead of from spring xml
@@ -204,19 +196,14 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         return authExpressionVsServiceDefinitions;
     }
 
-    private void loadPrefabsServiceDefinitionWrapper() {
-
-        synchronized (this) {
-            if (prefabServiceDefinitionsCache == null) {
-                final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
-                final Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions = new HashMap<>();
-                for (final Prefab prefab : prefabManager.getPrefabs()) {
-                    runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefsAndSecurityDefinitions(prefab, prefabServiceDefinitionsCache, prefabSecurityDefinitions));
-                }
-                this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
-                this.prefabSecurityDefinitions = prefabSecurityDefinitions;
-            }
+    private void loadPrefabsServiceDefinitions() {
+        final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
+        final Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions = new HashMap<>();
+        for (final Prefab prefab : prefabManager.getPrefabs()) {
+            runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefsAndSecurityDefinitions(prefab, prefabServiceDefinitionsCache, prefabSecurityDefinitions));
         }
+        this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
+        this.prefabSecurityDefinitions = prefabSecurityDefinitions;
     }
 
     private synchronized void loadPrefabServiceDefsAndSecurityDefinitions(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache,
@@ -273,19 +260,6 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         }
     }
 
-    @Override
-    public void onApplicationEvent(final PrefabsLoadedEvent event) {
-        ExecutorService executor = null;
-        try {
-            executor = Executors.newFixedThreadPool(2);
-            loadServiceDefinitions(executor);
-        } finally {
-            if (executor != null) {
-                executor.shutdown();
-            }
-        }
-    }
-
     private void putElements(Collection<ServiceDefinition> serviceDefinitions, Map<String, ServiceDefinition> serviceDefinitionsMap, boolean valueLess) {
         if (serviceDefinitions != null) {
             for (ServiceDefinition serviceDefinition : serviceDefinitions) {
@@ -308,10 +282,4 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                 .addService(serviceDefinition.getService())
                 .addWmServiceOperationInfo(null);
     }
-
-    private void loadServiceDefinitions(ExecutorService executor) {
-        executor.execute(this::loadServiceDefinitions);
-        executor.execute(this::loadPrefabsServiceDefinitionWrapper);
-    }
-
 }
