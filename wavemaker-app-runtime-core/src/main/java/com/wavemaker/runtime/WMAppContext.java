@@ -42,7 +42,9 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
     private static WMAppContext instance;
 
     private WMAppContext() {
-        instance = this;
+        if (instance == null) {
+            instance = this;
+        }
     }
 
     public static synchronized WMAppContext getInstance() {
