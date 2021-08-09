@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.security.access.ConfigAttribute;
@@ -46,8 +47,10 @@ import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
 import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
 import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
+import com.wavemaker.runtime.prefab.core.PrefabRegistry;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
 import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.servicedef.helper.OAuthProvidersHelper;
@@ -84,6 +87,12 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     @Autowired
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
+
+    @Autowired
+    private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
+
+    @Autowired
+    private PrefabRegistry prefabRegistry;
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionService.class);
 
@@ -237,12 +246,14 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         ClassLoader classLoader = prefab.getClassLoader();
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
+            ConfigurableApplicationContext prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
+            prefabThreadLocalContextManager.setContext(prefabContext);
             Thread.currentThread().setContextClassLoader(classLoader);
             runnable.run();
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
+            prefabThreadLocalContextManager.clearContext();
         }
-
     }
 
     private Resource[] getServiceDefResources(boolean isPrefab) {
