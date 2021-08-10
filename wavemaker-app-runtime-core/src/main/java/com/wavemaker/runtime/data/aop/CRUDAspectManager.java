@@ -38,7 +38,7 @@ public class CRUDAspectManager {
             crudMethodInvocationHandler.preHandle(serviceId, entityClass, method, args);
         });
         logger.debug("Calling target method {}", method.getName());
-        Object retVal = joinPoint.proceed();
+        Object retVal = joinPoint.proceed(args);
         crudMethodInvocationHandlerOptional.ifPresent(crudMethodInvocationHandler -> {
             logger.debug("Calling postHandler in handler {}", crudMethodInvocationHandler);
             crudMethodInvocationHandler.postHandle(serviceId, entityClass, method, retVal);

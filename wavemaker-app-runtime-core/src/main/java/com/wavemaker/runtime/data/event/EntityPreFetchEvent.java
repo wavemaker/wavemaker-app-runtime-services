@@ -1,14 +1,16 @@
 package com.wavemaker.runtime.data.event;
 
-public class EntityPreFetchEvent<E> extends EntityCRUDEvent<E> {
-    private String query;
+import com.wavemaker.runtime.data.model.FetchQuery;
 
-    public EntityPreFetchEvent(String serviceId, Class<E> entityClass, String query) {
+public class EntityPreFetchEvent<E> extends EntityCRUDEvent<E> {
+    private FetchQuery fetchQuery;
+
+    public EntityPreFetchEvent(String serviceId, Class<E> entityClass, FetchQuery fetchQuery) {
         super(serviceId, entityClass);
-        this.query = query;
+        this.fetchQuery = fetchQuery;
     }
 
-    public String getQuery() {
-        return query;
+    public FetchQuery getFetchQuery() {
+        return fetchQuery;
     }
 }
