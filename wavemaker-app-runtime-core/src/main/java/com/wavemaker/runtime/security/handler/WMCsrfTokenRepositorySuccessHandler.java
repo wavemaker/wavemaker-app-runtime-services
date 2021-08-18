@@ -45,7 +45,7 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
 
     private CsrfTokenRepository csrfTokenRepository;
 
-    @Value("#{${general.cookie.maxAge} * 60}")
+    @Value("#{${security.general.cookie.maxAge} * 60}")
     private int cookieMaxAge;
 
     public WMCsrfTokenRepositorySuccessHandler(CsrfTokenRepository csrfTokenRepository) {

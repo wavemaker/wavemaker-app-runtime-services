@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean class="org.springframework.session.MapSessionRepository" id="sessionRepository">
-        <property name="defaultMaxInactiveInterval" value="#{${general.session.timeout} * 60}"/>
+        <property name="defaultMaxInactiveInterval" value="#{${security.general.session.timeout} * 60}"/>
     </bean>
 
     <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl"/>
