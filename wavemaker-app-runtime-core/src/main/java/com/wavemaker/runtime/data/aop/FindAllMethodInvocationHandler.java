@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 
-import com.wavemaker.runtime.data.event.EntityPostFetchEvent;
-import com.wavemaker.runtime.data.event.EntityPreFetchEvent;
+import com.wavemaker.runtime.data.event.EntityPostFetchListEvent;
+import com.wavemaker.runtime.data.event.EntityPreFetchListEvent;
 import com.wavemaker.runtime.data.model.FetchQuery;
 
 class FindAllMethodInvocationHandler implements CRUDMethodInvocationHandler {
@@ -19,13 +19,13 @@ class FindAllMethodInvocationHandler implements CRUDMethodInvocationHandler {
     public void preHandle(String serviceId, Class entityClass, Method method, Object[] args) {
         String query = (String) args[0];
         FetchQuery fetchQuery = new FetchQuery(query);
-        applicationEventPublisher.publishEvent(new EntityPreFetchEvent<>(serviceId, entityClass, fetchQuery));
+        applicationEventPublisher.publishEvent(new EntityPreFetchListEvent<>(serviceId, entityClass, fetchQuery));
         args[0] = fetchQuery.getQuery();
     }
 
     @Override
     public void postHandle(String serviceId, Class entityClass, Method method, Object retVal) {
-        applicationEventPublisher.publishEvent(new EntityPostFetchEvent<>(serviceId, entityClass, (Page) retVal));
+        applicationEventPublisher.publishEvent(new EntityPostFetchListEvent<>(serviceId, entityClass, (Page) retVal));
     }
 
     @Override

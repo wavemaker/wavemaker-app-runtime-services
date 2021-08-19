@@ -1,16 +1,19 @@
 package com.wavemaker.runtime.data.event;
 
-import org.springframework.data.domain.Page;
+import java.util.Optional;
 
+/**
+ * @author Uday Shankar
+ */
 public class EntityPostFetchEvent<E> extends EntityCRUDEvent<E> {
-    private Page<E> results;
+    private Optional<E> entity;
 
-    public EntityPostFetchEvent(String serviceId, Class<E> entityClass, Page<E> results) {
+    public EntityPostFetchEvent(String serviceId, Class<E> entityClass, E entity) {
         super(serviceId, entityClass);
-        this.results = results;
+        this.entity = Optional.ofNullable(entity);
     }
 
-    public Page<E> getResults() {
-        return results;
+    public Optional<E> getEntity() {
+        return entity;
     }
 }
