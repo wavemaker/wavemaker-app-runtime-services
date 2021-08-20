@@ -36,7 +36,7 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
     @Value("${app.build.ui.mode}")
     private String buildMode;
 
-    @Value("${app.build.ui.ng.args}")
+    @Value("${app.build.ui.ng.config}")
     private String buildArgs;
 
     private List<String> angularCachedContentPath = Arrays.asList("/ng-bundle/**");
