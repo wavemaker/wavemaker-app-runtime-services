@@ -17,6 +17,7 @@ package com.wavemaker.runtime.servicedef.helper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,13 @@ import com.wavemaker.commons.auth.oauth2.OAuth2Flow;
 import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
 
 public class OAuthProvidersHelper {
+
+    private OAuthProvidersHelper() {
+    }
 
     public static final String OAUTH_PROVIDER_JSON_PATH = "/oauth-providers.json";
     public static final String OAUTH_PROVIDER = "oauthProvider";
@@ -43,7 +49,10 @@ public class OAuthProvidersHelper {
         Resource resource = patternResolver.getResource(OAUTH_PROVIDER_JSON_PATH);
         try {
             if (resource.exists()) {
-                return getOAuth2ProvidersMap(resource.getInputStream());
+                InputStream inputStream = resource.getInputStream();
+                PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper = new PropertyPlaceHolderReplacementHelper();
+                Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(inputStream, WMAppContext.getInstance().getThreadLocalAwareEnvironment());
+                return getOAuth2ProvidersMap(reader);
             }
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.oauth2provider.failure"), e, resource.getFilename());
@@ -51,9 +60,9 @@ public class OAuthProvidersHelper {
         return null;
     }
 
-    public static Map<String, Map<String, OAuth2ProviderConfig>> getOAuth2ProvidersMap(InputStream inputStream) {
+    public static Map<String, Map<String, OAuth2ProviderConfig>> getOAuth2ProvidersMap(Reader reader) {
         Map<String, Map<String, OAuth2ProviderConfig>> oauthProvidersMap = new HashMap<>();
-        String oauthProviders = WMIOUtils.toString(inputStream);
+        String oauthProviders = WMIOUtils.toString(reader);
         if (oauthProviders != null) {
             List<OAuth2ProviderConfig> oAuth2ProviderConfigs = null;
             try {

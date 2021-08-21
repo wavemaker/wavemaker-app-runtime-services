@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,7 +207,7 @@ public class RestRuntimeService {
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
         updateAuthorizationInfo(serviceId, swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
-        httpRequestDetails.setEndpointAddress(getEndPointAddress(serviceId, swagger, pathInfo.v1, queryParameters, pathParameters));
+        httpRequestDetails.setEndpointAddress(getEndPointAddress(serviceId, pathInfo.v1, queryParameters, pathParameters));
         httpRequestDetails.setMethod(method);
 
         httpRequestDetails.setHeaders(httpHeaders);
@@ -289,7 +289,7 @@ public class RestRuntimeService {
         }
     }
 
-    private String getEndPointAddress(String serviceId, Swagger swagger, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
+    private String getEndPointAddress(String serviceId, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
         String scheme = getPropertyValue(serviceId, RestConstants.SCHEME_KEY);
         String host = getPropertyValue(serviceId, RestConstants.HOST_KEY);
         String basePath = getPropertyValue(serviceId, RestConstants.BASE_PATH_KEY);
@@ -299,8 +299,8 @@ public class RestRuntimeService {
 
         updateUrlWithQueryParameters(sb, queryParameters);
 
-        StrSubstitutor strSubstitutor = new StrSubstitutor(pathParameters, "{", "}");
-        return strSubstitutor.replace(sb.toString());
+        StringSubstitutor stringSubstitutor = new StringSubstitutor(pathParameters, "{", "}");
+        return stringSubstitutor.replace(sb.toString());
     }
 
     private void updateUrlWithQueryParameters(StringBuilder endpointAddressSb, Map<String, Object> queryParameters) {
@@ -372,7 +372,7 @@ public class RestRuntimeService {
     }
 
     private String getPropertyValue(String serviceId, String key) {
-        String fullKey = serviceId + "." + key;
+        String fullKey = "rest." + serviceId + "." + key;
         return environment.getProperty(fullKey);
     }
 }
