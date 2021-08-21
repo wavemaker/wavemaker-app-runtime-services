@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<beans xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <import resource="classpath:springapp.xml"/>
+    <import resource="classpath:project-rest-service.xml"/>
+    <import resource="classpath:prefab-dispatcher-servlet.xml"/>
+    <import resource="classpath:prefab-services.xml"/>
+
+    <bean class="com.wavemaker.runtime.core.props.AppPropertySourcesPlaceHolderConfigurer" id="prefabPropertySourcesPlaceHolderConfigurer">
+        <property name="propertySourceName" value="prefabPropertiesPropertySource"/>
+        <property name="locations">
+            <list>
+                <value>classpath:prefab-app.properties</value>
+                <value>classpath:app.properties</value>
+                <value>classpath*:prefab-conf/*.properties</value>
+            </list>
+        </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+    </bean>
+</beans>
