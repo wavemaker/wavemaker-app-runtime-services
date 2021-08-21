@@ -37,7 +37,7 @@ public class FirewallFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(FirewallFilter.class);
 
-    @Value("${general.request.allowedHosts}")
+    @Value("${security.general.request.allowedHosts}")
     private String hosts;
 
     private List<String> allowedHosts;
