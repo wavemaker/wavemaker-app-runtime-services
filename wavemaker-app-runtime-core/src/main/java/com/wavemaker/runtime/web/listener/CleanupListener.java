@@ -26,15 +26,9 @@ import java.security.Security;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -226,7 +220,13 @@ public class CleanupListener implements ServletContextListener {
             if (klass != null && klass.getClassLoader() == classLoader) {
                 //Shutdown the thread only if the class is loaded by web-app
                 logger.info("Shutting down mysql thread {}", className);
-                klass.getMethod("shutdown").invoke(null);
+                Method shutdownMethod = ReflectionUtils.findMethod(klass, "checkedShutdown");
+                if (shutdownMethod == null) {
+                    shutdownMethod = ReflectionUtils.findMethod(klass, "shutdown");
+                }
+                if (shutdownMethod != null) {
+                    shutdownMethod.invoke(null);
+                }
             }
         } catch (Throwable e) {
             logger.warn("Failed to shutdown mysql thread {}", className, e);
