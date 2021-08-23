@@ -206,6 +206,7 @@
     <bean id="createMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.CreateMethodInvocationHandler"/>
     <bean id="updateMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.UpdateMethodInvocationHandler"/>
     <bean id="findAllMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.FindAllMethodInvocationHandler"/>
+    <bean id="findMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.FindMethodInvocationHandler"/>
     <bean id="deleteMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.DeleteMethodInvocationHandler"/>
 
     <beans profile="wm_preview">

@@ -1,5 +1,8 @@
 package com.wavemaker.runtime.data.event;
 
+/**
+ * @author Uday Shankar
+ */
 public class EntityPostCreateEvent<E> extends EntityCRUDEvent<E> {
     private E entity;
 
