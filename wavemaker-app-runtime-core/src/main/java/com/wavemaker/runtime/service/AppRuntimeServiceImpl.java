@@ -17,7 +17,6 @@ package com.wavemaker.runtime.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -30,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.i18n.FinalLocaleData;
+import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.PropertiesFileUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
@@ -56,11 +56,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
             "timeFormat",
             "preferBrowserLang"};
 
-    private String applicationType;
     private Map<String, Object> applicationProperties;
-
-    @Autowired
-    private ProcedureDesignService procedureDesignService;
 
     @Autowired
     private AppFileSystem appFileSystem;
@@ -72,8 +68,8 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     public Map<String, Object> getApplicationProperties() {
         synchronized (this) {
             if (applicationProperties == null) {
-                URL classpathResourceStream = appFileSystem.getClasspathResource(APP_PROPERTIES);
-                Properties properties = PropertiesFileUtils.loadFromXml(classpathResourceStream);
+                File appPropertiesFile = appFileSystem.getClassPathFile(APP_PROPERTIES);
+                Properties properties = PropertiesFileUtils.loadFromXml(appPropertiesFile);
                 Map<String, Object> appProperties = new HashMap<>();
                 for (String s : uiProperties) {
                     appProperties.put(s, properties.get(s));
@@ -92,14 +88,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     }
 
     public String getApplicationType() {
-        synchronized (this) {
-            if (applicationType == null) {
-                URL classpathResourceStream = appFileSystem.getClasspathResource(APP_PROPERTIES);
-                Properties properties = PropertiesFileUtils.loadFromXml(classpathResourceStream);
-                applicationType = properties.getProperty("type");
-            }
-        }
-        return applicationType;
+        return (String) getApplicationProperties().get("type");
     }
 
     @Override

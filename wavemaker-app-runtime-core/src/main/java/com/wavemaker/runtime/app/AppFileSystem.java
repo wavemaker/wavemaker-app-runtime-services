@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.app;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -25,6 +24,8 @@ import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.ResourceNotFoundException;
+import com.wavemaker.commons.io.ClassPathFile;
+import com.wavemaker.commons.io.File;
 
 /**
  * Provides a virtual files system for accessing resources of the application.
@@ -44,8 +45,8 @@ public class AppFileSystem implements ServletContextAware {
         return this.context.getRealPath("/");
     }
 
-    public URL getClasspathResource(String resourcePath) {
-        return context.getClassLoader().getResource(resourcePath);
+    public File getClassPathFile(String resourcePath) {
+        return new ClassPathFile(context.getClassLoader(), resourcePath);
     }
 
     public InputStream getWebappResource(String resourcePath) {

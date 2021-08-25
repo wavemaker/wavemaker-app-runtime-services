@@ -15,11 +15,10 @@
  */
 package com.wavemaker.runtime;
 
-import java.io.InputStream;
 import java.util.Properties;
 
+import com.wavemaker.commons.io.ClassPathFile;
 import com.wavemaker.commons.util.PropertiesFileUtils;
-import com.wavemaker.commons.util.WMIOUtils;
 
 /**
  * Created by srujant on 29/12/16.
@@ -28,13 +27,11 @@ public class AppRuntimeProperties {
 
     private AppRuntimeProperties(){}
 
-
     private static Properties properties;
 
     static {
-        InputStream inputStream = AppRuntimeProperties.class.getClassLoader().getResourceAsStream("app.properties");
-        properties = PropertiesFileUtils.loadProperties(inputStream);
-        WMIOUtils.closeSilently(inputStream);
+        ClassPathFile classPathFile = new ClassPathFile(AppRuntimeProperties.class.getClassLoader(), "app.properties");
+        properties = PropertiesFileUtils.loadProperties(classPathFile);
     }
 
     public static String getProperty(String key) {
