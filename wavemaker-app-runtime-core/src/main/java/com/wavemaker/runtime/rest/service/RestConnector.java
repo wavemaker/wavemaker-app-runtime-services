@@ -52,10 +52,8 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.commons.rest.error.WMDefaultResponseErrorHandler;
 import com.wavemaker.commons.util.SSLUtils;
-import com.wavemaker.runtime.AppRuntimeProperties;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
@@ -168,23 +166,11 @@ public class RestConnector {
     }
 
     private CredentialsProvider getCredentialProvider() {
-
-        boolean isEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_ENABLED));
         CredentialsProvider credentialsProvider = null;
-        if (isEnabled) {
+        if (httpConfiguration.isAppProxyEnabled()) {
             credentialsProvider = new BasicCredentialsProvider();
-            String hostName = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_HOST);
-            String port = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PORT);
-            String userName = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_USERNAME);
-            if (userName == null) {
-                userName = "";
-            }
-            String passWord = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PASSWORD);
-            int proxyPort = 0;
-            if (port != null && !("".equals(port))) {
-                proxyPort = Integer.parseInt(port);
-            }
-            credentialsProvider.setCredentials(new AuthScope(hostName, proxyPort), new UsernamePasswordCredentials(userName, passWord));
+            credentialsProvider.setCredentials(new AuthScope(httpConfiguration.getAppProxyHost(), httpConfiguration.getAppProxyPort()),
+                    new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
         }
         return credentialsProvider;
     }
