@@ -74,7 +74,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 for (String s : uiProperties) {
                     appProperties.put(s, properties.get(s));
                 }
-                if("APPLICATION".equals(getApplicationType())) {
+                if("APPLICATION".equals(getApplicationType(appProperties))) {
                     appProperties.put("securityEnabled", securityService.isSecurityEnabled());
                     appProperties.put("xsrf_header_name", getCsrfHeaderName());
                 }
@@ -88,7 +88,11 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     }
 
     public String getApplicationType() {
-        return (String) getApplicationProperties().get("type");
+        return getApplicationType(getApplicationProperties());
+    }
+
+    private String getApplicationType(Map<String, Object> appProperties) {
+        return (String) appProperties.get("type");
     }
 
     @Override
