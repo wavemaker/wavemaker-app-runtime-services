@@ -74,7 +74,7 @@ public class WebProcessController {
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     @ApiOperation(value = "starts a web process by redirecting the user to process hook url.")
-    public void start(String process, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void start(String process, HttpServletRequest request, HttpServletResponse response) throws IOException {
         WebProcessHelper.addWebProcessCookie(request, response, process);
         WebProcess webProcess = WebProcessHelper.decodeWebProcess(process);
         response.sendRedirect(request.getServletContext().getContextPath() + webProcess.getHookUrl());
@@ -95,8 +95,7 @@ public class WebProcessController {
             }
             Map<String, Object> input = new HashMap<>();
             input.put("appLink", urlScheme + redirectUrl);
-            StringSubstitutor strSubstitutor = new StringSubstitutor(input);
-            String processResponse = strSubstitutor.replace(new ClassPathFile(WEB_PROCESS_RESPONSE_TEMPLATE).getContent().asString());
+            String processResponse = StringSubstitutor.replace(new ClassPathFile(WEB_PROCESS_RESPONSE_TEMPLATE).getContent().asString(), input);
             response.setContentType(ContentType.TEXT_HTML.getMimeType());
             response.getWriter().write(processResponse);
         } else {
@@ -134,14 +133,6 @@ public class WebProcessController {
             }
         }
         return customUrlScheme;
-    }
-
-    private String getFullPath(String relativePath, HttpServletRequest request) {
-        String port = "";
-        if (request.getServerPort() > 0) {
-            port = ":" + request.getServerPort();
-        }
-        return request.getServerName() + port + request.getServletContext().getContextPath() + relativePath;
     }
 
 }
