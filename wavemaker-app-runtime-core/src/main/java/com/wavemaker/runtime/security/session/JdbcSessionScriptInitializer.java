@@ -35,7 +35,7 @@ public class JdbcSessionScriptInitializer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcSessionScriptInitializer.class);
 
-    @Resource(name = "${session.jdbc.serviceName}DataSource")
+    @Resource(name = "${security.session.jdbc.serviceName}DataSource")
     private WMDataSource dataSource;
 
     @PostConstruct
