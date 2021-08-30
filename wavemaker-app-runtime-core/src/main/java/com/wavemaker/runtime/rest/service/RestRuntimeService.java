@@ -130,6 +130,11 @@ public class RestRuntimeService {
         executeRestCall(serviceId, path, httpRequestData, httpServletRequest, httpServletResponse, context);
     }
 
+    public HttpResponseDetails executeRestCall(String serviceId, String path, String method, HttpRequestData httpRequestData) {
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, method, httpRequestData);
+        return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, null, "");
+    }
+
     public void executeRestCall(String serviceId, String path, final HttpRequestData httpRequestData,
                                 final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) {
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, httpServletRequest.getMethod(), httpRequestData);
