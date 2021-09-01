@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.security.access.ConfigAttribute;
@@ -47,13 +48,12 @@ import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
 import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
 import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.core.PrefabRegistry;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
 import com.wavemaker.runtime.security.SecurityService;
-import com.wavemaker.runtime.servicedef.helper.OAuthProvidersHelper;
+import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 import com.wavemaker.runtime.servicedef.model.ServiceDefinitionsWrapper;
 import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
@@ -76,7 +76,6 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     private Map<String, ServiceDefinition> baseServiceDefinitions;
 
     private Map<String, Map<String, OAuth2ProviderConfig>> securityDefinitions;
-
     private Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions;
 
     @Autowired
@@ -89,10 +88,13 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
 
     @Autowired
-    private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
+    private PrefabRegistry prefabRegistry;
 
     @Autowired
-    private PrefabRegistry prefabRegistry;
+    private OAuthProvidersManager oAuthProvidersManager;
+
+    @Autowired
+    private PropertyResolver propertyResolver;
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionService.class);
 
@@ -104,9 +106,6 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     public ServiceDefinitionsWrapper getServiceDefinitionWrapper() {
         ServiceDefinitionsWrapper serviceDefinitionsWrapper = new ServiceDefinitionsWrapper();
-        if (securityDefinitions == null) {
-            securityDefinitions = OAuthProvidersHelper.getOAuth2ProviderWithImplicitFlow();
-        }
         serviceDefinitionsWrapper.setSecurityDefinitions(securityDefinitions);
         serviceDefinitionsWrapper.setServiceDefs(listServiceDefs());
         return serviceDefinitionsWrapper;
@@ -147,7 +146,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         Resource[] resources = getServiceDefResources(false);
         if (resources != null) {
             for (Resource resource : resources) {
-                serviceDefinitionsCache.putAll(getServiceDefinition(resource));
+                serviceDefinitionsCache.putAll(getServiceDefinition(resource, propertyResolver));
             }
         } else {
             logger.warn("Service def resources does not exist for this project");
@@ -159,6 +158,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
         authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s ->
                 putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
+        securityDefinitions = oAuthProvidersManager.getOAuth2ProviderWithImplicitFlow();
     }
 
     //TODO find a better way to fix it, read intercept urls from json instead of from spring xml
@@ -222,19 +222,20 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         }
         Resource[] resources = getServiceDefResources(true);
         if (resources != null) {
+            ConfigurableApplicationContext prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
             for (Resource resource : resources) {
-                prefabServiceDefinitionsCache.get(prefab.getName()).putAll(getServiceDefinition(resource));
+                prefabServiceDefinitionsCache.get(prefab.getName()).putAll(getServiceDefinition(resource, prefabContext.getEnvironment()));
             }
-            prefabSecurityDefinitions.put(prefab.getName(), OAuthProvidersHelper.getOAuth2ProviderWithImplicitFlow());
+            prefabSecurityDefinitions.put(prefab.getName(), oAuthProvidersManager.getOAuth2ProviderWithImplicitFlow());
         } else {
             logger.warn("Service def resources does not exist for this project");
         }
     }
 
-    private Map<String, ServiceDefinition> getServiceDefinition(Resource resource) {
+    private Map<String, ServiceDefinition> getServiceDefinition(Resource resource, PropertyResolver propertyResolver) {
         try {
             Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream(),
-                    WMAppContext.getInstance().getThreadLocalAwareEnvironment());
+                    propertyResolver);
             return serviceDefinitionHelper.build(reader);
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
@@ -246,13 +247,10 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         ClassLoader classLoader = prefab.getClassLoader();
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            ConfigurableApplicationContext prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
-            prefabThreadLocalContextManager.setContext(prefabContext);
             Thread.currentThread().setContextClassLoader(classLoader);
             runnable.run();
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
-            prefabThreadLocalContextManager.clearContext();
         }
     }
 

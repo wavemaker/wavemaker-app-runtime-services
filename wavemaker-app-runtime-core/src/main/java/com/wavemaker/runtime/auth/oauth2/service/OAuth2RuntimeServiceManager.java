@@ -17,23 +17,20 @@ package com.wavemaker.runtime.auth.oauth2.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
@@ -52,6 +49,7 @@ import com.wavemaker.runtime.rest.builder.HttpRequestDetailsBuilder;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestConnector;
+import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;
 
 /**
  * Created by srujant on 18/7/17.
@@ -61,26 +59,10 @@ public class OAuth2RuntimeServiceManager {
     private static final String REDIRECT_URL = "/services/oauth2/${providerId}/callback";
     private String customUrlScheme;
 
-
-    private List<OAuth2ProviderConfig> oAuth2ProviderConfigList = new ArrayList<>();
+    @Autowired
+    private OAuthProvidersManager oAuthProvidersManager;
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2RuntimeServiceManager.class);
-
-    @PostConstruct
-    public void init() {
-        InputStream oauthProvidersJsonFile = Thread.currentThread().getContextClassLoader().getResourceAsStream("oauth-providers.json");
-        if (oauthProvidersJsonFile != null) {
-            try {
-                this.oAuth2ProviderConfigList = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuth2ProviderConfig>>() {
-                });
-            } catch (IOException e) {
-                throw new WMRuntimeException(e);
-            } finally {
-                WMIOUtils.closeSilently(oauthProvidersJsonFile);
-            }
-        }
-    }
-
 
     public String getAuthorizationUrl(String providerId, String requestSourceType, String key, HttpServletRequest httpServletRequest) {
         try {
@@ -110,12 +92,11 @@ public class OAuth2RuntimeServiceManager {
         }
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("providerId", providerId);
-        redirectUrl = StrSubstitutor.replace(redirectUrl, valuesMap);
+        redirectUrl = StringSubstitutor.replace(redirectUrl, valuesMap);
         return redirectUrl;
     }
 
     public String callBack(String providerId, String redirectUrl, String code, String state, HttpServletRequest httpServletRequest) {
-
         OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
         if (StringUtils.isBlank(redirectUrl)) {
             redirectUrl = new StringBuilder().append(HttpRequestUtils.getBaseUrl(httpServletRequest)).append(httpServletRequest.getContextPath())
@@ -156,7 +137,7 @@ public class OAuth2RuntimeServiceManager {
     }
 
     private OAuth2ProviderConfig getOAuthProviderConfig(String providerId) {
-        for (OAuth2ProviderConfig oAuth2ProviderConfig : oAuth2ProviderConfigList) {
+        for (OAuth2ProviderConfig oAuth2ProviderConfig : oAuthProvidersManager.getOAuth2ProviderConfigList()) {
             if (Objects.equals(oAuth2ProviderConfig.getProviderId(), providerId)) {
                 return oAuth2ProviderConfig;
             }

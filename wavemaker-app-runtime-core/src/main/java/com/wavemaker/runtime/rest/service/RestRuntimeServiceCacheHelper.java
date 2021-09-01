@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,11 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.springframework.core.env.Environment;
+
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.io.ClassPathFile;
+import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.FileValidationUtils;
-import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
@@ -44,20 +46,17 @@ public class RestRuntimeServiceCacheHelper {
 
     private Map<String, Swagger> serviceIdVsSwaggerCache = Collections.synchronizedMap(new WeakHashMap<>());
     private PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper;
-
+    private Environment environment;
 
     public Swagger getSwaggerDoc(String serviceId) {
         if (!serviceIdVsSwaggerCache.containsKey(serviceId)) {
-            InputStream stream = null;
             try {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(FileValidationUtils.validateFilePath(serviceId + "_apiTarget.json"));
-                Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(stream, WMAppContext.getInstance().getThreadLocalAwareEnvironment());
+                File apiTargetJsonFile = new ClassPathFile(Thread.currentThread().getContextClassLoader(), FileValidationUtils.validateFilePath(serviceId + "_apiTarget.json"));
+                Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(apiTargetJsonFile, environment);
                 Swagger swaggerDoc = JSONUtils.toObject(reader, Swagger.class);
                 serviceIdVsSwaggerCache.put(serviceId, swaggerDoc);
             } catch (IOException e) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.read.swagger"), e, serviceId);
-            } finally {
-                WMIOUtils.closeSilently(stream);
             }
         }
         return serviceIdVsSwaggerCache.get(serviceId);
@@ -76,5 +75,9 @@ public class RestRuntimeServiceCacheHelper {
 
     public void setPropertyPlaceHolderReplacementHelper(PropertyPlaceHolderReplacementHelper propertyPlaceHolderReplacementHelper) {
         this.propertyPlaceHolderReplacementHelper = propertyPlaceHolderReplacementHelper;
+    }
+
+    public void setEnvironment(final Environment environment) {
+        this.environment = environment;
     }
 }
