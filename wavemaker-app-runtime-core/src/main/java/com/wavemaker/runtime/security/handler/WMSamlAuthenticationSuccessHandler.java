@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.saml.SAMLCredential;
 
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
@@ -35,7 +34,7 @@ public class WMSamlAuthenticationSuccessHandler implements WMAuthenticationSucce
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
         Authentication samlAuthenticationToken = authentication.getAuthenticationSource();
-        SAMLCredential samlCredential = (SAMLCredential) samlAuthenticationToken.getCredentials();
+        Object samlCredential = samlAuthenticationToken.getCredentials();
         authentication.addAttribute(SAMLConstants.SAML_CREDENTIALS, samlCredential, Attribute.AttributeScope.SERVER_ONLY);
     }
 }

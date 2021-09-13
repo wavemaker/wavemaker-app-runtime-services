@@ -55,6 +55,7 @@ dependencies {
     compileOnly(libs.spring.security.oauth2.jose)
     //TODO Need to add xalan and xml-apis exclusions for saml2-core
     compileOnly(libs.springSecuritySaml2Core)
+    compileOnly(libs.springSecuritySaml2ServiceProvider)
     compileOnly(libs.spring.session.jdbc)
     runtimeOnly(libs.hikariCP)
     runtimeOnly(libs.spring.security.config)

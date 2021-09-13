@@ -25,7 +25,7 @@ public class SAMLConstants {
     public static final String IDP_METADATA_XML = "idpMetadata.xml";
     public static final String SAML_METADATA_PATH = "/saml/metadata";
     public static final String SAML_SINGLE_LOGOUT = "/saml/SingleLogout";
-    public static final String SAML_SSO = "/saml/SSO";
+    public static final String SAML_SSO = "/login/saml2/sso/samlexample";
 
     public static final String IDP_KEY = "idpkey";
 

@@ -30,9 +30,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.wavemaker.runtime.security.provider.saml.SAMLConfig;
-import com.wavemaker.runtime.security.provider.saml.SAMLHttpServletRequestWrapper;
+//import com.wavemaker.runtime.security.provider.saml.SAMLHttpServletRequestWrapper;
 
-import static com.wavemaker.runtime.security.provider.saml.SAMLHttpServletRequestWrapper.EndpointType.SLO;
+//import static com.wavemaker.runtime.security.provider.saml.SAMLHttpServletRequestWrapper.EndpointType.SLO;
 
 
 public class WMSAMLLogoutProcessingFilter extends SAMLLogoutProcessingFilter {
@@ -44,7 +44,7 @@ public class WMSAMLLogoutProcessingFilter extends SAMLLogoutProcessingFilter {
      * Constructor defines URL to redirect to after successful logout and handlers.
      *
      * @param logoutSuccessUrl user will be redirected to the url after successful logout
-     * @param handlers handlers to invoke after logout
+     * @param handlers         handlers to invoke after logout
      */
     public WMSAMLLogoutProcessingFilter(String logoutSuccessUrl, LogoutHandler... handlers) {
         super(logoutSuccessUrl, handlers);
@@ -54,7 +54,7 @@ public class WMSAMLLogoutProcessingFilter extends SAMLLogoutProcessingFilter {
      * Constructor uses custom implementation for determining URL to redirect after successful logout.
      *
      * @param logoutSuccessHandler custom implementation of the logout logic
-     * @param handlers handlers to invoke after logout
+     * @param handlers             handlers to invoke after logout
      */
     public WMSAMLLogoutProcessingFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler... handlers) {
         super(logoutSuccessHandler, handlers);
@@ -73,8 +73,10 @@ public class WMSAMLLogoutProcessingFilter extends SAMLLogoutProcessingFilter {
                     logger.debug("Error determining metadata contracts", e);
                     throw new ServletException("Error determining metadata contracts", e);
                 }
-                SAMLHttpServletRequestWrapper requestWrapper = new SAMLHttpServletRequestWrapper(request, context, SLO);
-                super.processLogout(requestWrapper, response, chain);
+                //TODO handle for SLO
+//                SAMLHttpServletRequestWrapper requestWrapper = new SAMLHttpServletRequestWrapper(request, context, SLO);
+//                super.processLogout(requestWrapper, response, chain);
+                super.processLogout(request, response, chain);
             } else {
                 super.processLogout(request, response, chain);
             }
