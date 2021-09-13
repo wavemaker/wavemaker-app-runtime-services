@@ -44,8 +44,7 @@ dependencies {
     compileOnly(libs.spring.security.ldap)
     compileOnly(libs.spring.security.oauth2.client)
     compileOnly(libs.spring.security.oauth2.jose)
-    //TODO Need to add xalan and xml-apis exclusions for saml2-core
-    compileOnly(libs.springSecuritySaml2Core)
+    compileOnly(libs.spring.security.saml2.service.provider)
     compileOnly(libs.spring.session.jdbc)
     compileOnly(libs.poiOoxml) {
         because("Needed this for cleaning up memory references in Cleanupistener. " +

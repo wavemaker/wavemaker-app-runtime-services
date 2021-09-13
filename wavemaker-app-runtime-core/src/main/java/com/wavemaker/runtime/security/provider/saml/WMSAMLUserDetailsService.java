@@ -15,20 +15,23 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.saml.SAMLCredential;
-import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.saml2.provider.service.authentication.OpenSamlAuthenticationProvider.ResponseToken;
 
-import com.wavemaker.runtime.security.WMUser;
+import com.wavemaker.runtime.security.provider.saml.util.SAMLUtils;
 
 /**
  * Created by ArjunSahasranam on 23/11/16.
@@ -40,24 +43,25 @@ public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
     private String roleAttributeName;
 
     @Override
-    public Object loadUserBySAML(final SAMLCredential credential) {
-        final String username = credential.getNameID().getValue();
-
+    public Collection<GrantedAuthority> getAuthorities(ResponseToken responseToken) {
         List<GrantedAuthority> authorities = null;
         if (StringUtils.isNotBlank(roleAttributeName)) {
-            final String attributeValues[] = credential.getAttributeAsStringArray(roleAttributeName);
-            LOGGER.info("Attribute values for {} is {}", roleAttributeName, Arrays.toString(attributeValues));
-            if (ArrayUtils.isNotEmpty(attributeValues)) {
-                authorities = AuthorityUtils.createAuthorityList(attributeValues);
+            Response response = responseToken.getResponse();
+            Assertion assertion = org.springframework.util.CollectionUtils.firstElement(response.getAssertions());
+            Map<String, List<Object>> attributes = SAMLUtils.getAssertionAttributes(assertion);
+            List<Object> attributeValues = attributes.get(roleAttributeName);
+            LOGGER.info("Attribute values for {} is {}", roleAttributeName, attributeValues);
+            authorities = new ArrayList<>(attributeValues.size());
+            if (!attributes.isEmpty()) {
+                for (Object attribute : attributeValues) {
+                    authorities.add(new SimpleGrantedAuthority(attribute.toString()));
+                }
             }
         }
-
         if (CollectionUtils.isEmpty(authorities)) {
             authorities = AuthorityUtils.NO_AUTHORITIES;
         }
-
-        return new WMUser("", username, "", username, 0, true, true, true, true, authorities,
-                System.currentTimeMillis());
+        return authorities;
     }
 
     public String getRoleAttributeName() {

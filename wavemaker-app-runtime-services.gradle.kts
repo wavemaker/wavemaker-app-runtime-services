@@ -27,7 +27,7 @@ dependencies {
         api(libs.commons.text)
         api(libs.guava)
         api(libs.gson)
-        api(libs.springSecuritySaml2Core)
+        api(libs.spring.security.saml2.service.provider)
         api(libs.hibernate.core)
         api(libs.hibernate.validator)
         api(libs.apache.httpclient)

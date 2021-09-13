@@ -15,14 +15,16 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Response;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.saml.SAMLCredential;
-import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import org.springframework.security.saml2.provider.service.authentication.OpenSamlAuthenticationProvider.ResponseToken;
+import org.springframework.util.CollectionUtils;
 
-import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 
@@ -37,14 +39,13 @@ public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService 
     }
 
     @Override
-    public Object loadUserBySAML(final SAMLCredential credential) {
-        String username = credential.getNameID().getValue();
+    public Collection<GrantedAuthority> getAuthorities(ResponseToken responseToken) {
+        Response response = responseToken.getResponse();
+        Assertion assertion = CollectionUtils.firstElement(response.getAssertions());
+        String username = assertion.getSubject().getNameID().getValue();
         Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
-
         dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
-
-        long loginTime = System.currentTimeMillis();
-        return new WMUser("", username, "", username, 0, true, true, true, true, dbAuthsSet, loginTime);
+        return dbAuthsSet;
     }
 
     public AuthoritiesProvider getAuthoritiesProvider() {
@@ -54,6 +55,5 @@ public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService 
     public void setAuthoritiesProvider(AuthoritiesProvider authoritiesProvider) {
         this.authoritiesProvider = authoritiesProvider;
     }
-
 
 }

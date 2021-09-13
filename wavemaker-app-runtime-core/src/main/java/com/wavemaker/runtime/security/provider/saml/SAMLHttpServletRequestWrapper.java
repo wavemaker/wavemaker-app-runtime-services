@@ -15,19 +15,12 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.opensaml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.SingleLogoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.saml.context.SAMLMessageContext;
-
-import static com.wavemaker.runtime.security.provider.saml.SAMLConstants.SAML_2_0_PROTOCOL;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationToken;
 
 /**
  * Created by arjuns on 18/1/17.
@@ -36,8 +29,8 @@ public class SAMLHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     private static final Logger logger = LoggerFactory.getLogger(SAMLHttpServletRequestWrapper.class);
 
-    private SAMLMessageContext context;
     private EndpointType endpointType;
+    private Saml2AuthenticationToken saml2AuthenticationToken;
 
     public enum EndpointType {
         SSO, // Single Sign-on Service
@@ -50,30 +43,23 @@ public class SAMLHttpServletRequestWrapper extends HttpServletRequestWrapper {
      * @param request
      * @throws IllegalArgumentException if the request is null
      */
-    public SAMLHttpServletRequestWrapper(HttpServletRequest request, SAMLMessageContext context, EndpointType endpointType) {
+    public SAMLHttpServletRequestWrapper(HttpServletRequest request, Saml2AuthenticationToken saml2AuthenticationToken, EndpointType endpointType) {
         super(request);
-        this.context = context;
+        this.saml2AuthenticationToken = saml2AuthenticationToken;
         this.endpointType = endpointType;
     }
 
     @Override
     public StringBuffer getRequestURL() {
-        SPSSODescriptor spssoDescriptor = context.getLocalEntityMetadata().getSPSSODescriptor(SAML_2_0_PROTOCOL);
         String endPoint = null;
         if (EndpointType.SSO == this.endpointType) {
-            endPoint = getEndpoint(spssoDescriptor.getAssertionConsumerServices());
+            endPoint = saml2AuthenticationToken.getRelyingPartyRegistration().getAssertionConsumerServiceLocation();
         } else {
-            endPoint = getSLOEndpoint(spssoDescriptor.getSingleLogoutServices());
+            //TODO for SLO
+            endPoint = saml2AuthenticationToken.getRelyingPartyRegistration().getSingleLogoutServiceLocation();
         }
         logger.debug("Endpoint is {} and Url is {}", endpointType, endPoint);
         return new StringBuffer(endPoint);
     }
 
-    protected String getEndpoint(final List<AssertionConsumerService> endpoints) {
-        return endpoints.get(0).getLocation();
-    }
-
-    protected String getSLOEndpoint(final List<SingleLogoutService> endpoints) {
-        return endpoints.get(0).getLocation();
-    }
 }

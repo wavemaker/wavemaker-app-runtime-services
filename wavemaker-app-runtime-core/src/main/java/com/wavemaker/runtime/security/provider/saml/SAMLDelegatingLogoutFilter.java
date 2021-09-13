@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -35,7 +36,6 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
-import com.wavemaker.runtime.security.filter.WMSAMLLogoutFilter;
 
 /**
  * Created by ArjunSahasranam on 25/11/16.
@@ -45,7 +45,7 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
     private RequestMatcher logoutRequestMatcher;
 
     @Autowired
-    private WMSAMLLogoutFilter samlLogoutFilter;
+    private LogoutFilter logoutFilter;
 
     private static final Logger logger = LoggerFactory.getLogger(SAMLDelegatingLogoutFilter.class);
 
@@ -67,8 +67,8 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
                 response.getWriter().write(JSONUtils.toJSON(new StringWrapper(request.getRequestURI())));
                 response.getWriter().flush();
             } else {
-                logger.info("Delegating to {}", samlLogoutFilter.getClass().getSimpleName());
-                samlLogoutFilter.doFilter(request, response, chain);
+                logger.info("Delegating to {}", logoutFilter.getClass().getSimpleName());
+                logoutFilter.doFilter(request, response, chain);
             }
         } else {
             chain.doFilter(request, response);
@@ -78,9 +78,8 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
     /**
      * Allow subclasses to modify when a logout should take place.
      *
-     * @param request the request
+     * @param request  the request
      * @param response the response
-     *
      * @return <code>true</code> if logout should occur, <code>false</code> otherwise
      */
     protected boolean requiresLogout(HttpServletRequest request,
