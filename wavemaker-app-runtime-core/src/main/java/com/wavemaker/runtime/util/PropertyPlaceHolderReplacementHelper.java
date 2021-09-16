@@ -20,8 +20,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 
+import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.util.PatternMatchingReplaceReader;
 
 /**
@@ -29,12 +30,16 @@ import com.wavemaker.commons.util.PatternMatchingReplaceReader;
  */
 public class PropertyPlaceHolderReplacementHelper {
 
-    public Reader getPropertyReplaceReader(Reader reader, Environment environment) {
-        return new PatternMatchingReplaceReader(reader, "${", "}", environment::getProperty);
+    public Reader getPropertyReplaceReader(Reader reader, PropertyResolver propertyResolver) {
+        return new PatternMatchingReplaceReader(reader, "${", "}", propertyResolver::getProperty);
     }
 
-    public Reader getPropertyReplaceReader(InputStream inputStream, Environment environment) {
+    public Reader getPropertyReplaceReader(InputStream inputStream, PropertyResolver propertyResolver) {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return getPropertyReplaceReader(inputStreamReader, environment);
+        return getPropertyReplaceReader(inputStreamReader, propertyResolver);
+    }
+
+    public Reader getPropertyReplaceReader(File file, PropertyResolver propertyResolver) {
+        return getPropertyReplaceReader(file.getContent().asReader(), propertyResolver);
     }
 }

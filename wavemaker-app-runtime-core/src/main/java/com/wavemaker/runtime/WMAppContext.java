@@ -20,7 +20,6 @@ import javax.servlet.ServletContext;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.env.Environment;
 import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
@@ -58,10 +57,6 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
     @Deprecated
     public ServletContext getContext() {
         return servletContext;
-    }
-
-    public Environment getThreadLocalAwareEnvironment() {
-        return getSpringBean(Environment.class);
     }
 
     public <T> T getSpringBean(String beanId) {

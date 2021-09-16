@@ -84,7 +84,7 @@ public class RestRuntimeService {
     private static final String AUTHORIZATION = "authorization";
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
     private static final String OPERATION_DOES_NOT_EXIST = "com.wavemaker.runtime.operation.doesnt.exist";
-    private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
+    private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper;
 
     @Autowired
     private RequestTrackingFilter requestTrackingFilter;
@@ -100,7 +100,9 @@ public class RestRuntimeService {
 
     @PostConstruct
     public void init() {
+        restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
         restRuntimeServiceCacheHelper.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
+        restRuntimeServiceCacheHelper.setEnvironment(environment);
         restConnector = new RestConnector(environment);
     }
 

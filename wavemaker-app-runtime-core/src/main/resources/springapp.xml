@@ -110,6 +110,8 @@
 
     <bean id="oAuthServiceManager" class="com.wavemaker.runtime.auth.oauth2.service.OAuth2RuntimeServiceManager"/>
 
+    <bean id="oAuthProvidersManager" class="com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager"/>
+
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
     <bean id="wMHandlerMethodReturnValueHandlerConfig" class="com.wavemaker.runtime.WMHandlerMethodReturnValueHandlerConfig"/>

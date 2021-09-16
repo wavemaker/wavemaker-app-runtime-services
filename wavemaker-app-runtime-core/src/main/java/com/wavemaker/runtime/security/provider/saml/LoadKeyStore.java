@@ -51,8 +51,8 @@ public class LoadKeyStore {
 
     private static final Logger logger = LoggerFactory.getLogger(LoadKeyStore.class);
 
-    private static final String PROVIDERS_SAML_KEY_STORE_FILE = "providers.saml.keyStoreFile";
-    private static final String PROVIDERS_SAML_KEY_STORE_PASSWORD = "providers.saml.keyStorePassword";
+    private static final String PROVIDERS_SAML_KEY_STORE_FILE = "security.providers.saml.keyStoreFile";
+    private static final String PROVIDERS_SAML_KEY_STORE_PASSWORD = "security.providers.saml.keyStorePassword";
     private static final String KEY = "idpkey";
 
     private Environment environment;
