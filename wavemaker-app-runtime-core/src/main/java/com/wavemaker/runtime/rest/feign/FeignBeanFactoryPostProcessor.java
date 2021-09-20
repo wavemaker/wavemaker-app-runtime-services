@@ -35,6 +35,7 @@ public class FeignBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
             ConstructorArgumentValues values = new ConstructorArgumentValues();
             values.addIndexedArgumentValue(0, apiClass);
             values.addIndexedArgumentValue(1, serviceId);
+            values.addIndexedArgumentValue(2, configurableListableBeanFactory.getBeanClassLoader());
             bd.setPrimary(true);
             bd.setConstructorArgumentValues(values);
             ((DefaultListableBeanFactory) configurableListableBeanFactory).registerBeanDefinition(serviceId + StringUtils.upperCaseFirstLetter(apiClass.getName()) +
