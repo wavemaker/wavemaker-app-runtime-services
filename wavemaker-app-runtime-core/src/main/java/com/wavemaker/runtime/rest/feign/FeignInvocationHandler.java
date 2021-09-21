@@ -23,6 +23,7 @@ import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
+import com.wavemaker.runtime.util.WMHeaderUtils;
 import feign.Param;
 import feign.QueryMap;
 import feign.RequestLine;
@@ -73,6 +74,7 @@ public class FeignInvocationHandler implements InvocationHandler {
 
         httpRequestData.setQueryParametersMap(queryVariablesMap);
         httpRequestData.setPathVariablesMap(pathVariablesMap);
+        WMHeaderUtils.getHeaders().forEach((key, value)-> httpRequestData.getHttpHeaders().add(key, value));
 
 //        logger.info("constructed request data {}", httpRequestData.getPathVariablesMap());
 //        logger.info("constructed request query param {}", httpRequestData.getQueryParametersMap());
@@ -87,6 +89,8 @@ public class FeignInvocationHandler implements InvocationHandler {
             return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            WMHeaderUtils.clear();
         }
         return null;
     }
