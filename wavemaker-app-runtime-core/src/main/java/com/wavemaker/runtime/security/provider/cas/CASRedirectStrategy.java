@@ -28,8 +28,8 @@ import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 
 import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
-import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
  * Created by ArjunSahasranam on 1/6/16.
@@ -47,9 +47,9 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
         if ("/".equals(url)) {
             super.sendRedirect(request, response, url);
         } else {
-            String serviceUrl = HttpRequestUtils.getServiceUrl(request);
+            String applicationBaseUrl = HttpRequestUtils.getApplicationBaseUrl(request);
             StringBuilder stringBuilder = new StringBuilder(url);
-            stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + serviceUrl + "/");
+            stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + applicationBaseUrl + "/");
 
             LOGGER.info("CAS logout redirect url is {}", url);
             String casRedirectUrl = stringBuilder.toString();

@@ -45,11 +45,11 @@ import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.app.AppFileSystem;
+import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;
 import com.wavemaker.runtime.rest.builder.HttpRequestDetailsBuilder;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestConnector;
-import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;
 
 /**
  * Created by srujant on 18/7/17.
@@ -67,8 +67,7 @@ public class OAuth2RuntimeServiceManager {
     public String getAuthorizationUrl(String providerId, String requestSourceType, String key, HttpServletRequest httpServletRequest) {
         try {
             OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
-            String baseUrl = HttpRequestUtils.getBaseUrl(httpServletRequest);
-            String appPath = new StringBuilder(baseUrl).append(httpServletRequest.getContextPath()).toString();
+            String appPath = HttpRequestUtils.getApplicationBaseUrl(httpServletRequest);
             String redirectUrl = getRedirectUrl(providerId, appPath);
             Map<String, String> stateObject = new HashMap<>();
             stateObject.put("mode", "runtTime");
@@ -99,7 +98,7 @@ public class OAuth2RuntimeServiceManager {
     public String callBack(String providerId, String redirectUrl, String code, String state, HttpServletRequest httpServletRequest) {
         OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
         if (StringUtils.isBlank(redirectUrl)) {
-            redirectUrl = new StringBuilder().append(HttpRequestUtils.getBaseUrl(httpServletRequest)).append(httpServletRequest.getContextPath())
+            redirectUrl = new StringBuilder().append(HttpRequestUtils.getApplicationBaseUrl(httpServletRequest))
                     .append("/services/oauth2/").append(providerId).append("/callback").toString();
         }
 

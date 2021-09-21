@@ -35,8 +35,8 @@ import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
-import com.wavemaker.runtime.util.HttpRequestUtils;
 
 import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;

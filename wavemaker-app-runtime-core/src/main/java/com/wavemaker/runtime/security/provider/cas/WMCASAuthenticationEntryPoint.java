@@ -32,8 +32,8 @@ import org.springframework.security.core.AuthenticationException;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
-import com.wavemaker.runtime.util.HttpRequestUtils;
 
 import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
@@ -50,8 +50,8 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
     @Override
     protected String createServiceUrl(HttpServletRequest request, HttpServletResponse response) {
         if (serviceProperties.getService().equals("/")) {
-            String serviceUrl = HttpRequestUtils.getServiceUrl(request);
-            serviceProperties.setService(serviceUrl + "/j_spring_cas_security_check");
+            String applicationBaseUrl = HttpRequestUtils.getApplicationBaseUrl(request);
+            serviceProperties.setService(applicationBaseUrl + "/j_spring_cas_security_check");
         }
 
         String service = this.serviceProperties.getService();

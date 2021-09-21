@@ -142,8 +142,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
                     clientRegistration.getRegistrationId() + "): " + clientRegistration.getAuthorizationGrantType());
         }
 
-        String baseUrl = HttpRequestUtils.getBaseUrl(request);
-        String appPath = new StringBuilder(baseUrl).append(request.getContextPath()).toString();
+        String appPath = HttpRequestUtils.getApplicationBaseUrl(request);
         String redirectUrl = this.getRedirectUri(clientRegistration, appPath);
 
         Map<String, Object> additionalParameters = new HashMap<>();
