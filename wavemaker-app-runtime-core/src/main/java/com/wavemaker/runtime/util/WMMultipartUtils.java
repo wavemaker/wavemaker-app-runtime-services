@@ -28,7 +28,6 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -54,11 +54,6 @@ import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMAppObjectMapper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicException;
-import net.sf.jmimemagic.MagicMatch;
-import net.sf.jmimemagic.MagicMatchNotFoundException;
-import net.sf.jmimemagic.MagicParseException;
 
 /**
  * @author sunilp
@@ -68,7 +63,6 @@ public class WMMultipartUtils {
     public static final String WM_DATA_JSON = "wm_data_json";
     public static final String BLOB = "Blob";
     private static final Logger LOGGER = LoggerFactory.getLogger(WMMultipartUtils.class);
-    private static final int READ_LIMIT_FOR_CONTENT_TYPE = 2048;
     private static final int FILE_NAME_LENGTH = 12;
     private static final String BYTE_ARRAY = "byte[]";
 
@@ -117,7 +111,6 @@ public class WMMultipartUtils {
      * @param oldInstance : persisted instance.
      * @param newInstance : changes in the persisted instance.
      * @param <T>
-     *
      * @return returns newInstance with updated blob content
      */
     public static <T> T updateLobsContent(T oldInstance, T newInstance) {
@@ -196,9 +189,9 @@ public class WMMultipartUtils {
     public static String guessContentType(File file) {
         String mimeType = null;
         try {
-            mimeType = getMagicMatch(file).getMimeType();
-        } catch (MagicException e) {
-
+            mimeType = new Tika().detect(file);
+        } catch (IOException e) {
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.reading.error"), e);
         }
         return mimeType;
     }
@@ -208,26 +201,10 @@ public class WMMultipartUtils {
      * get a match from a stream of data
      *
      * @param data bytes of data
-     *
      * @return Guessed content type of given bytes
-     *
-     * @throws MagicException Failed to Guess!
      */
-    public static String guessContentType(byte[] data) throws MagicException {
-        return getMagicMatch(data).getMimeType();
-    }
-
-    /**
-     * get a match from a stream of data
-     *
-     * @param data bytes of data
-     *
-     * @return Guessed extension of given bytes
-     *
-     * @throws MagicException Failed to Guess!
-     */
-    public static String guessExtension(byte[] data) throws MagicException {
-        return getMagicMatch(data).getExtension();
+    public static String guessContentType(byte[] data) {
+        return new Tika().detect(data);
     }
 
     /**
@@ -296,38 +273,49 @@ public class WMMultipartUtils {
         }
     }
 
+    private static MimeType getMimeTypeFromInputStream(InputStream is) {
+        String contentType = null;
+        try {
+            contentType = new Tika().detect(is);
+            return TikaConfig.getDefaultConfig().getMimeRepository().forName(contentType);
+        } catch (IOException | MimeTypeException e) {
+            LOGGER.warn("Could not get file extension for file type {}", contentType);
+            return null;
+        }
+    }
+
     public static DownloadResponse buildDownloadResponse(
             HttpServletRequest request, InputStream is, boolean download) {
         DownloadResponse downloadResponse = new DownloadResponse();
-        try {
-            downloadResponse.setContents(is);
-            downloadResponse.setInline(!download);
 
-            String contentType = null;
-            String filename = request.getParameter("filename");
-            String extension = "";
+        downloadResponse.setContents(is);
+        downloadResponse.setInline(!download);
 
-            final Optional<MagicMatch> magicMatchOptional = getMagicType(is);
-            if (magicMatchOptional.isPresent()) {
-                contentType = magicMatchOptional.get().getMimeType();
-                extension = "." + magicMatchOptional.get().getExtension();
-            } else if (StringUtils.isNotBlank(filename)) {
-                contentType = URLConnection.guessContentTypeFromName(filename);
-            }
+        String contentType = null;
+        String filename = request.getParameter("filename");
+        String extension = "";
 
-            if (StringUtils.isBlank(filename)) {
-                filename = WMRandomUtils.getRandomString(FILE_NAME_LENGTH);
-            }
+        MimeType mimeType = getMimeTypeFromInputStream(is);
+        if (mimeType != null) {
+            contentType = mimeType.getName();
+            extension = mimeType.getExtension();
+        } else if (StringUtils.isNotBlank(filename)) {
+            contentType = URLConnection.guessContentTypeFromName(filename);
+        }
 
-            if (StringUtils.isBlank(contentType)) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-            }
+        if (StringUtils.isBlank(filename)) {
+            filename = WMRandomUtils.getRandomString(FILE_NAME_LENGTH);
+        }
 
-            downloadResponse.setContentType(contentType);
+        if (StringUtils.isBlank(contentType)) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+
+        downloadResponse.setContentType(contentType);
+        if (filename.endsWith(extension)) {
+            downloadResponse.setFileName(filename);
+        } else {
             downloadResponse.setFileName(filename + extension);
-
-        } catch (IOException | MagicException e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.prepare.response"), e);
         }
         return downloadResponse;
     }
@@ -355,57 +343,19 @@ public class WMMultipartUtils {
     }
 
     /**
-     * Guess Content type for the given bytes using Magic apis.
-     * If any exception using magic api, then getting content type from request.
+     * Guess Content type for the given bytes using Tika
+     * If any exception using Tika api, then getting content type from request.
      *
      * @param bytes              stream of bytes
      * @param httpServletRequest
-     *
      * @return content type for given bytes
      */
     private static String getMatchingContentType(byte[] bytes, HttpServletRequest httpServletRequest) {
-        String contentType = null;
-        try {
-            contentType = WMMultipartUtils.guessContentType(bytes);
-        } catch (MagicException e) {
-            //do nothing
-        }
+        String contentType = guessContentType(bytes);
         if (contentType == null) {
             contentType = httpServletRequest.getContentType();
         }
         return contentType;
-    }
-
-    private static Optional<MagicMatch> getMagicType(final InputStream is) throws IOException, MagicException {
-        Optional<MagicMatch> result = Optional.empty();
-        if (is.markSupported()) {
-            byte[] bytes = new byte[READ_LIMIT_FOR_CONTENT_TYPE];
-            is.mark(READ_LIMIT_FOR_CONTENT_TYPE);
-            is.read(bytes);
-            is.reset();
-            try {
-                result = Optional.of(getMagicMatch(bytes));
-            } catch (MagicException e) {
-                // ignore
-            }
-        }
-        return result;
-    }
-
-    private static MagicMatch getMagicMatch(byte[] data) throws MagicException {
-        try {
-            return Magic.getMagicMatch(data);
-        } catch (MagicParseException | MagicMatchNotFoundException | MagicException e) {
-            throw new MagicException("Failed to guess magic match for the given bytes", e);
-        }
-    }
-
-    private static MagicMatch getMagicMatch(File file) throws MagicException {
-        try {
-            return Magic.getMagicMatch(file, false);
-        } catch (MagicParseException | MagicMatchNotFoundException | MagicException e) {
-            throw new MagicException("Failed to guess magic match for the given bytes", e);
-        }
     }
 
 }
