@@ -34,9 +34,6 @@ dependencies {
     implementation(libs.jackson.datatype.jsr310)
     implementation(libs.jackson.datatype.hibernate5)
     implementation(libs.apache.httpclient)
-    implementation(libs.jmimemagic) {
-        exclude("log4j", "log4j")
-    }
     implementation(libs.tika.core)
     implementation(libs.poi)
     implementation(libs.poiOoxml) {
