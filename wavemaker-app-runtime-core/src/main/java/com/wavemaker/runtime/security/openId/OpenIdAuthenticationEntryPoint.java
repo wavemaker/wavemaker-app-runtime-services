@@ -26,8 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 
 import com.wavemaker.commons.auth.openId.OpenIdConstants;
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
-import com.wavemaker.runtime.util.HttpRequestUtils;
 
 import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
@@ -56,8 +56,7 @@ public class OpenIdAuthenticationEntryPoint implements SSOEntryPoint {
     }
 
     private String createRedirectUrl(HttpServletRequest request) {
-        String serviceUrl = HttpRequestUtils.getServiceUrl(request);
-        StringBuilder stringBuilder = new StringBuilder(serviceUrl).append("/auth/oauth2/").append(providerId);
+        StringBuilder stringBuilder = new StringBuilder(HttpRequestUtils.getApplicationBaseUrl(request)).append("/auth/oauth2/").append(providerId);
         return StringUtils.isNotEmpty(request.getParameter(OpenIdConstants.REDIRECT_PAGE)) ? stringBuilder.append("?redirectPage=").append(request.getParameter(
                 OpenIdConstants.REDIRECT_PAGE)).toString() : stringBuilder.toString();
     }
