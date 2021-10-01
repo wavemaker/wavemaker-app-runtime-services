@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,11 +15,13 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -53,20 +56,21 @@ public class FeignInvocationHandler implements InvocationHandler {
 
         int position = 0;
         for (Annotation[] parameterAnnotation : method.getParameterAnnotations()) {
-
-            if (parameterAnnotation.length != 0 && parameterAnnotation[0] instanceof Param) {
-                if (queryVariablesList.contains(((Param) parameterAnnotation[0]).value())) {
-                    queryVariablesMap.add(((Param) parameterAnnotation[0]).value(), args[position].toString());
+            if (args[position] != null) {
+                if (parameterAnnotation.length != 0 && parameterAnnotation[0] instanceof Param) {
+                    if (queryVariablesList.contains(((Param) parameterAnnotation[0]).value())) {
+                        queryVariablesMap.add(((Param) parameterAnnotation[0]).value(), args[position].toString());
+                    } else {
+                        pathVariablesMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
+                    }
+                } else if (parameterAnnotation.length != 0 && parameterAnnotation[0] instanceof QueryMap) {
+                    queryVariablesMap.addAll((MultiValueMap<String, String>) args[position]);
                 } else {
-                    pathVariablesMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
+                    //set as request body
+                    httpRequestData.setRequestBody(new ByteArrayInputStream(WMObjectMapper.getInstance().writeValueAsBytes(args[position])));
+                    httpRequestData.getHttpHeaders().add("content-type", "application/json");
+                    //TODO:file
                 }
-            } else if (parameterAnnotation.length != 0 && parameterAnnotation[0] instanceof QueryMap) {
-                queryVariablesMap.addAll((MultiValueMap<String, String>) args[position]);
-            } else {
-                //set as request body
-                httpRequestData.setRequestBody(new ByteArrayInputStream(WMObjectMapper.getInstance().writeValueAsBytes(args[position])));
-                httpRequestData.getHttpHeaders().add("content-type", "application/json");
-                //TODO:file
             }
             position++;
         }
@@ -84,9 +88,16 @@ public class FeignInvocationHandler implements InvocationHandler {
                 httpRequestData);
 
         try {
-            return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
+            if (method.getReturnType() != void.class) {
+                if (responseDetails.getStatusCode() >= 200 && responseDetails.getStatusCode() < 300) {
+                    return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
+                } else {
+                    throw new WMRuntimeException(IOUtils.toString(responseDetails.getBody(), Charset.defaultCharset()));
+                }
+
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new WMRuntimeException(e);
         }
         return null;
     }
