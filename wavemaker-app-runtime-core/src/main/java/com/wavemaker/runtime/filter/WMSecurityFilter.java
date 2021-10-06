@@ -17,6 +17,7 @@ package com.wavemaker.runtime.filter;
 
 import java.io.IOException;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.commons.WMAppContext;
@@ -34,16 +35,18 @@ import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 /**
  * @author Uday Shankar
  */
-public class WMSecurityFilter extends DelegatingFilterProxy {
+public class WMSecurityFilter extends GenericFilterBean {
 
     private Boolean isSecurityEnforced;
 
     private boolean skipSecurityEnabled;
 
+    private Filter springSecurityFilterChain;
+
     @Override
     protected void initFilterBean() throws ServletException {
         if (isSecurityEnforced()) {
-            super.initFilterBean();
+            springSecurityFilterChain = WMAppContext.getInstance().getSpringBean("org.springframework.security.filterChainProxy");
         }
         skipSecurityEnabled = RuntimeEnvironment.isTestRunEnvironment();
     }
@@ -56,7 +59,7 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 // Call the delegate
-                super.doFilter(servletRequest, servletResponse, filterChain);
+                springSecurityFilterChain.doFilter(servletRequest, servletResponse, filterChain);
             }
         } finally {
             SecurityContextHolder.clearContext(); //Cleaning any Thread local map values if created
