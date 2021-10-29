@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.rest.feign;
+package com.wavemaker.runtime.rest;
 
 import java.util.List;
 
@@ -13,9 +13,9 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import com.wavemaker.commons.util.StringUtils;
 
-public class FeignBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class RestBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(FeignBeanFactoryPostProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestBeanFactoryPostProcessor.class);
 
     private List<Class> apiClasses;
     private String serviceId;
@@ -31,7 +31,7 @@ public class FeignBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
         apiClasses.forEach(apiClass -> {
-            AnnotatedGenericBeanDefinition bd = new AnnotatedGenericBeanDefinition(FeignFactoryBean.class);
+            AnnotatedGenericBeanDefinition bd = new AnnotatedGenericBeanDefinition(RestFactoryBean.class);
             ConstructorArgumentValues values = new ConstructorArgumentValues();
             values.addIndexedArgumentValue(0, apiClass);
             values.addIndexedArgumentValue(1, serviceId);

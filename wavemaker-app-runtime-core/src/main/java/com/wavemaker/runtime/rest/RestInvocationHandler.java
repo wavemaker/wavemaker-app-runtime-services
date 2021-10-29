@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.rest.feign;
+package com.wavemaker.runtime.rest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -30,9 +31,9 @@ import feign.Param;
 import feign.QueryMap;
 import feign.RequestLine;
 
-public class FeignInvocationHandler implements InvocationHandler {
+public class RestInvocationHandler implements InvocationHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(FeignInvocationHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(RestInvocationHandler.class);
 
     private static Pattern pathParameterPattern = Pattern.compile("\\/\\{(\\w*)\\}");
     private static Pattern queryParameterPattern = Pattern.compile("=\\{(\\w*)\\}");
@@ -41,7 +42,7 @@ public class FeignInvocationHandler implements InvocationHandler {
 
     private String serviceId;
 
-    public FeignInvocationHandler(String serviceId, RestRuntimeService restRuntimeService) {
+    public RestInvocationHandler(String serviceId, RestRuntimeService restRuntimeService) {
         this.serviceId = serviceId;
         this.restRuntimeService = restRuntimeService;
     }
@@ -75,6 +76,15 @@ public class FeignInvocationHandler implements InvocationHandler {
             position++;
         }
 
+        RequestContext requestContext = RestExecutor.getRequestContextThreadLocal();
+        if (requestContext != null) {
+            if (!requestContext.getHeaders().isEmpty()) {
+                httpRequestData.getHttpHeaders().putAll(requestContext.getHeaders());
+            }
+            if (!requestContext.getQueryParams().isEmpty()) {
+                queryVariablesMap.putAll(requestContext.getQueryParams());
+            }
+        }
         httpRequestData.setQueryParametersMap(queryVariablesMap);
         httpRequestData.setPathVariablesMap(pathVariablesMap);
 
@@ -92,7 +102,8 @@ public class FeignInvocationHandler implements InvocationHandler {
                 if (responseDetails.getStatusCode() >= 200 && responseDetails.getStatusCode() < 300) {
                     return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
                 } else {
-                    throw new WMRuntimeException(IOUtils.toString(responseDetails.getBody(), Charset.defaultCharset()));
+                    logger.error(IOUtils.toString(responseDetails.getBody(), Charset.defaultCharset()));
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.$RestServiceInvocationError"), responseDetails.getStatusCode());
                 }
 
             }
