@@ -17,7 +17,6 @@ package com.wavemaker.runtime.security.openId;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
-import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
@@ -63,7 +60,6 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
     private final AntPathRequestMatcher authorizationRequestMatcher;
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final RedirectStrategy authorizationRedirectStrategy = new DefaultRedirectStrategy();
-    private final StringKeyGenerator stateGenerator = new Base64StringKeyGenerator(Base64.getUrlEncoder());
     private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
             new HttpSessionOAuth2AuthorizationRequestRepository();
 
@@ -106,7 +102,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (this.shouldRequestAuthorization(request, response)) {
+        if (this.shouldRequestAuthorization(request)) {
             try {
                 this.sendRedirectForAuthorization(request, response);
             } catch (Exception failed) {
@@ -118,12 +114,12 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         filterChain.doFilter(request, response);
     }
 
-    private boolean shouldRequestAuthorization(HttpServletRequest request, HttpServletResponse response) {
+    private boolean shouldRequestAuthorization(HttpServletRequest request) {
         return this.authorizationRequestMatcher.matches(request);
     }
 
     private void sendRedirectForAuthorization(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws IOException {
 
         String registrationId = this.authorizationRequestMatcher
                 .extractUriTemplateVariables(request).get(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME);
@@ -192,7 +188,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
     }
 
     private void unsuccessfulRedirectForAuthorization(HttpServletRequest request, HttpServletResponse response,
-                                                      Exception failed) throws IOException, ServletException {
+                                                      Exception failed) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Authorization Request failed: " + failed.toString(), failed);
         }
@@ -208,7 +204,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
                 redirectUrl = new StringBuilder(appPath).append(OpenIdConstants.REDIRECT_URL).toString();
         }
         Map<String, String> valuesMap = Collections.singletonMap(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME, clientRegistration.getRegistrationId());
-        redirectUrl = StrSubstitutor.replace(redirectUrl, valuesMap);
+        redirectUrl = StringSubstitutor.replace(redirectUrl, valuesMap);
         return redirectUrl;
     }
 

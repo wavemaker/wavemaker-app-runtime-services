@@ -44,6 +44,8 @@ dependencies {
     }
     implementation(libs.freemarker)
     implementation(libs.swagger.annotations)
+    implementation(libs.javax.annotation.api)
+    implementation(libs.javax.jaxws.api)
     compileOnly(libs.javax.servlet.api)
     compileOnly(libs.spring.contextSupport)
     compileOnly(libs.spring.security.cas)

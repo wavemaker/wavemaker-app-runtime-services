@@ -66,12 +66,10 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(JSONUtils.toJSON(new StringWrapper(request.getRequestURI())));
                 response.getWriter().flush();
-                return;
             } else {
                 logger.info("Delegating to {}", samlLogoutFilter.getClass().getSimpleName());
                 samlLogoutFilter.doFilter(request, response, chain);
             }
-
         } else {
             chain.doFilter(request, response);
         }

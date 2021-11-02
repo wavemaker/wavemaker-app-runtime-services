@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -95,27 +96,27 @@ public class HttpRequestUtils {
         }
         Message message = new Message();
         message.setHttpHeaders(new HttpHeaders());
-        message.setInputStream(org.apache.commons.io.IOUtils.toInputStream(JSONUtils.toJSON(body)));
+        message.setInputStream(IOUtils.toInputStream(JSONUtils.toJSON(body), Charset.defaultCharset()));
         return message;
     }
 
     public static Message createMessage(MultiValueMap<String, Object> map, String contentType) {
         RestHttpOutputMessage httpOutputMessage = new HttpRequestUtils.RestHttpOutputMessage();
-        httpOutputMessage.setHttpHeaders(new HttpHeaders());
+        httpOutputMessage.setHeaders(new HttpHeaders());
         FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
         formHttpMessageConverter.setPartConverters(getPartConverters());
         try {
             File file = File.createTempFile("requestBody", ".tmp");
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))){
-                httpOutputMessage.setOutputStream(outputStream);
+                httpOutputMessage.setBody(outputStream);
                 formHttpMessageConverter.write(map, MediaType.valueOf(contentType), httpOutputMessage);
             }
             Message message = new Message();
-            message.setHttpHeaders(httpOutputMessage.getHttpHeaders());
+            message.setHttpHeaders(httpOutputMessage.getHeaders());
             message.setInputStream(new DeleteTempFileOnCloseInputStream(file));
             return message;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create message body", e);
+            throw new WMRuntimeException("Failed to create message body", e);
         }
     }
 
@@ -171,33 +172,25 @@ public class HttpRequestUtils {
 
     private static class RestHttpOutputMessage implements HttpOutputMessage {
 
-        private OutputStream outputStream;
-        private HttpHeaders httpHeaders;
+        private OutputStream body;
+        private HttpHeaders headers;
 
         @Override
         public OutputStream getBody() throws IOException {
-            return outputStream;
+            return body;
         }
 
         @Override
         public HttpHeaders getHeaders() {
-            return httpHeaders;
+            return headers;
         }
 
-        public OutputStream getOutputStream() {
-            return outputStream;
+        public void setBody(OutputStream body) {
+            this.body = body;
         }
 
-        public void setOutputStream(OutputStream outputStream) {
-            this.outputStream = outputStream;
-        }
-
-        public HttpHeaders getHttpHeaders() {
-            return httpHeaders;
-        }
-
-        public void setHttpHeaders(HttpHeaders httpHeaders) {
-            this.httpHeaders = httpHeaders;
+        public void setHeaders(HttpHeaders httpHeaders) {
+            this.headers = httpHeaders;
         }
     }
 

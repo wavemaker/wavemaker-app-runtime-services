@@ -80,14 +80,12 @@ public class HttpRequestUtilTest {
             HttpRequestUtils.getJsonMessage("");
             Assert.fail("Should throw exception");
         } catch (WMRuntimeException e) {
-            Assert.assertEquals(e.getMessageResourceHolder().getMessageResource().getMessageKey(),
-                    COM_WM_EMPTY_OBJECT);
+            Assert.assertEquals(COM_WM_EMPTY_OBJECT, e.getMessageResourceHolder().getMessageResource().getMessageKey());
         }
         try {
             assertNotNull(HttpRequestUtils.getJsonMessage("name"));
         } catch (WMRuntimeException e) {
-            Assert.assertEquals(e.getMessageResourceHolder().getMessageResource().getMessageKey(),
-                    COM_WM_EMPTY_OBJECT);
+            Assert.assertEquals(COM_WM_EMPTY_OBJECT, e.getMessageResourceHolder().getMessageResource().getMessageKey());
         }
     }
 
