@@ -76,15 +76,6 @@ public class RestInvocationHandler implements InvocationHandler {
             position++;
         }
 
-        RequestContext requestContext = RestExecutor.getRequestContextThreadLocal();
-        if (requestContext != null) {
-            if (!requestContext.getHeaders().isEmpty()) {
-                httpRequestData.getHttpHeaders().putAll(requestContext.getHeaders());
-            }
-            if (!requestContext.getQueryParams().isEmpty()) {
-                queryVariablesMap.putAll(requestContext.getQueryParams());
-            }
-        }
         httpRequestData.setQueryParametersMap(queryVariablesMap);
         httpRequestData.setPathVariablesMap(pathVariablesMap);
 
@@ -95,7 +86,7 @@ public class RestInvocationHandler implements InvocationHandler {
         HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
                 split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
                 split[0],
-                httpRequestData);
+                httpRequestData, RestExecutor.getRequestContextThreadLocal());
 
         try {
             if (method.getReturnType() != void.class) {
