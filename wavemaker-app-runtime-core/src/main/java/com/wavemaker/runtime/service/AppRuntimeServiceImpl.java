@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.i18n.FinalLocaleData;
+import com.wavemaker.commons.i18n.LocaleData;
 import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.PropertiesFileUtils;
@@ -109,7 +109,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     private void addToLocaleMap(Map<String, Object> map, InputStream localeFileInputStream, String fileName) {
         fileName = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
         try {
-            FinalLocaleData userLocaleData = JSONUtils.toObject(localeFileInputStream, FinalLocaleData.class);
+            LocaleData userLocaleData = JSONUtils.toObject(localeFileInputStream, LocaleData.class);
             map.put(fileName, userLocaleData.getFiles());
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.app.build.filenotfound"));
