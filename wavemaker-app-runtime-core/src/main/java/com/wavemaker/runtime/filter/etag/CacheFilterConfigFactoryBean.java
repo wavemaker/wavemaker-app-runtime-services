@@ -46,15 +46,12 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
     private List<String> etagContentPath = Arrays.asList("/**");
 
 
-
     @Override
     public CacheFilterConfig getObject() throws Exception {
         CacheFilterConfig cacheFilterConfig = new CacheFilterConfig();
         if ("angular".equals(buildMode) && StringUtils.isNotBlank(buildArgs)) {
-            if (buildArgs.contains("--prod=true")) {
-                    cacheFilterConfig.setCacheRequestMatcher(getOrRequestMatcher(angularCachedContentPath));
-                    cacheFilterConfig.setCacheExclusionRequestMatcher(getOrRequestMatcher(angularCacheExclusionPath));
-            }
+            cacheFilterConfig.setCacheRequestMatcher(getOrRequestMatcher(angularCachedContentPath));
+            cacheFilterConfig.setCacheExclusionRequestMatcher(getOrRequestMatcher(angularCacheExclusionPath));
         }
         cacheFilterConfig.setEtagRequestMatcher(getOrRequestMatcher(etagContentPath));
         return cacheFilterConfig;
