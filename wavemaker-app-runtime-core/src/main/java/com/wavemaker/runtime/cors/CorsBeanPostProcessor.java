@@ -73,6 +73,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.path.cannot.be.empty"), pathEntry.getName());
             }
             CorsConfiguration corsConfiguration = buildCorsConfigurationObject(pathEntry, maxAge, allowCredentials);
+            corsConfiguration.validateAllowCredentials();
             ((UrlBasedCorsConfigurationSource) corsConfigurationSource).registerCorsConfiguration(path, corsConfiguration);
         }
     }
