@@ -29,10 +29,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceNotFoundException;
@@ -345,7 +342,7 @@ public class CleanupListener implements ServletContextListener {
      * Clears up the juli references for the given class loader
      */
     public static void cleanupJULIReferences(ClassLoader classLoader) {
-        String className = "java.util.logging.Level$KnownLevel";
+        /*String className = "java.util.logging.Level$KnownLevel";
         try {
             Class klass = Class.forName(className, true, classLoader);
             Field nameToKnownLevelsField = findField(klass, "nameToLevels");
@@ -366,10 +363,10 @@ public class CleanupListener implements ServletContextListener {
             }
         } catch (Exception e) {
             logger.warn("Failed to clean up juli references in the class " + className, e);
-        }
+        }*/
     }
 
-    private static void removeTCLKnownLevels(
+    /*private static void removeTCLKnownLevels(
             ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
             Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
         Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
@@ -399,7 +396,7 @@ public class CleanupListener implements ServletContextListener {
                 mapEntryIterator.remove();
             }
         }
-    }
+    }*/
 
     /**
      * Added by akritim
