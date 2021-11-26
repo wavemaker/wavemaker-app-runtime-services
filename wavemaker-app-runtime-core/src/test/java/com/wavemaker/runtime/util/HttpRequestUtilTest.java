@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
@@ -32,8 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.testng.annotations.Test;
@@ -51,21 +48,6 @@ public class HttpRequestUtilTest {
     private static final String COM_WM_EMPTY_OBJECT = "com.wavemaker.runtime.empty.object";
     private final String INPUTSTREAM_PATH = "/com/wavemaker/runtime/util/HttpRequestBody";
     private final String REQUEST_URL = "http://localhost:8080/HelloServlet/login";
-
-    @Test
-    public void addCsrfCookieTest() {
-
-        final HttpServletRequest request = getHttpServletRequest();
-
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-
-        CsrfToken defaultCsrfToken = new DefaultCsrfToken("cookie", "_ga", "GA1.2.2072376018.1536596681");
-        Optional<CsrfToken> csrfTokenOptional = Optional.ofNullable(defaultCsrfToken);
-        HttpRequestUtils.addCsrfCookie(csrfTokenOptional, request, response); //with contextPath
-        when(request.getContextPath()).thenReturn("");
-        HttpRequestUtils.addCsrfCookie(csrfTokenOptional, request, response); //without ContextPath
-    }
-
 
     @Test
     public void messageParseTest() {

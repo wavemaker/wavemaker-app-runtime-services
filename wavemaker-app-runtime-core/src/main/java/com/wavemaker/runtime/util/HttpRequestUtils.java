@@ -25,14 +25,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -40,7 +36,6 @@ import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -48,11 +43,8 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.commons.model.security.CSRFConfig;
-import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.model.Message;
-import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 
 /**
  * Created by ArjunSahasranam on 9/6/16.
@@ -145,29 +137,6 @@ public class HttpRequestUtils {
             multiValueMap.setAll(map);
         }
         return multiValueMap;
-    }
-
-    public static Optional<CsrfToken> getCsrfToken(HttpServletRequest request) {
-        CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
-        if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {
-            CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-            return Optional.ofNullable(csrfToken);
-        }
-        return Optional.empty();
-    }
-
-    public static void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {
-        if (csrfTokenOptional.isPresent()) {
-            CsrfToken csrfToken = csrfTokenOptional.get();
-            Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
-            String contextPath = request.getContextPath();
-            if (StringUtils.isBlank(contextPath)) {
-                contextPath = "/";
-            }
-            cookie.setSecure(request.isSecure());
-            cookie.setPath(contextPath);
-            response.addCookie(cookie);
-        }
     }
 
     private static class RestHttpOutputMessage implements HttpOutputMessage {
