@@ -16,16 +16,13 @@
 package com.wavemaker.runtime.util;
 
 
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.rest.model.HttpResponseDetails;
-
-import org.junit.Assert;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.DefaultCsrfToken;
-import org.testng.annotations.Test;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
@@ -33,13 +30,20 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import org.junit.Assert;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.testng.annotations.Test;
+
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertNotNull;
 
 
 public class HttpRequestUtilTest {
@@ -47,24 +51,6 @@ public class HttpRequestUtilTest {
     private static final String COM_WM_EMPTY_OBJECT = "com.wavemaker.runtime.empty.object";
     private final String INPUTSTREAM_PATH = "/com/wavemaker/runtime/util/HttpRequestBody";
     private final String REQUEST_URL = "http://localhost:8080/HelloServlet/login";
-
-    @Test
-    public void serviceUrlTest() {
-        final HttpServletRequest request = getHttpServletRequest();
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        try {
-            when(response.getOutputStream()).thenReturn(getServletOutputStream()); //append outputStream to response
-
-            HttpResponseDetails httpResponseDetails = getHttpResponseDetails(response);
-            HttpRequestUtils.writeResponse(httpResponseDetails, response);
-        } catch (IOException e) {
-            Assert.fail(e.getMessage());
-        }
-        assertNotNull(HttpRequestUtils.isAjaxRequest(request));
-        assertTrue(HttpRequestUtils.isAjaxRequest(request));
-        assertNotNull(HttpRequestUtils.getServiceUrl(request));
-    }
-
 
     @Test
     public void addCsrfCookieTest() {

@@ -28,8 +28,8 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 
 import com.wavemaker.commons.auth.oauth2.OAuth2Helper;
 import com.wavemaker.commons.auth.openId.OpenIdConstants;
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.WMAuthentication;
-import com.wavemaker.runtime.util.HttpRequestUtils;
 
 public class WMAuthenticationSuccessRedirectionHandler extends SavedRequestAwareAuthenticationSuccessHandler implements WMAuthenticationRedirectionHandler {
 

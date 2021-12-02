@@ -37,11 +37,6 @@ dependencies {
     implementation("io.github.openfeign:feign-core:9.4.0")
     implementation("io.swagger:swagger-annotations:1.6.2")
     implementation("org.threeten:threetenbp:0.7.2")
-
-
-    implementation(libs.jmimemagic) {
-        exclude("log4j", "log4j")
-    }
     implementation(libs.tika.core)
     implementation(libs.poi)
     implementation(libs.poiOoxml) {

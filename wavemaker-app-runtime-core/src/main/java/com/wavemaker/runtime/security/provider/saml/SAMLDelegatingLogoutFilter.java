@@ -33,9 +33,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.filter.WMSAMLLogoutFilter;
-import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
  * Created by ArjunSahasranam on 25/11/16.

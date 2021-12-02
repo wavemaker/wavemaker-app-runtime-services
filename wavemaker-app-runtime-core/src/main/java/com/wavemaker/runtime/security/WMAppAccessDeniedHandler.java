@@ -34,6 +34,7 @@ import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.WMObjectMapper;
 
 import static com.wavemaker.runtime.security.SecurityConstants.*;
@@ -46,7 +47,7 @@ public class WMAppAccessDeniedHandler extends AccessDeniedHandlerImpl {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
             throws IOException, ServletException {
-        if(com.wavemaker.runtime.util.HttpRequestUtils.isAjaxRequest(request)) {
+        if(HttpRequestUtils.isAjaxRequest(request)) {
             String exceptionMessage = accessDeniedException.getMessage();
             Map<String, Object> errorMap = new HashMap(1);
             ErrorResponse errorResponse = new ErrorResponse();
