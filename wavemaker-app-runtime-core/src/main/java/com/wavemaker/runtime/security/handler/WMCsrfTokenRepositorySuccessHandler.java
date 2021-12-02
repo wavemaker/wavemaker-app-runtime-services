@@ -33,7 +33,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import com.wavemaker.commons.model.security.CSRFConfig;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 
 /**

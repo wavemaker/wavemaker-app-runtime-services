@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.wavemaker.commons.util.Tuple;
+import com.wavemaker.runtime.commons.variable.VariableType;
 
 public class VariableTypeHelper {
 

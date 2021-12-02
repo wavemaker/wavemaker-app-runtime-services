@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.StringTemplate;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;

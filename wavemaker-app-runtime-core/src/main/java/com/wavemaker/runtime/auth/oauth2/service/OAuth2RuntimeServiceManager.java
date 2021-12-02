@@ -42,7 +42,7 @@ import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;

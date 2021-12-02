@@ -51,7 +51,7 @@ import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.WMAppObjectMapper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 

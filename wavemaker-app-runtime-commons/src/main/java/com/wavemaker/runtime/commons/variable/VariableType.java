@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.data.replacers.providers;
+package com.wavemaker.runtime.commons.variable;
 
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.system.AppEnvironmentVariableValueProvider;
-import com.wavemaker.runtime.system.ServerVariableValueProvider;
-import com.wavemaker.runtime.system.VariableValueProvider;
+import com.wavemaker.runtime.commons.WMAppContext;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

@@ -17,7 +17,7 @@
     <import resource="config.xml"/>
     <import resource="springapp-mvc.xml"/>
 
-    <bean id="wmAppContext" class="com.wavemaker.runtime.WMAppContext"/>
+    <bean id="wmAppContext" class="com.wavemaker.runtime.commons.WMAppContext"/>
 
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
@@ -120,7 +120,7 @@
 
     <bean id="securityService" class="com.wavemaker.runtime.security.SecurityService"/>
 
-    <bean id="propertyPlaceHolderReplacementHelper" class="com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper"/>
+    <bean id="propertyPlaceHolderReplacementHelper" class="com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper"/>
 
     <bean id="compressionFilterConfig" class="com.wavemaker.runtime.filter.compression.CompressionFilterConfig">
         <property name="enableCompression" value="${app.web.compression.enabled}"/>

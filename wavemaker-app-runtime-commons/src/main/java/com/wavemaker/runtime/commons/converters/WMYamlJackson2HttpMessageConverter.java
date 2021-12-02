@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.converters;
+package com.wavemaker.runtime.commons.converters;
 
 import java.io.IOException;
 import java.util.Map;

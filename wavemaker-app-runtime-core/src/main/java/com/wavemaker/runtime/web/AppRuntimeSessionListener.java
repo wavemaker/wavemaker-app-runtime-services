@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.web.session.HttpSessionCreatedEvent;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 
 /**

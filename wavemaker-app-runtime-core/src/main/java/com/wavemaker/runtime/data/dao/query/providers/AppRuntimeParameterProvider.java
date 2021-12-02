@@ -28,7 +28,7 @@ import com.wavemaker.runtime.data.dao.query.types.RuntimeParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.query.types.wmql.WMQLTypeHelper;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.replacers.providers.VariableTypeHelper;
-import com.wavemaker.runtime.data.replacers.providers.VariableType;
+import com.wavemaker.runtime.commons.variable.VariableType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

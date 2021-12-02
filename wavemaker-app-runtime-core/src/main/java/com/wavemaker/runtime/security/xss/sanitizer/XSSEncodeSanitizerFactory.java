@@ -1,7 +1,7 @@
 package com.wavemaker.runtime.security.xss.sanitizer;
 
 import com.wavemaker.commons.model.security.XSSConfig;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 
 public class XSSEncodeSanitizerFactory {
 

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.wavemaker.runtime.commons.variable.VariableType;
 import com.wavemaker.runtime.data.annotations.WMValueInject;
 import com.wavemaker.runtime.data.replacers.ListenerContext;
 import com.wavemaker.runtime.data.replacers.Scope;

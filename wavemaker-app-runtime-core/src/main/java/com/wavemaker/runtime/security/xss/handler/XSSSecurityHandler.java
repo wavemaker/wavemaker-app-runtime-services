@@ -21,7 +21,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import com.wavemaker.commons.model.security.XSSConfig;
 import com.wavemaker.commons.model.security.XSSFilterStrategy;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.xss.sanitizer.DefaultXSSSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizerFactory;

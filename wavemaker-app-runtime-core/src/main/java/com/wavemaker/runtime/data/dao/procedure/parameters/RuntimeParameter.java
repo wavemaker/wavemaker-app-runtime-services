@@ -18,7 +18,7 @@ package com.wavemaker.runtime.data.dao.procedure.parameters;
 import java.util.Map;
 
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
-import com.wavemaker.runtime.data.replacers.providers.VariableType;
+import com.wavemaker.runtime.commons.variable.VariableType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

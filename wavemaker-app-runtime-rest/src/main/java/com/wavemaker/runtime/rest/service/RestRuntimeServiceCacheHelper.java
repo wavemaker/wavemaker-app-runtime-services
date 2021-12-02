@@ -31,12 +31,12 @@ import com.wavemaker.commons.io.ClassPathFile;
 import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.FileValidationUtils;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
 import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
-import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
+import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 
 /**

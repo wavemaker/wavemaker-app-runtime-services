@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.system;
 
+import com.wavemaker.runtime.commons.variable.VariableValueProvider;
 import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
 public abstract class AbstractVariableValueProvider implements VariableValueProvider {

@@ -30,6 +30,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.runtime.commons.converters.WMCustomAbstractHttpMessageConverter;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 

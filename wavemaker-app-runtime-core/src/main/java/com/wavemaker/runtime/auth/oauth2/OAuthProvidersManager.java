@@ -36,7 +36,7 @@ import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.io.ClassPathFile;
 import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
+import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 
 public class OAuthProvidersManager {
 

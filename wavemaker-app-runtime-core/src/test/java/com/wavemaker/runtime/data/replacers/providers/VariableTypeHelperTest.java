@@ -18,6 +18,7 @@ package com.wavemaker.runtime.data.replacers.providers;
 import org.junit.Test;
 
 import com.wavemaker.commons.util.Tuple;
+import com.wavemaker.runtime.commons.variable.VariableType;
 
 import static org.junit.Assert.assertEquals;
 

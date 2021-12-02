@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.system;
+package com.wavemaker.runtime.commons.variable;
 
 public interface ServerVariableValueProvider extends VariableValueProvider {
 }

@@ -46,7 +46,7 @@ import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
-import com.wavemaker.runtime.converters.WMYamlJackson2HttpMessageConverter;
+import com.wavemaker.runtime.commons.converters.WMYamlJackson2HttpMessageConverter;
 
 /**
  * @author Uday Shankar

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.wavemaker.commons.util.StringTemplate;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;

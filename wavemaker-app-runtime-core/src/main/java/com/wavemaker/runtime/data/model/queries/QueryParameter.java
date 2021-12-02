@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotEmpty;
 
 import com.wavemaker.runtime.data.model.JavaType;
-import com.wavemaker.runtime.data.replacers.providers.VariableType;
+import com.wavemaker.runtime.commons.variable.VariableType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

@@ -62,7 +62,7 @@ import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
 import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.runtime.rest.util.HttpRequestUtils;
-import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
+import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;

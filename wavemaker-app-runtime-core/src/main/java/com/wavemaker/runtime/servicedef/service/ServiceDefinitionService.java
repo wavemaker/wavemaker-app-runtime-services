@@ -47,7 +47,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
 import com.wavemaker.commons.util.EncodeUtils;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.core.PrefabRegistry;
@@ -56,7 +56,7 @@ import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 import com.wavemaker.runtime.servicedef.model.ServiceDefinitionsWrapper;
-import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
+import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>

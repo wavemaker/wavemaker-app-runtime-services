@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.wavemaker.runtime.data.replacers.Scope;
-import com.wavemaker.runtime.data.replacers.providers.VariableType;
+import com.wavemaker.runtime.commons.variable.VariableType;
 
 /**
  * @author Ravali Koppaka

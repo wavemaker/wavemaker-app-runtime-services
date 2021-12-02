@@ -36,7 +36,7 @@ import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
 import com.wavemaker.commons.io.ClassPathFile;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.util.WMRandomUtils;
 import com.wavemaker.runtime.webprocess.WebProcessHelper;
