@@ -129,10 +129,10 @@
         <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.excludePatterns}"/>
     </bean>
 
-    <bean id="serverVariableValueProvider" class="com.wavemaker.runtime.system.ServerVariableValueProvider"/>
+    <bean id="serverVariableValueProvider" class="com.wavemaker.runtime.system.DefaultServerVariableValueProvider"/>
 
     <bean id="appEnvironmentVariableValueProvider"
-          class="com.wavemaker.runtime.system.AppEnvironmentVariableValueProvider"/>
+          class="com.wavemaker.runtime.system.DefaultAppEnvironmentVariableValueProvider"/>
 
     <bean id="messageSource" class="com.wavemaker.commons.i18n.MultipleReloadableResourceBundleMessageSource">
         <property name="basenames">

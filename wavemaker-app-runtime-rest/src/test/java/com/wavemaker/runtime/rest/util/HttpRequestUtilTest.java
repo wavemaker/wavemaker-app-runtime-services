@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.util;
+package com.wavemaker.runtime.rest.util;
 
 
 import java.io.IOException;
@@ -30,17 +30,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.testng.annotations.Test;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertNotNull;
 
 
 public class HttpRequestUtilTest {
@@ -51,8 +48,8 @@ public class HttpRequestUtilTest {
 
     @Test
     public void messageParseTest() {
-        assertNotNull(HttpRequestUtils.getFormMessage(getDetailMap()));
-        assertNotNull(HttpRequestUtils.getMultipartMessage(getMultiValueMapMap()));
+        Assert.assertNotNull(HttpRequestUtils.getFormMessage(getDetailMap()));
+        Assert.assertNotNull(HttpRequestUtils.getMultipartMessage(getMultiValueMapMap()));
     }
 
 
@@ -65,18 +62,18 @@ public class HttpRequestUtilTest {
             Assert.assertEquals(COM_WM_EMPTY_OBJECT, e.getMessageResourceHolder().getMessageResource().getMessageKey());
         }
         try {
-            assertNotNull(HttpRequestUtils.getJsonMessage("name"));
+            Assert.assertNotNull(HttpRequestUtils.getJsonMessage("name"));
         } catch (WMRuntimeException e) {
             Assert.assertEquals(COM_WM_EMPTY_OBJECT, e.getMessageResourceHolder().getMessageResource().getMessageKey());
         }
     }
 
     private HttpServletRequest getHttpServletRequest() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getCookies()).thenReturn(new Cookie[0]);
-        when(request.getRequestURL()).thenReturn(new StringBuffer(REQUEST_URL));
-        when(request.getContextPath()).thenReturn(CONTEXT_PATH);
-        when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
+        final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getCookies()).thenReturn(new Cookie[0]);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(REQUEST_URL));
+        Mockito.when(request.getContextPath()).thenReturn(CONTEXT_PATH);
+        Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
         return request;
     }
 

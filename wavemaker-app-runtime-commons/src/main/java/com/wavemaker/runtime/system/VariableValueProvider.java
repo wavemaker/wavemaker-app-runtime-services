@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.rest;
-
-import com.wavemaker.runtime.commons.WebConstants;
+package com.wavemaker.runtime.system;
 
 /**
- * Sowmya D created on 06-06-2014
+ * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
+ * @since 10/7/17
  */
-public class RestConstants extends WebConstants {
-    public static final String X_WM_HEADER_PREFIX = "X-WM-";
-    public static final String VARIABLE_TYPE = "VARIABLE_TYPE";
-    public static final String VARIABLE_KEY = "VARIABLE_KEY";
+public interface VariableValueProvider {
 
-    public static final String HOST_KEY = "host";
-    public static final String BASE_PATH_KEY = "basepath";
-    public static final String SCHEME_KEY = "scheme";
+    Object getValue(String variableName);
+
+    <T> T getValue(String variableName, Class<T> requiredType);
+
 }
