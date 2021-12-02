@@ -27,6 +27,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.wavemaker.runtime.commons.variable.Scope;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 16/6/16

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.system;
+package com.wavemaker.runtime.core.variable;
 
 import java.sql.Date;
 import java.sql.Time;

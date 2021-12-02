@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.data.replacers.providers;
+package com.wavemaker.runtime.commons.variable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.wavemaker.commons.util.Tuple;
-import com.wavemaker.runtime.commons.variable.VariableType;
 
 public class VariableTypeHelper {
 

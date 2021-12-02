@@ -19,8 +19,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.wavemaker.runtime.data.annotations.WMValueInject;
-import com.wavemaker.runtime.data.replacers.providers.VariableDefinedPropertyProvider;
+import com.wavemaker.runtime.commons.annotations.WMValueInject;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

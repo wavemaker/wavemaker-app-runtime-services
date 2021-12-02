@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.data.replacers.providers;
+package com.wavemaker.runtime.data.replacers;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
@@ -22,12 +22,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.wavemaker.runtime.commons.variable.Scope;
 import com.wavemaker.runtime.commons.variable.VariableType;
-import com.wavemaker.runtime.data.annotations.WMValueInject;
-import com.wavemaker.runtime.data.replacers.ListenerContext;
-import com.wavemaker.runtime.data.replacers.Scope;
-import com.wavemaker.runtime.data.replacers.ValueProvider;
-import com.wavemaker.runtime.data.replacers.ValueProviderBuilder;
+import com.wavemaker.runtime.commons.annotations.WMValueInject;
 
 /**
  * @author Ravali Koppaka

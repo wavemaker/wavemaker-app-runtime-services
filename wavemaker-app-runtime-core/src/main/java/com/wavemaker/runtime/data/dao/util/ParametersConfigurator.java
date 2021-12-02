@@ -23,10 +23,10 @@ import org.hibernate.query.Query;
 import org.hibernate.type.Type;
 
 import com.wavemaker.commons.util.Tuple;
+import com.wavemaker.runtime.commons.variable.VariableType;
+import com.wavemaker.runtime.commons.variable.VariableTypeHelper;
 import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
-import com.wavemaker.runtime.data.replacers.providers.VariableTypeHelper;
-import com.wavemaker.runtime.commons.variable.VariableType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.wavemaker.runtime.commons.variable.Scope;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 16/6/16

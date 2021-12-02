@@ -28,7 +28,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.replacers.EntityValueReplacer;
 import com.wavemaker.runtime.data.replacers.ListenerContext;
-import com.wavemaker.runtime.data.replacers.Scope;
+import com.wavemaker.runtime.commons.variable.Scope;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

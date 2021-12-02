@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.data.replacers.providers;
+package com.wavemaker.runtime.core.variable;
 
 import org.junit.Test;
 
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.commons.variable.VariableType;
+import com.wavemaker.runtime.commons.variable.VariableTypeHelper;
 
 import static org.junit.Assert.assertEquals;
 

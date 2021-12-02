@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.data.annotations;
+package com.wavemaker.runtime.commons.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.wavemaker.runtime.data.replacers.Scope;
 import com.wavemaker.runtime.commons.variable.VariableType;
+import com.wavemaker.runtime.commons.variable.Scope;
 
 /**
  * @author Ravali Koppaka

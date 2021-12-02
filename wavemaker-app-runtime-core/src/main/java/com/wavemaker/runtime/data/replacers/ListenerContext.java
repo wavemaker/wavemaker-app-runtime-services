@@ -15,6 +15,8 @@
  */
 package com.wavemaker.runtime.data.replacers;
 
+import com.wavemaker.runtime.commons.variable.Scope;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 16/6/16

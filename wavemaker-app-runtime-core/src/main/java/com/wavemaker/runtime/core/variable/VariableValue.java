@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.commons;
+package com.wavemaker.runtime.core.variable;
 
 /**
- * Created by srujant on 17/10/16.
+ * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
+ * @since 10/7/17
  */
-public class WebConstants {
-    public static final String REQUEST_BODY_KEY = "RequestBody";
-    public static final String AUTHORIZATION = "Authorization";
-    public static final String CONTENT_TYPE = "Content-Type";
+@FunctionalInterface
+interface VariableValue {
 
+    Object valueFor(String variableName);
 }
