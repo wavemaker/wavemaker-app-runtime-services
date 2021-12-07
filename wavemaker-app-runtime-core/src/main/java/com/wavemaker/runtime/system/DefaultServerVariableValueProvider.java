@@ -33,14 +33,14 @@ import com.wavemaker.runtime.security.SecurityService;
  * @since 10/7/17
  */
 @Component
-public class ServerVariableValueProvider implements VariableValueProvider {
+public class DefaultServerVariableValueProvider extends AbstractVariableValueProvider implements ServerVariableValueProvider {
 
     private final SecurityService securityService;
 
     private Map<String, VariableValue> keyVsValueMap;
 
     @Autowired
-    public ServerVariableValueProvider(final SecurityService securityService) {
+    public DefaultServerVariableValueProvider(final SecurityService securityService) {
         this.securityService = securityService;
         keyVsValueMap = new LinkedCaseInsensitiveMap<>();
 

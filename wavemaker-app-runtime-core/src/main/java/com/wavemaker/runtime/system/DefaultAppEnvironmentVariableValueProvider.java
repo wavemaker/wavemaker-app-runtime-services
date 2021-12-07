@@ -24,14 +24,14 @@ import org.springframework.stereotype.Component;
  * @since 10/7/17
  */
 @Component
-public class AppEnvironmentVariableValueProvider implements VariableValueProvider {
+public class DefaultAppEnvironmentVariableValueProvider extends AbstractVariableValueProvider implements AppEnvironmentVariableValueProvider {
 
     private static final String APP_ENVIRONMENT_PROPERTY_PREFIX = "app.environment.";
 
     private final Environment environment;
 
     @Autowired
-    public AppEnvironmentVariableValueProvider(final Environment environment) {
+    public DefaultAppEnvironmentVariableValueProvider(final Environment environment) {
         this.environment = environment;
     }
 

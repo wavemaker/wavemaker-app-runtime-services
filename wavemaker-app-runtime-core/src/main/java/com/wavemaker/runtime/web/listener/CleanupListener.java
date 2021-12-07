@@ -26,7 +26,10 @@ import java.security.Security;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceNotFoundException;
@@ -48,14 +51,9 @@ import org.springframework.util.ReflectionUtils;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.LRUMap;
-import com.sun.jndi.ldap.Connection;
-import com.sun.jndi.ldap.LdapClient;
-import com.sun.jndi.ldap.LdapPoolManager;
-import com.sun.naming.internal.ResourceManager;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 
@@ -81,8 +79,8 @@ public class CleanupListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         init();
         //properties set to time out LDAP connections automatically
-        System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
-        System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
+        /*System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
+        System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");*/
         warmUpPoiInParentClassLoader();
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             event.getServletContext().setInitParameter("spring.profiles.active", "wm_preview");
@@ -344,7 +342,7 @@ public class CleanupListener implements ServletContextListener {
      * Clears up the juli references for the given class loader
      */
     public static void cleanupJULIReferences(ClassLoader classLoader) {
-        String className = "java.util.logging.Level$KnownLevel";
+        /*String className = "java.util.logging.Level$KnownLevel";
         try {
             Class klass = Class.forName(className, true, classLoader);
             Field nameToKnownLevelsField = findField(klass, "nameToLevels");
@@ -365,10 +363,10 @@ public class CleanupListener implements ServletContextListener {
             }
         } catch (Exception e) {
             logger.warn("Failed to clean up juli references in the class " + className, e);
-        }
+        }*/
     }
 
-    private static void removeTCLKnownLevels(
+    /*private static void removeTCLKnownLevels(
             ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
             Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
         Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
@@ -398,7 +396,7 @@ public class CleanupListener implements ServletContextListener {
                 mapEntryIterator.remove();
             }
         }
-    }
+    }*/
 
     /**
      * Added by akritim
@@ -424,7 +422,7 @@ public class CleanupListener implements ServletContextListener {
      * To clear ResourceManager's PropertiesCache
      */
     private void resourceManagerClearPropertiesCache() {
-        Class<ResourceManager> klass = ResourceManager.class;
+        /*Class<ResourceManager> klass = ResourceManager.class;
         try {
             Field propertiesCache = findField(klass, "propertiesCache");
             if (propertiesCache != null) {
@@ -437,11 +435,11 @@ public class CleanupListener implements ServletContextListener {
             }
         } catch (Throwable e) {
             logger.warn("Failed to clear propertiesCache from {}", klass, e);
-        }
+        }*/
     }
 
     private void clearLdapThreadConnections(ClassLoader classLoader) {
-        List<Thread> threads = getThreads(classLoader);
+        /*List<Thread> threads = getThreads(classLoader);
         for (Thread thread : threads) {
             if (isAliveAndNotCurrentThread(thread)) {
                 try {
@@ -467,7 +465,7 @@ public class CleanupListener implements ServletContextListener {
                     logger.warn("Failed to stop the thread {} properly", thread, t);
                 }
             }
-        }
+        }*/
     }
 
     /**

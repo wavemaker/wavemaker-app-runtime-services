@@ -73,7 +73,7 @@ public class WMSAMLEntryPoint extends SAMLEntryPoint implements SSOEntryPoint {
         HttpServletRequestAdapter requestAdapter = (HttpServletRequestAdapter) context.getInboundMessageTransport();
         HttpServletRequest request = requestAdapter.getWrappedRequest();
         StringBuffer requestURL = request.getRequestURL();
-        logger.debug("Request URL is {}", requestURL.toString());
+        logger.debug("Request URL is {}", requestURL);
 
         try {
             URL incomingRequestUrl = new URL(requestURL.toString());
@@ -94,7 +94,7 @@ public class WMSAMLEntryPoint extends SAMLEntryPoint implements SSOEntryPoint {
             profileOptions.setRelayState(appUrl);
             webSSOProfileOptions.setRelayState(appUrl);
         } catch (MalformedURLException e) {
-            logger.error("Invalid URL {}", requestURL.toString(), e);
+            logger.error("Invalid URL {}", requestURL, e);
             throw new WMRuntimeException(e);
         }
         return profileOptions;

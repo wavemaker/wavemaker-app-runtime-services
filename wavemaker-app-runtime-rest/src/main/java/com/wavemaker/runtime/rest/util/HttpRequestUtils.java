@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.util;
+package com.wavemaker.runtime.rest.util;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,17 +21,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -39,7 +36,6 @@ import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -47,11 +43,8 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.commons.model.security.CSRFConfig;
-import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.model.Message;
-import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 
 /**
  * Created by ArjunSahasranam on 9/6/16.
@@ -95,27 +88,27 @@ public class HttpRequestUtils {
         }
         Message message = new Message();
         message.setHttpHeaders(new HttpHeaders());
-        message.setInputStream(org.apache.commons.io.IOUtils.toInputStream(JSONUtils.toJSON(body)));
+        message.setInputStream(IOUtils.toInputStream(JSONUtils.toJSON(body), Charset.defaultCharset()));
         return message;
     }
 
     public static Message createMessage(MultiValueMap<String, Object> map, String contentType) {
         RestHttpOutputMessage httpOutputMessage = new HttpRequestUtils.RestHttpOutputMessage();
-        httpOutputMessage.setHttpHeaders(new HttpHeaders());
+        httpOutputMessage.setHeaders(new HttpHeaders());
         FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
         formHttpMessageConverter.setPartConverters(getPartConverters());
         try {
             File file = File.createTempFile("requestBody", ".tmp");
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))){
-                httpOutputMessage.setOutputStream(outputStream);
+                httpOutputMessage.setBody(outputStream);
                 formHttpMessageConverter.write(map, MediaType.valueOf(contentType), httpOutputMessage);
             }
             Message message = new Message();
-            message.setHttpHeaders(httpOutputMessage.getHttpHeaders());
+            message.setHttpHeaders(httpOutputMessage.getHeaders());
             message.setInputStream(new DeleteTempFileOnCloseInputStream(file));
             return message;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create message body", e);
+            throw new WMRuntimeException("Failed to create message body", e);
         }
     }
 
@@ -146,58 +139,27 @@ public class HttpRequestUtils {
         return multiValueMap;
     }
 
-    public static Optional<CsrfToken> getCsrfToken(HttpServletRequest request) {
-        CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
-        if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {
-            CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-            return Optional.ofNullable(csrfToken);
-        }
-        return Optional.empty();
-    }
-
-    public static void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {
-        if (csrfTokenOptional.isPresent()) {
-            CsrfToken csrfToken = csrfTokenOptional.get();
-            Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
-            String contextPath = request.getContextPath();
-            if (StringUtils.isBlank(contextPath)) {
-                contextPath = "/";
-            }
-            cookie.setSecure(request.isSecure());
-            cookie.setPath(contextPath);
-            response.addCookie(cookie);
-        }
-    }
-
     private static class RestHttpOutputMessage implements HttpOutputMessage {
 
-        private OutputStream outputStream;
-        private HttpHeaders httpHeaders;
+        private OutputStream body;
+        private HttpHeaders headers;
 
         @Override
         public OutputStream getBody() throws IOException {
-            return outputStream;
+            return body;
         }
 
         @Override
         public HttpHeaders getHeaders() {
-            return httpHeaders;
+            return headers;
         }
 
-        public OutputStream getOutputStream() {
-            return outputStream;
+        public void setBody(OutputStream body) {
+            this.body = body;
         }
 
-        public void setOutputStream(OutputStream outputStream) {
-            this.outputStream = outputStream;
-        }
-
-        public HttpHeaders getHttpHeaders() {
-            return httpHeaders;
-        }
-
-        public void setHttpHeaders(HttpHeaders httpHeaders) {
-            this.httpHeaders = httpHeaders;
+        public void setHeaders(HttpHeaders httpHeaders) {
+            this.headers = httpHeaders;
         }
     }
 

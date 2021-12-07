@@ -17,32 +17,14 @@ package com.wavemaker.runtime.util;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.feed.AtomFeedHttpMessageConverter;
-import org.springframework.http.converter.feed.RssChannelHttpMessageConverter;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
-import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
-import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
-import org.springframework.http.converter.xml.SourceHttpMessageConverter;
-import org.springframework.util.ClassUtils;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.converters.WMYamlJackson2HttpMessageConverter;
 
 /**
  * @author Uday Shankar
@@ -51,57 +33,9 @@ public class WMRuntimeUtils {
 
     private WMRuntimeUtils(){}
 
-    private static final boolean ROME_PRESENT =
-            ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRuntimeUtils.class.getClassLoader());
-
-    private static final boolean JAXB_2_PRESENT =
-            ClassUtils.isPresent("javax.xml.bind.Binder", WMRuntimeUtils.class.getClassLoader());
-
-    private static final boolean JACKSON_2_PRESENT =
-            ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", WMRuntimeUtils.class.getClassLoader()) &&
-                    ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", WMRuntimeUtils.class.getClassLoader());
-
-    private static final boolean JACKSON_2_XML_PRESENT =
-            ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", WMRuntimeUtils.class.getClassLoader());
-
-    private static final boolean GSON_PRESENT =
-            ClassUtils.isPresent("com.google.gson.Gson", WMRuntimeUtils.class.getClassLoader());
-
-    private static final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-
     private static final String BYTE_ARRAY = "byte[]";
 
     private static final String BLOB = "Blob";
-
-
-    static {
-        messageConverters.add(new ByteArrayHttpMessageConverter());
-        messageConverters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
-        messageConverters.add(new ResourceHttpMessageConverter());
-        messageConverters.add(new SourceHttpMessageConverter<>());
-        messageConverters.add(new AllEncompassingFormHttpMessageConverter());
-        messageConverters.add(new FormHttpMessageConverter());
-        messageConverters.add(new WMYamlJackson2HttpMessageConverter());
-        if (ROME_PRESENT) {
-            messageConverters.add(new AtomFeedHttpMessageConverter());
-            messageConverters.add(new RssChannelHttpMessageConverter());
-        }
-        if (JACKSON_2_XML_PRESENT) {
-            messageConverters.add(new MappingJackson2XmlHttpMessageConverter());
-        }
-        if (JAXB_2_PRESENT) {
-            messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
-        }
-        if (JACKSON_2_PRESENT) {
-            messageConverters.add(new MappingJackson2HttpMessageConverter());
-        } else if (GSON_PRESENT) {
-            messageConverters.add(new GsonHttpMessageConverter());
-        }
-    }
-
-    public static List<HttpMessageConverter<?>> getMessageConverters() {
-        return messageConverters;
-    }
 
     public static boolean isLob(Class instance, String field) {
         Field declaredField;

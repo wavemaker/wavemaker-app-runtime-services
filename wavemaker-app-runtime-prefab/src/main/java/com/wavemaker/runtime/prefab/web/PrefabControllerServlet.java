@@ -22,6 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -94,6 +96,8 @@ public class PrefabControllerServlet extends DispatcherServlet {
 
     @Autowired
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
+
+    private static final Logger logger = LoggerFactory.getLogger(PrefabControllerServlet.class);
 
     @Override
     public void init(ServletConfig config) throws ServletException {

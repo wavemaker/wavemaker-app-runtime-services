@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
@@ -55,8 +56,8 @@ import com.wavemaker.runtime.mixins.SliceMixin;
 
 public class WMObjectMapper extends ObjectMapper {
 
-    private static WMObjectMapper instance = new WMObjectMapper();
-    private static WMPropertyNamingStrategy PROPERTY_NAMING_STRATEGY = new WMPropertyNamingStrategy();
+    private static final WMObjectMapper INSTANCE = new WMObjectMapper();
+    private static final WMPropertyNamingStrategy PROPERTY_NAMING_STRATEGY = new WMPropertyNamingStrategy();
 
     private WMObjectReadMapper readMapper;
     private WMObjectWriteMapper writeMapper;
@@ -67,7 +68,7 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     public static WMObjectMapper getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**

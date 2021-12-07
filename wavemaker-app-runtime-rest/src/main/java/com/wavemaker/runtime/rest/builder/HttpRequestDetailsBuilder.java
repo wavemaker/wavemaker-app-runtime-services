@@ -32,7 +32,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.Message;
-import com.wavemaker.runtime.util.HttpRequestUtils;
+import com.wavemaker.runtime.rest.util.HttpRequestUtils;
 
 /**
  * Created by ArjunSahasranam on 3/9/15.

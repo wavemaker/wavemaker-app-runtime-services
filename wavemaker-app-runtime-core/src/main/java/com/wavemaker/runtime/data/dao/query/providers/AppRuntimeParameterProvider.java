@@ -27,6 +27,7 @@ import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.query.types.RuntimeParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.query.types.wmql.WMQLTypeHelper;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.replacers.providers.VariableTypeHelper;
 import com.wavemaker.runtime.data.replacers.providers.VariableType;
 
 /**
@@ -53,7 +54,7 @@ public class AppRuntimeParameterProvider implements ParametersProvider {
         Object value = parameters.get(name);
         // looking for system variables, only for null values.
         if (value == null) {
-            final Tuple.Two<VariableType, String> variableInfo = VariableType.fromVariableName(name);
+            final Tuple.Two<VariableType, String> variableInfo = VariableTypeHelper.fromVariableName(name);
             if (variableInfo.v1.isVariable()) {
                 final Optional<Type> type = getType(session, name);
                 if (type.isPresent()) {

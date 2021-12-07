@@ -48,7 +48,6 @@ import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.commons.web.filter.RequestTrackingFilter;
 import com.wavemaker.commons.web.filter.ServerTimingMetric;
-import com.wavemaker.runtime.commons.WebConstants;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -62,7 +61,7 @@ import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
 import com.wavemaker.runtime.rest.util.RestRequestUtils;
-import com.wavemaker.runtime.util.HttpRequestUtils;
+import com.wavemaker.runtime.rest.util.HttpRequestUtils;
 import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
@@ -366,7 +365,7 @@ public class RestRuntimeService {
         if (authorizationHeaderValue == null) {
             throw new UnAuthorizedResourceAccessException("Authorization details are not specified in the request headers");
         }
-        httpHeaders.set(WebConstants.AUTHORIZATION, authorizationHeaderValue);
+        httpHeaders.set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
     }
 
     private String getNormalizedString(String str) {
