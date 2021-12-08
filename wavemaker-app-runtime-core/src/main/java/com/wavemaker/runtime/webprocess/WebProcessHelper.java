@@ -25,7 +25,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.commons.WMObjectMapper;
 import com.wavemaker.runtime.webprocess.model.WebProcess;
 
 public class WebProcessHelper {

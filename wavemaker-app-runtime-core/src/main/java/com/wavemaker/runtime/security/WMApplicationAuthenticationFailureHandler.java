@@ -35,7 +35,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
-import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.commons.WMObjectMapper;
 import com.wavemaker.runtime.security.handler.WMAuthenticationFailureHandler;
 
 import static com.wavemaker.runtime.security.SecurityConstants.APPLICATION_JSON;

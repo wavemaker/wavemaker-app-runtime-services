@@ -31,8 +31,8 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.commons.converters.WMCustomAbstractHttpMessageConverter;
-import com.wavemaker.runtime.file.model.DownloadResponse;
-import com.wavemaker.runtime.file.model.Downloadable;
+import com.wavemaker.runtime.commons.file.model.DownloadResponse;
+import com.wavemaker.runtime.commons.file.model.Downloadable;
 
 /**
  * @Author: sowmyad

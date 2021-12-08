@@ -81,7 +81,7 @@
 
     <bean id="appFileSystem" class="com.wavemaker.runtime.app.AppFileSystem"/>
 
-    <bean id="procedureDesignService" class="com.wavemaker.runtime.service.ProcedureDesignServiceImpl"/>
+    <bean id="procedureDesignService" class="com.wavemaker.runtime.data.service.ProcedureDesignServiceImpl"/>
 
     <bean id="nonHistoryEntitiesFilter" class="com.wavemaker.runtime.data.util.NegatingTypeFilter">
         <constructor-arg ref="historyEntitiesFilter"/>
@@ -102,9 +102,9 @@
         <property name="basename" value="views"/>
     </bean>
 
-    <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
+    <bean class="com.wavemaker.runtime.commons.file.manager.FileServiceManager" id="FileServiceManager"/>
 
-    <bean id="exportedFileManager" class="com.wavemaker.runtime.file.manager.ExportedFileManagerImpl"/>
+    <bean id="exportedFileManager" class="com.wavemaker.runtime.commons.file.manager.ExportedFileManagerImpl"/>
 
     <bean id="tempFilesStorageManager" class="com.wavemaker.commons.io.TempFilesStorageManager"/>
 
@@ -212,8 +212,8 @@
     <bean id="deleteMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.DeleteMethodInvocationHandler"/>
 
     <beans profile="wm_preview">
-        <bean id="querycontroller" class="com.wavemaker.runtime.controller.QueryTestRunController"/>
-        <bean id="queryDesignService" class="com.wavemaker.runtime.service.QueryDesignServiceImpl"/>
+        <bean id="querycontroller" class="com.wavemaker.runtime.data.controller.QueryTestRunController"/>
+        <bean id="queryDesignService" class="com.wavemaker.runtime.data.service.QueryDesignServiceImpl"/>
     </beans>
 
 </beans>

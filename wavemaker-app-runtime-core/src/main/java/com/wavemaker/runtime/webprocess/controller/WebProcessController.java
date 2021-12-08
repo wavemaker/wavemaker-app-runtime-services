@@ -38,7 +38,7 @@ import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.app.AppFileSystem;
-import com.wavemaker.runtime.util.WMRandomUtils;
+import com.wavemaker.runtime.commons.util.WMRandomUtils;
 import com.wavemaker.runtime.webprocess.WebProcessHelper;
 import com.wavemaker.runtime.webprocess.model.WebProcess;
 import com.wordnik.swagger.annotations.Api;

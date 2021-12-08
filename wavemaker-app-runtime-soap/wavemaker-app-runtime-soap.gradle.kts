@@ -9,8 +9,9 @@ dependencies {
     implementation(projects.wavemakerCommonsUtil)
     implementation(libs.commons.lang3)
     implementation(libs.javax.jaxws.api)
-    runtimeOnly(libs.javax.jws.api) {
-        because("soap runtime built on java 8 depends on javax.jws.soap package which is not available in java 11")
+    api(libs.javax.jws.api) {
+        because("soap runtime built on java 8 depends on javax.jws.soap package which is not available in java 11. " +
+                "It's declared as api as it is needed in project compilation having soap services")
     }
     runtimeOnly(libs.javax.jaxws.rt) {
         because("soap runtime built on java 8 depends on javax.jws.soap package which is not available in java 11")

@@ -37,7 +37,7 @@
         <property name="objectMapper" ref="wmAppObjectMapper"/>
     </bean>
 
-    <bean id="wmAppObjectMapper" class="com.wavemaker.runtime.WMAppObjectMapper" factory-method="getInstance"/>
+    <bean id="wmAppObjectMapper" class="com.wavemaker.runtime.commons.WMAppObjectMapper" factory-method="getInstance"/>
 
     <bean id="wmCompositeHttpMessageConverter"
           class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>

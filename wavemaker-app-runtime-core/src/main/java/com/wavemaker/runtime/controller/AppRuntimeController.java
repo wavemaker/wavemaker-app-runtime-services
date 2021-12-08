@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.commons.wrapper.StringWrapper;
-import com.wavemaker.runtime.file.manager.ExportedFileManager;
-import com.wavemaker.runtime.file.model.DownloadResponse;
-import com.wavemaker.runtime.file.model.ExportedFileContentWrapper;
+import com.wavemaker.runtime.commons.file.manager.ExportedFileManager;
+import com.wavemaker.runtime.commons.file.model.DownloadResponse;
+import com.wavemaker.runtime.commons.file.model.ExportedFileContentWrapper;
 import com.wavemaker.runtime.service.AppRuntimeService;
 
 /**

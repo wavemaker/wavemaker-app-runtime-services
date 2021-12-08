@@ -18,6 +18,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -121,7 +122,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         }
         for (final Field field : object.getClass().getDeclaredFields()) {
             if (!field.isAnnotationPresent(XssDisable.class) && !Modifier.isFinal(field.getModifiers())) {
-                field.setAccessible(true);
+                ReflectionUtils.makeAccessible(field);
                 try {
                     final ResponseTuple response = encode(field.get(object), manipulatedObjects);
                     if (response.modified) {
