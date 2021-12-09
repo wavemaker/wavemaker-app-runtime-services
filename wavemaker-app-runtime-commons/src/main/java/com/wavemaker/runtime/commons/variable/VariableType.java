@@ -58,6 +58,10 @@ public enum VariableType {
         return null;
     }
 
+    public String toVariableName(String variableName, String parameterName) {
+        return VariableTypeHelper.toVariableName(this, variableName, parameterName);
+    }
+
     private VariableValueProvider getVariableValueProvider() {
         if (variableValueProvider == null && variableValueProviderClass != null) {
             variableValueProvider = WMAppContext.getInstance().getSpringBean(variableValueProviderClass);
