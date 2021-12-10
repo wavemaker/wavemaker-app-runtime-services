@@ -54,7 +54,6 @@ import com.fasterxml.jackson.databind.util.LRUMap;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 
 /**
@@ -72,7 +71,7 @@ public class CleanupListener implements ServletContextListener {
             .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
 
     private boolean isSharedLib() {
-        return WMUtils.isSharedLibSetup();
+        return RuntimeEnvironment.isTestRunEnvironment();
     }
 
     @Override
