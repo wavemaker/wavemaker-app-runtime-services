@@ -15,9 +15,8 @@
  */
 package com.wavemaker.runtime.commons.variable;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-
-import com.wavemaker.commons.util.Tuple;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,26 +28,26 @@ public class VariableTypeHelperTest {
 
     @Test
     public void fromAppVariableName() {
-        final Tuple.Two<VariableType, String> result = VariableTypeHelper
+        final Pair<VariableType, String> result = VariableTypeHelper
                 .fromVariableName("APP_ENVIRONMENT__myProperty__name");
-        assertEquals(VariableType.APP_ENVIRONMENT, result.v1);
-        assertEquals("myProperty", result.v2);
+        assertEquals(VariableType.APP_ENVIRONMENT, result.getLeft());
+        assertEquals("myProperty", result.getRight());
     }
 
     @Test
     public void fromServerVariableName() {
-        final Tuple.Two<VariableType, String> result = VariableTypeHelper
+        final Pair<VariableType, String> result = VariableTypeHelper
                 .fromVariableName("SERVER__time__name");
-        assertEquals(VariableType.SERVER, result.v1);
-        assertEquals("time", result.v2);
+        assertEquals(VariableType.SERVER, result.getLeft());
+        assertEquals("time", result.getRight());
     }
 
     @Test
     public void fromPromptVariableName() {
-        final Tuple.Two<VariableType, String> result = VariableTypeHelper
+        final Pair<VariableType, String> result = VariableTypeHelper
                 .fromVariableName("name");
-        assertEquals(VariableType.PROMPT, result.v1);
-        assertEquals("name", result.v2);
+        assertEquals(VariableType.PROMPT, result.getLeft());
+        assertEquals("name", result.getRight());
     }
 
 }

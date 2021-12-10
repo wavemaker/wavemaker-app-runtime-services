@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.wavemaker.commons.util.Tuple;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.filter.WMQueryParamInfo;
 
@@ -52,9 +53,9 @@ public class UpdateQueryBuilder extends QueryBuilder<UpdateQueryBuilder> {
 
     private String generateSetClause(Map<String, WMQueryParamInfo> parameters) {
         return (setters.entrySet().stream()
-                .map(entry -> new Tuple.Two<>(entry, "wm_setter_" + entry.getKey()))
-                .peek(tuple -> parameters.put(tuple.v2, new WMQueryParamInfo(tuple.v1.getValue())))
-                .map(tuple -> tuple.v1.getKey() + " = :" + tuple.v2)
+                .map(entry -> ImmutablePair.of(entry, "wm_setter_" + entry.getKey()))
+                .peek(pair -> parameters.put(pair.getRight(), new WMQueryParamInfo(pair.getLeft().getValue())))
+                .map(pair -> pair.getLeft().getKey() + " = :" + pair.getRight())
                 .collect(Collectors.joining(", ", " set ", " ")));
     }
 

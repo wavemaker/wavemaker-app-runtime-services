@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.query.Query;
 import org.hibernate.type.Type;
 
-import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.commons.variable.VariableType;
 import com.wavemaker.runtime.commons.variable.VariableTypeHelper;
 import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
@@ -71,9 +71,11 @@ public class ParametersConfigurator {
         Object value = parameters.get(parameterName);
         // looking for system variables, only for null values.
         if (value == null) {
-            final Tuple.Two<VariableType, String> variableInfo = VariableTypeHelper.fromVariableName(parameterName);
-            if (variableInfo.v1.isVariable()) {
-                value = variableInfo.v1.getValue(variableInfo.v2);
+            final Pair<VariableType, String> variableInfo = VariableTypeHelper.fromVariableName(parameterName);
+            VariableType variableType = variableInfo.getLeft();
+            if (variableType.isVariable()) {
+                String variableName = variableInfo.getRight();
+                value = variableType.getValue(variableName);
             }
         }
         return value;

@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
 import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryGrammarInterceptor;
@@ -115,9 +115,9 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
             builder.append("where ");
 
             builder.append(filterConditions.entrySet().stream()
-                    .map(entry -> new Tuple.Two<>(entry, "wm_filter_" + entry.getKey()))
-                    .peek(tuple -> parameters.put(tuple.v2, new WMQueryParamInfo(tuple.v1.getValue())))
-                    .map(tuple -> tuple.v1.getKey() + " = :" + tuple.v2)
+                    .map(entry -> ImmutablePair.of(entry, "wm_filter_" + entry.getKey()))
+                    .peek(pair -> parameters.put(pair.getRight(), new WMQueryParamInfo(pair.getLeft().getValue())))
+                    .map(pair -> pair.getLeft().getKey() + " = :" + pair.getRight())
                     .collect(Collectors.joining(" and ", " ", " ")));
 
             if (StringUtils.isNotBlank(filter)) {

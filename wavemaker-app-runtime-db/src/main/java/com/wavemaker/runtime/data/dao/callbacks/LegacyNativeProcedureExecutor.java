@@ -75,7 +75,7 @@ public class LegacyNativeProcedureExecutor {
                     if (procedureParam.getProcedureParamType().isOutParam()) {
 
                         LOGGER.info("Found out Parameter {}", procedureParam.getParamName());
-                        String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).v2;
+                        String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).getRight();
                         Integer typeCode = getTypeCode(typeName);
                         LOGGER.info("Found type code to be {}", typeCode);
                         callableStatement.registerOutParameter(position + 1, typeCode);
@@ -124,7 +124,7 @@ public class LegacyNativeProcedureExecutor {
     private static List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
             for (CustomProcedureParam customProcedureParam : customProcedureParams) {
-                if (StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).v2
+                if (StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).getRight()
                         .equalsIgnoreCase(CURSOR) || customProcedureParam.getProcedureParamType().isOutParam()) {
                     continue;
                 }

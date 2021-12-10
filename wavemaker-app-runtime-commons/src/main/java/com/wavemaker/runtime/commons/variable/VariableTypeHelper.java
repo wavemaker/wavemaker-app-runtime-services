@@ -6,7 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.wavemaker.commons.util.Tuple;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class VariableTypeHelper {
 
@@ -29,7 +30,7 @@ public class VariableTypeHelper {
     private static final int PREFIX_GROUP = 1;
     private static final int VARIABLE_NAME_GROUP = 2;
 
-    public static Tuple.Two<VariableType, String> fromVariableName(String name) {
+    public static Pair<VariableType, String> fromVariableName(String name) {
         VariableType type = VariableType.PROMPT;
         String variableName = name;
 
@@ -39,7 +40,7 @@ public class VariableTypeHelper {
             variableName = matcher.group(VARIABLE_NAME_GROUP);
         }
 
-        return new Tuple.Two<>(type, variableName);
+        return ImmutablePair.of(type, variableName);
     }
 
     public static String toVariableName(VariableType variableType, String variableName, String parameterName) {

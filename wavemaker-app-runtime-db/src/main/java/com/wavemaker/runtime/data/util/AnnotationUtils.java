@@ -17,15 +17,15 @@ package com.wavemaker.runtime.data.util;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-
-import com.wavemaker.commons.util.Tuple;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -37,31 +37,32 @@ public abstract class AnnotationUtils {
 
     public static List<PropertyDescriptor> findProperties(Class<?> type, Class<? extends Annotation> annotationType) {
         return Arrays.stream(type.getDeclaredFields())
-                .map(field -> new Tuple.Two<>(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
-                .filter(tuple -> {
-                    boolean found = tuple.v1.isAnnotationPresent(annotationType);
-
-                    if (tuple.v2 != null) {
-                        if (tuple.v2.getReadMethod() != null) {
-                            found = found || tuple.v2.getReadMethod().isAnnotationPresent(annotationType);
+                .map(field -> ImmutablePair.of(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
+                .filter(pair -> {
+                    Field field = pair.getLeft();
+                    PropertyDescriptor propertyDescriptor = pair.getRight();
+                    boolean found = field.isAnnotationPresent(annotationType);
+                    if (propertyDescriptor != null) {
+                        if (propertyDescriptor.getReadMethod() != null) {
+                            found = found || propertyDescriptor.getReadMethod().isAnnotationPresent(annotationType);
                         } else {
-                            LOGGER.warn("Read method not found for field: {} in class: {}", tuple.v1.getName(),
+                            LOGGER.warn("Read method not found for field: {} in class: {}", field.getName(),
                                     type.getName());
                         }
 
-                        if (tuple.v2.getWriteMethod() != null) {
-                            found = found || tuple.v2.getWriteMethod().isAnnotationPresent(annotationType);
+                        if (propertyDescriptor.getWriteMethod() != null) {
+                            found = found || propertyDescriptor.getWriteMethod().isAnnotationPresent(annotationType);
                         } else {
-                            LOGGER.warn("Write method not found for field: {} in class: {}", tuple.v1.getName(),
+                            LOGGER.warn("Write method not found for field: {} in class: {}", field.getName(),
                                     type.getName());
                         }
                     } else {
-                        LOGGER.warn("Property Descriptor not found for field: {} in class: {}", tuple.v1.getName(),
+                        LOGGER.warn("Property Descriptor not found for field: {} in class: {}", field.getName(),
                                 type.getName());
                     }
 
                     return found;
-                }).map(tuple -> tuple.v2)
+                }).map(pair -> pair.getRight())
                 .collect(Collectors.toList());
     }
 
