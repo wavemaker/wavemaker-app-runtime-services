@@ -211,6 +211,8 @@
     <bean id="findMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.FindMethodInvocationHandler"/>
     <bean id="deleteMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.DeleteMethodInvocationHandler"/>
 
+    <bean id="restExecutor" class="com.wavemaker.runtime.rest.RestExecutor"/>
+
     <beans profile="wm_preview">
         <bean id="querycontroller" class="com.wavemaker.runtime.data.controller.QueryTestRunController"/>
         <bean id="queryDesignService" class="com.wavemaker.runtime.data.service.QueryDesignServiceImpl"/>

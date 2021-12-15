@@ -52,6 +52,8 @@ import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.commons.web.filter.RequestTrackingFilter;
 import com.wavemaker.commons.web.filter.ServerTimingMetric;
 import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
+import com.wavemaker.runtime.commons.WebConstants;
+import com.wavemaker.runtime.rest.RequestContext;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -132,6 +134,23 @@ public class RestRuntimeService {
             httpRequestDataProcessor.process(httpRequestDataProcessorContext);
         }
         executeRestCall(serviceId, path, httpRequestData, httpServletRequest, httpServletResponse, context);
+    }
+
+    public HttpResponseDetails executeRestCall(String serviceId, String path, String method, HttpRequestData httpRequestData, RequestContext requestContext) {
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, method, httpRequestData);
+        if (requestContext != null) {
+            HttpHeaders httpHeaders = httpRequestDetails.getHeaders();
+            if (!requestContext.getHeaders().isEmpty()) {
+                httpHeaders.putAll(requestContext.getHeaders());
+                httpRequestDetails.setHeaders(httpHeaders);
+            }
+            if (!requestContext.getQueryParams().isEmpty()) {
+                StringBuilder endpointAddress = new StringBuilder(httpRequestDetails.getEndpointAddress());
+                updateUrlWithQueryParameters(endpointAddress, new HashMap<>(httpRequestData.getQueryParametersMap()));
+                httpRequestDetails.setEndpointAddress(endpointAddress.toString());
+            }
+        }
+        return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, null, "");
     }
 
     public void executeRestCall(String serviceId, String path, final HttpRequestData httpRequestData,

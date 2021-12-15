@@ -28,6 +28,13 @@ dependencies {
     implementation(libs.spring.security.web)
     implementation(libs.spring.session.core)
     implementation(libs.hibernate.validator)
+    implementation(libs.jackson.dataformat.yaml)
+    implementation(libs.jackson.datatype.jsr310)
+    implementation(libs.jackson.datatype.hibernate5)
+    implementation(libs.apache.httpclient)
+    implementation("io.github.openfeign:feign-core:9.4.0")
+    implementation("io.swagger:swagger-annotations:1.6.2")
+    implementation("org.threeten:threetenbp:0.7.2")
     implementation(libs.tika.core)
     implementation(libs.antisamy) {
         exclude("org.slf4j", "slf4j-simple")
