@@ -23,7 +23,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.commons.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
