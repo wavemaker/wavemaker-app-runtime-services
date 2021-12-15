@@ -28,7 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.commons.WMObjectMapper;
 
 public class PaginationJsonCheckTest {
 

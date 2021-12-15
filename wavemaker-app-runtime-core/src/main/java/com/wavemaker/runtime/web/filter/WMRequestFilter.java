@@ -78,7 +78,7 @@ public class WMRequestFilter extends GenericFilterBean {
                 logger.debug("Calling cleanCache of com.sun.xml.internal.bind.v2.ClassFactory");
                 Method cleanCacheMethod = ReflectionUtils.findMethod(klass, "cleanCache");
                 if (cleanCacheMethod != null) {
-                    cleanCacheMethod.setAccessible(true);
+                    ReflectionUtils.makeAccessible(cleanCacheMethod);
                     cleanCacheMethod.invoke(null, null);
                 }
             }
@@ -95,9 +95,9 @@ public class WMRequestFilter extends GenericFilterBean {
                 klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
             }
             if (klass != null) {
-                Field privateThreadLocalFactoriesField = klass.getDeclaredField("threadLocalFactories");
-                privateThreadLocalFactoriesField.setAccessible(true);
-                ThreadLocal threadLocal = (ThreadLocal) privateThreadLocalFactoriesField.get(null);
+                Field threadLocalFactoriesField = klass.getDeclaredField("threadLocalFactories");
+                ReflectionUtils.makeAccessible(threadLocalFactoriesField);
+                ThreadLocal threadLocal = (ThreadLocal) threadLocalFactoriesField.get(null);
                 if (threadLocal != null) {
                     logger.debug("Removing the thread local value of the field threadLocalFactories in the class {}", className);
                     threadLocal.remove();
@@ -118,7 +118,7 @@ public class WMRequestFilter extends GenericFilterBean {
             if (klass != null) {
                 try {
                     Field activityIdTlsField = klass.getDeclaredField("ActivityIdTls");
-                    activityIdTlsField.setAccessible(true);
+                    ReflectionUtils.makeAccessible(activityIdTlsField);
                     ThreadLocal threadLocal = (ThreadLocal) activityIdTlsField.get(null);
                     if (threadLocal != null) {
                         logger.debug("Removing the thread local value of the field ActivityIdTls in the class {}", className);
@@ -142,7 +142,7 @@ public class WMRequestFilter extends GenericFilterBean {
             }
             if (klass != null) {
                 Field currentField = klass.getDeclaredField("CURRENT");
-                currentField.setAccessible(true);
+                ReflectionUtils.makeAccessible(currentField);
                 ThreadLocal threadLocal = (ThreadLocal) currentField.get(null);
                 if (threadLocal != null) {
                     logger.debug("Removing the thread local value of the field currentField in the class {}", className);

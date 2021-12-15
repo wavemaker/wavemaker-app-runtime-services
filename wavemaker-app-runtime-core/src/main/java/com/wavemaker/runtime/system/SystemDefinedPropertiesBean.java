@@ -20,7 +20,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.Calendar;
 
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.SecurityService;
 
 /**

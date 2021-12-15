@@ -32,7 +32,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.util.HttpRequestUtils;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.model.LoginSuccessResponse;
 
 import static com.wavemaker.runtime.security.SecurityConstants.*;

@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.wavemaker.runtime.data.replacers.providers.VariableType;
+import com.wavemaker.runtime.commons.variable.VariableType;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.tools.apidocs.tools.core.model.VendorUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;

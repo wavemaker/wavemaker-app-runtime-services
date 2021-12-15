@@ -54,7 +54,6 @@ import com.fasterxml.jackson.databind.util.LRUMap;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 
 /**
@@ -72,7 +71,7 @@ public class CleanupListener implements ServletContextListener {
             .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
 
     private boolean isSharedLib() {
-        return WMUtils.isSharedLibSetup();
+        return RuntimeEnvironment.isTestRunEnvironment();
     }
 
     @Override
@@ -164,13 +163,13 @@ public class CleanupListener implements ServletContextListener {
                             klass);
                     Field defaultAnnotationIntrospectorField = klass
                             .getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
-                    defaultAnnotationIntrospectorField.setAccessible(true);
+                    ReflectionUtils.makeAccessible(defaultAnnotationIntrospectorField);
                     JacksonAnnotationIntrospector jacksonAnnotationIntrospector = (JacksonAnnotationIntrospector) defaultAnnotationIntrospectorField
                             .get(null);
-                    Field annotaionsInsideField = jacksonAnnotationIntrospector.getClass()
+                    Field annotationsInsideField = jacksonAnnotationIntrospector.getClass()
                             .getDeclaredField("_annotationsInside");
-                    annotaionsInsideField.setAccessible(true);
-                    LRUMap lruMap = (LRUMap) annotaionsInsideField.get(jacksonAnnotationIntrospector);
+                    ReflectionUtils.makeAccessible(annotationsInsideField);
+                    LRUMap lruMap = (LRUMap) annotationsInsideField.get(jacksonAnnotationIntrospector);
                     if (lruMap != null) {
                         lruMap.clear();
                     }
@@ -634,7 +633,7 @@ public class CleanupListener implements ServletContextListener {
     private static Field findField(Class klass, String name) {
         Field field = ReflectionUtils.findField(klass, name);
         if (field != null) {
-            field.setAccessible(true);
+            ReflectionUtils.makeAccessible(field);
         }
         return field;
     }
@@ -642,7 +641,7 @@ public class CleanupListener implements ServletContextListener {
     private static Method findMethod(Class klass, String name, Class... paramTypes) {
         Method method = ReflectionUtils.findMethod(klass, name, paramTypes);
         if (method != null) {
-            method.setAccessible(true);
+            ReflectionUtils.makeAccessible(method);
         }
         return method;
     }

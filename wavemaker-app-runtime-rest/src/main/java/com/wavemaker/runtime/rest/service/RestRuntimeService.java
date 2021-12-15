@@ -29,6 +29,10 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +48,10 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.comparator.UrlComparator;
 import com.wavemaker.commons.comparator.UrlStringComparator;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
-import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.commons.web.filter.RequestTrackingFilter;
 import com.wavemaker.commons.web.filter.ServerTimingMetric;
+import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -60,9 +64,8 @@ import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
-import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.runtime.rest.util.HttpRequestUtils;
-import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
+import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
@@ -113,9 +116,9 @@ public class RestRuntimeService {
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData,
                                                HttpServletRequest httpServletRequest) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
-        final Tuple.Three<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
-        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, pathAndOperation.v1,
-                SwaggerDocUtil.getOperationType(pathAndOperation.v2, pathAndOperation.v3.getOperationId()).toUpperCase(), httpRequestData);
+        Triple<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, pathAndOperation.getLeft(),
+                SwaggerDocUtil.getOperationType(pathAndOperation.getMiddle(), pathAndOperation.getRight().getOperationId()).toUpperCase(), httpRequestData);
         return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, httpServletRequest, "");
     }
 
@@ -196,19 +199,19 @@ public class RestRuntimeService {
 
     private HttpRequestDetails constructHttpRequest(String serviceId, String path, String method, HttpRequestData httpRequestData) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
-        final Tuple.Two<String, Operation> pathInfo = findOperation(swagger, path, method);
+        final Pair<String, Operation> operationPair = findOperation(swagger, path, method);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> pathParameters = new HashMap<>();
-        Operation operation = pathInfo.v2;
+        Operation operation = operationPair.getRight();
         filterAndApplyServerVariablesOnRequestData(httpRequestData, swagger, operation,
                 httpHeaders, queryParameters, pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
         updateAuthorizationInfo(serviceId, swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
-        httpRequestDetails.setEndpointAddress(getEndPointAddress(serviceId, pathInfo.v1, queryParameters, pathParameters));
+        httpRequestDetails.setEndpointAddress(getEndPointAddress(serviceId, operationPair.getLeft(), queryParameters, pathParameters));
         httpRequestDetails.setMethod(method);
 
         httpRequestDetails.setHeaders(httpHeaders);
@@ -217,11 +220,11 @@ public class RestRuntimeService {
         return httpRequestDetails;
     }
 
-    private Tuple.Three<String, Path, Operation> findPathAndOperation(Swagger swagger, String operationId) {
+    private Triple<String, Path, Operation> findPathAndOperation(Swagger swagger, String operationId) {
         for (final Map.Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
             for (final Operation operation : pathEntry.getValue().getOperations()) {
                 if (operation.getMethodName().equalsIgnoreCase(operationId)) {
-                    return new Tuple.Three<>(pathEntry.getKey(), pathEntry.getValue(), operation);
+                    return ImmutableTriple.of(pathEntry.getKey(), pathEntry.getValue(), operation);
                 }
             }
         }
@@ -229,7 +232,7 @@ public class RestRuntimeService {
                 operationId);
     }
 
-    private Tuple.Two<String, Operation> findOperation(Swagger swagger, String path, String method) {
+    private Pair<String, Operation> findOperation(Swagger swagger, String path, String method) {
         Map<String, Path> swaggerPaths = swagger.getPaths();
 
         List<String> pathEntries = new ArrayList<>(swaggerPaths.keySet());
@@ -250,7 +253,7 @@ public class RestRuntimeService {
             if (pathMatcher.match(pathString, path)) {
                 Operation operation = PathUtils.getOperation(swaggerPaths.get(pathString), method);
                 if (operation != null) {
-                    return new Tuple.Two<>(pathString, operation);
+                    return ImmutablePair.of(pathString, operation);
                 }
             }
         }

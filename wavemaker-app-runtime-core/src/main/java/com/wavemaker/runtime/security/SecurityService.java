@@ -39,7 +39,7 @@ import com.wavemaker.commons.model.security.LoginConfig;
 import com.wavemaker.commons.model.security.RoleConfig;
 import com.wavemaker.commons.model.security.RolesConfig;
 import com.wavemaker.commons.util.EncodeUtils;
-import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;

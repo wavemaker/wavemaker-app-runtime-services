@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.runtime.commons.converters.WMCustomAbstractHttpMessageConverter;
 
 /**
  * Created by srujant on 16/5/17.

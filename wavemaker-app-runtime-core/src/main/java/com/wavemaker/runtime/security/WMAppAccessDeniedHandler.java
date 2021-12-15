@@ -35,7 +35,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.commons.util.HttpRequestUtils;
-import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.commons.WMObjectMapper;
 
 import static com.wavemaker.runtime.security.SecurityConstants.*;
 

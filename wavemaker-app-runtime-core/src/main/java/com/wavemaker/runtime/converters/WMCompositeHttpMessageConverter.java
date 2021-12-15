@@ -26,6 +26,9 @@ import org.springframework.http.converter.HttpMessageConverter;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.commons.converters.WMCustomAbstractHttpMessageConverter;
+import com.wavemaker.runtime.commons.converters.WMCustomHttpMessageConverter;
+import com.wavemaker.runtime.commons.converters.WMYamlJackson2HttpMessageConverter;
 
 /**
  * @Author: Uday

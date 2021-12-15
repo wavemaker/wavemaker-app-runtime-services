@@ -1,6 +1,5 @@
 plugins {
     `java-library-maven-publish`
-    `antlr`
 }
 
 group ="com.wavemaker.runtime"
@@ -17,34 +16,24 @@ dependencies {
     implementation(projects.wavemakerAppRuntimePrefab)
     implementation(projects.wavemakerAppRuntimeRest)
     implementation(projects.wavemakerAppRuntimeSoap)
+    implementation(projects.wavemakerAppRuntimeDb)
     implementation(projects.wavemakerAppRuntimeConnectorAppIntegration)
     implementation(projects.wavemakerToolsApidocsCore)
+    implementation(libs.commons.collections4)
     implementation(libs.commons.text)
-    implementation(libs.commons.lang3)
-    implementation(libs.commons.fileupload)
     implementation(libs.guava)
     implementation(libs.spring.webmvc)
     implementation(libs.spring.data.jpa)
     implementation(libs.spring.security.core)
     implementation(libs.spring.security.web)
     implementation(libs.spring.session.core)
-    implementation(libs.hibernate.core)
     implementation(libs.hibernate.validator)
-    implementation(libs.jackson.datatype.jsr310)
-    implementation(libs.jackson.datatype.hibernate5)
     implementation(libs.tika.core)
-    implementation(libs.poi)
-    implementation(libs.poiOoxml) {
-        exclude("com.github.virtuald", "curvesapi")
-    }
     implementation(libs.antisamy) {
         exclude("org.slf4j", "slf4j-simple")
     }
-    implementation(libs.freemarker)
     implementation(libs.swagger.annotations)
     implementation(libs.javax.annotation.api)
-    implementation(libs.aspectjrt)
-    implementation(libs.aspectjweaver)
     compileOnly(libs.javax.servlet.api)
     compileOnly(libs.spring.contextSupport)
     compileOnly(libs.spring.security.cas)
@@ -54,14 +43,17 @@ dependencies {
     //TODO Need to add xalan and xml-apis exclusions for saml2-core
     compileOnly(libs.springSecuritySaml2Core)
     compileOnly(libs.spring.session.jdbc)
-    runtimeOnly(libs.hikariCP)
+    compileOnly(libs.poiOoxml) {
+        because("Needed this for cleaning up memory references in Cleanupistener. " +
+                "TODO need to remove this dependency")
+    }
+    compileOnly(libs.hibernate.core) {
+        because("Used for getting roles for logged in user. Used in conjuction with database service in the project." +
+                "TODO need to remove this dependency.")
+    }
     runtimeOnly(libs.spring.security.config)
-    testImplementation(libs.test.testng)
+    runtimeOnly(libs.commons.fileupload)
     testImplementation(libs.test.junit4)
-    testImplementation(libs.test.jsonassert)
-    runtimeOnly(libs.antlr4Runtime)
-    // The below dependency is adding antlr4 and its transitive dependencies as well, removing them using exclude for runtime configuration
-    antlr(libs.antlr4)
 
     //Logging related dependencies
     implementation(libs.slf4j.api)
@@ -70,18 +62,6 @@ dependencies {
 
     //runtime dependencies lib
     runtimeLibDependencies(projects.wavemakerAppRuntimeCore)
-    //TODO: To support DB2 implementation, the custom code needs to be updated as per the new hibernate library code
-    /*runtimeLibDependencies(libs.hibernate.core) {
-        version {
-            strictly("5.2.17.WM")
-        }
-    }*/
-}
-
-configurations {
-    runtimeOnly {
-        exclude("org.antlr", "antlr4")
-    }
 }
 
 tasks {
@@ -101,14 +81,12 @@ tasks {
         dependsOn(":wavemaker-commons-util:jar")
         dependsOn(":wavemaker-app-runtime-commons:jar")
         dependsOn(":wavemaker-app-runtime-prefab:jar")
+        dependsOn(":wavemaker-app-runtime-db:jar")
         dependsOn(":wavemaker-app-runtime-soap:jar")
         dependsOn(":wavemaker-app-runtime-rest:jar")
         dependsOn(":wavemaker-tools-apidocs-core:jar")
         dependsOn(":wavemaker-app-runtime-connector-app-integration:jar")
         dependsOn(":wavemaker-app-runtime-connector-api:jar")
-    }
-    withType<Jar>().configureEach { // This is added to make sourcesJar task depend on generateGrammarSource task
-        dependsOn(generateGrammarSource)
     }
 }
 
