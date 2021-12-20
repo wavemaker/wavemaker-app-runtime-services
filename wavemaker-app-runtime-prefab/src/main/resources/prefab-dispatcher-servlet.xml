@@ -36,7 +36,7 @@
 
     <bean id="wmCompositeHttpMessageConverter" class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
 
-    <bean id="wmObjectMapper" class="com.wavemaker.runtime.WMObjectMapper"/>
+    <bean id="wmObjectMapper" class="com.wavemaker.runtime.commons.WMObjectMapper"/>
 
     <bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
