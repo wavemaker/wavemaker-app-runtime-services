@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.apache.httpclient)
     implementation(libs.javax.annotation.api)
     implementation(libs.javax.validationApi)
+    implementation(libs.feign.core)
     compileOnly(libs.javax.servlet.api)
     testImplementation(libs.test.junit4)
     testImplementation(libs.test.mockito.all)

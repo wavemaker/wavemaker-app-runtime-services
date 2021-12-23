@@ -32,14 +32,11 @@ dependencies {
     implementation(libs.jackson.datatype.jsr310)
     implementation(libs.jackson.datatype.hibernate5)
     implementation(libs.apache.httpclient)
-    implementation("io.github.openfeign:feign-core:9.4.0")
-    implementation("io.swagger:swagger-annotations:1.6.2")
-    implementation("org.threeten:threetenbp:0.7.2")
     implementation(libs.tika.core)
     implementation(libs.antisamy) {
         exclude("org.slf4j", "slf4j-simple")
     }
-    implementation(libs.swagger.annotations)
+    implementation(libs.wordnik.swagger.annotations)
     implementation(libs.javax.annotation.api)
     compileOnly(libs.javax.servlet.api)
     compileOnly(libs.spring.contextSupport)
