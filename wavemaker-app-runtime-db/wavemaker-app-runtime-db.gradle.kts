@@ -23,7 +23,6 @@ dependencies {
     implementation(libs.aspectjweaver)
     implementation(libs.javax.annotation.api)
     implementation(libs.javax.validationApi)
-    implementation(libs.poi)
     implementation(libs.poiOoxml) {
         exclude("com.github.virtuald", "curvesapi")
     }
