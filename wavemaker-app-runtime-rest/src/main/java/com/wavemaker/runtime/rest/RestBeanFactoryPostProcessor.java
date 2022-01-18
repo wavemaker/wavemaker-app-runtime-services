@@ -2,6 +2,7 @@ package com.wavemaker.runtime.rest;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -10,8 +11,6 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-
-import com.wavemaker.commons.util.StringUtils;
 
 public class RestBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
@@ -38,9 +37,8 @@ public class RestBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
             values.addIndexedArgumentValue(2, configurableListableBeanFactory.getBeanClassLoader());
             bd.setPrimary(true);
             bd.setConstructorArgumentValues(values);
-            ((DefaultListableBeanFactory) configurableListableBeanFactory).registerBeanDefinition(serviceId + StringUtils.upperCaseFirstLetter(apiClass.getName()) +
-                            "VirtualControllerApi",
-                    bd);
+            ((DefaultListableBeanFactory) configurableListableBeanFactory).registerBeanDefinition(
+                serviceId + StringUtils.capitalize(apiClass.getName()) +"VirtualControllerApi", bd);
             logger.info("Bean definition is loaded for interface {} ", apiClass);
         });
     }
