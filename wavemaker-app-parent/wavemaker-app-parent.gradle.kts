@@ -1,4 +1,4 @@
 plugins {
     `maven-pom-publish`
 }
-group ="com.wavemaker.runtime"
+group ="com.wavemaker.app"
