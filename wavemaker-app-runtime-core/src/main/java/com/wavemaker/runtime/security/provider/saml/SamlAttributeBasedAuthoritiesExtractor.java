@@ -23,31 +23,30 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.saml2.provider.service.authentication.OpenSamlAuthenticationProvider.ResponseToken;
 
 import com.wavemaker.runtime.security.provider.saml.util.SAMLUtils;
 
 /**
  * Created by ArjunSahasranam on 23/11/16.
  */
-public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
+public class SamlAttributeBasedAuthoritiesExtractor implements Converter<Assertion, Collection<? extends GrantedAuthority>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WMSAMLUserDetailsService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SamlAttributeBasedAuthoritiesExtractor.class);
 
+    @Value("${security.providers.saml.roleAttributeName}")
     private String roleAttributeName;
 
     @Override
-    public Collection<GrantedAuthority> getAuthorities(ResponseToken responseToken) {
+    public Collection<GrantedAuthority> convert(Assertion assertion) {
         List<GrantedAuthority> authorities = null;
         if (StringUtils.isNotBlank(roleAttributeName)) {
-            Response response = responseToken.getResponse();
-            Assertion assertion = org.springframework.util.CollectionUtils.firstElement(response.getAssertions());
             Map<String, List<Object>> attributes = SAMLUtils.getAssertionAttributes(assertion);
             List<Object> attributeValues = attributes.get(roleAttributeName);
             LOGGER.info("Attribute values for {} is {}", roleAttributeName, attributeValues);
@@ -62,13 +61,5 @@ public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
             authorities = AuthorityUtils.NO_AUTHORITIES;
         }
         return authorities;
-    }
-
-    public String getRoleAttributeName() {
-        return roleAttributeName;
-    }
-
-    public void setRoleAttributeName(final String roleAttributeName) {
-        this.roleAttributeName = roleAttributeName;
     }
 }

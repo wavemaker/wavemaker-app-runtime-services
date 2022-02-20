@@ -307,7 +307,6 @@
                 <profile.props.file>deployment.properties</profile.props.file>
             </properties>
         </profile>
-        <!-- These two are Studio Managed Profiles. DO NOT EDIT THIS PROFILES -->
         <profile>
             <id>runtime-dependency</id>
             <activation>

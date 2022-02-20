@@ -21,12 +21,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wavemaker.commons.util.EncodeUtils;
-import com.wavemaker.runtime.security.authenticationToken.AbstractAuthenticationToken;
 import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
 
 /**
@@ -44,12 +44,8 @@ public class WMAuthentication extends AbstractAuthenticationToken {
     @JsonIgnore
     private transient Authentication authenticationSource;
 
-    public WMAuthentication() {
-    }
-
     public WMAuthentication(Authentication authenticationSource) {
-        super();
-        setAuthorities(mapAuthorities(authenticationSource.getAuthorities()));
+        super(mapAuthorities(authenticationSource.getAuthorities()));
         this.principal = authenticationSource.getName();
         this.authenticationSource = authenticationSource;
         if (authenticationSource.getPrincipal() instanceof WMUser) {
@@ -102,7 +98,7 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         attributes.put(key, new Attribute(scope, value));
     }
 
-    private Set<SimpleGrantedAuthority> mapAuthorities(
+    private static Set<SimpleGrantedAuthority> mapAuthorities(
             Collection<? extends GrantedAuthority> authorities) {
         HashSet<SimpleGrantedAuthority> mapped = new HashSet<>(authorities.size());
         for (GrantedAuthority authority : authorities) {
@@ -111,7 +107,7 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         return mapped;
     }
 
-    private SimpleGrantedAuthority mapAuthority(String authorityName) {
+    private static SimpleGrantedAuthority mapAuthority(String authorityName) {
         if (prefix.length() > 0 && !authorityName.startsWith(prefix)) {
             authorityName = prefix + authorityName;
         }

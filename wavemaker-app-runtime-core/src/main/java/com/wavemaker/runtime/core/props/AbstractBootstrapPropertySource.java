@@ -8,7 +8,7 @@ import org.springframework.core.env.PropertySource;
 
 public abstract class AbstractBootstrapPropertySource extends PropertySource {
 
-    private static final Logger logger = LoggerFactory.getLogger(WMApplicationContextInitializer.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractBootstrapPropertySource.class);
 
     private ConfigurableEnvironment environment;
 

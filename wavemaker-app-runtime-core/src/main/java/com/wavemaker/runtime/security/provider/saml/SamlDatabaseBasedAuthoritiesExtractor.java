@@ -20,10 +20,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.saml2.provider.service.authentication.OpenSamlAuthenticationProvider.ResponseToken;
-import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
@@ -31,29 +30,17 @@ import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 /**
  * @author Arjun Sahasranam
  */
-public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService {
+public class SamlDatabaseBasedAuthoritiesExtractor implements Converter<Assertion, Collection<? extends GrantedAuthority>> {
 
+    @Autowired
     private AuthoritiesProvider authoritiesProvider;
 
-    public WMSAMLDatabaseUserDetailsService() {
-    }
-
     @Override
-    public Collection<GrantedAuthority> getAuthorities(ResponseToken responseToken) {
-        Response response = responseToken.getResponse();
-        Assertion assertion = CollectionUtils.firstElement(response.getAssertions());
+    public Collection<GrantedAuthority> convert(Assertion assertion) {
         String username = assertion.getSubject().getNameID().getValue();
         Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
         dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
         return dbAuthsSet;
-    }
-
-    public AuthoritiesProvider getAuthoritiesProvider() {
-        return authoritiesProvider;
-    }
-
-    public void setAuthoritiesProvider(AuthoritiesProvider authoritiesProvider) {
-        this.authoritiesProvider = authoritiesProvider;
     }
 
 }

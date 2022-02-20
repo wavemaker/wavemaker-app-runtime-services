@@ -67,7 +67,7 @@ public class WMSAMLSecurityConfig {
             PrivateKey privateKey;
             X509Certificate cert;
             try {
-                KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                KeyStore keystore = KeyStore.getInstance("JKS");
                 keystore.load(resourceAsStream, keyStorePassword.toCharArray());
                 privateKey = (PrivateKey) keystore.getKey(keyStoreAlias, keyStorePassword.toCharArray());
                 cert = (X509Certificate) keystore.getCertificate(keyStoreAlias);
