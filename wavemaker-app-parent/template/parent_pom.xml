@@ -305,7 +305,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>${maven.version}</version>
+                                    <version>${minimum.maven.version}</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>${java.version}</version>
@@ -412,6 +412,6 @@
         <project.lib.directory>${basedir}/lib</project.lib.directory>
         <profile.props.file>development.properties</profile.props.file>
         <java.version>11</java.version>
-        <maven.version>3.8.1</maven.version>
+        <minimum.maven.version>3.8.1</minimum.maven.version>
     </properties>
 </project>
