@@ -25,8 +25,8 @@ import org.owasp.validator.html.PolicyException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
-import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.app.AppFileSystem;
+import com.wavemaker.runtime.commons.WMAppContext;
 
 /**
  * Created by kishorer on 6/7/16.
@@ -43,7 +43,7 @@ public class XSSWhiteListSanitizer implements XSSSanitizer {
     }
 
     @Override
-    public String sanitizeRequestData(String data) {
+    public String sanitizeIncomingData(String data) {
         if (data == null) {
             return data;
         }

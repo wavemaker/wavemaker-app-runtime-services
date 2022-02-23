@@ -15,10 +15,10 @@
  */
 package com.wavemaker.runtime.security.xss.sanitizer;
 
-import org.apache.commons.lang3.text.translate.AggregateTranslator;
-import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
-import org.apache.commons.lang3.text.translate.EntityArrays;
-import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.apache.commons.text.translate.AggregateTranslator;
+import org.apache.commons.text.translate.CharSequenceTranslator;
+import org.apache.commons.text.translate.EntityArrays;
+import org.apache.commons.text.translate.LookupTranslator;
 
 /**
  * Created by kishorer on 6/7/16.
@@ -27,31 +27,38 @@ public class XSSEncodeSanitizer implements XSSSanitizer {
 
     private static final CharSequenceTranslator UNESCAPE_HTML4 =
             new AggregateTranslator(
-                    new LookupTranslator(EntityArrays.BASIC_UNESCAPE()),
-                    new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE()),
-                    new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE())
+                    new LookupTranslator(EntityArrays.BASIC_UNESCAPE),
+                    new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE),
+                    new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE)
             );
 
     private static final CharSequenceTranslator ESCAPE_HTML4 =
             new AggregateTranslator(
-                    new LookupTranslator(EntityArrays.BASIC_ESCAPE()),
-                    new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE()),
-                    new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE())
+                    new LookupTranslator(EntityArrays.BASIC_ESCAPE),
+                    new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE),
+                    new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE)
             );
 
-    private final boolean dataBackwardCompatibility;
+    private final boolean dataPreSanitized;
 
-    public XSSEncodeSanitizer(boolean dataBackwardCompatibility) {
-        this.dataBackwardCompatibility = dataBackwardCompatibility;
+    public XSSEncodeSanitizer(boolean dataPreSanitized) {
+        this.dataPreSanitized = dataPreSanitized;
     }
 
+    @Override
+    public String sanitizeIncomingData(String data) {
+        if (data == null) {
+            return null;
+        }
+        return ESCAPE_HTML4.translate(data);
+    }
 
     @Override
-    public String sanitizeRequestData(String data) {
+    public String sanitizeOutgoingData(String data) {
         if (data == null) {
-            return data;
+            return null;
         }
-        if (dataBackwardCompatibility) {
+        if (dataPreSanitized) {
             data = UNESCAPE_HTML4.translate(data);
         }
         return ESCAPE_HTML4.translate(data);

@@ -52,11 +52,18 @@ public class XSSSecurityHandler {
         return instance;
     }
 
-    public String sanitizeRequestData(String data) {
+    public String sanitizeIncomingData(String data) {
         if (!isInitialized) {
             initConfiguration();
         }
-        return xssSanitizer.sanitizeRequestData(data);
+        return xssSanitizer.sanitizeIncomingData(data);
+    }
+
+    public String sanitizeOutgoingData(String data) {
+        if (!isInitialized) {
+            initConfiguration();
+        }
+        return xssSanitizer.sanitizeOutgoingData(data);
     }
 
     public boolean isXSSEnabled() {

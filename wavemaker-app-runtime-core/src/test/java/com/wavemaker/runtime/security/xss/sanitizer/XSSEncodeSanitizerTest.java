@@ -1,7 +1,6 @@
 package com.wavemaker.runtime.security.xss.sanitizer;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -17,56 +16,65 @@ import com.wavemaker.commons.util.WMIOUtils;
 public class XSSEncodeSanitizerTest {
 
     private List<String> xssInputVectors;
-    private List<String> xssEncodedVectors;
-    private List<String> xssOutputVector;
+    private List<String> encodedOnceList;
+    private List<String> encodedTwiceList;
 
 
     @Before
     public void init() {
-        InputStream xssEncodeVectorStream = this.getClass().getResourceAsStream("/com/wavemaker/runtime/xss/xss-encode-vectors-input.txt");
-        InputStream xssVectorStream = this.getClass().getResourceAsStream("/com/wavemaker/runtime/xss/xss-attack-vector-input.txt");
-        InputStream xssEncodeResultStream = this.getClass().getResourceAsStream("/com/wavemaker/runtime/xss/xss-encode-vectors-output.txt");
-
-        xssInputVectors = streamToListOfStrings(xssVectorStream);
-        xssOutputVector = streamToListOfStrings(xssEncodeResultStream);
-        xssEncodedVectors = streamToListOfStrings(xssEncodeVectorStream);
-
-        WMIOUtils.closeSilently(xssEncodeVectorStream);
-        WMIOUtils.closeSilently(xssVectorStream);
-        WMIOUtils.closeSilently(xssEncodeResultStream);
+        xssInputVectors = getFileLines("/com/wavemaker/runtime/xss/xss-attack-vector-input.txt");
+        encodedOnceList = getFileLines("/com/wavemaker/runtime/xss/encoded-once.txt");
+        encodedTwiceList = getFileLines("/com/wavemaker/runtime/xss/encoded-twice.txt");
     }
 
     @Test
-    public void testSanitizeRequestDataWhenBackwardCompatibilityTrue() throws IOException {
-        XSSEncodeSanitizer xssEncodeSanitizer = new XSSEncodeSanitizer(true);
-        List<String> xssEncodedVectorsRes = xssEncodedVectors.stream().map(str -> xssEncodeSanitizer.sanitizeRequestData(str))
+    public void testSanitizeIncomingDataWithDataPreSanitizedFlagEnabled() {
+        XSSSanitizer xssSanitizer = new XSSEncodeSanitizer(true);
+        List<String> actualOutput = xssInputVectors.stream().map(str -> xssSanitizer.sanitizeIncomingData(str))
                 .collect(Collectors.toList());
-        Assert.assertTrue(compareLists(xssEncodedVectorsRes, xssOutputVector));
+        Assert.assertEquals(encodedOnceList, actualOutput);
     }
 
     @Test
-    public void testSanitizeRequestDataWhenBackwardCompatibilityFalse() {
-        XSSEncodeSanitizer xssEncodeSanitizer = new XSSEncodeSanitizer(false);
-        List<String> xssEncodedVectorsRes = xssInputVectors.stream().map(str -> xssEncodeSanitizer.sanitizeRequestData(str))
+    public void testSanitizeIncomingDataWithDataPreSanitizedFlagDisabled() {
+        XSSSanitizer xssSanitizer = new XSSEncodeSanitizer(false);
+        List<String> actualOutput = xssInputVectors.stream().map(str -> xssSanitizer.sanitizeIncomingData(str))
                 .collect(Collectors.toList());
-        Assert.assertTrue(compareLists(xssEncodedVectorsRes, xssOutputVector));
+        Assert.assertEquals(encodedOnceList, actualOutput);
     }
 
-
-    private boolean compareLists(List<String> input, List<String> output) {
-        for (int i = 0; i < input.size(); i++) {
-            if (!input.get(i).equals(output.get(i))) {
-                return false;
-            }
-        }
-        return true;
+    @Test
+    public void testSanitizeOutgoingDataWithDataPreSanitizedFlagDisabled() {
+        XSSSanitizer xssSanitizer = new XSSEncodeSanitizer(false);
+        List<String> actualOutput = xssInputVectors.stream().map(str -> xssSanitizer.sanitizeOutgoingData(str))
+                .collect(Collectors.toList());
+        Assert.assertEquals(encodedOnceList, actualOutput);
     }
 
-    private List<String> streamToListOfStrings(InputStream inputStream) {
+    @Test
+    public void testSanitizeOutgoingDataWithDataPreSanitizedAndFlagEnabled() {
+        XSSSanitizer xssSanitizer = new XSSEncodeSanitizer(true);
+        List<String> actualOutput = encodedOnceList.stream().map(str -> xssSanitizer.sanitizeOutgoingData(str))
+                .collect(Collectors.toList());
+        Assert.assertEquals(encodedOnceList, actualOutput);
+    }
+
+    @Test
+    public void testSanitizeOutgoingDataWithDataPreSanitizedAndFlagDisabled() {
+        XSSSanitizer xssSanitizer = new XSSEncodeSanitizer(false);
+        List<String> actualOutput = encodedOnceList.stream().map(str -> xssSanitizer.sanitizeOutgoingData(str))
+                .collect(Collectors.toList());
+        Assert.assertEquals(encodedTwiceList, actualOutput);
+    }
+
+    private List<String> getFileLines(String resourcePath) {
+        InputStream inputStream = this.getClass().getResourceAsStream(resourcePath);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             return reader.lines().collect(Collectors.toList());
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to read inputStream");
+        } finally {
+            WMIOUtils.closeSilently(inputStream);
         }
     }
 }

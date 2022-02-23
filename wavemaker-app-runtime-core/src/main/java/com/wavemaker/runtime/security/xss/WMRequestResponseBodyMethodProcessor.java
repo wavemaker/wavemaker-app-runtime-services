@@ -20,7 +20,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
@@ -39,18 +38,6 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         super(converters);
     }
 
-    public WMRequestResponseBodyMethodProcessor(List<HttpMessageConverter<?>> converters, ContentNegotiationManager contentNegotiationManager) {
-        super(converters, contentNegotiationManager);
-    }
-
-    public WMRequestResponseBodyMethodProcessor(List<HttpMessageConverter<?>> converters, List<Object> requestResponseBodyAdvice) {
-        super(converters, requestResponseBodyAdvice);
-    }
-
-    public WMRequestResponseBodyMethodProcessor(List<HttpMessageConverter<?>> converters, ContentNegotiationManager manager, List<Object> requestResponseBodyAdvice) {
-        super(converters, manager, requestResponseBodyAdvice);
-    }
-
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws IOException, HttpMediaTypeNotAcceptableException, HttpMessageNotWritableException {
         Method method = returnType.getMethod();
@@ -61,7 +48,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
                 .anyMatch(an -> an instanceof XssDisable);
 
         if (!xssDisable) {
-            ResponseTuple encodeResult = encode(returnValue, new ArrayList());
+            ResponseTuple encodeResult = encode(returnValue, new ArrayList(), DataFlowType.OUTGOING);
             if(encodeResult.modified) {
                 returnValue = encodeResult.value;
             }
@@ -69,7 +56,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         super.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
     }
 
-    private ResponseTuple encode(Object value, List<Object> manipulatedObjects) {
+    private ResponseTuple encode(Object value, List<Object> manipulatedObjects, DataFlowType dataFlowType) {
         Object encoded = value;
         boolean modified = false;
 
@@ -77,16 +64,16 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
             final Class<?> valueClass = value.getClass();
 
             if (valueClass == char[].class) {
-                encoded = encode(((char[]) value));
+                encoded = encode(((char[]) value), dataFlowType);
                 modified = true;
             } else if (valueClass.isArray()) {
-                modified = encodeArray((Object[]) value, manipulatedObjects);
+                modified = encodeArray((Object[]) value, manipulatedObjects, dataFlowType);
             } else if (value instanceof String) {
-                encoded = encode((String) value);
+                encoded = encode((String) value, dataFlowType);
                 modified = true;
             } else {
                 manipulatedObjects.add(value);
-                final ResponseTuple response = encodeCustomClass(value, manipulatedObjects);
+                final ResponseTuple response = encodeCustomClass(value, manipulatedObjects, dataFlowType);
                 if (response.modified) {
                     encoded = response.value;
                     modified = true;
@@ -97,12 +84,11 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         return new ResponseTuple(encoded, modified);
     }
 
-    private boolean encodeArray(
-            final Object[] valueArray, final List<Object> manipulatedObjects) {
+    private boolean encodeArray(Object[] valueArray, final List<Object> manipulatedObjects, DataFlowType dataFlowType) {
         boolean modified = false;
         for (int i = 0; i < valueArray.length; i++) {
-            final Object obj = valueArray[i];
-            final ResponseTuple result = encode(obj, manipulatedObjects);
+            Object obj = valueArray[i];
+            ResponseTuple result = encode(obj, manipulatedObjects, dataFlowType);
             if (result.modified) {
                 valueArray[i] = result.value;
                 modified = true;
@@ -112,11 +98,11 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
     }
 
 
-    private ResponseTuple encodeCustomClass(Object object, List<Object> manipulatedObjects) {
+    private ResponseTuple encodeCustomClass(Object object, List<Object> manipulatedObjects, DataFlowType dataFlowType) {
         AtomicBoolean modified = new AtomicBoolean(false);
         if(object instanceof Page) {
             ((Page) object).getContent().forEach(obj -> {
-                obj = encode(obj, manipulatedObjects).value;
+                obj = encode(obj, manipulatedObjects, dataFlowType).value;
                 modified.set(true);
             });
         }
@@ -124,7 +110,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
             if (!field.isAnnotationPresent(XssDisable.class) && !Modifier.isFinal(field.getModifiers())) {
                 ReflectionUtils.makeAccessible(field);
                 try {
-                    final ResponseTuple response = encode(field.get(object), manipulatedObjects);
+                    final ResponseTuple response = encode(field.get(object), manipulatedObjects, dataFlowType);
                     if (response.modified) {
                         modified.set(true);
                         field.set(object, response.value);
@@ -138,12 +124,19 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         return new ResponseTuple(object, modified.get());
     }
 
-    private char[] encode(char[] value) {
-        return encode(new String(value)).toCharArray();
+    private char[] encode(char[] value, DataFlowType dataFlowType) {
+        return encode(new String(value), dataFlowType).toCharArray();
     }
 
-    private String encode(String value) {
-        return XSSSecurityHandler.getInstance().sanitizeRequestData(value);
+    private String encode(String value, DataFlowType dataFlowType) {
+        switch (dataFlowType) {
+            case OUTGOING:
+                return XSSSecurityHandler.getInstance().sanitizeOutgoingData(value);
+            case INCOMING:
+                return XSSSecurityHandler.getInstance().sanitizeIncomingData(value);
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     private boolean isExcludedClass(Object value) {
@@ -161,8 +154,16 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         return excluded;
     }
 
-    private static class ResponseTuple {
+    private boolean containsInList(Object value, List<Object> manipulatedObjects) {
+        for(Object obj : manipulatedObjects) {
+            if(obj == value) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    private static class ResponseTuple {
         private Object value;
         private boolean modified;
 
@@ -172,12 +173,8 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         }
     }
 
-    private boolean containsInList(Object value, List<Object> manipulatedObjects) {
-        for(Object obj : manipulatedObjects) {
-            if(obj == value) {
-                return true;
-            }
-        }
-        return false;
+    private enum DataFlowType {
+        INCOMING,
+        OUTGOING
     }
 }

