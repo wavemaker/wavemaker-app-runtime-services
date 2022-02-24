@@ -5,7 +5,7 @@ plugins {
 group ="com.wavemaker.runtime.connector"
 
 dependencies {
-    implementation(platform(projects.wavemakerAppRuntimeServices))
+    implementation(enforcedPlatform(libs.boms.springFramework.get()))
     implementation(libs.slf4j.api)
     implementation(libs.spring.context)
 }

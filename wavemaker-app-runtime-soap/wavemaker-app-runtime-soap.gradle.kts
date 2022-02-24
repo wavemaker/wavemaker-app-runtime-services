@@ -5,7 +5,6 @@ plugins {
 group ="com.wavemaker.runtime"
 
 dependencies {
-    implementation(platform(projects.wavemakerAppRuntimeServices))
     implementation(projects.wavemakerCommonsUtil)
     implementation(libs.commons.lang3)
     implementation(libs.javax.jaxws.api)
