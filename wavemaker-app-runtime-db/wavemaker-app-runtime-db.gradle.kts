@@ -6,42 +6,42 @@ plugins {
 group ="com.wavemaker.runtime"
 
 dependencies {
-    implementation(enforcedPlatform(libs.boms.springFramework.get()))
-    implementation(enforcedPlatform(libs.boms.springData.get()))
-    implementation(enforcedPlatform(libs.boms.jackson.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springFramework.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springData.get()))
+    implementation(enforcedPlatform(appDependencies.boms.jackson.get()))
     implementation(projects.wavemakerCommonsUtil)
     implementation(projects.wavemakerAppRuntimeCommons)
-    implementation(libs.slf4j.api)
-    implementation(libs.commons.lang3)
-    implementation(libs.guava)
-    implementation(libs.spring.beans)
-    implementation(libs.spring.context)
-    implementation(libs.spring.orm)
-    implementation(libs.spring.web)
-    implementation(libs.spring.data.commons)
-    implementation(libs.jackson.annotations)
-    implementation(libs.hibernate.core)
-    implementation(libs.aspectjrt)
-    implementation(libs.aspectjweaver)
-    implementation(libs.javax.annotation.api)
-    implementation(libs.javax.validationApi)
-    implementation(libs.poiOoxml) {
+    implementation(appDependencies.slf4j.api)
+    implementation(appDependencies.commons.lang3)
+    implementation(appDependencies.guava)
+    implementation(appDependencies.spring.beans)
+    implementation(appDependencies.spring.context)
+    implementation(appDependencies.spring.orm)
+    implementation(appDependencies.spring.web)
+    implementation(appDependencies.spring.data.commons)
+    implementation(appDependencies.jackson.annotations)
+    implementation(appDependencies.hibernate.core)
+    implementation(appDependencies.aspectjrt)
+    implementation(appDependencies.aspectjweaver)
+    implementation(appDependencies.javax.annotation.api)
+    implementation(appDependencies.javax.validationApi)
+    implementation(appDependencies.poiOoxml) {
         exclude("com.github.virtuald", "curvesapi")
     }
-    implementation(libs.freemarker)
-    implementation(libs.tika.core)
-    compileOnly(libs.javax.servlet.api)
-    runtimeOnly(libs.antlr4Runtime)
+    implementation(appDependencies.freemarker)
+    implementation(appDependencies.tika.core)
+    compileOnly(appDependencies.javax.servlet.api)
+    runtimeOnly(appDependencies.antlr4Runtime)
     // The below dependency is adding antlr4 and its transitive dependencies as well, removing them using exclude for runtime configuration
-    antlr(libs.antlr4)
-    runtimeOnly(libs.antlr4Runtime)
-    runtimeOnly(libs.hikariCP)
-    testImplementation(libs.test.junit4)
-    testImplementation(libs.test.testng)
-    testImplementation(libs.commons.text)
+    antlr(appDependencies.build.antlr4)
+    runtimeOnly(appDependencies.antlr4Runtime)
+    runtimeOnly(appDependencies.hikariCP)
+    testImplementation(appDependencies.test.junit4)
+    testImplementation(appDependencies.test.testng)
+    testImplementation(appDependencies.commons.text)
 
     //TODO: To support DB2 implementation, the custom code needs to be updated as per the new hibernate library code
-    /*runtimeLibDependencies(libs.hibernate.core) {
+    /*runtimeLibDependencies(appDependencies.hibernate.core) {
         version {
             strictly("5.2.17.WM")
         }

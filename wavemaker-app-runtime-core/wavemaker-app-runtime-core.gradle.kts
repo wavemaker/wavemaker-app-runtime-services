@@ -10,12 +10,12 @@ val runtimeLibDependencies: Configuration by configurations.creating {
 }
 
 dependencies {
-    implementation(enforcedPlatform(libs.boms.springFramework.get()))
-    implementation(enforcedPlatform(libs.boms.springSecurity.get()))
-    implementation(enforcedPlatform(libs.boms.springData.get()))
-    implementation(enforcedPlatform(libs.boms.springSession.get()))
-    implementation(enforcedPlatform(libs.boms.log4j.get()))
-    implementation(enforcedPlatform(libs.boms.jackson.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springFramework.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springSecurity.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springData.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springSession.get()))
+    implementation(enforcedPlatform(appDependencies.boms.log4j.get()))
+    implementation(enforcedPlatform(appDependencies.boms.jackson.get()))
     implementation(projects.wavemakerCommonsUtil)
     implementation(projects.wavemakerAppRuntimeCommons)
     implementation(projects.wavemakerAppRuntimePrefab)
@@ -24,49 +24,49 @@ dependencies {
     implementation(projects.wavemakerAppRuntimeDb)
     implementation(projects.wavemakerAppRuntimeConnectorAppIntegration)
     implementation(projects.wavemakerToolsApidocsCore)
-    implementation(libs.commons.collections4)
-    implementation(libs.commons.text)
-    implementation(libs.guava)
-    implementation(libs.spring.webmvc)
-    implementation(libs.spring.data.jpa)
-    implementation(libs.spring.security.core)
-    implementation(libs.spring.security.web)
-    implementation(libs.spring.session.core)
-    implementation(libs.hibernate.validator)
-    implementation(libs.jackson.dataformat.yaml)
-    implementation(libs.jackson.datatype.jsr310)
-    implementation(libs.jackson.datatype.hibernate5)
-    implementation(libs.apache.httpclient)
-    implementation(libs.tika.core)
-    implementation(libs.antisamy) {
+    implementation(appDependencies.commons.collections4)
+    implementation(appDependencies.commons.text)
+    implementation(appDependencies.guava)
+    implementation(appDependencies.spring.webmvc)
+    implementation(appDependencies.spring.data.jpa)
+    implementation(appDependencies.spring.security.core)
+    implementation(appDependencies.spring.security.web)
+    implementation(appDependencies.spring.session.core)
+    implementation(appDependencies.hibernate.validator)
+    implementation(appDependencies.jackson.dataformat.yaml)
+    implementation(appDependencies.jackson.datatype.jsr310)
+    implementation(appDependencies.jackson.datatype.hibernate5)
+    implementation(appDependencies.apache.httpclient)
+    implementation(appDependencies.tika.core)
+    implementation(appDependencies.antisamy) {
         exclude("org.slf4j", "slf4j-simple")
     }
-    implementation(libs.wordnik.swagger.annotations)
-    implementation(libs.javax.annotation.api)
-    compileOnly(libs.javax.servlet.api)
-    compileOnly(libs.spring.contextSupport)
-    compileOnly(libs.spring.security.cas)
-    compileOnly(libs.spring.security.ldap)
-    compileOnly(libs.spring.security.oauth2.client)
-    compileOnly(libs.spring.security.oauth2.jose)
-    compileOnly(libs.spring.security.saml2.service.provider)
-    compileOnly(libs.spring.session.jdbc)
-    compileOnly(libs.poiOoxml) {
+    implementation(appDependencies.wordnik.swagger.annotations)
+    implementation(appDependencies.javax.annotation.api)
+    compileOnly(appDependencies.javax.servlet.api)
+    compileOnly(appDependencies.spring.contextSupport)
+    compileOnly(appDependencies.spring.security.cas)
+    compileOnly(appDependencies.spring.security.ldap)
+    compileOnly(appDependencies.spring.security.oauth2.client)
+    compileOnly(appDependencies.spring.security.oauth2.jose)
+    compileOnly(appDependencies.spring.security.saml2.service.provider)
+    compileOnly(appDependencies.spring.session.jdbc)
+    compileOnly(appDependencies.poiOoxml) {
         because("Needed this for cleaning up memory references in Cleanupistener. " +
                 "TODO need to remove this dependency")
     }
-    compileOnly(libs.hibernate.core) {
+    compileOnly(appDependencies.hibernate.core) {
         because("Used for getting roles for logged in user. Used in conjuction with database service in the project." +
                 "TODO need to remove this dependency.")
     }
-    runtimeOnly(libs.spring.security.config)
-    runtimeOnly(libs.commons.fileupload)
-    testImplementation(libs.test.junit4)
+    runtimeOnly(appDependencies.spring.security.config)
+    runtimeOnly(appDependencies.commons.fileupload)
+    testImplementation(appDependencies.test.junit4)
 
     //Logging related dependencies
-    implementation(libs.slf4j.api)
-    implementation(libs.log4j.core)
-    loggingCapabilityConfiguration(libs.log4j.slf4j.impl)
+    implementation(appDependencies.slf4j.api)
+    implementation(appDependencies.log4j.core)
+    loggingCapabilityConfiguration(appDependencies.log4j.slf4j.impl)
 
     //runtime dependencies lib
     runtimeLibDependencies(projects.wavemakerAppRuntimeCore)

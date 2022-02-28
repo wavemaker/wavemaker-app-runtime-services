@@ -5,15 +5,15 @@ plugins {
 group ="com.wavemaker.runtime"
 
 dependencies {
-    implementation(enforcedPlatform(libs.boms.springFramework.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springFramework.get()))
     implementation(projects.wavemakerCommonsUtil)
-    implementation(libs.slf4j.api)
-    implementation(libs.commons.lang3)
-    implementation(libs.commons.collections4)
-    implementation(libs.spring.webmvc)
-    compileOnly(libs.javax.servlet.api)
-    testImplementation(libs.test.junit4)
-    testImplementation(libs.test.spring.test)
+    implementation(appDependencies.slf4j.api)
+    implementation(appDependencies.commons.lang3)
+    implementation(appDependencies.commons.collections4)
+    implementation(appDependencies.spring.webmvc)
+    compileOnly(appDependencies.javax.servlet.api)
+    testImplementation(appDependencies.test.junit4)
+    testImplementation(appDependencies.test.spring.test)
 }
 
 javaLibraryMavenPublish {

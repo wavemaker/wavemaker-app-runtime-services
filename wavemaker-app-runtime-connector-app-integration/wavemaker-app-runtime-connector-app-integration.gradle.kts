@@ -5,14 +5,14 @@ plugins {
 group ="com.wavemaker.runtime.connector"
 
 dependencies {
-    implementation(enforcedPlatform(libs.boms.springFramework.get()))
+    implementation(enforcedPlatform(appDependencies.boms.springFramework.get()))
     implementation(projects.wavemakerAppRuntimeConnectorApi)
     implementation(projects.wavemakerCommonsUtil)
-    implementation(libs.slf4j.api)
-    implementation(libs.spring.beans)
-    implementation(libs.spring.context)
-    implementation(libs.snakeyaml)
-    compileOnly(libs.javax.servlet.api)
+    implementation(appDependencies.slf4j.api)
+    implementation(appDependencies.spring.beans)
+    implementation(appDependencies.spring.context)
+    implementation(appDependencies.snakeyaml)
+    compileOnly(appDependencies.javax.servlet.api)
 }
 
 javaLibraryMavenPublish {
