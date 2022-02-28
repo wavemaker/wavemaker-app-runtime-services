@@ -70,7 +70,7 @@
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
+                    <version>${maven.eclipseLifecycleMappingPlugin.version}</version>
                     <configuration>
                         <lifecycleMappingMetadata>
                             <pluginExecutions>
@@ -94,12 +94,12 @@
                 <plugin>
                     <groupId>com.wavemaker.studio</groupId>
                     <artifactId>wavemaker-workspace-sync-plugin</artifactId>
-                    <version>${wavemaker.app.runtime.services.version}</version>
+                    <version>${wavemaker.app.build.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.wavemaker.studio</groupId>
                     <artifactId>wavemaker-studio-maven-plugin</artifactId>
-                    <version>${wavemaker.studio.version}</version>
+                    <version>${wavemaker.app.build.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -107,7 +107,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>${maven.propertiesMavenPlugin.version}</version>
                 <executions>
                     <execution>
                         <phase>initialize</phase>
@@ -125,7 +125,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>${maven.mavenResourcesPlugin.version}</version>
                 <configuration>
                     <propertiesEncoding>${project.build.sourceEncoding}</propertiesEncoding>
                 </configuration>
@@ -133,7 +133,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${maven.mavenCleanPlugin.version}</version>
                 <executions>
                     <execution>
                         <id>clean project</id>
@@ -155,7 +155,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven.mavenAntrunPlugin.version}</version>
                 <executions>
                     <execution>
                         <id>Copy init</id>
@@ -198,7 +198,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven.mavenCompilerPlugin.version}</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
@@ -210,7 +210,7 @@
             <plugin>
                 <groupId>com.wavemaker.app.build</groupId>
                 <artifactId>wavemaker-app-build-maven-plugin</artifactId>
-                <version>${wavemaker.app.runtime.services.version}</version>
+                <version>${wavemaker.app.build.version}</version>
                 <executions>
                     <execution>
                         <id>generate app sources</id>
@@ -231,7 +231,7 @@
             <plugin>
                 <groupId>com.wavemaker.app.build</groupId>
                 <artifactId>wavemaker-app-package-maven-plugin</artifactId>
-                <version>${wavemaker.app.runtime.services.version}</version>
+                <version>${wavemaker.app.build.version}</version>
                 <executions>
                     <execution>
                         <id>package app sources</id>
@@ -266,7 +266,7 @@
             <plugin>
                 <groupId>com.wavemaker.studio</groupId>
                 <artifactId>wavemaker-studio-maven-plugin</artifactId>
-                <version>${wavemaker.app.runtime.services.version}</version>
+                <version>${wavemaker.app.build.version}</version>
                 <executions>
                     <execution>
                         <id>clean controllers</id>
@@ -287,7 +287,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${maven.mavenWarPlugin.version}</version>
                 <configuration>
                     <warSourceExcludes>README.md</warSourceExcludes>
                     <webResources>
@@ -300,7 +300,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven.mavenEnforcerPlugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -310,10 +310,10 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>${minimum.maven.version}</version>
+                                    <version>${maven.minimum.required.version}</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>${java.version}</version>
+                                    <version>${java.required.version}</version>
                                 </requireJavaVersion>
                                 <requireProfileIdsExist/>
                             </rules>
@@ -400,23 +400,21 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.wavemaker.runtime</groupId>
-                <artifactId>wavemaker-app-runtime-services</artifactId>
-                <version>${wavemaker.app.runtime.services.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <properties>
-        <wavemaker.app.runtime.services.version>@version@</wavemaker.app.runtime.services.version>
+        <java.required.version>11</java.required.version>
+        <maven.eclipseLifecycleMappingPlugin.version>1.0.0</maven.eclipseLifecycleMappingPlugin.version>
+        <maven.mavenAntrunPlugin.version>3.0.0</maven.mavenAntrunPlugin.version>
+        <maven.mavenCleanPlugin.version>3.1.0</maven.mavenCleanPlugin.version>
+        <maven.mavenCompilerPlugin.version>3.8.1</maven.mavenCompilerPlugin.version>
+        <maven.mavenEnforcerPlugin.version>3.0.0</maven.mavenEnforcerPlugin.version>
+        <maven.mavenResourcesPlugin.version>3.2.0</maven.mavenResourcesPlugin.version>
+        <maven.mavenWarPlugin.version>3.3.2</maven.mavenWarPlugin.version>
+        <maven.minimum.required.version>3.8.1</maven.minimum.required.version>
+        <maven.propertiesMavenPlugin.version>1.0.0</maven.propertiesMavenPlugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.lib.directory>${basedir}/lib</project.lib.directory>
         <profile.props.file>development.properties</profile.props.file>
-        <java.version>11</java.version>
-        <minimum.maven.version>3.8.1</minimum.maven.version>
+        <wavemaker.app.build.version>@version@</wavemaker.app.build.version>
+        <wavemaker.app.runtime.services.version>@version@</wavemaker.app.runtime.services.version>
     </properties>
 </project>
