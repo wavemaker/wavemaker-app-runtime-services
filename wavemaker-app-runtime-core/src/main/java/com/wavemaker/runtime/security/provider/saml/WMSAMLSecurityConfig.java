@@ -80,10 +80,12 @@ public class WMSAMLSecurityConfig {
             } else {
                 relyingPartyBuilder = RelyingPartyRegistrations.fromMetadataLocation(idpMetadataFile);
             }
+
             RelyingPartyRegistration registration = relyingPartyBuilder
                     .registrationId("saml")
                     .signingX509Credentials((c) -> c.add(Saml2X509Credential.signing(privateKey, cert)))
                     .decryptionX509Credentials((c) -> c.add(Saml2X509Credential.decryption(privateKey, cert)))
+                    .singleLogoutServiceLocation("{baseUrl}/logout/saml2/slo")
                     .build();
             return new InMemoryRelyingPartyRegistrationRepository(registration);
         } else {
