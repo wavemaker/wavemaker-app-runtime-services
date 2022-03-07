@@ -14,6 +14,6 @@ public class XSSEncodeSanitizerFactory {
     }
 
     public static XSSEncodeSanitizer getInstance() {
-        return new XSSEncodeSanitizer(xssConfig.isDataBackwardCompatibility());
+        return new XSSEncodeSanitizer(xssConfig.isDataBackwardCompatibility(), xssConfig.getXssSanitizationLayer());
     }
 }

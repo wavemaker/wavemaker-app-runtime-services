@@ -280,7 +280,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         if (args != null) {
             for (Object arg : args) {
                 if (arg != null) {
-                    parameters.add(encodeSanitizer.sanitizeRequestData(arg.toString()));
+                    parameters.add(encodeSanitizer.sanitizeOutgoingData(arg.toString()));
                     continue;
                 }
                 parameters.add(null);

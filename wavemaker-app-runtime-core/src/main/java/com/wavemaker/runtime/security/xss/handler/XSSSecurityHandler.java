@@ -21,6 +21,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import com.wavemaker.commons.model.security.XSSConfig;
 import com.wavemaker.commons.model.security.XSSFilterStrategy;
+import com.wavemaker.commons.model.security.XSSSanitizationLayer;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.xss.sanitizer.DefaultXSSSanitizer;
@@ -52,11 +53,18 @@ public class XSSSecurityHandler {
         return instance;
     }
 
-    public String sanitizeRequestData(String data) {
+    public String sanitizeIncomingData(String data) {
         if (!isInitialized) {
             initConfiguration();
         }
-        return xssSanitizer.sanitizeRequestData(data);
+        return xssSanitizer.sanitizeIncomingData(data);
+    }
+
+    public String sanitizeOutgoingData(String data) {
+        if (!isInitialized) {
+            initConfiguration();
+        }
+        return xssSanitizer.sanitizeOutgoingData(data);
     }
 
     public boolean isXSSEnabled() {
@@ -66,17 +74,35 @@ public class XSSSecurityHandler {
         return xssEnabled;
     }
 
+    public boolean isInputSanitizationEnabled() {
+        if (isXSSEnabled()) {
+            XSSSanitizationLayer xssSanitizationLayer = getXSSSanitizationLayer();
+            return xssSanitizationLayer == XSSSanitizationLayer.INPUT || xssSanitizationLayer == XSSSanitizationLayer.BOTH;
+        }
+        return false;
+    }
+
+    public boolean isOutputSanitizationEnabled() {
+        if (isXSSEnabled()) {
+            XSSSanitizationLayer xssSanitizationLayer = getXSSSanitizationLayer();
+            return xssSanitizationLayer == XSSSanitizationLayer.OUTPUT || xssSanitizationLayer == XSSSanitizationLayer.BOTH;
+        }
+        return false;
+    }
+
+    private XSSSanitizationLayer getXSSSanitizationLayer() {
+        if (!isInitialized) {
+            initConfiguration();
+        }
+        return xssConfig.getXssSanitizationLayer();
+    }
+
     private boolean isXSSEnabled(XSSConfig xssConfig) {
         return xssConfig != null && xssConfig.isEnforceXssSecurity();
     }
 
     private void initConfiguration() {
-        WMAppSecurityConfig wmAppSecurityConfig = null;
-        try {
-            wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WM_APP_SECURITY_CONFIG);
-        } catch (NoSuchBeanDefinitionException e) {
-            LOGGER.warn("WMAppSecurityConfig bean not found in the application");
-        }
+        WMAppSecurityConfig wmAppSecurityConfig = getWMAppSecurityConfig();
         if (wmAppSecurityConfig != null) {
             xssConfig = wmAppSecurityConfig.getXssConfig();
             if (isXSSEnabled(xssConfig)) {
@@ -89,6 +115,15 @@ public class XSSSecurityHandler {
             buildSanitizer(XSSFilterStrategy.NONE);
         }
         isInitialized = true;
+    }
+
+    public WMAppSecurityConfig getWMAppSecurityConfig() {
+        try {
+            return WMAppContext.getInstance().getSpringBean(WM_APP_SECURITY_CONFIG);
+        } catch (NoSuchBeanDefinitionException e) {
+            LOGGER.warn("WMAppSecurityConfig bean not found in the application");
+            return null;
+        }
     }
 
     private void buildSanitizer(XSSFilterStrategy strategy) {

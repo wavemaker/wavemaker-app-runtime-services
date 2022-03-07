@@ -114,7 +114,7 @@
 
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
-    <bean id="wMHandlerMethodReturnValueHandlerConfig" class="com.wavemaker.runtime.WMHandlerMethodReturnValueHandlerConfig"/>
+    <bean id="wMArgumentResolverAndReturnValueHandler" class="com.wavemaker.runtime.WMArgumentResolverAndReturnValueHandler"/>
 
     <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>
 
