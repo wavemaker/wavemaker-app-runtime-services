@@ -91,9 +91,11 @@ public class RestInvocationHandler implements InvocationHandler {
                 httpRequestData, RestExecutor.getRequestContextThreadLocal());
 
         try {
-            if (method.getReturnType() != void.class) {
+            if (method.getReturnType().equals(HttpResponseDetails.class)) {
+                return responseDetails;
+            } else if (method.getReturnType() != void.class) {
                 if (responseDetails.getStatusCode() >= 200 && responseDetails.getStatusCode() < 300) {
-                    if(method.getGenericReturnType() instanceof ParameterizedType) {
+                    if (method.getGenericReturnType() instanceof ParameterizedType) {
                         return WMObjectMapper.getInstance().readValue(responseDetails.getBody(),
                                 WMObjectMapper.getInstance().getTypeFactory()
                                         .constructCollectionType((Class<? extends Collection>) Class.forName(method.getReturnType().getName()),
