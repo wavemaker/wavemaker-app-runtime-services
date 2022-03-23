@@ -23,16 +23,7 @@ public class SAMLConstants {
     private SAMLConstants(){}
 
     public static final String IDP_METADATA_XML = "idpMetadata.xml";
-    public static final String SAML_METADATA_PATH = "/saml/metadata";
-    public static final String SAML_SINGLE_LOGOUT = "/logout/saml2/slo";
-    public static final String SAML_SSO = "/login/saml2/sso/saml";
-
     public static final String IDP_KEY = "idpkey";
-
-    public static final String SAML_2_0_PROTOCOL = "urn:oasis:names:tc:SAML:2.0:protocol";
-
-    public static final String SAML_IDP_METADATA_BACKUP_LOCATION = "/saml/metadata/idpMetadata.xml";
-
     public static final String SAML_CREDENTIALS = "SAML_CREDENTIALS";
 
 }

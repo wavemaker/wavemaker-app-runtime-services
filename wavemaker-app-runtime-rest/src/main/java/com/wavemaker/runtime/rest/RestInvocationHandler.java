@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,8 +81,8 @@ public class RestInvocationHandler implements InvocationHandler {
         httpRequestData.setQueryParametersMap(queryVariablesMap);
         httpRequestData.setPathVariablesMap(pathVariablesMap);
 
-//        logger.info("constructed request data {}", httpRequestData.getPathVariablesMap());
-//        logger.info("constructed request query param {}", httpRequestData.getQueryParametersMap());
+        logger.debug("constructed request data {}", httpRequestData.getPathVariablesMap());
+        logger.debug("constructed request query param {}", httpRequestData.getQueryParametersMap());
 
         String[] split = method.getAnnotation(RequestLine.class).value().split(" ");
         HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
@@ -91,6 +93,12 @@ public class RestInvocationHandler implements InvocationHandler {
         try {
             if (method.getReturnType() != void.class) {
                 if (responseDetails.getStatusCode() >= 200 && responseDetails.getStatusCode() < 300) {
+                    if(method.getGenericReturnType() instanceof ParameterizedType) {
+                        return WMObjectMapper.getInstance().readValue(responseDetails.getBody(),
+                                WMObjectMapper.getInstance().getTypeFactory()
+                                        .constructCollectionType((Class<? extends Collection>) Class.forName(method.getReturnType().getName()),
+                                                Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName())));
+                    }
                     return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
                 } else {
                     logger.error(IOUtils.toString(responseDetails.getBody(), Charset.defaultCharset()));
