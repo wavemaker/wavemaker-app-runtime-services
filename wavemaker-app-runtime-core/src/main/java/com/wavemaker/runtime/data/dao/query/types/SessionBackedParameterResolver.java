@@ -18,6 +18,7 @@ package com.wavemaker.runtime.data.dao.query.types;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.engine.spi.NamedQueryDefinition;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -40,7 +41,7 @@ public class SessionBackedParameterResolver {
     public SessionBackedParameterResolver(final SessionFactoryImplementor factory) {
         this.factory = factory;
 
-        resolversCache = new HashMap<>();
+        resolversCache = new ConcurrentHashMap<>();
     }
 
     @SuppressWarnings("unchecked")
