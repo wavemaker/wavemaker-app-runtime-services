@@ -34,10 +34,4 @@ public  class XSSRequestWrapper extends HttpServletRequestWrapper {
         return escapedValues;
     }
 
-    @Override
-    public String getHeader(String name) {
-        String headerValue = super.getHeader(name);
-        return xssSecurityHandler.sanitizeIncomingData(headerValue);
-    }
-
 }
