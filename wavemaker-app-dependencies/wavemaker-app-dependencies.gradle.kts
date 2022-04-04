@@ -6,5 +6,5 @@ group = "com.wavemaker.app"
 
 catalogMavenPublish {
     scmUrl = "git:https://github.com/wavemaker/wavemaker-app-runtime-services.git"
-    catalogName = "appDependencies"
+    catalogName = "appDependenciesLibs"
 }
