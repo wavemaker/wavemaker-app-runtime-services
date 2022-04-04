@@ -21,7 +21,7 @@ package com.wavemaker.runtime.security.xss.sanitizer;
 public class DefaultXSSSanitizer implements XSSSanitizer {
 
     @Override
-    public String sanitizeRequestData(String data) {
+    public String sanitizeIncomingData(String data) {
         return data;
     }
 }

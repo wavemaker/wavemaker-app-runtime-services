@@ -20,5 +20,9 @@ package com.wavemaker.runtime.security.xss.sanitizer;
  */
 public interface XSSSanitizer {
 
-    String sanitizeRequestData(String data);
+    String sanitizeIncomingData(String data);
+
+    default String sanitizeOutgoingData(String data) {
+        return sanitizeIncomingData(data);
+    }
 }
