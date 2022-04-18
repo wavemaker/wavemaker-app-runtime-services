@@ -6,8 +6,10 @@ plugins {
 group ="com.wavemaker.runtime"
 
 val loggingCapabilityConfiguration: Configuration by configurations.creating
+val java11SupportConfiguration: Configuration by configurations.creating
 val runtimeLibDependencies: Configuration by configurations.creating {
     extendsFrom(loggingCapabilityConfiguration)
+    extendsFrom(java11SupportConfiguration)
 }
 
 dependencies {
@@ -70,6 +72,8 @@ dependencies {
     implementation(libs.slf4j.api)
     implementation(libs.log4j.core)
     loggingCapabilityConfiguration(libs.log4j.slf4j.impl)
+
+    java11SupportConfiguration("com.sun.xml.ws:jaxws-rt:2.3.5")
 
     //runtime dependencies lib
     runtimeLibDependencies(projects.wavemakerAppRuntimeCore)
