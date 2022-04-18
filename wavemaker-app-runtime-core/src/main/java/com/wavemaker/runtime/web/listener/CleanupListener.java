@@ -26,11 +26,7 @@ import java.security.Security;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceNotFoundException;
@@ -339,6 +335,66 @@ public class CleanupListener implements ServletContextListener {
                 logger.warn(
                         "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
                         e);
+            }
+        }
+    }
+
+    /**
+     * Clears up the juli references for the given class loader
+     */
+    public static void cleanupJULIReferences(ClassLoader classLoader) {
+        String className = "java.util.logging.Level$KnownLevel";
+        try {
+            Class klass = Class.forName(className, true, classLoader);
+            Field nameToKnownLevelsField = findField(klass, "nameToLevels");
+            Field intToKnownLevelsField = findField(klass, "intToLevels");
+            Field levelObjectField = findField(klass, "levelObject");
+            Field mirroredLevelField = findField(klass, "mirroredLevel");
+            synchronized (klass) {
+                if (nameToKnownLevelsField != null) {
+                    Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
+                    removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
+                }
+                if (intToKnownLevelsField != null) {
+                    Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
+                    removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
+                }
+
+
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to clean up juli references in the class " + className, e);
+        }
+    }
+
+    private static void removeTCLKnownLevels(
+            ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
+            Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
+        Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
+        Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
+        while (mapEntryIterator.hasNext()) {
+            Map.Entry<Object, List> entry = mapEntryIterator.next();
+            List knownLevels = entry.getValue();
+            Iterator iterator = knownLevels.iterator();
+            List<Object> removableMirroredObjects = new ArrayList<>();
+            while (iterator.hasNext()) {
+                Object knownLevelObject = iterator.next();
+                Object levelObject = levelObjectField.get(knownLevelObject);
+                if (levelObject.getClass().getClassLoader() == classLoader) {
+                    iterator.remove();
+                    removableMirroredObjects.add(mirroredLevelField.get(knownLevelObject));
+                }
+            }
+            iterator = knownLevels.iterator();
+            while (iterator.hasNext()) {
+                Object knownLevelObject = iterator.next();
+                Object levelObject = levelObjectField.get(knownLevelObject);
+                if (removableMirroredObjects.contains(levelObject)) {
+                    iterator.remove();
+                }
+            }
+            if (knownLevels.isEmpty()) {
+                mapEntryIterator.remove();
             }
         }
     }
