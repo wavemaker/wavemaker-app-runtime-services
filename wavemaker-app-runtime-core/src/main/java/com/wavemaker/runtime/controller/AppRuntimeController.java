@@ -17,7 +17,9 @@ package com.wavemaker.runtime.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,7 +65,7 @@ public class AppRuntimeController {
         Map<String, Object> applicationProperties = appRuntimeService.getApplicationProperties();
         String acceptLanguageHeader = request.getHeader("Accept-Language");
         if (acceptLanguageHeader != null) {
-            applicationProperties.put("preferredLanguage", acceptLanguageHeader);
+            applicationProperties.put("preferredLanguage", URLEncoder.encode(acceptLanguageHeader, "UTF-8"));
         }
         response.getWriter().write("var _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
         response.getWriter().flush();
