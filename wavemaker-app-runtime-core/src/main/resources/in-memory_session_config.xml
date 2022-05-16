@@ -4,10 +4,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean class="org.springframework.session.MapSessionRepository" id="sessionRepository">
+    <bean class="com.wavemaker.runtime.session.WMInMemorySessionRepository" id="sessionRepository">
         <property name="defaultMaxInactiveInterval" value="#{${security.general.session.timeout} * 60}"/>
     </bean>
 
-    <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl"/>
+    <bean id="sessionRegistry" class="org.springframework.session.security.SpringSessionBackedSessionRegistry">
+        <constructor-arg ref="sessionRepository"/>
+    </bean>
 
 </beans>
