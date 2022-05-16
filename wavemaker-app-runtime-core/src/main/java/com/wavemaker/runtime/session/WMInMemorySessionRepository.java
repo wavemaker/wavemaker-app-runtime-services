@@ -4,14 +4,13 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;
-
-import com.wavemaker.runtime.security.WMAuthentication;
 
 public class WMInMemorySessionRepository implements FindByIndexNameSessionRepository<MapSession> {
 
@@ -33,12 +32,8 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
             return Collections.emptyMap();
         }
         Map<String, MapSession> sessionMap = new HashMap<>();
-        this.sessions.values().forEach(session -> {
-            if (((SecurityContextImpl) (session.getAttribute(
-                    SPRING_SECURITY_CONTEXT))).getAuthentication().getPrincipal().equals(value)) {
-                sessionMap.put(session.getId(), (MapSession) session);
-            }
-        });
+        sessions.values().stream().filter(session -> Objects.equals(getPrincipal(session), value))
+                .forEach(session -> sessionMap.put(session.getId(), (MapSession) session));
         return sessionMap;
     }
 
@@ -48,7 +43,6 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
         if (this.defaultMaxInactiveInterval != null) {
             result.setMaxInactiveInterval(Duration.ofSeconds((long) this.defaultMaxInactiveInterval));
         }
-
         return result;
     }
 
@@ -57,7 +51,6 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
         if (!session.getId().equals(session.getOriginalId())) {
             this.sessions.remove(session.getOriginalId());
         }
-
         this.sessions.put(session.getId(), new MapSession(session));
     }
 
@@ -83,4 +76,15 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
         this.defaultMaxInactiveInterval = defaultMaxInactiveInterval;
     }
 
+    private Object getPrincipal(Session session) {
+        Object principal = null;
+        SecurityContext securityContext = session.getAttribute(SPRING_SECURITY_CONTEXT);
+        if (securityContext != null) {
+            Authentication authentication = securityContext.getAuthentication();
+            if (authentication != null) {
+                principal = authentication.getPrincipal();
+            }
+        }
+        return principal;
+    }
 }
