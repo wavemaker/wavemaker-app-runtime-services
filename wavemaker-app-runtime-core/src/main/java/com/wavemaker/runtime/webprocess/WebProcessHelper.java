@@ -17,12 +17,8 @@ package com.wavemaker.runtime.webprocess;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.Base64;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,10 +30,10 @@ public class WebProcessHelper {
     public static final String WEB_PROCESS_COOKIE_NAME = "WM_WEB_PROCESS";
     public static final String WEB_PROCESS_OUTPUT = "WEB_PROCESS_OUTPUT";
     public static final String UTF_8 = StandardCharsets.UTF_8.toString();
-    private static final String ENCRYPTION_ALG = "AES/CBC/PKCS5Padding";
-    private static final String SECRET_KEY_SPEC_ALGORITHM = "AES";
     private static final int WEB_PROCESS_COOKIE_MAX_AGE = 10 * 60 * 1000;
-    private static final IvParameterSpec IV_PARAMETER_SPEC = new IvParameterSpec(new SecureRandom().generateSeed(16));
+
+    private WebProcessHelper() {
+    }
 
     public static Cookie getCookie(Cookie[] cookies, String cookieName) {
         if (cookies != null) {
@@ -57,21 +53,6 @@ public class WebProcessHelper {
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         response.addCookie(cookie);
-    }
-
-    public static String encode(String key, String data) throws Exception {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(UTF_8), SECRET_KEY_SPEC_ALGORITHM);
-        Cipher cipher = Cipher.getInstance(ENCRYPTION_ALG);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IV_PARAMETER_SPEC);
-        return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
-    }
-
-    public static String decode(String key, String encodedData) throws Exception {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(UTF_8), SECRET_KEY_SPEC_ALGORITHM);
-        Cipher cipher = Cipher.getInstance(ENCRYPTION_ALG);
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, IV_PARAMETER_SPEC);
-        byte[] bytes = Base64.getDecoder().decode(encodedData);
-        return new String(cipher.doFinal(bytes));
     }
 
     public static WebProcess decodeWebProcess(String process) throws IOException {

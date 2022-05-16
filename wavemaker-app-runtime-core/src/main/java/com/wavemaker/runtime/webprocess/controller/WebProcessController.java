@@ -33,11 +33,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
+import com.wavemaker.commons.crypto.CryptoUtils;
 import com.wavemaker.commons.io.ClassPathFile;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
-import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.app.AppFileSystem;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.commons.util.WMRandomUtils;
 import com.wavemaker.runtime.webprocess.WebProcessHelper;
 import com.wavemaker.runtime.webprocess.model.WebProcess;
@@ -82,12 +83,12 @@ public class WebProcessController {
 
     @RequestMapping(value = "/end", method = RequestMethod.GET)
     @ApiOperation(value = "ends a web process and shows a page that has encoded output")
-    public void end(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void end(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Cookie cookie = WebProcessHelper.getCookie(request.getCookies(), WebProcessHelper.WEB_PROCESS_COOKIE_NAME);
         if (cookie != null) {
             WebProcess webProcess = WebProcessHelper.decodeWebProcess(cookie.getValue());
             String processOutput = (String) request.getAttribute(WebProcessHelper.WEB_PROCESS_OUTPUT);
-            processOutput = WebProcessHelper.encode(webProcess.getCommunicationKey(), processOutput);
+            processOutput = CryptoUtils.encrypt(webProcess.getCommunicationKey(), processOutput);
             String redirectUrl = "://services/webprocess/" + webProcess.getProcessName() + "?process_output=" + URLEncoder.encode(processOutput, WebProcessHelper.UTF_8);
             String urlScheme = "com.wavemaker.wavelens";
             if ("MOBILE".equals(webProcess.getRequestSourceType())) {
@@ -105,11 +106,11 @@ public class WebProcessController {
 
     @RequestMapping(value = "/decode", method = RequestMethod.GET)
     @ApiOperation(value = "ends a web process and shows a page that has encoded output")
-    public String decode(String encodedProcessdata, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String decode(String encodedProcessdata, HttpServletRequest request) throws IOException {
         Cookie cookie = WebProcessHelper.getCookie(request.getCookies(), WebProcessHelper.WEB_PROCESS_COOKIE_NAME);
         if (cookie != null) {
             WebProcess webProcess = WebProcessHelper.decodeWebProcess(cookie.getValue());
-            return WebProcessHelper.decode(webProcess.getCommunicationKey(), encodedProcessdata);
+            return CryptoUtils.decrypt(webProcess.getCommunicationKey(), encodedProcessdata);
         } else {
             throw new WMRuntimeException("Web Process cookie is not found");
         }
