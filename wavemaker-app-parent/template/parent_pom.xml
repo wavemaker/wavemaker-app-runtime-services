@@ -354,6 +354,16 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>wavemaker-demo-deployment</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.wavemaker.studio</groupId>
+                    <artifactId>wavemaker-logging-extensions</artifactId>
+                    <version>${wavemaker.app.runtime.services.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
     <dependencies>
         <dependency>
