@@ -25,9 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.commons.json.JSONUtils;
@@ -53,13 +53,13 @@ public class AppRuntimeController {
     private ExportedFileManager exportedFileManager;
 
 
-    @RequestMapping(value = "/application/type", method = RequestMethod.GET)
+    @GetMapping(value = "/application/type")
     public StringWrapper getApplicationType() {
         String applicationType = appRuntimeService.getApplicationType();
         return new StringWrapper(applicationType);
     }
 
-    @RequestMapping(value = "/application/wmProperties.js", method = RequestMethod.GET)
+    @GetMapping(value = "/application/wmProperties.js")
     public void getApplicationProperties(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/javascript;charset=UTF-8");
         Map<String, Object> applicationProperties = appRuntimeService.getApplicationProperties();
@@ -71,7 +71,7 @@ public class AppRuntimeController {
         response.getWriter().flush();
     }
 
-    @RequestMapping(value = "/application/validations", method = RequestMethod.GET)
+    @GetMapping(value = "/application/validations")
     public DownloadResponse getValidations(HttpServletResponse httpServletResponse) {
         InputStream inputStream = appRuntimeService.getValidations(httpServletResponse);
         DownloadResponse downloadResponse = new DownloadResponse(inputStream, MediaType.APPLICATION_JSON_VALUE, DbValidationsConstants.DB_VALIDATIONS_JSON_FILE);
@@ -79,8 +79,8 @@ public class AppRuntimeController {
         return downloadResponse;
     }
 
-    @RequestMapping(value = "/files/exported/{fileId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public DownloadResponse getExportedFile(@PathVariable("fileId") String fileId) throws IOException {
+    @GetMapping(value = "/files/exported/{fileId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public DownloadResponse getExportedFile(@PathVariable("fileId") String fileId) {
         ExportedFileContentWrapper fileContents = exportedFileManager.getFileContent(fileId);
         return new DownloadResponse(fileContents.getInputStream(), MediaType.APPLICATION_OCTET_STREAM_VALUE, fileContents.getFileName());
     }
