@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -50,13 +50,13 @@ public class QueryTestRunController {
         LOGGER.info("-------------Query Test Controller enabled----------");
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/test_run")
+    @PostMapping(value = "/{serviceId}/queries/test_run")
     public DesignServiceResponse testRunQuery(
             @PathVariable("serviceId") String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
         return queryDesignService.testRunQuery(serviceId, request, pageable);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/execute")
+    @PostMapping(value = "/{serviceId}/queries/execute")
     public Object executeQuery(
             @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
         return queryDesignService.executeQuery(serviceId, query, pageable);

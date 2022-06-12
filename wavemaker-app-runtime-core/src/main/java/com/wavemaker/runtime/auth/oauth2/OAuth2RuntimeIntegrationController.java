@@ -18,9 +18,9 @@ package com.wavemaker.runtime.auth.oauth2;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,16 +37,15 @@ public class OAuth2RuntimeIntegrationController {
     @Autowired
     private OAuth2RuntimeServiceManager oAuth2RuntimeServiceManager;
 
-
     @XssDisable
-    @RequestMapping(value = "authorizationUrl", method = RequestMethod.GET)
+    @GetMapping(value = "authorizationUrl")
     public String getAuthorizationUrl(@PathVariable("providerId") String providerId, @RequestParam(name = "key", required = false) String key, @RequestParam
             (name = "requestSourceType", required = false) String requestSourceType, HttpServletRequest httpServletRequest) {
         return oAuth2RuntimeServiceManager.getAuthorizationUrl(providerId, requestSourceType, key, httpServletRequest);
     }
 
     @XssDisable
-    @RequestMapping(value = "callback", method = RequestMethod.GET, produces = "text/html")
+    @GetMapping(value = "callback", produces = "text/html")
     public String callBack(@PathVariable("providerId") String providerId, @RequestParam(name = "redirect_url", required = false) String redirectUrl,
                            @RequestParam(name = "code") String code, @RequestParam(name = "state", required = false) String state, HttpServletRequest
                                    httpServletRequest) {
