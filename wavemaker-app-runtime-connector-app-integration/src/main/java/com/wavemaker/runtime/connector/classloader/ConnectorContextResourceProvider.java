@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.connector.classloader;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -76,7 +77,7 @@ public class ConnectorContextResourceProvider {
 
     private ClassLoader buildClassLoader(String connectorId, URL url, ClassLoader appClassLoader) {
         try {
-            String path = URLDecoder.decode(url.getPath(), Charset.defaultCharset());
+            String path = URLDecoder.decode(url.getPath(), Charset.defaultCharset().toString());
             File[] fList = new File(path).listFiles();
             if (fList != null) {
                 URL[] urls = new URL[fList.length];
@@ -88,7 +89,7 @@ public class ConnectorContextResourceProvider {
                 return new ConnectorFirstClassLoader(urls, appClassLoader);
             }
             throw new ConnectorDoesNotExist("Failed to build impl class loader for connector: " + connectorId + ", from path: " + path);
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             logger.error("Failed to build impl class loader for connector {} ", connectorId);
             throw new ConnectorDoesNotExist("Failed to build impl class loader from connector " + connectorId, e);
         }
