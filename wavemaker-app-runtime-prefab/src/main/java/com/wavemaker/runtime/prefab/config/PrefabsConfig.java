@@ -42,6 +42,9 @@ public class PrefabsConfig {
     private String prefabConfigDir;
     private String prefabBuildDir;
 
+    @Value("${app.prefabs.lazyload:false}")
+    private boolean prefabsLazyLoad;
+
     @Autowired
     public void setPrefabsHomeDir(@Value("${" + PREFAB_HOME_DIR_PROP + "}") String prefabsHomeDir) {
         this.prefabsHomeDir = defaultOnEmpty(prefabsHomeDir, PrefabConstants.PREFAB_DEFAULT_DIRECTORY, PREFAB_HOME_DIR_PROP);
@@ -77,6 +80,10 @@ public class PrefabsConfig {
 
     public String getPrefabBuildDir() {
         return prefabBuildDir;
+    }
+
+    public boolean isPrefabsLazyLoad() {
+        return prefabsLazyLoad;
     }
 
     private String defaultOnEmpty(String value, String defaultValue, String propKey) {

@@ -30,6 +30,7 @@ public class Prefab {
     private final String name;
     private ClassLoader classLoader;
 
+    private boolean isInstalled = false;
     /**
      * Creates a new <code>Prefab</code> with the specified name and classloader.
      *
@@ -62,6 +63,13 @@ public class Prefab {
         this.classLoader = classLoader;
     }
 
+    public boolean isInstalled() {
+        return isInstalled;
+    }
+
+    public void setInstalled(boolean installed) {
+        isInstalled = installed;
+    }
 
     @Override
     public int hashCode() {

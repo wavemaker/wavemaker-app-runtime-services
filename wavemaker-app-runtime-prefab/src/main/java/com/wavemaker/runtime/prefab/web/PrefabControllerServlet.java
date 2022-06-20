@@ -39,7 +39,11 @@ import org.springframework.web.util.WebUtils;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.prefab.config.PrefabsConfig;
 import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
+import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabInstaller;
+import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.core.PrefabRegistry;
 import com.wavemaker.runtime.prefab.util.PrefabConstants;
 
@@ -47,7 +51,7 @@ import com.wavemaker.runtime.prefab.util.PrefabConstants;
  * Front controller to handle service requests directed at Spring prefabs. This servlet
  * receives service requests for prefabs, matches it with one of the registered contexts
  * and forwards it to the appropriate {@link Controller}.
- *
+ * <p>
  * To integrate prefab library with a web application include the following snippet in
  * <tt>web.xml</tt>.
  *
@@ -96,6 +100,18 @@ public class PrefabControllerServlet extends DispatcherServlet {
 
     @Autowired
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
+
+    @Autowired
+    private PrefabsConfig prefabsConfig;
+
+    @Autowired
+    private PrefabRegistry prefabRegistry;
+
+    @Autowired
+    private PrefabManager prefabManager;
+
+    @Autowired
+    private PrefabInstaller prefabInstaller;
 
     private static final Logger logger = LoggerFactory.getLogger(PrefabControllerServlet.class);
 
@@ -203,10 +219,15 @@ public class PrefabControllerServlet extends DispatcherServlet {
             if (prefabName == null) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.url.for.accessing.prefab"), urlPath);
             }
-
-            PrefabRegistry prefabRegistry = getWebApplicationContext().getBean(PrefabRegistry.class);
             prefabContext = prefabRegistry.getPrefabContext(prefabName);
 
+            if (prefabsConfig.isPrefabsLazyLoad() && prefabContext == null) {
+                Prefab prefab = prefabManager.getPrefab(prefabName);
+                if (prefab != null && !prefab.isInstalled()) {
+                    prefabInstaller.installPrefab(prefab);
+                    prefabContext = prefabRegistry.getPrefabContext(prefabName);
+                }
+            }
             if (prefabContext == null) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.prefab.not.found"), prefabName);
             }

@@ -28,6 +28,7 @@ import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.commons.classloader.WMUrlClassLoader;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.runtime.prefab.config.PrefabsConfig;
 import com.wavemaker.runtime.prefab.context.PrefabWebApplicationContext;
 import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabInstaller;
@@ -54,6 +55,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
         }
         ConfigurableApplicationContext prefabContext = new PrefabWebApplicationContext(prefab, context, servletContext);
         prefabRegistry.addPrefabContext(prefab.getName(), prefabContext);
+        prefab.setInstalled(true);
     }
 
     @Autowired
@@ -64,6 +66,9 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
     private ServletContext servletContext;
 
     private ApplicationContext context;
+
+    @Autowired
+    private PrefabsConfig prefabsConfig;
 
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) {
@@ -111,8 +116,10 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
             return;
         }
 
-        for (Prefab prefab : prefabManager.getPrefabs()) {
-            installPrefab(prefab);
+        if (!prefabsConfig.isPrefabsLazyLoad()) {
+            for (Prefab prefab : prefabManager.getPrefabs()) {
+                installPrefab(prefab);
+            }
         }
     }
 
