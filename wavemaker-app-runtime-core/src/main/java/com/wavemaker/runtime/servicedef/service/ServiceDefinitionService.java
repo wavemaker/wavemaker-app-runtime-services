@@ -15,16 +15,22 @@
  */
 package com.wavemaker.runtime.servicedef.service;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
+import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.commons.util.EncodeUtils;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;
+import com.wavemaker.runtime.prefab.config.PrefabsConfig;
+import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabManager;
+import com.wavemaker.runtime.prefab.core.PrefabRegistry;
+import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
+import com.wavemaker.runtime.security.SecurityService;
+import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
+import com.wavemaker.runtime.servicedef.model.ServiceDefinitionsWrapper;
+import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
@@ -42,21 +48,11 @@ import org.springframework.security.web.access.intercept.FilterInvocationSecurit
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.stereotype.Service;
 
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
-import com.wavemaker.commons.servicedef.model.ServiceDefinition;
-import com.wavemaker.commons.util.EncodeUtils;
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.prefab.core.Prefab;
-import com.wavemaker.runtime.prefab.core.PrefabManager;
-import com.wavemaker.runtime.prefab.core.PrefabRegistry;
-import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
-import com.wavemaker.runtime.security.SecurityService;
-import com.wavemaker.runtime.auth.oauth2.OAuthProvidersManager;
-import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
-import com.wavemaker.runtime.servicedef.model.ServiceDefinitionsWrapper;
-import com.wavemaker.runtime.util.PropertyPlaceHolderReplacementHelper;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -72,11 +68,11 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     private ServiceDefinitionHelper serviceDefinitionHelper = new ServiceDefinitionHelper();
 
     private MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions;
-    private Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache;
     private Map<String, ServiceDefinition> baseServiceDefinitions;
 
     private Map<String, Map<String, OAuth2ProviderConfig>> securityDefinitions;
-    private Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions;
+
+    private Map<String, ServiceDefinitionsWrapper> prefabDefinitionsMap = new ConcurrentHashMap<>();
 
     @Autowired
     private PrefabManager prefabManager;
@@ -96,12 +92,17 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     @Autowired
     private PropertyResolver propertyResolver;
 
+    @Autowired
+    private PrefabsConfig prefabsConfig;
+
     private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionService.class);
 
     @Override
     public void onApplicationEvent(final PrefabsLoadedEvent event) {
         loadServiceDefinitions();
-        loadPrefabsServiceDefinitions();
+        if (!prefabsConfig.isLazyInitPrefabs()) {
+            loadPrefabsServiceDefinitions();
+        }
     }
 
     public ServiceDefinitionsWrapper getServiceDefinitionWrapper() {
@@ -126,19 +127,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     public ServiceDefinitionsWrapper getServiceDefinitionWrapperForPrefab(String prefabName) {
-        ServiceDefinitionsWrapper serviceDefinitionsWrapper = new ServiceDefinitionsWrapper();
-        Map<String, ServiceDefinition> serviceDefinitionMap = listPrefabServiceDefinitions(prefabName);
-        serviceDefinitionsWrapper.setServiceDefs(serviceDefinitionMap);
-        serviceDefinitionsWrapper.setSecurityDefinitions(prefabSecurityDefinitions.get(prefabName));
-        return serviceDefinitionsWrapper;
-    }
-
-    public Map<String, ServiceDefinition> listPrefabServiceDefinitions(final String prefabName) {
-        Map<String, ServiceDefinition> serviceDefinitionMap = prefabServiceDefinitionsCache.get(prefabName);
-        if (serviceDefinitionMap == null) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.prefab.name"), prefabName);
-        }
-        return serviceDefinitionMap;
+        return prefabDefinitionsMap.computeIfAbsent(prefabName, this::loadPrefabServiceDefinitionWrapper);
     }
 
     private void loadServiceDefinitions() {
@@ -206,29 +195,33 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private void loadPrefabsServiceDefinitions() {
-        final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
-        final Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions = new HashMap<>();
         for (final Prefab prefab : prefabManager.getPrefabs()) {
-            runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefsAndSecurityDefinitions(prefab, prefabServiceDefinitionsCache, prefabSecurityDefinitions));
+            prefabDefinitionsMap.put(prefab.getName(), loadPrefabServiceDefinitionWrapper(prefab.getName()));
         }
-        this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
-        this.prefabSecurityDefinitions = prefabSecurityDefinitions;
     }
 
-    private synchronized void loadPrefabServiceDefsAndSecurityDefinitions(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache,
-                                                                          Map<String, Map<String, Map<String, OAuth2ProviderConfig>>> prefabSecurityDefinitions) {
-        if (prefabServiceDefinitionsCache.get(prefab.getName()) == null) {
-            prefabServiceDefinitionsCache.put(prefab.getName(), new HashMap<>());
+    private ServiceDefinitionsWrapper loadPrefabServiceDefinitionWrapper(String prefabName) {
+        Prefab prefab = prefabManager.getPrefab(prefabName);
+        if (prefab == null) {
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.prefab.name"), prefabName);
         }
-        Resource[] resources = getServiceDefResources(true);
-        if (resources != null) {
-            ConfigurableApplicationContext prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
-            for (Resource resource : resources) {
-                prefabServiceDefinitionsCache.get(prefab.getName()).putAll(getServiceDefinition(resource, prefabContext.getEnvironment()));
-            }
-            prefabSecurityDefinitions.put(prefab.getName(), oAuthProvidersManager.getOAuth2ProviderWithImplicitFlow());
-        } else {
-            logger.warn("Service def resources does not exist for this project");
+        synchronized (prefab) {
+            ServiceDefinitionsWrapper serviceDefinitionsWrapper = new ServiceDefinitionsWrapper();
+            runInPrefabClassLoader(prefab, () -> {
+                Map<String, ServiceDefinition> serviceDefinitionMap = new HashMap<>();
+                Resource[] resources = getServiceDefResources(true);
+                if (resources != null) {
+                    ConfigurableApplicationContext prefabContext = prefabRegistry.getPrefabContext(prefabName);
+                    for (Resource resource : resources) {
+                        serviceDefinitionMap.putAll(getServiceDefinition(resource, prefabContext.getEnvironment()));
+                    }
+                    serviceDefinitionsWrapper.setServiceDefs(serviceDefinitionMap);
+                    serviceDefinitionsWrapper.setSecurityDefinitions(oAuthProvidersManager.getOAuth2ProviderWithImplicitFlow());
+                } else {
+                    logger.warn("Service def resources does not exist for this project");
+                }
+            });
+            return serviceDefinitionsWrapper;
         }
     }
 

@@ -54,6 +54,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
         }
         ConfigurableApplicationContext prefabContext = new PrefabWebApplicationContext(prefab, context, servletContext);
         prefabRegistry.addPrefabContext(prefab.getName(), prefabContext);
+        prefab.setInstalled(true);
     }
 
     @Autowired
@@ -122,9 +123,11 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
     public void uninstallPrefabs() {
         if (prefabRegistry != null) {
             // closing application contexts
-            for (String prefabName : prefabRegistry.getPrefabs()) {
-                prefabRegistry.getPrefabContext(prefabName).close();
-            }
+            prefabManager.getPrefabs().stream().filter(Prefab::isInstalled).forEach(prefab -> {
+                ConfigurableApplicationContext prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
+                WMIOUtils.closeByLogging(prefabContext);
+                prefab.setInstalled(false);
+            });
             prefabRegistry.deletePrefabContexts();
         }
 
