@@ -54,4 +54,5 @@ public interface PrefabManager {
      * @return {@link Prefab}
      */
     public Prefab getPrefab(String name);
+
 }
