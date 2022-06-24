@@ -52,6 +52,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
         if (prefabRegistry == null) {
             return;
         }
+        logger.info("Installing prefab {}", prefab.getName());
         ConfigurableApplicationContext prefabContext = new PrefabWebApplicationContext(prefab, context, servletContext);
         prefabRegistry.addPrefabContext(prefab.getName(), prefabContext);
         prefab.setInstalled(true);
