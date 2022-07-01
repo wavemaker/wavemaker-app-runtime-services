@@ -40,6 +40,8 @@ import org.springframework.web.util.WebUtils;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
+import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.core.PrefabRegistry;
 import com.wavemaker.runtime.prefab.util.PrefabConstants;
 
@@ -96,6 +98,12 @@ public class PrefabControllerServlet extends DispatcherServlet {
 
     @Autowired
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
+
+    @Autowired
+    private PrefabRegistry prefabRegistry;
+
+    @Autowired
+    private PrefabManager prefabManager;
 
     private static final Logger logger = LoggerFactory.getLogger(PrefabControllerServlet.class);
 
@@ -203,13 +211,11 @@ public class PrefabControllerServlet extends DispatcherServlet {
             if (prefabName == null) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.url.for.accessing.prefab"), urlPath);
             }
-
-            PrefabRegistry prefabRegistry = getWebApplicationContext().getBean(PrefabRegistry.class);
-            prefabContext = prefabRegistry.getPrefabContext(prefabName);
-
-            if (prefabContext == null) {
+            Prefab prefab = prefabManager.getPrefab(prefabName);
+            if (prefab == null) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.prefab.not.found"), prefabName);
             }
+            prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
             // setting prefab name in request object
             request.setAttribute(WebUtils.INCLUDE_SERVLET_PATH_ATTRIBUTE,
                     getServletPathWithPrefabName(request.getServletPath(), prefabContext.getId()));
