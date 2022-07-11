@@ -95,7 +95,9 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
                 LOGGER.warn("Prefab: [{}] could not be loaded", prefabDir.getName(), e);
             }
         }
-        prefabInstaller.installPrefabs();
+        if (!prefabsConfig.isLazyInitPrefabs()) {
+            prefabInstaller.installPrefabs();
+        }
 
         publishEvent(new PrefabsLoadedEvent(context));
     }

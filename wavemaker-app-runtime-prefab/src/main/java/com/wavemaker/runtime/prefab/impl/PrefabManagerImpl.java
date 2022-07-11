@@ -21,9 +21,11 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabInstaller;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.util.Utils;
 
@@ -37,6 +39,9 @@ public class PrefabManagerImpl implements PrefabManager {
 
     // map containing prefab name as key and prefab as value
     private static final Map<String, Prefab> prefabs = Utils.newConcurrentMap();
+
+    @Autowired
+    private PrefabInstaller prefabInstaller;
 
     @Override
     public synchronized void addPrefab(final Prefab prefab) {
@@ -69,6 +74,17 @@ public class PrefabManagerImpl implements PrefabManager {
     @Override
     public Prefab getPrefab(final String prefabName) {
         Validate.notNull(prefabName, "PrefabManagerImpl: Prefab name should not be null");
-        return prefabs.get(prefabName);
+        Prefab prefab = prefabs.get(prefabName);
+        if (prefab == null) {
+            return null;
+        }
+        if (!prefab.isInstalled()) {
+            synchronized (prefab) {
+                if (!prefab.isInstalled()) {
+                    prefabInstaller.installPrefab(prefab);
+                }
+            }
+        }
+        return prefab;
     }
 }
