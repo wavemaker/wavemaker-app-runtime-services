@@ -9,6 +9,7 @@ import javax.servlet.ServletRegistration;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.prefab.web.PrefabControllerServlet;
 import com.wavemaker.runtime.service.AppRuntimeService;
@@ -96,6 +97,11 @@ public class WMApplicationListener implements ServletContextListener {
 
             FilterRegistration.Dynamic springSecurityFilterChain = servletContext.addFilter("springSecurityFilterChain", new DelegatingFilterProxy("springSecurityFilterChain"));
             springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
+        }
+
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            FilterRegistration.Dynamic htmlFilter = servletContext.addFilter("cdnUrlReplacementFilter", new DelegatingFilterProxy("cdnUrlReplacementFilter"));
+            htmlFilter.addMappingForUrlPatterns(null, true, "/*");
         }
     }
 

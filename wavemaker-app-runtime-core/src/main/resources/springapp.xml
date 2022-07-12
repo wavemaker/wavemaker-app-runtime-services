@@ -59,6 +59,8 @@
 
     <bean id="springEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter"/>
 
+    <bean id="cdnUrlReplacementFilter" class="com.wavemaker.runtime.web.filter.CDNUrlReplacementFilter"/>
+
     <bean id="formContentFilter" class="org.springframework.web.filter.FormContentFilter"/>
 
     <bean id="springSecurityFilterChain" class="com.wavemaker.runtime.filter.WMSecurityFilter"/>
