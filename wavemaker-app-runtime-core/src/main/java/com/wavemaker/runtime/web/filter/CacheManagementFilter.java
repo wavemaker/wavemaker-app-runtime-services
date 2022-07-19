@@ -24,7 +24,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -32,6 +31,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.commons.web.filter.EtagFilter;
 import com.wavemaker.runtime.filter.etag.CacheFilterConfig;
+import com.wavemaker.runtime.web.SkipEtagHttpServletResponseWrapper;
 
 /**
  * Created by srujant on 27/3/19.
@@ -62,13 +62,7 @@ public class CacheManagementFilter extends GenericFilterBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         if (matches(httpServletRequest, cacheRequestMatcher) && !matches(httpServletRequest,cacheExclusionRequestMatcher)) {
             httpServletResponse.addHeader("Cache-Control", "public, max-age=1296000");
-            chain.doFilter(request, new HttpServletResponseWrapper(httpServletResponse) {
-                public void setHeader(String name, String value) {
-                    if (!"etag".equalsIgnoreCase(name) && !"Last-Modified".equalsIgnoreCase(name)) {
-                        super.setHeader(name, value);
-                    }
-                }
-            });
+            chain.doFilter(request, new SkipEtagHttpServletResponseWrapper(httpServletResponse));
         } else if (matches(httpServletRequest, etagRequestMatcher)) {
             etagFilter.doFilter(request, response, chain);
         } else {
