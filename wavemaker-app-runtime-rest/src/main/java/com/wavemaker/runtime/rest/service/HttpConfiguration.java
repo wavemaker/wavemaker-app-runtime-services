@@ -3,6 +3,7 @@ package com.wavemaker.runtime.rest.service;
 import org.springframework.core.env.Environment;
 
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
+import com.wavemaker.runtime.rest.TrustStoreConfig;
 
 /**
  * @author Uday Shankar
@@ -20,6 +21,14 @@ public class HttpConfiguration {
     private int appProxyPort;
     private String appProxyUsername;
     private String appProxyPassword;
+    private boolean mtlsEnabled;
+    private String keyStoreFile;
+    private String keyStoreFileType;
+    private String keyStorePassword;
+    private TrustStoreConfig trustStoreConfig;
+    private String trustStoreFile;
+    private String trustStoreFileType;
+    private String trustStorePassword;
 
     public HttpConfiguration(Environment environment) {
         useSystemProperties = environment.getProperty("app.rest.useSystemProperties", Boolean.class, false);
@@ -34,6 +43,14 @@ public class HttpConfiguration {
         appProxyPort = environment.getProperty(AppPropertiesConstants.APP_PROXY_PORT, Integer.class, -1);
         appProxyUsername = environment.getProperty(AppPropertiesConstants.APP_PROXY_USERNAME, "");
         appProxyPassword = environment.getProperty(AppPropertiesConstants.APP_PROXY_PASSWORD, "");
+        mtlsEnabled = environment.getProperty(AppPropertiesConstants.APP_MTLS_ENABLED, Boolean.class, false);
+        keyStoreFile = environment.getProperty(AppPropertiesConstants.APP_MTLS_KEYSTORE_FILE, "");
+        keyStoreFileType = environment.getProperty(AppPropertiesConstants.APP_MTLS_KEYSTORE_FILETYPE, "");
+        keyStorePassword = environment.getProperty(AppPropertiesConstants.APP_MTLS_KEYSTORE_PASSWORD, "");
+        trustStoreConfig = environment.getProperty(AppPropertiesConstants.APP_TRUSTSTORE_CONFIG, TrustStoreConfig.class, TrustStoreConfig.NO_CHECK);
+        trustStoreFile = environment.getProperty(AppPropertiesConstants.APP_TRUSTSTORE_FILE, "");
+        trustStoreFileType = environment.getProperty(AppPropertiesConstants.APP_TRUSTSTORE_FILETYPE, "");
+        trustStorePassword = environment.getProperty(AppPropertiesConstants.APP_TRUSTSTORE_PASSWORD, "");
     }
 
     public boolean isUseSystemProperties() {
@@ -80,6 +97,38 @@ public class HttpConfiguration {
         return this.appProxyPassword;
     }
 
+    public boolean isMtlsEnabled() {
+        return mtlsEnabled;
+    }
+
+    public String getKeyStoreFile() {
+        return keyStoreFile;
+    }
+
+    public String getKeyStoreFileType() {
+        return keyStoreFileType;
+    }
+
+    public String getKeyStorePassword() {
+        return keyStorePassword;
+    }
+
+    public TrustStoreConfig getTrustStore() {
+        return trustStoreConfig;
+    }
+
+    public String getTrustStoreFile() {
+        return trustStoreFile;
+    }
+
+    public String getTrustStoreFileType() {
+        return trustStoreFileType;
+    }
+
+    public String getTrustStorePassword() {
+        return trustStorePassword;
+    }
+
     @Override
     public String toString() {
         return "HttpConfiguration{" +
@@ -93,6 +142,15 @@ public class HttpConfiguration {
                 ", appProxyHost='" + appProxyHost + '\'' +
                 ", appProxyPort=" + appProxyPort +
                 ", appProxyUsername='" + appProxyUsername + '\'' +
+                ", appProxyPassword='" + appProxyPassword + '\'' +
+                ", mtlsEnabled=" + mtlsEnabled +
+                ", keyStoreFile='" + keyStoreFile + '\'' +
+                ", keyStoreFileType='" + keyStoreFileType + '\'' +
+                ", keyStorePassword='" + keyStorePassword + '\'' +
+                ", trustStoreConfig=" + trustStoreConfig +
+                ", trustStoreFile='" + trustStoreFile + '\'' +
+                ", trustStoreFileType='" + trustStoreFileType + '\'' +
+                ", trustStorePassword='" + trustStorePassword + '\'' +
                 '}';
     }
 }

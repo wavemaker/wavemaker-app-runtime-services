@@ -53,7 +53,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import com.wavemaker.commons.rest.error.WMDefaultResponseErrorHandler;
-import com.wavemaker.commons.util.SSLUtils;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
@@ -176,9 +175,10 @@ public class RestConnector {
     }
 
     private PoolingHttpClientConnectionManager getConnectionManager() {
+        SSLContextBuilder sslContextBuilder = new SSLContextBuilder(httpConfiguration);
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.getSocketFactory())
-                .register("https", new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, NoopHostnameVerifier.INSTANCE))
+                .register("https", new SSLConnectionSocketFactory(sslContextBuilder.getSslContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, NoopHostnameVerifier.INSTANCE))
                 .build();
 
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);
