@@ -1,11 +1,15 @@
 package com.wavemaker.runtime.web.listener;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
+import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -17,13 +21,15 @@ import com.wavemaker.runtime.web.servlet.PrefabWebContentServlet;
 
 public class WMApplicationListener implements ServletContextListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(WMApplicationListener.class);
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         AppRuntimeService appRuntimeService = WMAppContext.getInstance().getSpringBean("appRuntimeService");
         String applicationType = appRuntimeService.getApplicationType();
         ServletContext servletContext = sce.getServletContext();
         registerServlets(servletContext);
-        registerFilter(servletContext, applicationType);
+        registerFilters(servletContext, applicationType);
     }
 
     @Override
@@ -32,27 +38,23 @@ public class WMApplicationListener implements ServletContextListener {
     }
 
     private void registerServlets(ServletContext servletContext) {
-        ServletRegistration.Dynamic servicesServlet = servletContext.addServlet(
-                "services", new DispatcherServlet());
+        ServletRegistration.Dynamic servicesServlet = registerServlet(servletContext, "services", new DispatcherServlet());
         servicesServlet.setLoadOnStartup(1);
         servicesServlet.setInitParameter("namespace", "project-services");
         servicesServlet.setInitParameter("contextConfigLocation", "");
         servicesServlet.setInitParameter("detectAllHandlerExceptionResolvers", "false");
         servicesServlet.addMapping("/services/*");
 
-        ServletRegistration.Dynamic prefabsServlet = servletContext.addServlet(
-                "prefabs", new PrefabControllerServlet());
+        ServletRegistration.Dynamic prefabsServlet = registerServlet(servletContext, "prefabs", new PrefabControllerServlet());
         prefabsServlet.setLoadOnStartup(1);
         prefabsServlet.setInitParameter("contextClass", "org.springframework.web.context.support.AnnotationConfigWebApplicationContext");
         prefabsServlet.setInitParameter("contextConfigLocation", "com.wavemaker.runtime.prefab.config.PrefabServletConfig");
         prefabsServlet.addMapping("/prefabs/*");
 
-        ServletRegistration.Dynamic prefabWebContentServlet = servletContext.addServlet(
-                "prefabWebContentServlet", new PrefabWebContentServlet());
+        ServletRegistration.Dynamic prefabWebContentServlet = registerServlet(servletContext, "prefabWebContentServlet", new PrefabWebContentServlet());
         prefabWebContentServlet.addMapping("/app/prefabs/*");
 
-        ServletRegistration.Dynamic cdnFilesServlet = servletContext.addServlet(
-                "cdn-files", new DispatcherServlet());
+        ServletRegistration.Dynamic cdnFilesServlet = registerServlet(servletContext, "cdn-files", new DispatcherServlet());
         cdnFilesServlet.setLoadOnStartup(1);
         cdnFilesServlet.setInitParameter("namespace", "project-cdn-files");
         cdnFilesServlet.setInitParameter("contextConfigLocation", "/WEB-INF/cdn-dispatcher-servlet.xml");
@@ -60,49 +62,63 @@ public class WMApplicationListener implements ServletContextListener {
         cdnFilesServlet.addMapping("/_cdnUrl_/*");
     }
 
-    private void registerFilter(ServletContext servletContext, String applicationType) {
-        FilterRegistration.Dynamic springEncodingFilter = servletContext.addFilter("springEncodingFilter", new DelegatingFilterProxy("springEncodingFilter"));
+    private void registerFilters(ServletContext servletContext, String applicationType) {
+        FilterRegistration.Dynamic springEncodingFilter = registerDelegatingFilterProxyFilter(servletContext, "springEncodingFilter");
         springEncodingFilter.setInitParameter("encoding", "UTF-8");
         springEncodingFilter.setInitParameter("forceEncoding", "true");
         springEncodingFilter.addMappingForUrlPatterns(null, false, "/*");
 
-        FilterRegistration.Dynamic throwableTranslationFilter = servletContext.addFilter("throwableTranslationFilter", new DelegatingFilterProxy("throwableTranslationFilter"));
+        FilterRegistration.Dynamic throwableTranslationFilter = registerDelegatingFilterProxyFilter(servletContext, "throwableTranslationFilter");
         throwableTranslationFilter.addMappingForUrlPatterns(null, false, "/*");
 
         if (applicationType.equals("APPLICATION")) {
-            FilterRegistration.Dynamic firewallFilter = servletContext.addFilter("firewallFilter", new DelegatingFilterProxy("firewallFilter"));
+            FilterRegistration.Dynamic firewallFilter = registerDelegatingFilterProxyFilter(servletContext, "firewallFilter");
             firewallFilter.addMappingForUrlPatterns(null, false, "/*");
         }
 
-        FilterRegistration.Dynamic requestTrackingFilter = servletContext.addFilter("requestTrackingFilter", new DelegatingFilterProxy("requestTrackingFilter"));
+        FilterRegistration.Dynamic requestTrackingFilter = registerDelegatingFilterProxyFilter(servletContext, "requestTrackingFilter");
         requestTrackingFilter.addMappingForUrlPatterns(null, false, "/*");
 
-        FilterRegistration.Dynamic wmRequestFilter = servletContext.addFilter("wmRequestFilter", new DelegatingFilterProxy("wmRequestFilter"));
+        FilterRegistration.Dynamic wmRequestFilter = registerDelegatingFilterProxyFilter(servletContext, "wmRequestFilter");
         wmRequestFilter.addMappingForUrlPatterns(null, false, "/*");
 
-        FilterRegistration.Dynamic httpPutFormContentFilter = servletContext.addFilter("formContentFilter", new DelegatingFilterProxy("formContentFilter"));
+        FilterRegistration.Dynamic httpPutFormContentFilter = registerDelegatingFilterProxyFilter(servletContext, "formContentFilter");
         httpPutFormContentFilter.addMappingForUrlPatterns(null, false, "/*");
 
         if (applicationType.equals("APPLICATION")) {
-            FilterRegistration.Dynamic wmCompressionFilter = servletContext.addFilter("wmCompressionFilter", new DelegatingFilterProxy("wmCompressionFilter"));
+            FilterRegistration.Dynamic wmCompressionFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompressionFilter");
             wmCompressionFilter.addMappingForUrlPatterns(null, false, "/*");
         }
 
-        FilterRegistration.Dynamic cacheManagementFilter = servletContext.addFilter("cacheManagementFilter", new DelegatingFilterProxy("cacheManagementFilter"));
+        FilterRegistration.Dynamic cacheManagementFilter = registerDelegatingFilterProxyFilter(servletContext, "cacheManagementFilter");
         cacheManagementFilter.addMappingForUrlPatterns(null, false, "/*");
 
         if (applicationType.equals("APPLICATION")) {
-            FilterRegistration.Dynamic wmCompositeSecurityFilter = servletContext.addFilter("WMCompositeSecurityFilter", new DelegatingFilterProxy("wmCompositeSecurityFilter"));
+            FilterRegistration.Dynamic wmCompositeSecurityFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompositeSecurityFilter");
             wmCompositeSecurityFilter.addMappingForUrlPatterns(null, true, "/*");
 
-            FilterRegistration.Dynamic springSecurityFilterChain = servletContext.addFilter("springSecurityFilterChain", new DelegatingFilterProxy("springSecurityFilterChain"));
+            FilterRegistration.Dynamic springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "springSecurityFilterChain");
             springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
         }
 
         if (RuntimeEnvironment.isTestRunEnvironment()) {
-            FilterRegistration.Dynamic htmlFilter = servletContext.addFilter("cdnUrlReplacementFilter", new DelegatingFilterProxy("cdnUrlReplacementFilter"));
+            FilterRegistration.Dynamic htmlFilter = registerDelegatingFilterProxyFilter(servletContext, "cdnUrlReplacementFilter");
             htmlFilter.addMappingForUrlPatterns(null, true, "/*");
         }
+    }
+
+    private FilterRegistration.Dynamic registerFilter(ServletContext servletContext, String filterName, Filter filter) {
+        logger.info("Registering filter : {} ", filterName);
+        return servletContext.addFilter(filterName, filter);
+    }
+
+    private ServletRegistration.Dynamic registerServlet(ServletContext servletContext, String servletName, Servlet servlet) {
+        logger.info("Registering servlet : {} ", servletName);
+        return servletContext.addServlet(servletName, servlet);
+    }
+
+    private FilterRegistration.Dynamic registerDelegatingFilterProxyFilter(ServletContext servletContext, String filterName) {
+        return registerFilter(servletContext, filterName, new DelegatingFilterProxy(filterName));
     }
 
 }
