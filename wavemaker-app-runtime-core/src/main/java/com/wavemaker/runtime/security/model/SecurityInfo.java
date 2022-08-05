@@ -27,6 +27,7 @@ public class SecurityInfo {
     private LoginConfig loginConfig;
     private UserInfo userInfo;
     private String csrfHeaderName;
+    private String csrfCookieName;
 
     public boolean isSecurityEnabled() {
         return securityEnabled;
@@ -74,6 +75,14 @@ public class SecurityInfo {
 
     public void setCsrfHeaderName(final String csrfHeaderName) {
         this.csrfHeaderName = csrfHeaderName;
+    }
+
+    public String getCsrfCookieName() {
+        return csrfCookieName;
+    }
+
+    public void setCsrfCookieName(String csrfCookieName) {
+        this.csrfCookieName = csrfCookieName;
     }
 
     @Override

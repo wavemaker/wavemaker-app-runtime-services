@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import com.wavemaker.commons.model.security.CSRFConfig;
+import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.AbstractLogoutHandler;
 
 /**
@@ -36,14 +38,17 @@ public class WMCsrfLogoutHandler extends AbstractLogoutHandler {
 
     @Override
     protected void postLogout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, null);
-        cookie.setMaxAge(0);
-        String contextPath = request.getContextPath();
-        if (StringUtils.isBlank(contextPath)) {
-            contextPath = "/";
+        CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean("csrfConfig");
+        if (csrfConfig.isEnforceCsrfSecurity()) {
+            Cookie cookie = new Cookie(csrfConfig.getCookieName(), null);
+            cookie.setMaxAge(0);
+            String contextPath = request.getContextPath();
+            if (StringUtils.isBlank(contextPath)) {
+                contextPath = "/";
+            }
+            cookie.setPath(contextPath);
+            cookie.setSecure(request.isSecure());
+            response.addCookie(cookie);
         }
-        cookie.setPath(contextPath);
-        cookie.setSecure(request.isSecure());
-        response.addCookie(cookie);
     }
 }
