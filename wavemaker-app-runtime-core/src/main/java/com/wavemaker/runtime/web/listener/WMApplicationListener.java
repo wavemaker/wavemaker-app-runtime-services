@@ -23,6 +23,10 @@ public class WMApplicationListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(WMApplicationListener.class);
 
+    private static final String CONTEXT_CONFIG_LOCATION = "contextConfigLocation";
+
+    private static final String APPLICATION = "APPLICATION";
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         AppRuntimeService appRuntimeService = WMAppContext.getInstance().getSpringBean("appRuntimeService");
@@ -32,23 +36,18 @@ public class WMApplicationListener implements ServletContextListener {
         registerFilters(servletContext, applicationType);
     }
 
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-
-    }
-
     private void registerServlets(ServletContext servletContext) {
         ServletRegistration.Dynamic servicesServlet = registerServlet(servletContext, "services", new DispatcherServlet());
         servicesServlet.setLoadOnStartup(1);
         servicesServlet.setInitParameter("namespace", "project-services");
-        servicesServlet.setInitParameter("contextConfigLocation", "");
+        servicesServlet.setInitParameter(CONTEXT_CONFIG_LOCATION, "");
         servicesServlet.setInitParameter("detectAllHandlerExceptionResolvers", "false");
         servicesServlet.addMapping("/services/*");
 
         ServletRegistration.Dynamic prefabsServlet = registerServlet(servletContext, "prefabs", new PrefabControllerServlet());
         prefabsServlet.setLoadOnStartup(1);
         prefabsServlet.setInitParameter("contextClass", "org.springframework.web.context.support.AnnotationConfigWebApplicationContext");
-        prefabsServlet.setInitParameter("contextConfigLocation", "com.wavemaker.runtime.prefab.config.PrefabServletConfig");
+        prefabsServlet.setInitParameter(CONTEXT_CONFIG_LOCATION, "com.wavemaker.runtime.prefab.config.PrefabServletConfig");
         prefabsServlet.addMapping("/prefabs/*");
 
         ServletRegistration.Dynamic prefabWebContentServlet = registerServlet(servletContext, "prefabWebContentServlet", new PrefabWebContentServlet());
@@ -57,7 +56,7 @@ public class WMApplicationListener implements ServletContextListener {
         ServletRegistration.Dynamic cdnFilesServlet = registerServlet(servletContext, "cdn-files", new DispatcherServlet());
         cdnFilesServlet.setLoadOnStartup(1);
         cdnFilesServlet.setInitParameter("namespace", "project-cdn-files");
-        cdnFilesServlet.setInitParameter("contextConfigLocation", "/WEB-INF/cdn-dispatcher-servlet.xml");
+        cdnFilesServlet.setInitParameter(CONTEXT_CONFIG_LOCATION, "/WEB-INF/cdn-dispatcher-servlet.xml");
         cdnFilesServlet.setInitParameter("detectAllHandlerExceptionResolvers", "false");
         cdnFilesServlet.addMapping("/_cdnUrl_/*");
     }
@@ -71,7 +70,7 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic throwableTranslationFilter = registerDelegatingFilterProxyFilter(servletContext, "throwableTranslationFilter");
         throwableTranslationFilter.addMappingForUrlPatterns(null, false, "/*");
 
-        if (applicationType.equals("APPLICATION")) {
+        if (applicationType.equals(APPLICATION)) {
             FilterRegistration.Dynamic firewallFilter = registerDelegatingFilterProxyFilter(servletContext, "firewallFilter");
             firewallFilter.addMappingForUrlPatterns(null, false, "/*");
         }
@@ -85,7 +84,7 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic httpPutFormContentFilter = registerDelegatingFilterProxyFilter(servletContext, "formContentFilter");
         httpPutFormContentFilter.addMappingForUrlPatterns(null, false, "/*");
 
-        if (applicationType.equals("APPLICATION")) {
+        if (applicationType.equals(APPLICATION)) {
             FilterRegistration.Dynamic wmCompressionFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompressionFilter");
             wmCompressionFilter.addMappingForUrlPatterns(null, false, "/*");
         }
@@ -93,11 +92,16 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic cacheManagementFilter = registerDelegatingFilterProxyFilter(servletContext, "cacheManagementFilter");
         cacheManagementFilter.addMappingForUrlPatterns(null, false, "/*");
 
-        if (applicationType.equals("APPLICATION")) {
+        if (applicationType.equals(APPLICATION)) {
             FilterRegistration.Dynamic wmCompositeSecurityFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompositeSecurityFilter");
             wmCompositeSecurityFilter.addMappingForUrlPatterns(null, true, "/*");
 
-            FilterRegistration.Dynamic springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "springSecurityFilterChain");
+            FilterRegistration.Dynamic springSecurityFilterChain;
+            if (RuntimeEnvironment.isTestRunEnvironment()) {
+                springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "skipSupportedSecurityFilter");
+            } else {
+                springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "springSecurityFilterChain");
+            }
             springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
         }
 

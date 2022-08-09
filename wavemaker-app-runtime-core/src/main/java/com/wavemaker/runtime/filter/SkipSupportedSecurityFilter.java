@@ -28,33 +28,29 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 
 /**
  * @author Uday Shankar
  */
-public class WMSecurityFilter extends GenericFilterBean {
+public class SkipSupportedSecurityFilter extends GenericFilterBean {
 
     private Boolean isSecurityEnforced;
-
-    private boolean skipSecurityEnabled;
 
     private Filter springSecurityFilterChain;
 
     @Override
-    protected void initFilterBean() throws ServletException {
+    protected void initFilterBean() {
         if (isSecurityEnforced()) {
             springSecurityFilterChain = WMAppContext.getInstance().getSpringBean("org.springframework.security.filterChainProxy");
         }
-        skipSecurityEnabled = RuntimeEnvironment.isTestRunEnvironment();
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
-            if (!isSecurityEnforced() || (skipSecurityEnabled && "true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
+            if (!isSecurityEnforced() || ("true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
                 // Ignore the DelegatingProxyFilter delegate
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
