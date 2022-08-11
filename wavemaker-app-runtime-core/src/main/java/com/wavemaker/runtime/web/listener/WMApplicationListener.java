@@ -16,6 +16,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.prefab.web.PrefabControllerServlet;
+import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.service.AppRuntimeService;
 import com.wavemaker.runtime.web.servlet.PrefabWebContentServlet;
 
@@ -99,10 +100,14 @@ public class WMApplicationListener implements ServletContextListener {
             FilterRegistration.Dynamic springSecurityFilterChain;
             if (RuntimeEnvironment.isTestRunEnvironment()) {
                 springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "skipSupportedSecurityFilter");
+                springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
             } else {
-                springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "springSecurityFilterChain");
+                WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+                if (wmAppSecurityConfig.isEnforceSecurity()) {
+                    springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "springSecurityFilterChain");
+                    springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
+                }
             }
-            springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
         }
 
         if (RuntimeEnvironment.isTestRunEnvironment()) {
