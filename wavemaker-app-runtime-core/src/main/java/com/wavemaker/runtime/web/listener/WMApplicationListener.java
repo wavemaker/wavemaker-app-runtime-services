@@ -98,15 +98,16 @@ public class WMApplicationListener implements ServletContextListener {
             wmCompositeSecurityFilter.addMappingForUrlPatterns(null, true, "/*");
 
             FilterRegistration.Dynamic springSecurityFilterChain;
-            if (RuntimeEnvironment.isTestRunEnvironment()) {
-                springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "skipSupportedSecurityFilter");
-                springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
-            } else {
-                WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
-                if (wmAppSecurityConfig.isEnforceSecurity()) {
-                    springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, "springSecurityFilterChain");
-                    springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
+            WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+            if (wmAppSecurityConfig.isEnforceSecurity()) {
+                String securityFilterBeanToRegister;
+                if (RuntimeEnvironment.isTestRunEnvironment()) {
+                    securityFilterBeanToRegister = "skipSupportedSecurityFilter";
+                } else {
+                    securityFilterBeanToRegister = "springSecurityFilterChain";
                 }
+                springSecurityFilterChain = registerDelegatingFilterProxyFilter(servletContext, securityFilterBeanToRegister);
+                springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
             }
         }
 
