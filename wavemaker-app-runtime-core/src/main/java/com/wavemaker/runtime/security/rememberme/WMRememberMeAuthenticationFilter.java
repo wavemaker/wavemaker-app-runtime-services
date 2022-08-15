@@ -68,6 +68,7 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
         Assert.notNull(rememberMeServices, "rememberMeServices must be specified");
     }
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
@@ -147,6 +148,7 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
         return rememberMeServices;
     }
 
+    @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }

@@ -103,6 +103,7 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
 
     private static abstract class AbstractFrameOptionsHeaderWriter implements FrameOptionsHeaderWriter {
 
+        @Override
         public void writeHeaders(FrameOptions.Mode frameOptionsMode, Map<String, URI> validDomains, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
             if (FrameOptions.Mode.ALLOW_FROM.equals(frameOptionsMode)) {
                 String refererUrl = httpServletRequest.getHeader("Referer");

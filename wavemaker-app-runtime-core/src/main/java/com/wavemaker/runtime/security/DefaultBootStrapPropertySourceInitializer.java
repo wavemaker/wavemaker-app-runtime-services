@@ -22,7 +22,7 @@ public class DefaultBootStrapPropertySourceInitializer implements ApplicationCon
         File classPathFile = new ClassPathFile(applicationContext.getClassLoader(), "conf/securityService.properties");
         if (classPathFile.exists()) {
             Properties properties = PropertiesFileUtils.loadProperties(classPathFile);
-            applicationContext.getEnvironment().getPropertySources().addLast(new PropertySource<Object>("securityServicePropertySource") {
+            applicationContext.getEnvironment().getPropertySources().addLast(new PropertySource<>("securityServicePropertySource") {
                 @Override
                 public Object getProperty(String name) {
                     if (name != null && name.startsWith("security.")) {

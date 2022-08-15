@@ -38,14 +38,17 @@ public class SortedUnPagedRequest implements Pageable {
         this.sort = sort;
     }
 
+    @Override
     public int getPageNumber() {
         return page;
     }
 
+    @Override
     public int getPageSize() {
         return size;
     }
 
+    @Override
     public long getOffset() {
         return page * (long) size;
     }
@@ -60,6 +63,7 @@ public class SortedUnPagedRequest implements Pageable {
         return new SortedUnPagedRequest(getPageNumber() + 1, getPageSize(), getSort());
     }
 
+    @Override
     public Pageable previousOrFirst() {
         return hasPrevious() ? previous() : first();
     }
@@ -74,6 +78,7 @@ public class SortedUnPagedRequest implements Pageable {
         return new SortedUnPagedRequest(getPageNumber(), getPageSize(), getSort());
     }
 
+    @Override
     public boolean hasPrevious() {
         return page > 0;
     }

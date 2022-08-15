@@ -52,6 +52,7 @@ import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.commons.web.filter.RequestTrackingFilter;
 import com.wavemaker.commons.web.filter.ServerTimingMetric;
 import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
+import com.wavemaker.runtime.rest.RequestContext;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -64,7 +65,6 @@ import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
-import com.wavemaker.runtime.rest.RequestContext;
 import com.wavemaker.runtime.rest.util.HttpRequestUtils;
 import com.wavemaker.runtime.rest.util.RestRequestUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
@@ -254,13 +254,13 @@ public class RestRuntimeService {
         Map<String, Path> swaggerPaths = swagger.getPaths();
 
         List<String> pathEntries = new ArrayList<>(swaggerPaths.keySet());
-        pathEntries.sort(new UrlComparator<String>() {
+        pathEntries.sort(new UrlComparator<>() {
             @Override
             public String getUrlPattern(String s) {
                 return s;
             }
         });
-        pathEntries.sort(new UrlStringComparator<String>() {
+        pathEntries.sort(new UrlStringComparator<>() {
             @Override
             public String getUrlPattern(String s) {
                 return s;

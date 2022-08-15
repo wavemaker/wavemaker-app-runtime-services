@@ -88,6 +88,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         return new HashMap<>(applicationProperties);
     }
 
+    @Override
     public String getApplicationType() {
         return getApplicationType(getApplicationProperties());
     }

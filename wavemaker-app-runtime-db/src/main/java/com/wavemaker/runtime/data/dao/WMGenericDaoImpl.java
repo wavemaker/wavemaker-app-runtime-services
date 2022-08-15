@@ -43,6 +43,9 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.commons.file.manager.ExportedFileManager;
+import com.wavemaker.runtime.commons.file.model.DownloadResponse;
+import com.wavemaker.runtime.commons.file.model.Downloadable;
 import com.wavemaker.runtime.data.dao.generators.EntityQueryGenerator;
 import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
@@ -65,9 +68,6 @@ import com.wavemaker.runtime.data.model.AggregationInfo;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.DaoUtils;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
-import com.wavemaker.runtime.commons.file.manager.ExportedFileManager;
-import com.wavemaker.runtime.commons.file.model.DownloadResponse;
-import com.wavemaker.runtime.commons.file.model.Downloadable;
 
 public abstract class WMGenericDaoImpl<E extends Serializable, I extends Serializable> implements
         WMGenericDao<E, I> {
@@ -98,6 +98,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         queryGenerator = new SimpleEntitiyQueryGenerator<>(entityClass);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public E create(E entity) {
         getTemplate().save(entity);
@@ -105,15 +106,18 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         return entity;
     }
 
+    @Override
     public void update(E entity) {
         getTemplate().update(entity);
         getTemplate().flush();
     }
 
+    @Override
     public void delete(E entity) {
         getTemplate().delete(entity);
     }
 
+    @Override
     public E findById(I entityId) {
         final SelectQueryBuilder builder = queryGenerator.findById(entityId);
 
@@ -141,6 +145,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         return resultWithNulls;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public E findByUniqueKey(final Map<String, Object> fieldValueMap) {
         final SelectQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
@@ -155,6 +160,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         return search(null, PageUtils.defaultIfNull(pageable));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Page getAssociatedObjects(
             final Object value, final String fieldName, final String key, final Pageable pageable) {
@@ -167,6 +173,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         });
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Page<E> search(final QueryFilter[] queryFilters, final Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);

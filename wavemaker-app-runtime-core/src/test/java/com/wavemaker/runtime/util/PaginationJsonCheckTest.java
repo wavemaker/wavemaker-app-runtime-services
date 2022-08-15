@@ -43,7 +43,7 @@ public class PaginationJsonCheckTest {
 
         Pageable pageable = PageRequest.of(1, 20, sort);
 
-        Page<String> page = new PageImpl<String>(sampleData, pageable, 10);
+        Page<String> page = new PageImpl<>(sampleData, pageable, 10);
 
         String pageObjectStringified = WMObjectMapper.getInstance().writeValueAsString(page);
 

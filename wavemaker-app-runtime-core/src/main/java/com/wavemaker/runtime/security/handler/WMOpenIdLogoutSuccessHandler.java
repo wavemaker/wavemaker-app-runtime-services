@@ -58,6 +58,7 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
     private static final int DEFAULT_HTTP_PORT = 80;
     private static final int DEFAULT_HTTPS_PORT = 443;
 
+    @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
                                 Authentication authentication) throws IOException {
         String targetUrl = determineTargetUrl(request, response, authentication);
@@ -73,6 +74,7 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
     /**
      * TODO Always taking the first openId providerInfo, find a better-way to get a particular ProviderInfo from the list
      **/
+    @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String logoutUrl = null;
         if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderInfoList())) {
