@@ -197,7 +197,7 @@ public class RestConnector {
         return httpResponseDetails;
     }
 
-    class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
+    static class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
 
         @Override
         protected boolean hasError(HttpStatus statusCode) {
