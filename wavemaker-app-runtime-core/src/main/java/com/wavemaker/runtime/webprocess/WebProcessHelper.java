@@ -30,7 +30,7 @@ public class WebProcessHelper {
     public static final String WEB_PROCESS_COOKIE_NAME = "WM_WEB_PROCESS";
     public static final String WEB_PROCESS_OUTPUT = "WEB_PROCESS_OUTPUT";
     public static final String UTF_8 = StandardCharsets.UTF_8.toString();
-    private static final int WEB_PROCESS_COOKIE_MAX_AGE = 10 * 60 * 1000;
+    private static final int WEB_PROCESS_COOKIE_MAX_AGE = 1 * 60 * 1000;
 
     private WebProcessHelper() {
     }
@@ -53,6 +53,17 @@ public class WebProcessHelper {
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         response.addCookie(cookie);
+    }
+
+    public static void removeWebProcessCookie(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if (WebProcessHelper.WEB_PROCESS_COOKIE_NAME.equalsIgnoreCase(c.getName())) {
+                    c.setMaxAge(0);
+                    response.addCookie(c);
+                }
+            }
+        }
     }
 
     public static WebProcess decodeWebProcess(String process) throws IOException {

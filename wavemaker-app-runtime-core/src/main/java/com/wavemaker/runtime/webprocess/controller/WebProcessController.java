@@ -106,10 +106,11 @@ public class WebProcessController {
 
     @GetMapping(value = "/decode")
     @ApiOperation(value = "ends a web process and shows a page that has encoded output")
-    public String decode(String encodedProcessdata, HttpServletRequest request) throws IOException {
+    public String decode(String encodedProcessdata, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Cookie cookie = WebProcessHelper.getCookie(request.getCookies(), WebProcessHelper.WEB_PROCESS_COOKIE_NAME);
         if (cookie != null) {
             WebProcess webProcess = WebProcessHelper.decodeWebProcess(cookie.getValue());
+            WebProcessHelper.removeWebProcessCookie(request, response);
             return CryptoUtils.decrypt(webProcess.getCommunicationKey(), encodedProcessdata);
         } else {
             throw new WMRuntimeException("Web Process cookie is not found");
