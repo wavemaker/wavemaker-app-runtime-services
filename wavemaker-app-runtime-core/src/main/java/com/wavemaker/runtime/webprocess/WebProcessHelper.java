@@ -60,6 +60,8 @@ public class WebProcessHelper {
             for (Cookie c : request.getCookies()) {
                 if (WebProcessHelper.WEB_PROCESS_COOKIE_NAME.equalsIgnoreCase(c.getName())) {
                     c.setMaxAge(0);
+                    c.setValue(null);
+                    c.setPath(request.getServletContext().getContextPath());
                     response.addCookie(c);
                 }
             }
