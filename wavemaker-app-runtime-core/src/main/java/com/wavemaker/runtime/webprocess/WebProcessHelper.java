@@ -30,7 +30,7 @@ public class WebProcessHelper {
     public static final String WEB_PROCESS_COOKIE_NAME = "WM_WEB_PROCESS";
     public static final String WEB_PROCESS_OUTPUT = "WEB_PROCESS_OUTPUT";
     public static final String UTF_8 = StandardCharsets.UTF_8.toString();
-    private static final int WEB_PROCESS_COOKIE_MAX_AGE = 1 * 60 * 1000;
+    private static final int WEB_PROCESS_COOKIE_MAX_AGE = 10 * 60 * 1000;
 
     private WebProcessHelper() {
     }
