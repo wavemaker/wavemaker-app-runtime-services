@@ -182,7 +182,7 @@ public class QueryHelper {
                     if (index != 0) {
                         index = StringUtils.indexOfIgnoreCase(query, FROM);
                         if (index > 0) {
-                            query = query.substring(index, query.length());
+                            query = query.substring(index);
                         }
                     }
                     index = StringUtils.indexOfIgnoreCase(query, ORDER_BY);

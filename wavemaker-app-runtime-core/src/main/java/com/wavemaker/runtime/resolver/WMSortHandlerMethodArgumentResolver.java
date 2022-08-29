@@ -81,7 +81,7 @@ public class WMSortHandlerMethodArgumentResolver extends SortHandlerMethodArgume
                     // sort=employeeId asc|desc
                     // sort=employee Id asc|desc
                     // sort=employee Id
-                    String value = keyValue.substring(lastDelimiterIndex + 1, keyValue.length());
+                    String value = keyValue.substring(lastDelimiterIndex + 1);
                     direction = Sort.Direction.fromString(value.trim());
                     key = keyValue.substring(0, lastDelimiterIndex).trim();
                 }

@@ -124,6 +124,7 @@ public class PrefabUtils {
     public FileFilter getPrefabDirectoryFilter() {
         return new FileFilter() {
 
+            @Override
             public boolean accept(final File pathname) {
                 return Utils.isReadableDirectory(pathname) && isPrefabDirectory(pathname);
             }

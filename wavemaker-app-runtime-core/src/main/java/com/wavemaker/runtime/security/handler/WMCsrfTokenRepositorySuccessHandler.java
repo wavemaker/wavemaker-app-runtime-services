@@ -34,7 +34,6 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.runtime.commons.WMAppContext;
-import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 
 /**
  * Created by srujant on 31/10/18.
@@ -54,15 +53,15 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        Optional<CsrfToken> csrfTokenOptional = getCsrfToken(request);
+        CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
+        Optional<CsrfToken> csrfTokenOptional = getCsrfToken(request,csrfConfig);
         if (csrfTokenOptional.isPresent()) {
-            addCsrfCookie(csrfTokenOptional, request, response);
+            addCsrfCookie(csrfTokenOptional, request, response, csrfConfig);
             csrfTokenRepository.saveToken(csrfTokenOptional.get(), request, response);
         }
     }
 
-    private Optional<CsrfToken> getCsrfToken(HttpServletRequest request) {
-        CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
+    private Optional<CsrfToken> getCsrfToken(HttpServletRequest request,CSRFConfig csrfConfig) {
         if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {
             CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
             return Optional.ofNullable(csrfToken);
@@ -70,11 +69,11 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
         return Optional.empty();
     }
 
-    private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {
+    private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response,CSRFConfig csrfConfig) {
         logger.info("Adding CsrfCookie");
         if(csrfTokenOptional.isPresent()) {
             CsrfToken csrfToken = csrfTokenOptional.get();
-            Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
+            Cookie cookie = new Cookie(csrfConfig.getCookieName(), csrfToken.getToken());
             String contextPath = request.getContextPath();
             if (StringUtils.isBlank(contextPath)) {
                 contextPath = "/";

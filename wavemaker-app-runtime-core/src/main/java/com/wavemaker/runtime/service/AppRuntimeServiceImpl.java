@@ -76,7 +76,8 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 }
                 if("APPLICATION".equals(getApplicationType(appProperties))) {
                     appProperties.put("securityEnabled", securityService.isSecurityEnabled());
-                    appProperties.put("xsrf_header_name", getCsrfHeaderName());
+                    appProperties.put("xsrf_header_name", securityService.getSecurityInfo().getCsrfHeaderName());
+                    appProperties.put("xsrf_cookie_name", securityService.getSecurityInfo().getCsrfCookieName());
                 }
                 appProperties
                         .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
@@ -87,6 +88,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         return new HashMap<>(applicationProperties);
     }
 
+    @Override
     public String getApplicationType() {
         return getApplicationType(getApplicationProperties());
     }
@@ -114,13 +116,5 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.app.build.filenotfound"));
         }
-    }
-
-    private String getCsrfHeaderName() {
-        String csrfHeaderName = securityService.getSecurityInfo().getCsrfHeaderName();
-        if(csrfHeaderName == null) {
-            return "X-WM-XSRF-TOKEN";
-        }
-        return csrfHeaderName;
     }
 }

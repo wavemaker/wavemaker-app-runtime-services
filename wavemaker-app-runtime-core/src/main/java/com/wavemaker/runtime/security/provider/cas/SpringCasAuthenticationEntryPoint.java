@@ -66,14 +66,16 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
 
     //~ Methods ========================================================================================================
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.hasLength(this.loginUrl, "loginUrl must be specified");
         Assert.notNull(this.serviceProperties, "serviceProperties must be specified");
         Assert.notNull(this.serviceProperties.getService(), "serviceProperties.getService() cannot be null.");
     }
 
+    @Override
     public void commence(final HttpServletRequest servletRequest, final HttpServletResponse response,
-            final AuthenticationException authenticationException) throws IOException, ServletException {
+                         final AuthenticationException authenticationException) throws IOException, ServletException {
 
         final String urlEncodedService = createServiceUrl(servletRequest, response);
         final String redirectUrl = createRedirectUrl(urlEncodedService);

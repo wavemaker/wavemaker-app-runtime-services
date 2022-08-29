@@ -27,8 +27,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.wavemaker.commons.crypto.CryptoUtils;
 import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.runtime.commons.WMObjectMapper;
 import com.wavemaker.runtime.webprocess.WebProcessHelper;
+import com.wavemaker.runtime.webprocess.model.WebProcess;
 
 public class LoginProcessFilter extends WebProcessFilter {
 
@@ -37,7 +40,7 @@ public class LoginProcessFilter extends WebProcessFilter {
     }
 
     @Override
-    public String endProcess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String endProcess(WebProcess webProcess, HttpServletRequest request, HttpServletResponse response) throws IOException {
         SecurityContext ctx = SecurityContextHolder.getContext();
         if (ctx != null)  {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -53,5 +56,29 @@ public class LoginProcessFilter extends WebProcessFilter {
             }
         }
         return null;
+    }
+
+    private void addCookie(String name, String value, int maxAge, HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath(request.getServletContext().getContextPath());
+        cookie.setMaxAge(maxAge);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
+        response.addCookie(cookie);
+    }
+
+    private void transferCookies(WebProcess webProcess, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String process = CryptoUtils.decrypt(webProcess.getCommunicationKey(), request.getParameter("encodedProcessdata"));
+        Map<String, String> cookieMap = WMObjectMapper.getInstance().readValue(process, Map.class);
+        for (String key: cookieMap.keySet()) {
+            addCookie(key, cookieMap.get(key), -1, request, response);
+        }
+    }
+
+    @Override
+    public boolean onDecode(WebProcess webProcess, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        this.transferCookies(webProcess, request, response);
+        this.addCookie(WebProcessHelper.WEB_PROCESS_COOKIE_NAME, "", 0, request, response);
+        return false;
     }
 }

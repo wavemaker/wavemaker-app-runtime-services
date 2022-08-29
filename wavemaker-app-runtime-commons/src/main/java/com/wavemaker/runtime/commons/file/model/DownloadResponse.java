@@ -77,6 +77,7 @@ public class DownloadResponse implements Downloadable {
         this.fileName = fileName;
     }
 
+    @Override
     public boolean isInline() {
         return inline;
     }

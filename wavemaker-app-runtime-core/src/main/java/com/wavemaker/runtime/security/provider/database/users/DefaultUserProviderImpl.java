@@ -47,11 +47,13 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
         this.usersByUsernameQuery = usersByUsernameQuery;
     }
 
+    @Override
     public UserDetails loadUser(final String username) {
         return getTransactionTemplate()
                 .execute(status -> getHibernateTemplate().execute(session -> getWmUser(session, username)));
     }
 
+    @Override
     public UserDetails createUserDetails(
             String username, UserDetails userDetails,
             List<GrantedAuthority> combinedAuthorities) {

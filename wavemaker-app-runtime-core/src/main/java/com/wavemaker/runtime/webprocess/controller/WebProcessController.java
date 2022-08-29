@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.http.entity.ContentType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.commons.WMRuntimeException;
@@ -56,7 +56,7 @@ public class WebProcessController {
 
     private String customUrlScheme;
 
-    @RequestMapping(value = "/prepare", method = RequestMethod.GET)
+    @GetMapping(value = "/prepare")
     @ApiOperation(value = "Returns a url to use to start the web process.")
     public String prepare(String hookUrl, String processName, String requestSourceType, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -73,7 +73,7 @@ public class WebProcessController {
         }
     }
 
-    @RequestMapping(value = "/start", method = RequestMethod.GET)
+    @GetMapping(value = "/start")
     @ApiOperation(value = "starts a web process by redirecting the user to process hook url.")
     public void start(String process, HttpServletRequest request, HttpServletResponse response) throws IOException {
         WebProcessHelper.addWebProcessCookie(request, response, process);
@@ -81,7 +81,7 @@ public class WebProcessController {
         response.sendRedirect(request.getServletContext().getContextPath() + webProcess.getHookUrl());
     }
 
-    @RequestMapping(value = "/end", method = RequestMethod.GET)
+    @GetMapping(value = "/end")
     @ApiOperation(value = "ends a web process and shows a page that has encoded output")
     public void end(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Cookie cookie = WebProcessHelper.getCookie(request.getCookies(), WebProcessHelper.WEB_PROCESS_COOKIE_NAME);
@@ -104,12 +104,13 @@ public class WebProcessController {
         }
     }
 
-    @RequestMapping(value = "/decode", method = RequestMethod.GET)
+    @GetMapping(value = "/decode")
     @ApiOperation(value = "ends a web process and shows a page that has encoded output")
-    public String decode(String encodedProcessdata, HttpServletRequest request) throws IOException {
+    public String decode(String encodedProcessdata, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Cookie cookie = WebProcessHelper.getCookie(request.getCookies(), WebProcessHelper.WEB_PROCESS_COOKIE_NAME);
         if (cookie != null) {
             WebProcess webProcess = WebProcessHelper.decodeWebProcess(cookie.getValue());
+            WebProcessHelper.removeWebProcessCookie(request, response);
             return CryptoUtils.decrypt(webProcess.getCommunicationKey(), encodedProcessdata);
         } else {
             throw new WMRuntimeException("Web Process cookie is not found");

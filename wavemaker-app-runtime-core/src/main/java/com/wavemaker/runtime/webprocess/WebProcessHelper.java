@@ -55,6 +55,19 @@ public class WebProcessHelper {
         response.addCookie(cookie);
     }
 
+    public static void removeWebProcessCookie(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if (WebProcessHelper.WEB_PROCESS_COOKIE_NAME.equalsIgnoreCase(c.getName())) {
+                    c.setMaxAge(0);
+                    c.setValue(null);
+                    c.setPath(request.getServletContext().getContextPath());
+                    response.addCookie(c);
+                }
+            }
+        }
+    }
+
     public static WebProcess decodeWebProcess(String process) throws IOException {
         process = new String(Base64.getDecoder().decode(process.getBytes(UTF_8)), UTF_8);
         return WMObjectMapper.getInstance().readValue(process, WebProcess.class);

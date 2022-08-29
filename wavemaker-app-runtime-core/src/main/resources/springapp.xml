@@ -55,6 +55,14 @@
 
     <bean id="cacheControlFilter" class="com.wavemaker.runtime.web.filter.CacheControlFilter"/>
 
+    <bean id="throwableTranslationFilter" class="com.wavemaker.commons.web.filter.ThrowableTranslationFilter"/>
+
+    <bean id="springEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter"/>
+
+    <bean id="cdnUrlReplacementFilter" class="com.wavemaker.runtime.web.filter.CDNUrlReplacementFilter"/>
+
+    <bean id="formContentFilter" class="org.springframework.web.filter.FormContentFilter"/>
+
     <bean id="cacheFilterConfigFactory" class="com.wavemaker.runtime.filter.etag.CacheFilterConfigFactoryBean"/>
     <bean id="eTagFilter" class="com.wavemaker.commons.web.filter.EtagFilter"/>
 
@@ -214,6 +222,7 @@
     <beans profile="wm_preview">
         <bean id="querycontroller" class="com.wavemaker.runtime.data.controller.QueryTestRunController"/>
         <bean id="queryDesignService" class="com.wavemaker.runtime.data.service.QueryDesignServiceImpl"/>
+        <bean id="skipSupportedSecurityFilter" class="com.wavemaker.runtime.filter.SkipSupportedSecurityFilter"/>
     </beans>
 
 </beans>
