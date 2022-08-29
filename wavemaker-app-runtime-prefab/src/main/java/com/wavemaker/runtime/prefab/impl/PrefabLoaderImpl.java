@@ -83,6 +83,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
         return prefabFactory;
     }
 
+    @Override
     public synchronized void loadPrefabs() {
         LOGGER.info("Context refreshed, (re)loading prefabs");
 

@@ -354,7 +354,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
             throw badCredentials();
         }
 
-        return rootDnFromDomain(bindPrincipal.substring(atChar+ 1, bindPrincipal.length()));
+        return rootDnFromDomain(bindPrincipal.substring(atChar+ 1));
     }
 
     private String rootDnFromDomain(String domain) {

@@ -603,7 +603,7 @@ public class WMJdbcIndexedSessionRepository
     }
 
     private static <T> Supplier<T> lazily(Supplier<T> supplier) {
-        Supplier<T> lazySupplier = new Supplier<T>() {
+        Supplier<T> lazySupplier = new Supplier<>() {
 
             private T value;
 

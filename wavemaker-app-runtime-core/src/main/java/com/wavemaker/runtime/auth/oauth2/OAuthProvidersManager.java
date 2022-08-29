@@ -84,7 +84,8 @@ public class OAuthProvidersManager {
 
     private static List<OAuth2ProviderConfig> getOAuth2ProviderConfigList(Reader reader) {
         try {
-            return JSONUtils.toObject(reader, new TypeReference<List<OAuth2ProviderConfig>>() {});
+            return JSONUtils.toObject(reader, new TypeReference<>() {
+            });
         } catch (IOException e) {
             throw new WMRuntimeException(e);
         }

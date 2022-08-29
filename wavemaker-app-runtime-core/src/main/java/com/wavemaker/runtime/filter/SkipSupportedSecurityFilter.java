@@ -17,61 +17,42 @@ package com.wavemaker.runtime.filter;
 
 import java.io.IOException;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.DelegatingFilterProxy;
-
-import com.wavemaker.runtime.RuntimeEnvironment;
-import com.wavemaker.runtime.commons.WMAppContext;
-import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
+import org.springframework.web.filter.GenericFilterBean;
 
 /**
  * @author Uday Shankar
  */
-public class WMSecurityFilter extends DelegatingFilterProxy {
+public class SkipSupportedSecurityFilter extends GenericFilterBean {
 
-    private Boolean isSecurityEnforced;
-
-    private boolean skipSecurityEnabled;
-
-    @Override
-    protected void initFilterBean() throws ServletException {
-        if (isSecurityEnforced()) {
-            super.initFilterBean();
-        }
-        skipSecurityEnabled = RuntimeEnvironment.isTestRunEnvironment();
-    }
+    @Autowired(required = false)
+    @Qualifier("springSecurityFilterChain")
+    private Filter springSecurityFilterChain;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
-            if (!isSecurityEnforced() || (skipSecurityEnabled && "true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
+            if (("true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
                 // Ignore the DelegatingProxyFilter delegate
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 // Call the delegate
-                super.doFilter(servletRequest, servletResponse, filterChain);
+                if (springSecurityFilterChain == null) {
+                    throw new IllegalStateException();
+                }
+                springSecurityFilterChain.doFilter(servletRequest, servletResponse, filterChain);
             }
         } finally {
             SecurityContextHolder.clearContext(); //Cleaning any Thread local map values if created
         }
-    }
-
-    private boolean isSecurityEnforced() {
-        if (isSecurityEnforced == null) {
-            try {
-                WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
-                isSecurityEnforced = wmAppSecurityConfig.isEnforceSecurity();
-            } catch (NoSuchBeanDefinitionException e) {
-                isSecurityEnforced = false;
-            }
-        }
-        return isSecurityEnforced;
     }
 }

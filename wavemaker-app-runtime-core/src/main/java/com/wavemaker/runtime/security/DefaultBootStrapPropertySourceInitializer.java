@@ -9,6 +9,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import com.wavemaker.commons.io.ClassPathFile;
+import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.util.PropertiesFileUtils;
 
 //TODO this class right now handles securityService.properties. Ideally there should be common framework to handle bootstrap properties
@@ -18,24 +19,19 @@ public class DefaultBootStrapPropertySourceInitializer implements ApplicationCon
 
     @Override
     public void initialize(ConfigurableWebApplicationContext applicationContext) {
-        applicationContext.getEnvironment().getPropertySources().addLast(new PropertySource<Object>("securityServicePropertySource") {
-            @Override
-            public Object getProperty(String name) {
-                if (name != null && name.startsWith("security.")) {
-                    return getSecurityServicesProperty(applicationContext.getClassLoader(), name);
-                }
-                return null;
-            }
-        });
-    }
-
-    private String getSecurityServicesProperty(ClassLoader classLoader, String name) {
-        logger.info("Fetching security services property {}", name);
-        ClassPathFile classPathFile = new ClassPathFile(classLoader, "conf/securityService.properties");
+        File classPathFile = new ClassPathFile(applicationContext.getClassLoader(), "conf/securityService.properties");
         if (classPathFile.exists()) {
             Properties properties = PropertiesFileUtils.loadProperties(classPathFile);
-            return properties.getProperty(name);
+            applicationContext.getEnvironment().getPropertySources().addLast(new PropertySource<>("securityServicePropertySource") {
+                @Override
+                public Object getProperty(String name) {
+                    if (name != null && name.startsWith("security.")) {
+                        DefaultBootStrapPropertySourceInitializer.logger.info("Fetching security services property {}", name);
+                        return properties.getProperty(name);
+                    }
+                    return null;
+                }
+            });
         }
-        return null;
     }
 }

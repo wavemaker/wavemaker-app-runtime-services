@@ -91,7 +91,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 }
             }
 
-            procedureMap = JSONUtils.toObject(resourceStream, new TypeReference<Map<String, RuntimeProcedure>>() {
+            procedureMap = JSONUtils.toObject(resourceStream, new TypeReference<>() {
             });
         } catch (WMRuntimeException e) {
             throw e;

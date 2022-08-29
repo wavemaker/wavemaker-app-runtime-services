@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -29,6 +30,8 @@ import com.wavemaker.runtime.commons.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
+
+import feign.Headers;
 import feign.Param;
 import feign.QueryMap;
 import feign.RequestLine;
@@ -39,6 +42,8 @@ public class RestInvocationHandler implements InvocationHandler {
 
     private static Pattern pathParameterPattern = Pattern.compile("\\/\\{(\\w*)\\}");
     private static Pattern queryParameterPattern = Pattern.compile("=\\{(\\w*)\\}");
+    private static Pattern headerParameterPattern = Pattern.compile("\\{(\\w*)\\}");
+    private static Pattern splitHeaderPattern = Pattern.compile("(.*):\\s\\{*((\\w|\\/)*)\\}*");
 
     private RestRuntimeService restRuntimeService;
 
@@ -54,8 +59,10 @@ public class RestInvocationHandler implements InvocationHandler {
         HttpRequestData httpRequestData = new HttpRequestData();
         Map<String, String> pathVariablesMap = new HashMap<>();
         MultiValueMap<String, String> queryVariablesMap = new LinkedMultiValueMap<>();
+        Map<String, String> headerVariableMap = new HashMap<>();
 
         List<String> queryVariablesList = getQueryVariables(method.getAnnotation(RequestLine.class).value());
+        List<String> headerPlaceholders = extractHeaderPlaceholders(method.getAnnotation(Headers.class).value());
 
         int position = 0;
         for (Annotation[] parameterAnnotation : method.getParameterAnnotations()) {
@@ -63,6 +70,8 @@ public class RestInvocationHandler implements InvocationHandler {
                 if (parameterAnnotation.length != 0 && parameterAnnotation[0] instanceof Param) {
                     if (queryVariablesList.contains(((Param) parameterAnnotation[0]).value())) {
                         queryVariablesMap.add(((Param) parameterAnnotation[0]).value(), args[position].toString());
+                    } else if (headerPlaceholders.contains(((Param) parameterAnnotation[0]).value())) {
+                        headerVariableMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
                     } else {
                         pathVariablesMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
                     }
@@ -84,6 +93,16 @@ public class RestInvocationHandler implements InvocationHandler {
         logger.debug("constructed request data {}", httpRequestData.getPathVariablesMap());
         logger.debug("constructed request query param {}", httpRequestData.getQueryParametersMap());
 
+        //Resolving the headers and setting them to httpRequestData
+        //eg: if Header is like X-RapidAPI-Key: {x_RapidAPI_Key} in this case we will look for x_RapidAPI_Key in variableMap and set its value
+        Arrays.stream(method.getAnnotation(Headers.class).value()).forEach(header -> {
+            Matcher matcher = splitHeaderPattern.matcher(header);
+            while (matcher.find()) {
+                httpRequestData.getHttpHeaders().add(matcher.group(1), header.contains("{") ? headerVariableMap.get(matcher.group(2)) :
+                        matcher.group(2));
+            }
+        });
+
         String[] split = method.getAnnotation(RequestLine.class).value().split(" ");
         HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
                 split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
@@ -93,7 +112,7 @@ public class RestInvocationHandler implements InvocationHandler {
         try {
             if (method.getReturnType() != void.class) {
                 if (responseDetails.getStatusCode() >= 200 && responseDetails.getStatusCode() < 300) {
-                    if(method.getGenericReturnType() instanceof ParameterizedType) {
+                    if (method.getGenericReturnType() instanceof ParameterizedType) {
                         return WMObjectMapper.getInstance().readValue(responseDetails.getBody(),
                                 WMObjectMapper.getInstance().getTypeFactory()
                                         .constructCollectionType((Class<? extends Collection>) Class.forName(method.getReturnType().getName()),
@@ -110,6 +129,17 @@ public class RestInvocationHandler implements InvocationHandler {
             throw new WMRuntimeException(e);
         }
         return null;
+    }
+
+    private List<String> extractHeaderPlaceholders(String[] value) {
+        List<String> headerVariables = new ArrayList();
+        Arrays.stream(value).forEach(header -> {
+            Matcher matcher = headerParameterPattern.matcher(header);
+            while (matcher.find()) {
+                headerVariables.add(matcher.group(1));
+            }
+        });
+        return headerVariables;
     }
 
     private Queue<String> getPathVariables(String value) {

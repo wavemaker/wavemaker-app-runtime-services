@@ -105,6 +105,7 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
         Assert.notNull(this.wmTokenBasedAuthenticationService, "An AccessTokenBasedAuthenticationService must be set");
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 

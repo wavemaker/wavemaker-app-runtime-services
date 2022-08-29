@@ -32,6 +32,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.model.security.saml.MetadataSource;
+import com.wavemaker.commons.util.WMIOUtils;
 
 @Configuration
 public class WMSAMLSecurityConfig {
@@ -73,6 +74,8 @@ public class WMSAMLSecurityConfig {
                 cert = (X509Certificate) keystore.getCertificate(keyStoreAlias);
             } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException | IOException e) {
                 throw new WMRuntimeException("Error in reading private key and certificate from keystore file ", e);
+            } finally {
+                WMIOUtils.closeSilently(resourceAsStream);
             }
             RelyingPartyRegistration.Builder relyingPartyBuilder;
             if (idpMetadataSource.equals(MetadataSource.URL.name())) {

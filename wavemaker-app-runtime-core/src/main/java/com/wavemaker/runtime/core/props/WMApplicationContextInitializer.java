@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import com.wavemaker.commons.WMRuntimeException;
@@ -23,8 +22,7 @@ public class WMApplicationContextInitializer implements ApplicationContextInitia
                 Object o = BeanUtils.instantiateClass(bootStrapPropertySourceClass);
                 if (o instanceof AbstractBootstrapPropertySource) {
                     AbstractBootstrapPropertySource bootstrapPropertySource = (AbstractBootstrapPropertySource) o;
-                    ConfigurableEnvironment environment = applicationContext.getEnvironment();
-                    bootstrapPropertySource.init(environment);
+                    bootstrapPropertySource.init(applicationContext);
                 } else {
                     throw new WMRuntimeException("Parameter 'bootstrapPropertySource' " + bootstrapPropertySourceParam +
                             " should extend " + AbstractBootstrapPropertySource.class.getName());

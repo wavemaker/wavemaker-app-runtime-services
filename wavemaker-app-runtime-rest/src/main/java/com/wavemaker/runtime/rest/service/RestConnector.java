@@ -30,7 +30,6 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -53,7 +52,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import com.wavemaker.commons.rest.error.WMDefaultResponseErrorHandler;
-import com.wavemaker.commons.util.SSLUtils;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
@@ -176,9 +174,10 @@ public class RestConnector {
     }
 
     private PoolingHttpClientConnectionManager getConnectionManager() {
+        SSLContextBuilder sslContextBuilder = new SSLContextBuilder(httpConfiguration);
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.getSocketFactory())
-                .register("https", new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, NoopHostnameVerifier.INSTANCE))
+                .register("https", new SSLConnectionSocketFactory(sslContextBuilder.getSslContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, sslContextBuilder.getHostNameVerifier()))
                 .build();
 
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);
@@ -198,7 +197,7 @@ public class RestConnector {
         return httpResponseDetails;
     }
 
-    class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
+    static class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
 
         @Override
         protected boolean hasError(HttpStatus statusCode) {

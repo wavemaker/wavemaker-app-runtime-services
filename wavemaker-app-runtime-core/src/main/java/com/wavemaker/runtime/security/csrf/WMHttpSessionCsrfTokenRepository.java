@@ -51,6 +51,7 @@ public class WMHttpSessionCsrfTokenRepository implements CsrfTokenRepository {
 
     private CSRFConfig csrfConfig;
 
+    @Override
     public void saveToken(CsrfToken token, HttpServletRequest request,
                           HttpServletResponse response) {
         HttpSession session = request.getSession(false);
@@ -63,6 +64,7 @@ public class WMHttpSessionCsrfTokenRepository implements CsrfTokenRepository {
         }
     }
 
+    @Override
     public CsrfToken loadToken(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -72,6 +74,7 @@ public class WMHttpSessionCsrfTokenRepository implements CsrfTokenRepository {
 
     }
 
+    @Override
     public CsrfToken generateToken(HttpServletRequest request) {
         return new DefaultCsrfToken(this.headerName, this.parameterName,
                 createNewToken());

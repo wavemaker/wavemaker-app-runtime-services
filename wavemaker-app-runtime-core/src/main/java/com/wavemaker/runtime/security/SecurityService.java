@@ -66,11 +66,6 @@ public class SecurityService {
     @Autowired(required = false)
     private WMAppSecurityConfig wmAppSecurityConfig;
 
-    private static Authentication getAuthenticatedAuthentication() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
-    }
-
     /**
      * This method is deprecated. You can set custom attributes in successhandlers.
      */
@@ -105,14 +100,6 @@ public class SecurityService {
 
     public LoginConfig getLoginConfig() {
         return wmAppSecurityConfig.getLoginConfig();
-    }
-
-    private String getCsrfHeaderName() {
-        if (isSecurityEnabled()) {
-            CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
-            return csrfConfig.getHeaderName();
-        }
-        return null;
     }
 
     /**
@@ -326,6 +313,7 @@ public class SecurityService {
         securityInfo.setLoginConfig(getLoginConfig());
         securityInfo.setUserInfo(userInfo);
         securityInfo.setCsrfHeaderName(getCsrfHeaderName());
+        securityInfo.setCsrfCookieName(getCsrfCookieName());
         return securityInfo;
     }
 
@@ -343,5 +331,26 @@ public class SecurityService {
     public void ssoLogin() {
         //DUMMY METHOD to redirect to default sso entry point...
         //When this method is invoked, the sso Filter is intercepted and sends the user to the default sso Login page through its AuthenticationEntryPoint.
+    }
+
+    private static Authentication getAuthenticatedAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
+    }
+
+    private String getCsrfCookieName() {
+        if (isSecurityEnabled()) {
+            CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
+            return csrfConfig.getCookieName();
+        }
+        return null;
+    }
+
+    private String getCsrfHeaderName() {
+        if (isSecurityEnabled()) {
+            CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
+            return csrfConfig.getHeaderName();
+        }
+        return null;
     }
 }

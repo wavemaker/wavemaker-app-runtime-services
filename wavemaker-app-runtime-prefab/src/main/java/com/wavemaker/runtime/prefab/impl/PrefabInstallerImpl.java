@@ -108,6 +108,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
     /**
      * (Re)installs all available prefabs.
      */
+    @Override
     public void installPrefabs() {
         if (prefabManager == null) {
             return;
@@ -121,6 +122,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
     /**
      * Uninstalls all prefabs.
      */
+    @Override
     public void uninstallPrefabs() {
         if (prefabRegistry != null) {
             // closing application contexts
