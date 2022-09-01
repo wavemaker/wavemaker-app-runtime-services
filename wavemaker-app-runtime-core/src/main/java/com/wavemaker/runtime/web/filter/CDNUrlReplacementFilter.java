@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,8 +17,6 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.wavemaker.runtime.web.wrapper.CDNUrlReplacementServletResponseWrapper;
 
 public class CDNUrlReplacementFilter extends GenericFilterBean {
-
-
     private static final String CDN_URL_PLACEHOLDER = "_cdnUrl_";
 
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
@@ -34,7 +33,9 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
             String response = new String(cdnUrlReplacementServletResponseWrapper.getByteArray());
             response = response.replace(CDN_URL_PLACEHOLDER, cdnUrl);
             httpServletResponse.setContentLengthLong(response.getBytes().length);
-            httpServletResponse.getWriter().write(response);
+            PrintWriter writer = httpServletResponse.getWriter();
+            writer.write(response);
+            writer.flush();
             return;
         }
         chain.doFilter(servletRequest, servletResponse);
