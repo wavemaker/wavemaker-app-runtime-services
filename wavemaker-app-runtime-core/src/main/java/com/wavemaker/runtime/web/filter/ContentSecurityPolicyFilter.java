@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -57,7 +58,9 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
                 String res = new String(cspResponseWrapper.getByteArray());
                 res = res.replaceAll(NONCE_VALUE_PATTERN, nonce);
                 httpServletResponse.setContentLengthLong(res.getBytes().length);
-                httpServletResponse.getWriter().write(res);
+                PrintWriter writer = httpServletResponse.getWriter();
+                writer.write(res);
+                writer.flush();
                 return;
             } else {
                 httpServletResponse.addHeader(CSP_HEADER, cspPolicy);
