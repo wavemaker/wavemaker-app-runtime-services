@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.runtime.web.wrapper.CDNUrlReplacementServletResponseWrapper;
@@ -20,6 +21,8 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
     private static final String CDN_URL_PLACEHOLDER = "_cdnUrl_";
 
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
+
+    private AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/index.html");
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
@@ -42,6 +45,6 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
     }
 
     protected boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return httpServletRequest.getServletPath().equals("/") || httpServletRequest.getServletPath().equals("/index.html");
+        return this.requestMatcher.matches(httpServletRequest);
     }
 }
