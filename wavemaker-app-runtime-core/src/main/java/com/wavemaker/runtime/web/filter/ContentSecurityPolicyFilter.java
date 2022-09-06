@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
 public class ContentSecurityPolicyFilter extends GenericFilterBean {
@@ -31,6 +32,8 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     private static final String NONCE_PLACEHOLDER = "${NONCE_VALUE}";
     private static final String CSP_HEADER = "Content-Security-Policy";
     private static final Logger logger = LoggerFactory.getLogger(ContentSecurityPolicyFilter.class);
+
+    private AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/index.html");
 
     @Override
     protected void initFilterBean() {
@@ -70,7 +73,7 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     }
 
     private boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return httpServletRequest.getServletPath().equals("/") || httpServletRequest.getServletPath().equals("/index.html");
+        return this.requestMatcher.matches(httpServletRequest);
     }
 
     private String generateRandomNonce(int length) {
