@@ -37,7 +37,8 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
 
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
 
-    private AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/index.html");
+    private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
+    private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
@@ -60,6 +61,6 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
     }
 
     protected boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.requestMatcher.matches(httpServletRequest);
+        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest);
     }
 }
