@@ -1,18 +1,17 @@
-/**
- * Copyright (C) 2020 WaveMaker, Inc.
- * <p>
+/*******************************************************************************
+ * Copyright (C) 2022-2023 WaveMaker, Inc.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ ******************************************************************************/
 package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
@@ -32,11 +31,11 @@ import com.wavemaker.commons.io.File;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.FileValidationUtils;
 import com.wavemaker.runtime.commons.WMAppContext;
+import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
 import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
-import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 
 /**
