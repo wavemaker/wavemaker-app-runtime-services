@@ -32,7 +32,8 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     private static final String CSP_HEADER = "Content-Security-Policy";
     private static final Logger logger = LoggerFactory.getLogger(ContentSecurityPolicyFilter.class);
 
-    private AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/index.html");
+    private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
+    private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
 
     @Override
     protected void initFilterBean() {
@@ -70,7 +71,7 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     }
 
     private boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.requestMatcher.matches(httpServletRequest);
+        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest);
     }
 
     private String generateRandomNonce(int length) {
