@@ -61,12 +61,12 @@ public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegister
 
         if (value.contains(DataServiceConstants.WM_MY_SQL_CLOUD_USER_NAME_TOKEN)) {
             value = StringUtils.replacePlainStr(value, DataServiceConstants.WM_MY_SQL_CLOUD_USER_NAME_TOKEN,
-                    DataServiceConstants.WM_MY_SQL_CLOUD_USER_NAME);
+                DataServiceConstants.WM_MY_SQL_CLOUD_USER_NAME);
         }
 
         if (value.contains(DataServiceConstants.WM_MY_SQL_CLOUD_PASSWORD_TOKEN)) {
             value = StringUtils.replacePlainStr(value, DataServiceConstants.WM_MY_SQL_CLOUD_PASSWORD_TOKEN,
-                    DataServiceConstants.WM_MY_SQL_CLOUD_PASSWORD);
+                DataServiceConstants.WM_MY_SQL_CLOUD_PASSWORD);
         }
         return value;
     }

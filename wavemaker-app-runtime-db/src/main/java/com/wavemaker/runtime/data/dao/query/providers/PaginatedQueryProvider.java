@@ -29,8 +29,9 @@ public interface PaginatedQueryProvider<R> {
     /**
      * Returns or creates query from underlying data source with given pagination info.
      *
-     * @param session active hibernate session.
+     * @param session  active hibernate session.
      * @param pageable pagination info
+     *
      * @return query
      */
     Query<R> getQuery(Session session, Pageable pageable);
@@ -39,6 +40,7 @@ public interface PaginatedQueryProvider<R> {
      * Returns count query to fetch the count from the underlying data source.
      *
      * @param session active hibernate session
+     *
      * @return count query.
      */
     Optional<Query<Number>> getCountQuery(Session session);

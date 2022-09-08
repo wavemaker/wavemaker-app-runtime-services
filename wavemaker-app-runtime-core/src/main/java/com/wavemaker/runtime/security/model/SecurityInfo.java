@@ -87,11 +87,11 @@ public class SecurityInfo {
     @Override
     public String toString() {
         return "SecurityInfo{" +
-                "securityEnabled=" + securityEnabled +
-                ", authenticated=" + authenticated +
-                ", login=" + loginConfig +
-                ", userInfo=" + userInfo +
-                ", csrfHeaderName=" + csrfHeaderName +
-                '}';
+            "securityEnabled=" + securityEnabled +
+            ", authenticated=" + authenticated +
+            ", login=" + loginConfig +
+            ", userInfo=" + userInfo +
+            ", csrfHeaderName=" + csrfHeaderName +
+            '}';
     }
 }

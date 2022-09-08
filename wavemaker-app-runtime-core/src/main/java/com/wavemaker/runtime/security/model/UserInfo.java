@@ -70,10 +70,10 @@ public class UserInfo {
     @Override
     public String toString() {
         return "UserInfo{" +
-                "userId='" + userId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userRoles=" + Arrays.toString(userRoles) +
-                ", landingPage='" + landingPage + '\'' +
-                '}';
+            "userId='" + userId + '\'' +
+            ", userName='" + userName + '\'' +
+            ", userRoles=" + Arrays.toString(userRoles) +
+            ", landingPage='" + landingPage + '\'' +
+            '}';
     }
 }

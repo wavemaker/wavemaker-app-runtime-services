@@ -29,8 +29,8 @@ public class PageableQueryInfo<T> extends QueryInfo<T> {
     private final Pageable pageable;
 
     public PageableQueryInfo(
-            final String queryName, final Map<String, Object> params, final ParameterTypeResolver resolver,
-            final Class<T> returnClass, final Pageable pageable) {
+        final String queryName, final Map<String, Object> params, final ParameterTypeResolver resolver,
+        final Class<T> returnClass, final Pageable pageable) {
         super(queryName, params, resolver, returnClass);
         this.pageable = pageable;
     }

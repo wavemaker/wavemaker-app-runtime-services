@@ -58,7 +58,8 @@ public class ProceduresUtils {
      * convert it to : call exampleProcedure ?,?,?
      *
      * @param procedureStr procedure string
-     * @param namedParams list of the named procedure parameters
+     * @param namedParams  list of the named procedure parameters
+     *
      * @return jdbc compliance procedure.
      */
     public static String jdbcComplianceProcedure(final String procedureStr, final Set<String> namedParams) {

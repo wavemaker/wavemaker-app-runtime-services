@@ -29,7 +29,6 @@ import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.util.HttpResponseUtils;
 
 /**
- *
  * 1)Removes headers which have an corresponding X-WM prefixed headers
  *
  * 2) Removes all X-WM- query parameters and adds them in headers for form post requests.

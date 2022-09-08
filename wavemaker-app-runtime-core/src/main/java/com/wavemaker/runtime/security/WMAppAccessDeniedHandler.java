@@ -49,8 +49,8 @@ public class WMAppAccessDeniedHandler extends AccessDeniedHandlerImpl {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
-            throws IOException, ServletException {
-        if(HttpRequestUtils.isAjaxRequest(request)) {
+        throws IOException, ServletException {
+        if (HttpRequestUtils.isAjaxRequest(request)) {
             String exceptionMessage = accessDeniedException.getMessage();
             Map<String, Object> errorMap = new HashMap(1);
             ErrorResponse errorResponse = new ErrorResponse();

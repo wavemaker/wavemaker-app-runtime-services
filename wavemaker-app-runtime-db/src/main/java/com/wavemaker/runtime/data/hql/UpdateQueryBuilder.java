@@ -43,19 +43,19 @@ public class UpdateQueryBuilder extends QueryBuilder<UpdateQueryBuilder> {
     public WMQueryInfo build() {
         Map<String, WMQueryParamInfo> parameters = new HashMap<>();
         String query = "update " +
-                generateFromClause(parameters, true) +
-                generateSetClause(parameters) +
-                generateWhereClause(parameters);
+            generateFromClause(parameters, true) +
+            generateSetClause(parameters) +
+            generateWhereClause(parameters);
 
         return new WMQueryInfo(query, parameters);
     }
 
     private String generateSetClause(Map<String, WMQueryParamInfo> parameters) {
         return (setters.entrySet().stream()
-                .map(entry -> ImmutablePair.of(entry, "wm_setter_" + entry.getKey()))
-                .peek(pair -> parameters.put(pair.getRight(), new WMQueryParamInfo(pair.getLeft().getValue())))
-                .map(pair -> pair.getLeft().getKey() + " = :" + pair.getRight())
-                .collect(Collectors.joining(", ", " set ", " ")));
+            .map(entry -> ImmutablePair.of(entry, "wm_setter_" + entry.getKey()))
+            .peek(pair -> parameters.put(pair.getRight(), new WMQueryParamInfo(pair.getLeft().getValue())))
+            .map(pair -> pair.getLeft().getKey() + " = :" + pair.getRight())
+            .collect(Collectors.joining(", ", " set ", " ")));
     }
 
 }

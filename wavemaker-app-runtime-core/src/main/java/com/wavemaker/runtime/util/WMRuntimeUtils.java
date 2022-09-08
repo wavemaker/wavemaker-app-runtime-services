@@ -30,7 +30,8 @@ import com.wavemaker.commons.WMRuntimeException;
  */
 public class WMRuntimeUtils {
 
-    private WMRuntimeUtils(){}
+    private WMRuntimeUtils() {
+    }
 
     private static final String BYTE_ARRAY = "byte[]";
 
@@ -44,11 +45,11 @@ public class WMRuntimeUtils {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.field.not.found"), e, field, instance.getName());
         }
         return declaredField != null && (Objects.equals(BYTE_ARRAY, declaredField.getType().getSimpleName())
-                || Objects.equals(BLOB, declaredField.getType().getSimpleName()));
+            || Objects.equals(BLOB, declaredField.getType().getSimpleName()));
     }
 
     public static String getContextRelativePath(File file, HttpServletRequest request) {
-      	return getContextRelativePath(file, request, null);
+        return getContextRelativePath(file, request, null);
     }
 
     public static String getContextRelativePath(File file, HttpServletRequest request, String relativePath) {

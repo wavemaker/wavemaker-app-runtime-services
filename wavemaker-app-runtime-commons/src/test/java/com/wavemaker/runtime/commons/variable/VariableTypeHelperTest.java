@@ -28,7 +28,7 @@ public class VariableTypeHelperTest {
     @Test
     public void fromAppVariableName() {
         final Pair<VariableType, String> result = VariableTypeHelper
-                .fromVariableName("APP_ENVIRONMENT__myProperty__name");
+            .fromVariableName("APP_ENVIRONMENT__myProperty__name");
         assertEquals(VariableType.APP_ENVIRONMENT, result.getLeft());
         assertEquals("myProperty", result.getRight());
     }
@@ -36,7 +36,7 @@ public class VariableTypeHelperTest {
     @Test
     public void fromServerVariableName() {
         final Pair<VariableType, String> result = VariableTypeHelper
-                .fromVariableName("SERVER__time__name");
+            .fromVariableName("SERVER__time__name");
         assertEquals(VariableType.SERVER, result.getLeft());
         assertEquals("time", result.getRight());
     }
@@ -44,7 +44,7 @@ public class VariableTypeHelperTest {
     @Test
     public void fromPromptVariableName() {
         final Pair<VariableType, String> result = VariableTypeHelper
-                .fromVariableName("name");
+            .fromVariableName("name");
         assertEquals(VariableType.PROMPT, result.getLeft());
         assertEquals("name", result.getRight());
     }

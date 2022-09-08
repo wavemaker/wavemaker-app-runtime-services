@@ -30,7 +30,6 @@ public class CDNUrlReplacementServletResponseWrapper extends SkipEtagHttpServlet
     private PrintWriter printWriter;
     private ServletOutputStream servletOutputStream;
 
-
     public CDNUrlReplacementServletResponseWrapper(HttpServletResponse response) {
         super(response);
         byteArrayOutputStream = new ByteArrayOutputStream();

@@ -50,28 +50,28 @@ public class CustomXmlLogConfiguration extends XmlConfiguration {
          * * Adding newly created appender to loggerConfiguration
          * */
         PatternLayout layout = PatternLayout.newBuilder()
-                .withConfiguration(configuration)
-                .withPattern("%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} -%X{X-WM-Request-Track-Id} %t %p [%c] - %encode{%m}{CRLF}%n")
-                .build();
+            .withConfiguration(configuration)
+            .withPattern("%d{dd MMM yyyy HH:mm:ss,SSS} -%X{wm.app.name} -%X{X-WM-Request-Track-Id} %t %p [%c] - %encode{%m}{CRLF}%n")
+            .build();
 
         getAppenders().keySet().forEach(this::removeAppender);
 
         String fileName = System.getProperty("wm.apps.log", System.getProperty("java.io.tmpdir") + "/apps.log");
         String rollingAppenderName = "RollAppender";
         DefaultRolloverStrategy rolloverStrategy = DefaultRolloverStrategy.newBuilder()
-                .withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
-                .withConfig(configuration)
-                .withMax(String.valueOf(10))
-                .build();
+            .withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
+            .withConfig(configuration)
+            .withMax(String.valueOf(10))
+            .build();
         RollingFileAppender rollingFileAppender = RollingFileAppender.newBuilder()
-                .setConfiguration(configuration)
-                .setName(rollingAppenderName)
-                .setLayout(layout)
-                .withFileName(fileName)
-                .withFilePattern(fileName.replace(".log", "%i.log"))
-                .withPolicy(SizeBasedTriggeringPolicy.createPolicy("10MB"))
-                .withStrategy(rolloverStrategy)
-                .build();
+            .setConfiguration(configuration)
+            .setName(rollingAppenderName)
+            .setLayout(layout)
+            .withFileName(fileName)
+            .withFilePattern(fileName.replace(".log", "%i.log"))
+            .withPolicy(SizeBasedTriggeringPolicy.createPolicy("10MB"))
+            .withStrategy(rolloverStrategy)
+            .build();
         addAppender(rollingFileAppender);
 
         /*

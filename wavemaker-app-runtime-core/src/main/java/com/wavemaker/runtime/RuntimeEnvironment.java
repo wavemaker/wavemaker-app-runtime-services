@@ -21,7 +21,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class RuntimeEnvironment {
 
-    private RuntimeEnvironment(){}
+    private RuntimeEnvironment() {
+    }
 
     private static final String WMAPP_ENVIRONMENT_KEY = "wmapp.environment";
     private static final String WM_STUDIO_URL = "wm.studioUrl";

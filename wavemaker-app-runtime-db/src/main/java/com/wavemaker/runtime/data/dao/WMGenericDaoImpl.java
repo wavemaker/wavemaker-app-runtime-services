@@ -69,7 +69,7 @@ import com.wavemaker.runtime.data.util.DaoUtils;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
 
 public abstract class WMGenericDaoImpl<E extends Serializable, I extends Serializable> implements
-        WMGenericDao<E, I> {
+    WMGenericDao<E, I> {
 
     protected Class<E> entityClass;
     protected EntityQueryGenerator<E, I> queryGenerator;
@@ -121,7 +121,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         final SelectQueryBuilder builder = queryGenerator.findById(entityId);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder, getWMQLTypeHelper())
-                .orElseThrow(() -> new EntityNotFoundException(MessageResource.create("com.wavemaker.runtime.no.entity.exists.for.given.id"), entityId));
+            .orElseThrow(() -> new EntityNotFoundException(MessageResource.create("com.wavemaker.runtime.no.entity.exists.for.given.id"), entityId));
     }
 
     @Override
@@ -129,8 +129,8 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         final List<I> nonNullIds = ids.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
         final List<E> result = getTemplate().execute(session -> session.byMultipleIds(entityClass)
-                .enableOrderedReturn(orderedReturn)
-                .multiLoad(nonNullIds));
+            .enableOrderedReturn(orderedReturn)
+            .multiLoad(nonNullIds));
 
         List<E> resultWithNulls = new ArrayList<>(ids.size());
         int index = 0;
@@ -150,8 +150,8 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         final SelectQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder, getWMQLTypeHelper())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        MessageResource.create("com.wavemaker.runtime.entity.not.found.for.given.map"), fieldValueMap));
+            .orElseThrow(() -> new EntityNotFoundException(
+                MessageResource.create("com.wavemaker.runtime.entity.not.found.for.given.map"), fieldValueMap));
     }
 
     @Override
@@ -162,7 +162,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     @Override
     @SuppressWarnings("unchecked")
     public Page getAssociatedObjects(
-            final Object value, final String fieldName, final String key, final Pageable pageable) {
+        final Object value, final String fieldName, final String key, final Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
         this.sortValidator.validate(validPageable, entityClass);
         return getTemplate().execute(session -> {
@@ -223,7 +223,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     @Override
     @SuppressWarnings("unchecked")
     public Page<Map<String, Object>> getAggregatedValues(
-            final AggregationInfo aggregationInfo, final Pageable pageable) {
+        final AggregationInfo aggregationInfo, final Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
 
         this.sortValidator.validate(validPageable, entityClass);
@@ -239,7 +239,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         export(new DataExportOptions(exportType, pageable.getPageSize(), query), pageable, outputStream);
         return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(),
-                entityClass.getSimpleName() + exportType.getExtension());
+            entityClass.getSimpleName() + exportType.getExtension());
     }
 
     @Override

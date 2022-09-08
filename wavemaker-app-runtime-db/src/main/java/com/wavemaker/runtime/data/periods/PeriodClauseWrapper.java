@@ -30,7 +30,7 @@ import com.wavemaker.runtime.data.model.JavaType;
 public class PeriodClauseWrapper implements PeriodClause {
 
     private static final String ERROR_MESSAGE = "period clause should be as_of <arg>, from_to <arg1> <arg2>, between " +
-            "<arg1> <arg2>";
+        "<arg1> <arg2>";
 
     private PeriodClause periodClause;
 

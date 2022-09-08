@@ -75,10 +75,10 @@ public class OpenSamlLogoutRequestResolver {
         this.relyingPartyRegistrationResolver = relyingPartyRegistrationResolver;
         XMLObjectProviderRegistry registry = ConfigurationService.get(XMLObjectProviderRegistry.class);
         this.marshaller = (LogoutRequestMarshaller) registry.getMarshallerFactory()
-                .getMarshaller(LogoutRequest.DEFAULT_ELEMENT_NAME);
+            .getMarshaller(LogoutRequest.DEFAULT_ELEMENT_NAME);
         Assert.notNull(this.marshaller, "logoutRequestMarshaller must be configured in OpenSAML");
         this.logoutRequestBuilder = (LogoutRequestBuilder) registry.getBuilderFactory()
-                .getBuilder(LogoutRequest.DEFAULT_ELEMENT_NAME);
+            .getBuilder(LogoutRequest.DEFAULT_ELEMENT_NAME);
         Assert.notNull(this.logoutRequestBuilder, "logoutRequestBuilder must be configured in OpenSAML");
         this.issuerBuilder = (IssuerBuilder) registry.getBuilderFactory().getBuilder(Issuer.DEFAULT_ELEMENT_NAME);
         Assert.notNull(this.issuerBuilder, "issuerBuilder must be configured in OpenSAML");
@@ -95,6 +95,7 @@ public class OpenSamlLogoutRequestResolver {
      *
      * @param request        the HTTP request
      * @param authentication the current user
+     *
      * @return a signed and serialized SAML 2.0 Logout Request
      */
     Saml2LogoutRequest resolve(HttpServletRequest request, Authentication authentication) {
@@ -123,7 +124,7 @@ public class OpenSamlLogoutRequestResolver {
         }
         String relayState = getRelayState(request);
         Saml2LogoutRequest.Builder result = Saml2LogoutRequest.withRelyingPartyRegistration(registration)
-                .id(logoutRequest.getID());
+            .id(logoutRequest.getID());
         if (registration.getAssertingPartyDetails().getSingleLogoutServiceBinding() == Saml2MessageBinding.POST) {
             String xml = serialize(OpenSamlSigningUtils.sign(logoutRequest, registration));
             String samlRequest = Saml2Utils.samlEncode(xml.getBytes(StandardCharsets.UTF_8));
@@ -133,8 +134,8 @@ public class OpenSamlLogoutRequestResolver {
             String deflatedAndEncoded = Saml2Utils.samlEncode(Saml2Utils.samlDeflate(xml));
             result.samlRequest(deflatedAndEncoded);
             OpenSamlSigningUtils.QueryParametersPartial partial = OpenSamlSigningUtils.sign(registration)
-                    .param(Saml2ParameterNames.SAML_REQUEST, deflatedAndEncoded)
-                    .param(Saml2ParameterNames.RELAY_STATE, relayState);
+                .param(Saml2ParameterNames.SAML_REQUEST, deflatedAndEncoded)
+                .param(Saml2ParameterNames.RELAY_STATE, relayState);
             return result.parameters((params) -> params.putAll(partial.parameters())).build();
         }
     }
@@ -147,7 +148,7 @@ public class OpenSamlLogoutRequestResolver {
             return null;
         }
         if (authentication instanceof WMAuthentication) {
-            WMAuthentication wmAuthentication = (WMAuthentication)authentication;
+            WMAuthentication wmAuthentication = (WMAuthentication) authentication;
             Object principal = wmAuthentication.getAuthenticationSource().getPrincipal();
             if (principal instanceof Saml2AuthenticatedPrincipal) {
                 return ((Saml2AuthenticatedPrincipal) principal).getRelyingPartyRegistrationId();
@@ -183,7 +184,7 @@ public class OpenSamlLogoutRequestResolver {
 
             String redirectPage = request.getParameter("redirectPage");
             if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(appUrl) && !StringUtils
-                    .containsAny(appUrl, '#', '?')) {
+                .containsAny(appUrl, '#', '?')) {
                 appUrl = appUrl.concat("#").concat(redirectPage);
             }
             return appUrl;

@@ -51,7 +51,6 @@ public class AppRuntimeController {
     @Autowired
     private ExportedFileManager exportedFileManager;
 
-
     @GetMapping(value = "/application/type")
     public StringWrapper getApplicationType() {
         String applicationType = appRuntimeService.getApplicationType();

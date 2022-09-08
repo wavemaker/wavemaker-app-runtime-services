@@ -36,38 +36,38 @@ public abstract class AnnotationUtils {
 
     public static List<PropertyDescriptor> findProperties(Class<?> type, Class<? extends Annotation> annotationType) {
         return Arrays.stream(type.getDeclaredFields())
-                .map(field -> ImmutablePair.of(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
-                .filter(pair -> {
-                    Field field = pair.getLeft();
-                    PropertyDescriptor propertyDescriptor = pair.getRight();
-                    boolean found = field.isAnnotationPresent(annotationType);
-                    if (propertyDescriptor != null) {
-                        if (propertyDescriptor.getReadMethod() != null) {
-                            found = found || propertyDescriptor.getReadMethod().isAnnotationPresent(annotationType);
-                        } else {
-                            LOGGER.warn("Read method not found for field: {} in class: {}", field.getName(),
-                                    type.getName());
-                        }
-
-                        if (propertyDescriptor.getWriteMethod() != null) {
-                            found = found || propertyDescriptor.getWriteMethod().isAnnotationPresent(annotationType);
-                        } else {
-                            LOGGER.warn("Write method not found for field: {} in class: {}", field.getName(),
-                                    type.getName());
-                        }
+            .map(field -> ImmutablePair.of(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
+            .filter(pair -> {
+                Field field = pair.getLeft();
+                PropertyDescriptor propertyDescriptor = pair.getRight();
+                boolean found = field.isAnnotationPresent(annotationType);
+                if (propertyDescriptor != null) {
+                    if (propertyDescriptor.getReadMethod() != null) {
+                        found = found || propertyDescriptor.getReadMethod().isAnnotationPresent(annotationType);
                     } else {
-                        LOGGER.warn("Property Descriptor not found for field: {} in class: {}", field.getName(),
-                                type.getName());
+                        LOGGER.warn("Read method not found for field: {} in class: {}", field.getName(),
+                            type.getName());
                     }
 
-                    return found;
-                }).map(pair -> pair.getRight())
-                .collect(Collectors.toList());
+                    if (propertyDescriptor.getWriteMethod() != null) {
+                        found = found || propertyDescriptor.getWriteMethod().isAnnotationPresent(annotationType);
+                    } else {
+                        LOGGER.warn("Write method not found for field: {} in class: {}", field.getName(),
+                            type.getName());
+                    }
+                } else {
+                    LOGGER.warn("Property Descriptor not found for field: {} in class: {}", field.getName(),
+                        type.getName());
+                }
+
+                return found;
+            }).map(pair -> pair.getRight())
+            .collect(Collectors.toList());
     }
 
     public static List<PropertyDescription> findProperties(Class<?> type) {
         return Arrays.stream(type.getDeclaredFields())
-                .map(field -> new PropertyDescription(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
-                .collect(Collectors.toList());
+            .map(field -> new PropertyDescription(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
+            .collect(Collectors.toList());
     }
 }

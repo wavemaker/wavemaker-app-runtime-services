@@ -45,7 +45,7 @@ import com.wavemaker.commons.util.HttpRequestUtils;
 public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
 
     /*Space after 'frame-ancestors' in FRAME_ANCESTOR_HEADER is mandatory.
-    * */
+     * */
     private FrameOptions frameOptions;
     private String allowFromUrl;
     private Map<String, URI> validDomains;
@@ -77,7 +77,7 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
-            IOException, ServletException {
+        IOException, ServletException {
         if (enabled) {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
@@ -86,7 +86,7 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
              * Most of the browsers except IE, supports ContentSecurityPolicy header.
              *  */
             FrameOptionsHeaderWriter frameOptionsHeaderWriter = (HttpRequestUtils.isRequestedFromIEBrowser(httpServletRequest)) ?
-                    new WMXFrameOptionsHeaderWriter() : new CSPFrameOptionsHeaderWriter();
+                new WMXFrameOptionsHeaderWriter() : new CSPFrameOptionsHeaderWriter();
             frameOptionsHeaderWriter.writeHeaders(frameOptions.getMode(), validDomains, httpServletRequest, httpServletResponse);
         }
         chain.doFilter(request, response);
@@ -127,15 +127,15 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
     private static class WMXFrameOptionsHeaderWriter extends AbstractFrameOptionsHeaderWriter {
 
         private static final XFrameOptionsHeaderWriter SAMEORIGIN_XFRAME_OPTIONS_HEADER_WRITER = new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter
-                .XFrameOptionsMode.SAMEORIGIN);
+            .XFrameOptionsMode.SAMEORIGIN);
 
         private static final XFrameOptionsHeaderWriter DENY_XFRAME_OPTIONS_HEADER_WRITER = new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter
-                .XFrameOptionsMode.DENY);
+            .XFrameOptionsMode.DENY);
 
         @Override
         protected void writeNonAllowFromHeader(FrameOptions.Mode mode, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
             XFrameOptionsHeaderWriter xFrameOptionsHeaderWriter = (mode == FrameOptions.Mode.SAMEORIGIN) ? SAMEORIGIN_XFRAME_OPTIONS_HEADER_WRITER :
-                    DENY_XFRAME_OPTIONS_HEADER_WRITER;
+                DENY_XFRAME_OPTIONS_HEADER_WRITER;
             xFrameOptionsHeaderWriter.writeHeaders(httpServletRequest, httpServletResponse);
         }
 
@@ -152,15 +152,15 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
         private static String FRAME_ANCESTORS_HEADER = "frame-ancestors ";
 
         private static final ContentSecurityPolicyHeaderWriter SELF_CONTENT_SECURITY_POLICY_HEADER_WRITER = new ContentSecurityPolicyHeaderWriter(
-                FRAME_ANCESTORS_HEADER + "'self'");
+            FRAME_ANCESTORS_HEADER + "'self'");
 
         private static final ContentSecurityPolicyHeaderWriter NONE_CONTENT_SECURITY_POLICY_HEADER_WRITER = new ContentSecurityPolicyHeaderWriter(
-                FRAME_ANCESTORS_HEADER + "'none'");
+            FRAME_ANCESTORS_HEADER + "'none'");
 
         @Override
         protected void writeNonAllowFromHeader(FrameOptions.Mode mode, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
             ContentSecurityPolicyHeaderWriter contentSecurityPolicyHeaderWriter = (mode == FrameOptions.Mode.SAMEORIGIN) ?
-                    SELF_CONTENT_SECURITY_POLICY_HEADER_WRITER : NONE_CONTENT_SECURITY_POLICY_HEADER_WRITER;
+                SELF_CONTENT_SECURITY_POLICY_HEADER_WRITER : NONE_CONTENT_SECURITY_POLICY_HEADER_WRITER;
             contentSecurityPolicyHeaderWriter.writeHeaders(httpServletRequest, httpServletResponse);
         }
 

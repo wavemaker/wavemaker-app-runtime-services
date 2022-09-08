@@ -34,13 +34,12 @@ import com.wavemaker.commons.model.security.CSRFConfig;
  */
 public class WMHttpSessionCsrfTokenRepository implements CsrfTokenRepository {
 
-
     private static final String DEFAULT_CSRF_PARAMETER_NAME = "_csrf";
 
     private static final String DEFAULT_CSRF_HEADER_NAME = "X-CSRF-TOKEN";
 
     private static final String DEFAULT_CSRF_TOKEN_ATTR_NAME = HttpSessionCsrfTokenRepository.class
-            .getName().concat(".CSRF_TOKEN");
+        .getName().concat(".CSRF_TOKEN");
 
     private String parameterName = DEFAULT_CSRF_PARAMETER_NAME;
 
@@ -76,7 +75,7 @@ public class WMHttpSessionCsrfTokenRepository implements CsrfTokenRepository {
     @Override
     public CsrfToken generateToken(HttpServletRequest request) {
         return new DefaultCsrfToken(this.headerName, this.parameterName,
-                createNewToken());
+            createNewToken());
     }
 
     public void setParameterName(String parameterName) {
@@ -93,7 +92,7 @@ public class WMHttpSessionCsrfTokenRepository implements CsrfTokenRepository {
 
     public void setSessionAttributeName(String sessionAttributeName) {
         Assert.hasLength(sessionAttributeName,
-                "sessionAttributename cannot be null or empty");
+            "sessionAttributename cannot be null or empty");
         this.sessionAttributeName = sessionAttributeName;
     }
 

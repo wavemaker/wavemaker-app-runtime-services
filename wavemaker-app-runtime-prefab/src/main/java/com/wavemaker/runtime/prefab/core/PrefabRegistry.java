@@ -20,37 +20,38 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * <code>PrefabRegistry</code> keeps track of {@link String} Vs {@link ConfigurableApplicationContext} mapping.
- * 
+ *
  * @author Dilip Kumar
  */
 public interface PrefabRegistry {
 
     /**
      * Adds a new mapping.
-     * 
-     * @param prefabName {@link String} to be added
+     *
+     * @param prefabName    {@link String} to be added
      * @param prefabContext target {@link ConfigurableApplicationContext}
      */
     public void addPrefabContext(String prefabName, ConfigurableApplicationContext prefabContext);
 
     /**
      * Deletes an existing mapping.
-     * 
+     *
      * @param prefabName {@link String} whose mapping is to be deleted
      */
     public void deletePrefabContext(String prefabName);
 
     /**
      * Returns the context mapped to the given URL.
-     * 
+     *
      * @param prefabName URL whose mapping is to be retrieved
+     *
      * @return target {@link ConfigurableApplicationContext}, if any, else null
      */
     public ConfigurableApplicationContext getPrefabContext(String prefabName);
 
     /**
      * Retuns a collection of currently mapped URLs.
-     * 
+     *
      * @return collection containing {@link String}
      */
     public Set<String> getPrefabs();

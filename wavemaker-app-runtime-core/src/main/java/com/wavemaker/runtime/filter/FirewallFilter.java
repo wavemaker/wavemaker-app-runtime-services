@@ -61,11 +61,11 @@ public class FirewallFilter implements Filter {
     private void init() {
         logger.info("Allowed hostnames configured are {}", hosts);
         List<String> sanitisedHosts = new ArrayList<>();
-        if(hosts != null && !hosts.isEmpty()) {
+        if (hosts != null && !hosts.isEmpty()) {
             String hostNamesLower = StringUtils.lowerCase(hosts);
             allowedHosts = Arrays.asList(hostNamesLower.split(","));
             allowedHosts.stream().map(UrlParserUtils::trimUrlForHostName)
-                    .collect(Collectors.toCollection(() -> sanitisedHosts));
+                .collect(Collectors.toCollection(() -> sanitisedHosts));
         }
 
         firewall.setAllowedHostnames(hostName -> {

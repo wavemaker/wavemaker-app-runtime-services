@@ -41,7 +41,7 @@ public class VariableDefinedPropertyProvider implements ValueProvider {
     private final Set<Scope> scopes;
 
     public VariableDefinedPropertyProvider(
-            final VariableType type, final String name, final Class<?> fieldType, final Set<Scope> scopes) {
+        final VariableType type, final String name, final Class<?> fieldType, final Set<Scope> scopes) {
         this.type = type;
         this.name = name;
         this.fieldType = fieldType;
@@ -64,7 +64,7 @@ public class VariableDefinedPropertyProvider implements ValueProvider {
         public ValueProvider build(Field field, Map<Field, PropertyDescriptor> fieldDescriptorMap, Annotation annotation) {
             WMValueInject provider = (WMValueInject) annotation;
             return new VariableDefinedPropertyProvider(provider.type(), provider.name(), field.getType(),
-                    Sets.newHashSet(provider.scopes()));
+                Sets.newHashSet(provider.scopes()));
         }
 
     }

@@ -70,12 +70,12 @@ import org.springframework.util.StringValueResolver;
  *
  * @author Vedran Pavic
  * @author Eddú Meléndez
- * @since 1.2.0
  * @see EnableJdbcHttpSession
+ * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
 public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfiguration
-        implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
+    implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
 
     static final String DEFAULT_CLEANUP_CRON = "0 * * * * *";
 
@@ -116,7 +116,7 @@ public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfigurati
             this.transactionOperations = createTransactionTemplate(this.transactionManager);
         }
         WMJdbcIndexedSessionRepository sessionRepository = new WMJdbcIndexedSessionRepository(jdbcTemplate,
-                this.transactionOperations);
+            this.transactionOperations);
         if (StringUtils.hasText(this.tableName)) {
             sessionRepository.setTableName(this.tableName);
         }
@@ -128,23 +128,20 @@ public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfigurati
         }
         if (this.lobHandler != null) {
             sessionRepository.setLobHandler(this.lobHandler);
-        }
-        else if (requiresTemporaryLob(this.dataSource)) {
+        } else if (requiresTemporaryLob(this.dataSource)) {
             DefaultLobHandler lobHandler = new DefaultLobHandler();
             lobHandler.setCreateTemporaryLob(true);
             sessionRepository.setLobHandler(lobHandler);
         }
         if (this.springSessionConversionService != null) {
             sessionRepository.setConversionService(this.springSessionConversionService);
-        }
-        else if (this.conversionService != null) {
+        } else if (this.conversionService != null) {
             sessionRepository.setConversionService(this.conversionService);
-        }
-        else {
+        } else {
             sessionRepository.setConversionService(createConversionServiceWithBeanClassLoader(this.classLoader));
         }
         this.sessionRepositoryCustomizers
-                .forEach((sessionRepositoryCustomizer) -> sessionRepositoryCustomizer.customize(sessionRepository));
+            .forEach((sessionRepositoryCustomizer) -> sessionRepositoryCustomizer.customize(sessionRepository));
         return sessionRepository;
     }
 
@@ -152,8 +149,7 @@ public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfigurati
         try {
             String productName = JdbcUtils.extractDatabaseMetaData(dataSource, "getDatabaseProductName");
             return "Oracle".equalsIgnoreCase(JdbcUtils.commonDatabaseName(productName));
-        }
-        catch (MetaDataAccessException ex) {
+        } catch (MetaDataAccessException ex) {
             return false;
         }
     }
@@ -224,7 +220,7 @@ public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfigurati
 
     @Autowired(required = false)
     public void setSessionRepositoryCustomizer(
-            ObjectProvider<SessionRepositoryCustomizer<WMJdbcIndexedSessionRepository>> sessionRepositoryCustomizers) {
+        ObjectProvider<SessionRepositoryCustomizer<WMJdbcIndexedSessionRepository>> sessionRepositoryCustomizers) {
         this.sessionRepositoryCustomizers = sessionRepositoryCustomizers.orderedStream().collect(Collectors.toList());
     }
 
@@ -241,7 +237,7 @@ public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfigurati
     @Override
     public void setImportMetadata(AnnotationMetadata importMetadata) {
         Map<String, Object> attributeMap = importMetadata
-                .getAnnotationAttributes(EnableJdbcHttpSession.class.getName());
+            .getAnnotationAttributes(EnableJdbcHttpSession.class.getName());
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(attributeMap);
         this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
         String tableNameValue = attributes.getString("tableName");
@@ -292,7 +288,7 @@ public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfigurati
         @Override
         public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
             taskRegistrar.addCronTask(this.sessionRepository::cleanUpExpiredSessions,
-                    WMJdbcHttpSessionConfiguration.this.cleanupCron);
+                WMJdbcHttpSessionConfiguration.this.cleanupCron);
         }
 
     }

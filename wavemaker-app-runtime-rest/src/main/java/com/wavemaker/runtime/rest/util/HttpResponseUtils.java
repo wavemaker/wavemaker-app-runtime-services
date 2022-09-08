@@ -30,9 +30,10 @@ import com.wavemaker.runtime.rest.model.HttpResponseDetails;
  */
 public class HttpResponseUtils {
 
-    private HttpResponseUtils(){}
+    private HttpResponseUtils() {
+    }
 
-    private static final String SET_COOKIE_HEADER="Set-Cookie";
+    private static final String SET_COOKIE_HEADER = "Set-Cookie";
 
     public static List<HttpCookie> getCookies(HttpResponseDetails httpResponseDetails) {
         List<HttpCookie> httpCookieList = new ArrayList<>();
@@ -64,19 +65,19 @@ public class HttpResponseUtils {
 
     public static String toString(HttpCookie httpCookie) {
         StringBuilder result = new StringBuilder()
-                .append(httpCookie.getName())
-                .append("=")
-                .append("\"")
-                .append(httpCookie.getValue())
-                .append("\"");
+            .append(httpCookie.getName())
+            .append("=")
+            .append("\"")
+            .append(httpCookie.getValue())
+            .append("\"");
 
-        if(StringUtils.isNotBlank(httpCookie.getPath())){
+        if (StringUtils.isNotBlank(httpCookie.getPath())) {
             result.append("; path=").append(httpCookie.getPath());
         }
-        if(httpCookie.getDiscard()){
+        if (httpCookie.getDiscard()) {
             result.append("; discard=").append(1);
         }
-        if(httpCookie.getMaxAge() != -1){
+        if (httpCookie.getMaxAge() != -1) {
             result.append("; max-age=").append(httpCookie.getMaxAge());
         }
 

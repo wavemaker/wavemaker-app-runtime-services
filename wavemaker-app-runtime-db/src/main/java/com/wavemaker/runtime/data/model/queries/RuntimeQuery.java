@@ -45,8 +45,8 @@ public class RuntimeQuery {
     }
 
     public RuntimeQuery(
-            final String queryString, final boolean nativeSql, final QueryType type,
-            final List<QueryParameter> parameters) {
+        final String queryString, final boolean nativeSql, final QueryType type,
+        final List<QueryParameter> parameters) {
         this.queryString = queryString;
         this.nativeSql = nativeSql;
         this.type = type;
@@ -128,8 +128,8 @@ public class RuntimeQuery {
         }
         final RuntimeQuery that = (RuntimeQuery) o;
         return isNativeSql() == that.isNativeSql() &&
-                Objects.equals(getQueryString(), that.getQueryString()) &&
-                Objects.equals(getParameters(), that.getParameters());
+            Objects.equals(getQueryString(), that.getQueryString()) &&
+            Objects.equals(getParameters(), that.getParameters());
     }
 
     @Override
@@ -140,11 +140,10 @@ public class RuntimeQuery {
     @Override
     public String toString() {
         return "RuntimeQuery{" +
-                "query='" + queryString + '\'' +
-                ", nativeSql=" + nativeSql +
-                ", parameters=" + parameters +
-                '}';
+            "query='" + queryString + '\'' +
+            ", nativeSql=" + nativeSql +
+            ", parameters=" + parameters +
+            '}';
     }
-
 
 }

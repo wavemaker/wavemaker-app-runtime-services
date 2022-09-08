@@ -63,40 +63,37 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
         }
     }
 
-
     /**
      * Flush OutputStream or PrintWriter
-     *
-     * @throws IOException
      */
 
     @Override
     public void flushBuffer() throws IOException {
 
-        if(this.printWriter != null) {
+        if (this.printWriter != null) {
             this.printWriter.flush();
         }
 
         IOException exception1 = null;
-        try{
-            if(this.outputStream != null) {
+        try {
+            if (this.outputStream != null) {
                 this.outputStream.flush();
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             exception1 = e;
         }
 
         IOException exception2 = null;
         try {
             super.flushBuffer();
-        } catch(IOException e){
+        } catch (IOException e) {
             exception2 = e;
         }
 
-        if(exception1 != null) {
+        if (exception1 != null) {
             throw exception1;
         }
-        if(exception2 != null) {
+        if (exception2 != null) {
             throw exception2;
         }
     }
@@ -171,9 +168,9 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
 
     private boolean isMimeTypeCompatible(MimeType requestedMimeType, String configuredMimeTypes) {
         return Arrays.stream(configuredMimeTypes.split(","))
-                .map(MimeType::valueOf)
-                .filter(mimeType -> requestedMimeType.isCompatibleWith(mimeType))
-                .findFirst()
-                .isPresent();
+            .map(MimeType::valueOf)
+            .filter(mimeType -> requestedMimeType.isCompatibleWith(mimeType))
+            .findFirst()
+            .isPresent();
     }
 }

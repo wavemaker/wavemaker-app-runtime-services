@@ -30,8 +30,8 @@ public class QueryInfo<T> {
     private final Class<T> returnClass;
 
     public QueryInfo(
-            final String queryName, final Map<String, Object> params,
-            final ParameterTypeResolver resolver, final Class<T> returnClass) {
+        final String queryName, final Map<String, Object> params,
+        final ParameterTypeResolver resolver, final Class<T> returnClass) {
         this.queryName = queryName;
         this.params = params;
         this.resolver = resolver;

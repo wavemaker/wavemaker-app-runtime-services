@@ -110,7 +110,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-                config.getServletContext());
+            config.getServletContext());
     }
 
     /**
@@ -145,10 +145,6 @@ public class PrefabControllerServlet extends DispatcherServlet {
 
     /**
      * Returns the qualified servlet path with prefab name.
-     *
-     * @param servletPath
-     * @param prefabName
-     * @return
      */
     private String getServletPathWithPrefabName(String servletPath, String prefabName) {
         servletPath = (servletPath.endsWith("/") ? servletPath.substring(0, (servletPath.length() - 1)) : servletPath);
@@ -164,7 +160,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
         for (HandlerMapping hm : handlerMappingMap.values()) {
             if (logger.isTraceEnabled()) {
                 logger.trace(
-                        "Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
+                    "Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
             }
             HandlerExecutionChain handler = hm.getHandler(request);
             if (handler != null) {
@@ -178,7 +174,6 @@ public class PrefabControllerServlet extends DispatcherServlet {
     /**
      * Returns the prefab name from the lookupPath i.e uri path.
      *
-     * @param lookupPath
      * @return prefab name or null, if no prefab name specified.
      */
     private String extractPrefabName(final String lookupPath) {
@@ -198,12 +193,13 @@ public class PrefabControllerServlet extends DispatcherServlet {
      * Looks up applicable prefab context for the given request.
      *
      * @param request HTTP request object
+     *
      * @return prefab context or null, if no context is registered for the URL path
      */
     private ApplicationContext lookupContext(final HttpServletRequest request) {
         // checking if any already initialized prefab context is there.
         ApplicationContext prefabContext = (ApplicationContext) request
-                .getAttribute(PrefabConstants.REQUEST_PREFAB_CONTEXT);
+            .getAttribute(PrefabConstants.REQUEST_PREFAB_CONTEXT);
         if (prefabContext == null) {
             String urlPath = urlPathHelper.getLookupPathForRequest(request);
             String prefabName = extractPrefabName(urlPath);
@@ -217,7 +213,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
             prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
             // setting prefab name in request object
             request.setAttribute(WebUtils.INCLUDE_SERVLET_PATH_ATTRIBUTE,
-                    getServletPathWithPrefabName(request.getServletPath(), prefabContext.getId()));
+                getServletPathWithPrefabName(request.getServletPath(), prefabContext.getId()));
             request.setAttribute(PrefabConstants.REQUEST_PREFAB_CONTEXT, prefabContext);
         }
         return prefabContext;
@@ -225,15 +221,11 @@ public class PrefabControllerServlet extends DispatcherServlet {
 
     /**
      * Returns the {@link HandlerAdapter} from the prefab context.
-     *
-     * @param handler
-     * @return
-     * @throws ServletException
      */
     @Override
     protected HandlerAdapter getHandlerAdapter(final Object handler) throws ServletException {
         Map<String, HandlerAdapter> handlerAdapterMap = prefabThreadLocalContextManager.getContext()
-                .getBeansOfType(HandlerAdapter.class);
+            .getBeansOfType(HandlerAdapter.class);
         for (HandlerAdapter ha : handlerAdapterMap.values()) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Testing handler adapter [" + ha + "]");
@@ -243,18 +235,18 @@ public class PrefabControllerServlet extends DispatcherServlet {
             }
         }
         throw new ServletException("No adapter for handler [" + handler +
-                "]: Does your handler implement a supported interface like Controller?");
+            "]: Does your handler implement a supported interface like Controller?");
     }
 
     @Override
     protected ModelAndView processHandlerException(
-            final HttpServletRequest request, final HttpServletResponse response,
-            final Object handler, final Exception ex) throws Exception {
+        final HttpServletRequest request, final HttpServletResponse response,
+        final Object handler, final Exception ex) throws Exception {
         ApplicationContext context = lookupContext(request);
         ModelAndView exMv = null;
 
         Map<String, HandlerExceptionResolver> handlerExceptionResolversMap = context
-                .getBeansOfType(HandlerExceptionResolver.class);
+            .getBeansOfType(HandlerExceptionResolver.class);
         for (HandlerExceptionResolver handlerExceptionResolver : handlerExceptionResolversMap.values()) {
             exMv = handlerExceptionResolver.resolveException(request, response, handler, ex);
             if (exMv != null) {

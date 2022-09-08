@@ -29,11 +29,11 @@ public class DataServiceUtilsTest {
     public void umwrapTest() {
         Exception e = new DataServiceRuntimeException("test message");
         RuntimeException e1 = new RuntimeException("abcd", e);
-        RuntimeException runtimeException= new RuntimeException("some cause");
+        RuntimeException runtimeException = new RuntimeException("some cause");
         RuntimeException e2 = new RuntimeException("efgh", e1);
         Exception e3 = new NullPointerException("Null Values");
-        InvalidDataAccessResourceUsageException invalid= new InvalidDataAccessResourceUsageException("Invalid data");
-        RuntimeException rx= new IndexOutOfBoundsException("Check Array");
+        InvalidDataAccessResourceUsageException invalid = new InvalidDataAccessResourceUsageException("Invalid data");
+        RuntimeException rx = new IndexOutOfBoundsException("Check Array");
         Assert.assertEquals(DataServiceUtils.unwrap(e), e);
         Assert.assertEquals(DataServiceUtils.unwrap(e2), e);
         Assert.assertEquals(DataServiceUtils.unwrap(rx), rx);
@@ -61,10 +61,10 @@ public class DataServiceUtilsTest {
     @Test
     public void testReplaceMysqlHostPattern() throws Exception {
         String testUrl = "jdbc:mysql://{WM_CLOUD_MYSQL_HOST}/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         String expectedUrl = "jdbc:mysql://localhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
         Assert.assertEquals(expectedUrl, result);
@@ -73,10 +73,10 @@ public class DataServiceUtilsTest {
     @Test
     public void testReplaceMysqlHostPatternWithPort() throws Exception {
         String testUrl = "jdbc:mysql://{WM_CLOUD_MYSQL_HOST}:320/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         String expectedUrl = "jdbc:mysql://localhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
         Assert.assertEquals(expectedUrl, result);
@@ -85,10 +85,10 @@ public class DataServiceUtilsTest {
     @Test
     public void testReplaceMysqlHostPatternNegative() throws Exception {
         String testUrl = "jdbc:mysql://randomhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         String expectedUrl = "jdbc:mysql://randomhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
         Assert.assertEquals(expectedUrl, result);
@@ -97,10 +97,10 @@ public class DataServiceUtilsTest {
     @Test
     public void testReplaceMysqlHostPatternNegative2() throws Exception {
         String testUrl = "jdbc:mysql://randomhost/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         String expectedUrl = "jdbc:mysql://randomhost/a1?useUnicode=yes&characterEncoding=UTF-8" +
-                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+            "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
         final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
         Assert.assertEquals(expectedUrl, result);

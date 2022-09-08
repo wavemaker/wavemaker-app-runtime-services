@@ -45,12 +45,13 @@ import com.wavemaker.runtime.data.util.JDBCUtils;
  */
 public class NativeProcedureExecutor {
 
-    private NativeProcedureExecutor(){ }
+    private NativeProcedureExecutor() {
+    }
 
     public static final String CONTENT_FIELD = "content";
 
     public static <T> T execute(
-            Session session, String jdbcQuery, List<ResolvableParam> params, Class<T> type) {
+        Session session, String jdbcQuery, List<ResolvableParam> params, Class<T> type) {
         Connection connection = null;
         try {
             connection = ((SessionImpl) session).connection();
@@ -66,15 +67,15 @@ public class NativeProcedureExecutor {
     }
 
     public static CallableStatement prepareStatement(
-            Connection connection, String jdbcQuery, List<ResolvableParam> params) throws SQLException {
+        Connection connection, String jdbcQuery, List<ResolvableParam> params) throws SQLException {
         final CallableStatement statement = connection.prepareCall(jdbcQuery);
         configureParameters(statement, params);
         return statement;
     }
 
     public static Map<String, Object> getResultMap(
-            final CallableStatement statement, final List<ResolvableParam> params,
-            final boolean resultSetType, final int limit) throws SQLException {
+        final CallableStatement statement, final List<ResolvableParam> params,
+        final boolean resultSetType, final int limit) throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
         if (resultSetType) {
             result.put(CONTENT_FIELD, readResultSet(statement.getResultSet(), limit));
@@ -101,7 +102,7 @@ public class NativeProcedureExecutor {
     }
 
     protected static void configureParameters(
-            final CallableStatement statement, final List<ResolvableParam> params) throws SQLException {
+        final CallableStatement statement, final List<ResolvableParam> params) throws SQLException {
         for (int i = 0; i < params.size(); i++) {
             final ResolvableParam param = params.get(i);
             if (param.getParameter().getParameterType().isOutParam()) {
@@ -117,7 +118,7 @@ public class NativeProcedureExecutor {
                         statement.setClob(i + 1, new StringReader((String) param.getValue()));
                     } else {
                         statement.setObject(i + 1, param.getValue(),
-                                JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
+                            JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
                     }
                 } else {
                     statement.setNull(i + 1, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
@@ -127,7 +128,7 @@ public class NativeProcedureExecutor {
     }
 
     private static Map<String, Object> readResponse(
-            CallableStatement statement, final List<ResolvableParam> params, final int limit) throws SQLException {
+        CallableStatement statement, final List<ResolvableParam> params, final int limit) throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
 
         for (int i = 0; i < params.size(); i++) {
@@ -136,8 +137,8 @@ public class NativeProcedureExecutor {
             final ProcedureParameter parameter = param.getParameter();
             if (parameter.getParameterType().isOutParam()) {
                 Object value = parameter.getType() == JavaType.BLOB ?
-                        statement.getBlob(i + 1) :
-                        statement.getObject(i + 1);
+                    statement.getBlob(i + 1) :
+                    statement.getObject(i + 1);
                 if (parameter.getType() == JavaType.CURSOR) {
                     value = readResultSet(value, limit);
                 }

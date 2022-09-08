@@ -19,7 +19,8 @@ package com.wavemaker.runtime.security.csrf;
  */
 public class SecurityConfigConstants {
 
-    private SecurityConfigConstants(){}
+    private SecurityConfigConstants() {
+    }
 
     public static final String WM_CSRF_TOKEN_COOKIE = "wm_xsrf_token";
 }

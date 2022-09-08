@@ -108,7 +108,6 @@ public class RestRuntimeService {
         restConnector = new RestConnector(environment);
     }
 
-
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
         return executeRestCall(serviceId, operationId, httpRequestData, null);
     }
@@ -118,7 +117,7 @@ public class RestRuntimeService {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         Triple<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, pathAndOperation.getLeft(),
-                SwaggerDocUtil.getOperationType(pathAndOperation.getMiddle(), pathAndOperation.getRight().getOperationId()).toUpperCase(), httpRequestData);
+            SwaggerDocUtil.getOperationType(pathAndOperation.getMiddle(), pathAndOperation.getRight().getOperationId()).toUpperCase(), httpRequestData);
         return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, httpServletRequest, "");
     }
 
@@ -191,7 +190,6 @@ public class RestRuntimeService {
             httpHeaders.putAll(response.getHeaders());
             httpResponseDetails.setHeaders(httpHeaders);
 
-
             HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
             List<HttpResponseProcessor> httpResponseProcessors = restRuntimeConfig.getHttpResponseProcessorList();
             for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
@@ -223,7 +221,7 @@ public class RestRuntimeService {
         Map<String, String> pathParameters = new HashMap<>();
         Operation operation = operationPair.getRight();
         filterAndApplyServerVariablesOnRequestData(httpRequestData, swagger, operation,
-                httpHeaders, queryParameters, pathParameters);
+            httpHeaders, queryParameters, pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
@@ -246,7 +244,7 @@ public class RestRuntimeService {
             }
         }
         throw new WMRuntimeException(MessageResource.create(OPERATION_DOES_NOT_EXIST),
-                operationId);
+            operationId);
     }
 
     private Pair<String, Operation> findOperation(Swagger swagger, String path, String method) {
@@ -275,12 +273,12 @@ public class RestRuntimeService {
             }
         }
         throw new WMRuntimeException(MessageResource.create(OPERATION_DOES_NOT_EXIST),
-                path);
+            path);
     }
 
     private void filterAndApplyServerVariablesOnRequestData(
-            HttpRequestData httpRequestData, Swagger swagger, Operation operation, HttpHeaders headers,
-            Map<String, Object> queryParameters, Map<String, String> pathParameters) {
+        HttpRequestData httpRequestData, Swagger swagger, Operation operation, HttpHeaders headers,
+        Map<String, Object> queryParameters, Map<String, String> pathParameters) {
         for (Parameter parameter : operation.getParameters()) {
             if (parameter instanceof RefParameter) {
                 parameter = swagger.getParameter(((RefParameter) parameter).getSimpleRef());
@@ -290,19 +288,19 @@ public class RestRuntimeService {
             Optional<String> variableValue = RestRequestUtils.findVariableValue(parameter);
             if (ParameterType.HEADER.name().equals(type)) {
                 List<String> headerValues = variableValue.map(Collections::singletonList)
-                        .orElse(httpRequestData.getHttpHeaders().get(paramName));
+                    .orElse(httpRequestData.getHttpHeaders().get(paramName));
                 if (headerValues != null) {
                     headers.put(paramName, headerValues);
                 }
             } else if (ParameterType.QUERY.name().equals(type)) {
                 List<String> paramValues = variableValue.map(Collections::singletonList)
-                        .orElse(httpRequestData.getQueryParametersMap().get(paramName));
+                    .orElse(httpRequestData.getQueryParametersMap().get(paramName));
                 if (paramValues != null) {
                     queryParameters.put(paramName, paramValues);
                 }
             } else if (ParameterType.PATH.name().equals(type)) {
                 String pathVariableValue = variableValue
-                        .orElse(httpRequestData.getPathVariablesMap().get(paramName));
+                    .orElse(httpRequestData.getPathVariablesMap().get(paramName));
                 if (pathVariableValue != null) {
                     pathParameters.put(paramName, pathVariableValue);
                 }
@@ -316,7 +314,7 @@ public class RestRuntimeService {
         String basePath = getPropertyValue(serviceId, RestConstants.BASE_PATH_KEY);
 
         StringBuilder sb = new StringBuilder(scheme).append("://").append(host)
-                .append(getNormalizedString(basePath)).append(getNormalizedString(pathValue));
+            .append(getNormalizedString(basePath)).append(getNormalizedString(pathValue));
 
         updateUrlWithQueryParameters(sb, queryParameters);
 
@@ -352,7 +350,7 @@ public class RestRuntimeService {
                         OAuth2Definition oAuth2Definition = (OAuth2Definition) securitySchemeDefinition;
                         if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
                             queryParameters.put(oAuth2Definition.getAccessTokenParamName(), httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
-                                    .getAccessTokenParamName()));
+                                .getAccessTokenParamName()));
                         } else {
                             sendAsAuthorizationHeader(httpHeaders, httpRequestData);
                         }

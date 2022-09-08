@@ -50,14 +50,15 @@ public class OpenSaml3LogoutRequestResolver implements Saml2LogoutRequestResolve
         return this.logoutRequestResolver.resolve(request, authentication, (registration, logoutRequest) -> {
             logoutRequest.setIssueInstant(new DateTime(this.clock.millis()));
             this.parametersConsumer
-                    .accept(new LogoutRequestParameters(request, registration, authentication, logoutRequest));
+                .accept(new LogoutRequestParameters(request, registration, authentication, logoutRequest));
         });
     }
 
     /**
      * Set a {@link Consumer} for modifying the OpenSAML {@link LogoutRequest}
+     *
      * @param parametersConsumer a consumer that accepts an
-     * {@link org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml3LogoutRequestResolver.LogoutRequestParameters}
+     *                           {@link org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml3LogoutRequestResolver.LogoutRequestParameters}
      */
     public void setParametersConsumer(Consumer<LogoutRequestParameters> parametersConsumer) {
         Assert.notNull(parametersConsumer, "parametersConsumer cannot be null");
@@ -66,6 +67,7 @@ public class OpenSaml3LogoutRequestResolver implements Saml2LogoutRequestResolve
 
     /**
      * Use this {@link Clock} for generating the issued {@link DateTime}
+     *
      * @param clock the {@link Clock} to use
      */
     public void setClock(Clock clock) {

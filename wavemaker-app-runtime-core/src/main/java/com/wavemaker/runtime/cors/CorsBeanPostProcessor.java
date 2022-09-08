@@ -34,7 +34,7 @@ import com.wavemaker.commons.model.security.PathEntry;
  * Registers all {@link CorsConfig} beans configured in the app using
  * {@link org.springframework.web.cors.UrlBasedCorsConfigurationSource#registerCorsConfiguration(String, CorsConfiguration)}.
  *
- * @author  srujant on 5/7/17.
+ * @author srujant on 5/7/17.
  */
 public class CorsBeanPostProcessor implements BeanPostProcessor {
 
@@ -100,7 +100,6 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
     private List<String> toList(String inputString) {
         return Arrays.asList(StringUtils.split(inputString, ","));
     }
-
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {

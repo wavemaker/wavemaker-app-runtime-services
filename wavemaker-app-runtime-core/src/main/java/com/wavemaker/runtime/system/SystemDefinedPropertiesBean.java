@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.system;
 
-
 import java.sql.Date;
 import java.sql.Time;
 import java.util.Calendar;
@@ -46,7 +45,7 @@ public class SystemDefinedPropertiesBean {
     }
 
     public String getCurrentUserName() {
-        final SecurityService securityService =  getSecurityService();
+        final SecurityService securityService = getSecurityService();
         if (securityService != null && securityService.isSecurityEnabled()) {
             return securityService.getLoggedInUser().getUserName();
         }
@@ -54,7 +53,7 @@ public class SystemDefinedPropertiesBean {
     }
 
     public String getCurrentUserId() {
-        final SecurityService securityService =  getSecurityService();
+        final SecurityService securityService = getSecurityService();
         if (securityService != null && securityService.isSecurityEnabled()) {
             return securityService.getLoggedInUser().getUserId();
         }

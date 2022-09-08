@@ -49,7 +49,6 @@ import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_
  */
 public class WMApplicationAuthenticationFailureHandler implements AuthenticationFailureHandler, BeanPostProcessor {
 
-
     private static final Logger logger = LoggerFactory.getLogger(WMApplicationAuthenticationFailureHandler.class);
     private List<WMAuthenticationFailureHandler> customFailureHandlerList = new ArrayList<>();
 

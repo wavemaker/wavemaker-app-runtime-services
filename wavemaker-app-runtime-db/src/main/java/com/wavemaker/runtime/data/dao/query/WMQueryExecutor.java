@@ -42,7 +42,7 @@ public interface WMQueryExecutor {
     <T> T executeNamedQuery(QueryProcedureInput<T> queryInput);
 
     default <T> Page<T> executeNamedQuery(
-            String queryName, Map<String, Object> params, Class<T> returnType, Pageable pageable) {
+        String queryName, Map<String, Object> params, Class<T> returnType, Pageable pageable) {
         return executeNamedQuery(new QueryProcedureInput<>(queryName, params, returnType), pageable);
     }
 
@@ -70,8 +70,8 @@ public interface WMQueryExecutor {
 
     @Deprecated
     default <T> Downloadable exportNamedQueryData(
-            String queryName, Map<String, Object> params, ExportType exportType,
-            Class<T> responseType, Pageable pageable) {
+        String queryName, Map<String, Object> params, ExportType exportType,
+        Class<T> responseType, Pageable pageable) {
 
         try {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -79,11 +79,11 @@ public interface WMQueryExecutor {
                 ExportOptions options = new ExportOptions(exportType, pageable.getPageSize());
 
                 exportNamedQueryData(new QueryProcedureInput<>(queryName, params, responseType), options, pageable,
-                        outputStream);
+                    outputStream);
 
                 return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()),
-                        exportType.getContentType(),
-                        queryName + exportType.getExtension());
+                    exportType.getContentType(),
+                    queryName + exportType.getExtension());
             }
         } catch (IOException e) {
             throw new WMRuntimeException("Exception while closing out stream", e);
@@ -91,6 +91,6 @@ public interface WMQueryExecutor {
     }
 
     <T> void exportNamedQueryData(
-            QueryProcedureInput<T> queryInput, ExportOptions exportOptions, Pageable pageable,
-            OutputStream outputStream);
+        QueryProcedureInput<T> queryInput, ExportOptions exportOptions, Pageable pageable,
+        OutputStream outputStream);
 }

@@ -37,7 +37,6 @@ public class BetweenClause implements PeriodClause {
         this.to = to;
     }
 
-
     @Override
     public WMQueryInfo asWMQueryClause() {
         String var1Name = "wm_" + type.asHqlKeyword() + "_from_timestamp";

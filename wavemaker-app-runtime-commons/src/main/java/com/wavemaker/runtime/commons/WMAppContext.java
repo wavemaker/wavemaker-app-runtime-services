@@ -51,7 +51,6 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
 
     /**
      * Used by old file service java classes
-     * @return
      */
     @Deprecated
     public ServletContext getContext() {
@@ -85,7 +84,7 @@ public class WMAppContext implements ApplicationContextAware, ServletContextAwar
             PrefabThreadLocalContextManager prefabThreadLocalContextManager;
             try {
                 prefabThreadLocalContextManager = getRootApplicationContext()
-                        .getBean(PrefabThreadLocalContextManager.class);
+                    .getBean(PrefabThreadLocalContextManager.class);
             } catch (NoSuchBeanDefinitionException e) {
                 prefabThreadLocalContextManager = new PrefabThreadLocalContextManager(); //To prevent this method being called every time
             }

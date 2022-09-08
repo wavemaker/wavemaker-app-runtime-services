@@ -48,7 +48,6 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
         HttpResponseDetails httpResponseDetails = httpResponseProcessorContext.getHttpResponseDetails();
         List<HttpCookie> cookies = HttpResponseUtils.getCookies(httpResponseDetails);
 
-
         switch (persistenceStrategy) {
             case CLIENT:
                 updateCookiePath(httpServletRequest, httpResponseDetails, cookies);
@@ -64,7 +63,6 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unknown.strategytype"));
         }
     }
-
 
     private void updateCookiePath(HttpServletRequest httpServletRequest, HttpResponseDetails httpResponseDetails, List<HttpCookie> cookies) {
         String newCookiePath = getCookiePath(httpServletRequest);
@@ -121,7 +119,6 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
         USER_SESSION,
         NONE
     }
-
 
     public PersistenceStrategy getPersistenceStrategy() {
         return persistenceStrategy;

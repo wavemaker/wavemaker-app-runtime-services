@@ -29,7 +29,6 @@ import com.wavemaker.commons.CommonConstants;
  */
 public class MySQLDialect extends MySQL5Dialect {
 
-
     public MySQLDialect() {
         super();
         registerFunction("uuid", new NoArgSQLFunction("uuid", StringType.INSTANCE));

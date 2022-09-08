@@ -61,8 +61,8 @@ public class AggregationInfo {
         }
         final AggregationInfo that = (AggregationInfo) o;
         return Objects.equals(getGroupByFields(), that.getGroupByFields()) &&
-                Objects.equals(getAggregations(), that.getAggregations()) &&
-                Objects.equals(getFilter(), that.getFilter());
+            Objects.equals(getAggregations(), that.getAggregations()) &&
+            Objects.equals(getFilter(), that.getFilter());
     }
 
     @Override
@@ -73,9 +73,9 @@ public class AggregationInfo {
     @Override
     public String toString() {
         return "AggregationInfo{" +
-                "groupByFields=" + groupByFields +
-                ", aggregations=" + aggregations +
-                ", filter='" + filter + '\'' +
-                '}';
+            "groupByFields=" + groupByFields +
+            ", aggregations=" + aggregations +
+            ", filter='" + filter + '\'' +
+            '}';
     }
 }

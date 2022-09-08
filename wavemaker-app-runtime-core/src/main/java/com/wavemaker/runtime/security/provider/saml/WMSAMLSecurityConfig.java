@@ -100,11 +100,11 @@ public class WMSAMLSecurityConfig {
             }
 
             RelyingPartyRegistration registration = relyingPartyBuilder
-                    .registrationId("saml")
-                    .signingX509Credentials((c) -> c.add(Saml2X509Credential.signing(privateKey, cert)))
-                    .decryptionX509Credentials((c) -> c.add(Saml2X509Credential.decryption(privateKey, cert)))
-                    .singleLogoutServiceLocation("{baseUrl}/logout/saml2/slo")
-                    .build();
+                .registrationId("saml")
+                .signingX509Credentials((c) -> c.add(Saml2X509Credential.signing(privateKey, cert)))
+                .decryptionX509Credentials((c) -> c.add(Saml2X509Credential.decryption(privateKey, cert)))
+                .singleLogoutServiceLocation("{baseUrl}/logout/saml2/slo")
+                .build();
             return new InMemoryRelyingPartyRegistrationRepository(registration);
         } else {
             throw new WMRuntimeException("saml properties not found or configured");

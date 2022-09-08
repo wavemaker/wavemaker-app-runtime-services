@@ -41,24 +41,20 @@ public class HqlParserDataProvider {
         return getParameters(DataTypeQueries::getQueries, FieldsMetadata.getFields());
     }
 
-
     @DataProvider
     public static Object[][] nullValuesQueriesProvider() {
         return getParameters(NullCheckQueries::getQueries, FieldsMetadata.getFields());
     }
-
 
     @DataProvider
     public static Object[][] syntaxErrorQueriesProvider() {
         return getParameters(SyntaxErrorQueries::getQueries, Collections.singletonList(String.class));
     }
 
-
     @DataProvider
     public static Object[][] sqlInjectionQueriesProvider() {
         return getParameters(SqlInjectionQueries::getQueries, Collections.singletonList(String.class));
     }
-
 
     @DataProvider
     public static Object[][] betweenPositiveQueriesProvider() {
@@ -89,7 +85,6 @@ public class HqlParserDataProvider {
     public static Object[][] likeNegativeQueriesProvider() {
         return getParameters(LikeQueries::getNegativeQueries, Collections.singletonList(String.class));
     }
-
 
     @DataProvider
     public static Object[][] nestedBracesPositiveQueriesProvider() {
@@ -134,6 +129,5 @@ public class HqlParserDataProvider {
     private interface QueriesProvider {
         List<String> getQueries(Class dataType);
     }
-
 
 }

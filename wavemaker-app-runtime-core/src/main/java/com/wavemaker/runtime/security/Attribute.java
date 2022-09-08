@@ -19,8 +19,7 @@ import java.io.Serializable;
 /**
  * Created by srujant on 14/11/18.
  */
-public class Attribute implements Serializable{
-
+public class Attribute implements Serializable {
 
     private AttributeScope scope;
     private Object value;
@@ -38,15 +37,14 @@ public class Attribute implements Serializable{
         return value;
     }
 
-
     public enum AttributeScope {
         /*
-        *  This attributescoped variables will be visible to both client and server.
-        * */
+         *  This attributescoped variables will be visible to both client and server.
+         * */
         ALL,
         /*
-        * This attributescoped variables will be visible only to the server.
-        * */
+         * This attributescoped variables will be visible only to the server.
+         * */
         SERVER_ONLY;
     }
 

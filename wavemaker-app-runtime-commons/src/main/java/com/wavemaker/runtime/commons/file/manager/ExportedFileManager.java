@@ -25,9 +25,9 @@ public interface ExportedFileManager {
     default String registerAndGetURL(String fileName, Consumer<OutputStream> callback) {
         String fileID = registerFile(fileName, callback);
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/services/files/exported/{path}")
-                .buildAndExpand(fileID)
-                .toUriString();
+            .path("/services/files/exported/{path}")
+            .buildAndExpand(fileID)
+            .toUriString();
     }
 
     String registerFile(String fileName, Consumer<OutputStream> callback);

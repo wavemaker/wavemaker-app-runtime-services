@@ -28,7 +28,6 @@ public class PrefabAwareHttpRequestWrapper extends HttpServletRequestWrapper {
      * Creates a new {@code HttpRequest} wrapping the given request object.
      *
      * @param request the request object to be wrapped
-     * @param prefabName
      */
     public PrefabAwareHttpRequestWrapper(HttpServletRequest request, String prefabName) {
         super(request);
@@ -44,6 +43,5 @@ public class PrefabAwareHttpRequestWrapper extends HttpServletRequestWrapper {
             return pathInfo;
         }
     }
-
 
 }

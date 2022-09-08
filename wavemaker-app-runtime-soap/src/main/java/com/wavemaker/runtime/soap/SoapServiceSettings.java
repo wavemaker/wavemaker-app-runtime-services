@@ -149,28 +149,22 @@ public class SoapServiceSettings {
         this.soapActionURI = soapActionURI;
     }
 
-
     /**
      * Returns the service base package name
-     * @return
      */
     public String getPackageName() {
         return packageName;
     }
 
-
     /**
      * Sets the service base package name
-     * @param packageName
      */
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
 
-
     /**
      * Gets the location (URL) of wsdl
-     * @return
      */
     public String getWsdlLocation() {
         return wsdlLocation;
@@ -178,12 +172,10 @@ public class SoapServiceSettings {
 
     /**
      * Sets the location (URL) of wsdl
-     * @param wsdlLocation
      */
     public void setWsdlLocation(String wsdlLocation) {
         this.wsdlLocation = wsdlLocation;
     }
-
 
     public SoapWsdlSource getWsdlSource() {
         return wsdlSource;
@@ -210,7 +202,6 @@ public class SoapServiceSettings {
     public void setHttpHeaders(Map<String, String> httpHeaders) {
         this.httpHeaders = httpHeaders;
     }
-
 
     public String getBindingsFile() {
         return bindingsFile;

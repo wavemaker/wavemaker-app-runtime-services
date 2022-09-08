@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dao.procedure;
 
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +74,17 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             resourceStream = contextClassLoader.getResourceAsStream(serviceId + "-procedures.mappings.json");
             if (resourceStream != null) {
                 LOGGER.info("Using the file {}-procedures.mappings.json from context classLoader {}", serviceId,
-                        contextClassLoader);
+                    contextClassLoader);
             } else {
                 LOGGER.warn("Could not find {}-procedures.mappings.json in context classLoader {}", serviceId,
-                        contextClassLoader);
+                    contextClassLoader);
                 resourceStream = webAppClassLoader.getResourceAsStream(serviceId + "-procedures.mappings.json");
                 if (resourceStream != null) {
                     LOGGER.warn("Using the file {}-procedures.mappings.json from webApp classLoader {}", serviceId,
-                            webAppClassLoader);
+                        webAppClassLoader);
                 } else {
                     LOGGER.warn("Could not find {}-procedures.mappings.json in webApp classLoader {} also", serviceId,
-                            webAppClassLoader);
+                        webAppClassLoader);
                     throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.procedures.mappings.not.found"), serviceId);
                 }
             }
@@ -103,7 +102,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
     @Override
     public <T> T executeNamedProcedure(
-            final String procedureName, final Map<String, Object> params, final Class<T> type) {
+        final String procedureName, final Map<String, Object> params, final Class<T> type) {
         final RuntimeProcedure procedure = procedureMap.get(procedureName);
 
         try {
@@ -130,16 +129,16 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         List<ResolvableParam> testParameters = DesignTimeServiceUtils.prepareParameters(procedure);
 
         final String procedureString = ProceduresUtils.jdbcComplianceProcedure(procedure.getProcedureString(),
-                procedure.getParameters());
+            procedure.getParameters());
 
         return NativeProcedureExecutor
-                .execute(template.getSessionFactory().openSession(), procedureString, testParameters, Object.class);
+            .execute(template.getSessionFactory().openSession(), procedureString, testParameters, Object.class);
     }
 
     @Override
     public List<Object> executeCustomProcedure(CustomProcedure customProcedure) {
         return LegacyNativeProcedureExecutor.executeProcedure(template.getSessionFactory().openSession(),
-                customProcedure);
+            customProcedure);
     }
 
 }

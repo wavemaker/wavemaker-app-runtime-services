@@ -31,7 +31,6 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.dao.validators.HqlPropertyResolver;
 import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
-
 public class ExportOptionsStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExportOptionsStrategy.class);
@@ -44,14 +43,14 @@ public class ExportOptionsStrategy {
 
     public List<String> getDisplayNames() {
         return this.exportFields.stream()
-                .map(ExportField::getDisplayName)
-                .collect(Collectors.toList());
+            .map(ExportField::getDisplayName)
+            .collect(Collectors.toList());
     }
 
     public List<Object> readRowData(Object rowData) {
         return this.exportFields.stream()
-                .map(exportField -> exportField.getValueProvider().getValue(rowData))
-                .collect(Collectors.toList());
+            .map(exportField -> exportField.getValueProvider().getValue(rowData))
+            .collect(Collectors.toList());
     }
 
     private void init(ExportOptions options, Class<?> entityClass) {
@@ -62,8 +61,8 @@ public class ExportOptionsStrategy {
         }
 
         this.exportFields = fieldInfos.stream()
-                .map(fieldInfo -> generateExportField(entityClass, fieldInfo))
-                .collect(Collectors.toList());
+            .map(fieldInfo -> generateExportField(entityClass, fieldInfo))
+            .collect(Collectors.toList());
     }
 
     private ExportField generateExportField(final Class<?> entityClass, final FieldInfo fieldInfo) {
@@ -75,18 +74,17 @@ public class ExportOptionsStrategy {
                 provider = new SimpleFieldValueProvider(fieldInfo.getField(), entityClass);
             } else {
                 LOGGER.warn("Field: {} not present in the Entity class: {}", fieldInfo.getField(),
-                        entityClass.getName());
+                    entityClass.getName());
                 provider = object -> null;
             }
         } else if (StringUtils.isNotBlank(fieldInfo.getExpression())) {
             provider = new ExpressionFieldValueProvider(fieldInfo.getExpression());
         } else {
             throw new WMRuntimeException(
-                    MessageResource.create("com.wavemaker.runtime.no.fieldName.or.expression"));
+                MessageResource.create("com.wavemaker.runtime.no.fieldName.or.expression"));
         }
         return new ExportField(displayName, provider);
     }
-
 
     private List<FieldInfo> includeAllFields(Class<?> dataClass, String prefix, boolean includeChildren) {
         try {
@@ -106,7 +104,7 @@ public class ExportOptionsStrategy {
             return fieldInfos;
         } catch (Exception e) {
             throw new WMRuntimeException(
-                    MessageResource.create("com.wavemaker.runtime.unexpected.exportOptions.generation.error"), e);
+                MessageResource.create("com.wavemaker.runtime.unexpected.exportOptions.generation.error"), e);
         }
     }
 

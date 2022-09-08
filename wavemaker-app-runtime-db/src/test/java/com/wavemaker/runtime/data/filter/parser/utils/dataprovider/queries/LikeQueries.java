@@ -48,5 +48,4 @@ public class LikeQueries {
         return HqlParserTestUtils.getNormalizedHql(dataType, negativeQueries, false);
     }
 
-
 }

@@ -42,7 +42,7 @@ public class SimpleFieldValueProvider implements FieldValueProvider {
             for (String name : nestedFields) {
                 PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(currentClass, name);
                 value = (nestedRowData == null) ? null : propertyDescriptor.getReadMethod().invoke(nestedRowData);
-                if(value == null) {
+                if (value == null) {
                     break;
                 }
                 nestedRowData = value;

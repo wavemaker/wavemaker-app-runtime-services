@@ -19,12 +19,10 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
- *
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
  * @since 7/2/16
  */
-public class Token implements Serializable{
+public class Token implements Serializable {
 
     @JsonProperty("WM_AUTH_TOKEN")
     private String wmAuthToken;

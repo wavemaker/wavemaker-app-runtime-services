@@ -25,8 +25,8 @@ import com.wavemaker.commons.model.security.XSSConfig;
 /**
  * @author Ed Callahan
  *
- *         Stores security settings within project-security.xml
- *         No logic function here.
+ * Stores security settings within project-security.xml
+ * No logic function here.
  */
 public class WMAppSecurityConfig {
 
@@ -113,13 +113,13 @@ public class WMAppSecurityConfig {
     @Override
     public String toString() {
         return "WMAppSecurityConfig{" +
-                "enforceSecurity=" + enforceSecurity +
-                ", loginConfig=" + loginConfig +
-                ", rememberMeConfig=" + rememberMeConfig +
-                ", sslConfig=" + sslConfig +
-                ", xssConfig=" + xssConfig +
-                ", csrfConfig=" + csrfConfig +
-                ", tokenAuthConfig= " + tokenAuthConfig +
-                '}';
+            "enforceSecurity=" + enforceSecurity +
+            ", loginConfig=" + loginConfig +
+            ", rememberMeConfig=" + rememberMeConfig +
+            ", sslConfig=" + sslConfig +
+            ", xssConfig=" + xssConfig +
+            ", csrfConfig=" + csrfConfig +
+            ", tokenAuthConfig= " + tokenAuthConfig +
+            '}';
     }
 }

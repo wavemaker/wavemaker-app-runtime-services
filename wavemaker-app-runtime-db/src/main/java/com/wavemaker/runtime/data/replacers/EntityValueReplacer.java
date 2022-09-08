@@ -31,8 +31,8 @@ public class EntityValueReplacer implements Serializable {
     private final Map<Scope, List<FieldValueReplacer>> phaseVsOverridersMap;
 
     public EntityValueReplacer(
-            final Map<String, PropertyDescriptor> propertyDescriptorMap,
-            final Map<Scope, List<FieldValueReplacer>> phaseVsOverridersMap) {
+        final Map<String, PropertyDescriptor> propertyDescriptorMap,
+        final Map<Scope, List<FieldValueReplacer>> phaseVsOverridersMap) {
         this.propertyDescriptorMap = propertyDescriptorMap;
         this.phaseVsOverridersMap = phaseVsOverridersMap;
     }

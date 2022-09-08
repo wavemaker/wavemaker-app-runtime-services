@@ -23,7 +23,6 @@ import org.junit.Test;
  */
 public class SimpleFieldValueProviderTest {
 
-
     @Test
     public void testSimpleGetValue() {
         SimpleFieldValueProvider valueProvider = new SimpleFieldValueProvider("name", Employee.class);
@@ -47,8 +46,8 @@ public class SimpleFieldValueProviderTest {
         private final Department department;
 
         private Employee(
-                final String name,
-                final Department department) {
+            final String name,
+            final Department department) {
             this.name = name;
             this.department = department;
         }

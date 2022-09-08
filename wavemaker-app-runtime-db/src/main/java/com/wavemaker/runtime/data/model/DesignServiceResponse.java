@@ -30,7 +30,7 @@ public class DesignServiceResponse {
     }
 
     public DesignServiceResponse(
-            final Object results, final List<ReturnProperty> returnProperties) {
+        final Object results, final List<ReturnProperty> returnProperties) {
         this.results = results;
         this.returnProperties = returnProperties;
     }
@@ -48,7 +48,7 @@ public class DesignServiceResponse {
     }
 
     public void setReturnProperties(
-            final List<ReturnProperty> returnProperties) {
+        final List<ReturnProperty> returnProperties) {
         this.returnProperties = returnProperties;
     }
 }

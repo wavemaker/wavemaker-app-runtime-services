@@ -111,10 +111,9 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
 
     private static final Logger logger = LoggerFactory.getLogger(SpringActiveDirectoryLdapAuthenticationProvider.class);
 
-
     /**
      * @param domain the domain name (may be null or empty)
-     * @param url an LDAP url (or multiple URLs)
+     * @param url    an LDAP url (or multiple URLs)
      */
     public SpringActiveDirectoryLdapAuthenticationProvider(String domain, String url) {
         this(domain, url, null);
@@ -123,7 +122,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
 
     /**
      * @param domain the domain name (may be null or empty)
-     * @param url an LDAP url (or multiple URLs)
+     * @param url    an LDAP url (or multiple URLs)
      * @param rootDn rootDn to override the computed rootDn.
      */
     public SpringActiveDirectoryLdapAuthenticationProvider(String domain, String url, String rootDn) {
@@ -140,7 +139,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     @Override
     protected DirContextOperations doAuthentication(UsernamePasswordAuthenticationToken auth) {
         String username = auth.getName();
-        String password = (String)auth.getCredentials();
+        String password = (String) auth.getCredentials();
 
         DirContext ctx = bindAsUser(username, password);
 
@@ -241,16 +240,16 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         switch (code) {
             case PASSWORD_EXPIRED:
                 throw new CredentialsExpiredException(messages.getMessage("LdapAuthenticationProvider.credentialsExpired",
-                        "User credentials have expired"), cause);
+                    "User credentials have expired"), cause);
             case ACCOUNT_DISABLED:
                 throw new DisabledException(messages.getMessage("LdapAuthenticationProvider.disabled",
-                        "User is disabled"), cause);
+                    "User is disabled"), cause);
             case ACCOUNT_EXPIRED:
                 throw new AccountExpiredException(messages.getMessage("LdapAuthenticationProvider.expired",
-                        "User account has expired"), cause);
+                    "User account has expired"), cause);
             case ACCOUNT_LOCKED:
                 throw new LockedException(messages.getMessage("LdapAuthenticationProvider.locked",
-                        "User account is locked"), cause);
+                    "User account is locked"), cause);
             default:
                 throw badCredentials(cause);
         }
@@ -277,12 +276,12 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
             default:
         }
 
-        return "Unknown (error code " + Integer.toHexString(code) +")";
+        return "Unknown (error code " + Integer.toHexString(code) + ")";
     }
 
     private BadCredentialsException badCredentials() {
         return new BadCredentialsException(messages.getMessage(
-                "LdapAuthenticationProvider.badCredentials", "Bad credentials"));
+            "LdapAuthenticationProvider.badCredentials", "Bad credentials"));
     }
 
     private BadCredentialsException badCredentials(Throwable cause) {
@@ -300,7 +299,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
 
         try {
             return SpringSecurityLdapTemplate.searchForSingleEntryInternal(ctx, searchCtls, searchRoot, userSearchPattern,
-                    new Object[]{bindPrincipal});
+                new Object[]{bindPrincipal});
         } catch (IncorrectResultSizeDataAccessException incorrectResults) {
             if (incorrectResults.getActualSize() == 0) {
                 UsernameNotFoundException userNameNotFoundException = new UsernameNotFoundException("User " + username + " not found in directory.", incorrectResults);
@@ -315,7 +314,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     private String createPrincipal(String username) {
         if (StringUtils.hasText(domain)) {
             return createBindPrincipal(username);
-        } else if (StringUtils.hasText(rootDn)){
+        } else if (StringUtils.hasText(rootDn)) {
             String[] dns = rootDn.split(",");
             String domain = dns[0].split("=")[1];
             if (username.toLowerCase().contains("@")) {
@@ -340,7 +339,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
             throw badCredentials();
         }
 
-        return rootDnFromDomain(bindPrincipal.substring(atChar+ 1));
+        return rootDnFromDomain(bindPrincipal.substring(atChar + 1));
     }
 
     private String rootDnFromDomain(String domain) {

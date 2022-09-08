@@ -81,7 +81,6 @@ public class WMCsrfTokenResponseWriterAuthenticationSuccessHandler implements Au
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
-
     private Optional<CsrfToken> getCsrfToken(HttpServletRequest request) {
         CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
         if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {

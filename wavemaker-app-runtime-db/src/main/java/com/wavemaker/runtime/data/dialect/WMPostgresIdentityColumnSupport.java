@@ -38,6 +38,7 @@ public class WMPostgresIdentityColumnSupport extends PostgreSQL81IdentityColumnS
      * @param table  name of the table, including schema
      * @param column name of the column
      * @param type   type
+     *
      * @return "select currval('schema.table_column_seq')" or "select currval('schema."TABLE_COLUMN_seq"')
      */
     @Override
@@ -64,8 +65,8 @@ public class WMPostgresIdentityColumnSupport extends PostgreSQL81IdentityColumnS
         }
 
         sb.append(tableName.replace("\"", ""))
-                .append("_")
-                .append(column.replace("\"", ""));
+            .append("_")
+            .append(column.replace("\"", ""));
 
         sb.append("_seq");
 

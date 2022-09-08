@@ -43,17 +43,17 @@ public class WMEntityInterceptor extends EmptyInterceptor {
 
     @Override
     public void onDelete(
-            final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
-            final Type[] types) {
+        final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
+        final Type[] types) {
 //        final EntityValueReplacer valueOverrider = getEntityValueOverrider(entity.getClass());
 //        valueOverrider.apply(new ListenerContext(entity, Scope.DELETE));
     }
 
     @Override
     public boolean onFlushDirty(
-            final Object entity, final Serializable id, final Object[] currentState, final Object[] previousState,
-            final String[] propertyNames,
-            final Type[] types) {
+        final Object entity, final Serializable id, final Object[] currentState, final Object[] previousState,
+        final String[] propertyNames,
+        final Type[] types) {
         final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
         final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.UPDATE));
         if (applied) {
@@ -65,8 +65,8 @@ public class WMEntityInterceptor extends EmptyInterceptor {
 
     @Override
     public boolean onLoad(
-            final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
-            final Type[] types) {
+        final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
+        final Type[] types) {
         final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
         final Map<String, PropertyDescriptor> descriptorMap = valueReplacer.getPropertyDescriptorMap();
         try {
@@ -90,8 +90,8 @@ public class WMEntityInterceptor extends EmptyInterceptor {
 
     @Override
     public boolean onSave(
-            final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
-            final Type[] types) {
+        final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
+        final Type[] types) {
         final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
         final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.INSERT));
         if (applied) {
@@ -101,25 +101,25 @@ public class WMEntityInterceptor extends EmptyInterceptor {
     }
 
     private void updateState(
-            Object entity, Object[] state, String[] propertyNames, Map<String, PropertyDescriptor>
-            descriptorMap) {
+        Object entity, Object[] state, String[] propertyNames, Map<String, PropertyDescriptor>
+        descriptorMap) {
         try {
             for (int i = 0; i < propertyNames.length; i++) {
                 final PropertyDescriptor descriptor = descriptorMap.get(propertyNames[i]);
                 if (descriptor != null && descriptor.getReadMethod() != null &&
-                        isNotCollectionType(descriptor)) {
+                    isNotCollectionType(descriptor)) {
                     final Object value = descriptor.getReadMethod().invoke(entity);
                     state[i] = value;
                 }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.state.parameters.update.error"),
-                    e);
+                e);
         }
     }
 
     private boolean isNotCollectionType(final PropertyDescriptor descriptor) {
         return !Collection.class.isAssignableFrom(descriptor.getPropertyType()) &&
-                !Map.class.isAssignableFrom(descriptor.getPropertyType());
+            !Map.class.isAssignableFrom(descriptor.getPropertyType());
     }
 }

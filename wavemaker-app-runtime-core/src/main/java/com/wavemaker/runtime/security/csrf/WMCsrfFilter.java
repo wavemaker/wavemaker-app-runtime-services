@@ -79,14 +79,14 @@ public class WMCsrfFilter extends OncePerRequestFilter {
         if (missingToken || !expectedToken.getToken().equals(actualToken)) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Invalid CSRF token found for "
-                        + UrlUtils.buildFullRequestUrl(request));
+                    + UrlUtils.buildFullRequestUrl(request));
             }
             if (missingToken) {
                 this.accessDeniedHandler.handle(request, response,
-                        new MissingCsrfTokenException(actualToken));
+                    new MissingCsrfTokenException(actualToken));
             } else {
                 this.accessDeniedHandler.handle(request, response,
-                        new InvalidCsrfTokenException(expectedToken, actualToken));
+                    new InvalidCsrfTokenException(expectedToken, actualToken));
             }
             return;
         }
@@ -95,13 +95,12 @@ public class WMCsrfFilter extends OncePerRequestFilter {
 
     private static final class DefaultRequiresCsrfMatcher implements RequestMatcher {
         private final HashSet<String> allowedMethods = new HashSet<>(
-                Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS"));
+            Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS"));
 
         @Override
         public boolean matches(HttpServletRequest request) {
             return !this.allowedMethods.contains(request.getMethod());
         }
     }
-
 
 }

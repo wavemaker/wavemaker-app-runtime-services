@@ -76,15 +76,16 @@ public class WMSaml2LogoutRequestFilter extends OncePerRequestFilter {
     /**
      * Constructs a {@link Saml2LogoutResponseFilter} for accepting SAML 2.0 Logout
      * Requests from the asserting party
+     *
      * @param relyingPartyRegistrationResolver the strategy for resolving a
-     * {@link RelyingPartyRegistration}
-     * @param logoutRequestValidator the SAML 2.0 Logout Request authenticator
-     * @param logoutResponseResolver the strategy for creating a SAML 2.0 Logout Response
-     * @param handlers the actions that perform logout
+     *                                         {@link RelyingPartyRegistration}
+     * @param logoutRequestValidator           the SAML 2.0 Logout Request authenticator
+     * @param logoutResponseResolver           the strategy for creating a SAML 2.0 Logout Response
+     * @param handlers                         the actions that perform logout
      */
     public WMSaml2LogoutRequestFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver,
-                                    Saml2LogoutRequestValidator logoutRequestValidator, Saml2LogoutResponseResolver logoutResponseResolver,
-                                    LogoutHandler... handlers) {
+                                      Saml2LogoutRequestValidator logoutRequestValidator, Saml2LogoutResponseResolver logoutResponseResolver,
+                                      LogoutHandler... handlers) {
         this.relyingPartyRegistrationResolver = relyingPartyRegistrationResolver;
         this.logoutRequestValidator = logoutRequestValidator;
         this.logoutResponseResolver = logoutResponseResolver;
@@ -93,7 +94,7 @@ public class WMSaml2LogoutRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
         if (!this.logoutRequestMatcher.matches(request)) {
             chain.doFilter(request, response);
@@ -108,10 +109,10 @@ public class WMSaml2LogoutRequestFilter extends OncePerRequestFilter {
         WMAuthentication wmAuthentication = (WMAuthentication) SecurityContextHolder.getContext().getAuthentication();
         Authentication authentication = wmAuthentication.getAuthenticationSource();
         RelyingPartyRegistration registration = this.relyingPartyRegistrationResolver.resolve(request,
-                getRegistrationId(authentication));
+            getRegistrationId(authentication));
         if (registration == null) {
             this.logger
-                    .trace("Did not process logout request since failed to find associated RelyingPartyRegistration");
+                .trace("Did not process logout request since failed to find associated RelyingPartyRegistration");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -123,16 +124,16 @@ public class WMSaml2LogoutRequestFilter extends OncePerRequestFilter {
 
         String serialized = request.getParameter(Saml2ParameterNames.SAML_REQUEST);
         Saml2LogoutRequest logoutRequest = Saml2LogoutRequest.withRelyingPartyRegistration(registration)
-                .samlRequest(serialized).relayState(request.getParameter(Saml2ParameterNames.RELAY_STATE))
-                .binding(registration.getSingleLogoutServiceBinding())
-                .location(registration.getSingleLogoutServiceLocation())
-                .parameters((params) -> params.put(Saml2ParameterNames.SIG_ALG,
-                        request.getParameter(Saml2ParameterNames.SIG_ALG)))
-                .parameters((params) -> params.put(Saml2ParameterNames.SIGNATURE,
-                        request.getParameter(Saml2ParameterNames.SIGNATURE)))
-                .build();
+            .samlRequest(serialized).relayState(request.getParameter(Saml2ParameterNames.RELAY_STATE))
+            .binding(registration.getSingleLogoutServiceBinding())
+            .location(registration.getSingleLogoutServiceLocation())
+            .parameters((params) -> params.put(Saml2ParameterNames.SIG_ALG,
+                request.getParameter(Saml2ParameterNames.SIG_ALG)))
+            .parameters((params) -> params.put(Saml2ParameterNames.SIGNATURE,
+                request.getParameter(Saml2ParameterNames.SIGNATURE)))
+            .build();
         Saml2LogoutRequestValidatorParameters parameters = new Saml2LogoutRequestValidatorParameters(logoutRequest,
-                registration, authentication);
+            registration, authentication);
         Saml2LogoutValidatorResult result = this.logoutRequestValidator.validate(parameters);
         if (result.hasErrors()) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, result.getErrors().iterator().next().toString());
@@ -148,8 +149,7 @@ public class WMSaml2LogoutRequestFilter extends OncePerRequestFilter {
         }
         if (logoutResponse.getBinding() == Saml2MessageBinding.REDIRECT) {
             doRedirect(request, response, logoutResponse);
-        }
-        else {
+        } else {
             doPost(response, logoutResponse);
         }
     }
@@ -193,7 +193,7 @@ public class WMSaml2LogoutRequestFilter extends OncePerRequestFilter {
         Assert.hasText(name, "name cannot be empty or null");
         if (StringUtils.hasText(parameters.apply(name))) {
             builder.queryParam(UriUtils.encode(name, StandardCharsets.ISO_8859_1),
-                    UriUtils.encode(parameters.apply(name), StandardCharsets.ISO_8859_1));
+                UriUtils.encode(parameters.apply(name), StandardCharsets.ISO_8859_1));
         }
     }
 

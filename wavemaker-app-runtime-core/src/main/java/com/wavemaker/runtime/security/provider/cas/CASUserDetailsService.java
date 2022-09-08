@@ -25,12 +25,11 @@ import com.wavemaker.runtime.security.WMUser;
  */
 public class CASUserDetailsService implements UserDetailsService {
 
-
     @Override
     public UserDetails loadUserByUsername(String username) {
         long loginTime = System.currentTimeMillis();
         return new WMUser("", username, "", username, 0, true, true, true, true, AuthorityUtils.NO_AUTHORITIES,
-                loginTime);
+            loginTime);
     }
 
 }

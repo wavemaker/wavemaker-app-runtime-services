@@ -27,7 +27,6 @@ public class HqlQueryExtractor implements QueryExtractor {
     private ScrollableResults results;
     private int currentIndex;
 
-
     public HqlQueryExtractor(final ScrollableResults results) {
         this.results = results;
     }

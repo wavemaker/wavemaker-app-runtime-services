@@ -22,7 +22,7 @@ import com.wavemaker.runtime.security.core.AuthenticationContext;
  * Created by srujant on 8/8/18.
  */
 public class OpenIdAuthenticationContext implements AuthenticationContext {
-    
+
     private OidcUser oidcUser;
     private String username;
 

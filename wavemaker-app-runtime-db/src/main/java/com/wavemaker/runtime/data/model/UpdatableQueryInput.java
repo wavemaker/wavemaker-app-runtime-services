@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class UpdatableQueryInput extends QueryProcedureInput<Integer> {
     public UpdatableQueryInput(
-            final String name, final Map<String, Object> parameters) {
+        final String name, final Map<String, Object> parameters) {
         super(name, parameters, Integer.class);
     }
 }

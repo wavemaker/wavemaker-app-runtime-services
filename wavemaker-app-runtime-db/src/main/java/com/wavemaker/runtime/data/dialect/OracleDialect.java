@@ -39,8 +39,8 @@ public class OracleDialect extends org.hibernate.dialect.OracleDialect {
     @Override
     protected SqlTypeDescriptor getSqlTypeDescriptorOverride(int sqlCode) {
         SqlTypeDescriptor sqlTypeDescriptor = super.getSqlTypeDescriptorOverride(sqlCode);
-        if(sqlCode == Types.BOOLEAN) {
-            sqlTypeDescriptor =  new CharTypeDescriptor();
+        if (sqlCode == Types.BOOLEAN) {
+            sqlTypeDescriptor = new CharTypeDescriptor();
         }
         return sqlTypeDescriptor;
     }

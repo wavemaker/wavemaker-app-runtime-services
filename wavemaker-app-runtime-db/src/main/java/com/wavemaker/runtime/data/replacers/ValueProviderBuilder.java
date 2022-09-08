@@ -26,5 +26,5 @@ import java.util.Map;
 public interface ValueProviderBuilder {
 
     ValueProvider build(
-            final Field field, final Map<Field, PropertyDescriptor> fieldDescriptorMap, Annotation annotation);
+        final Field field, final Map<Field, PropertyDescriptor> fieldDescriptorMap, Annotation annotation);
 }

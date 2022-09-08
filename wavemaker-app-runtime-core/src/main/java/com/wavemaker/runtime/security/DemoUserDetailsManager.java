@@ -37,7 +37,7 @@ public class DemoUserDetailsManager extends InMemoryUserDetailsManager {
         String userDetailsUsername = userDetails.getUsername();
         String password = SystemUtils.decryptIfEncrypted(userDetails.getPassword());
         return new WMUser(userDetailsUsername, userDetailsUsername, password, userDetailsUsername, 1, true, true, true,
-                true, userDetails.getAuthorities(), System.currentTimeMillis());
+            true, userDetails.getAuthorities(), System.currentTimeMillis());
     }
 
     public void setUsers(List<WMUser> users) {

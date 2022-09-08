@@ -46,7 +46,7 @@ public class OpenIdUserService extends OidcUserService {
             List<GrantedAuthority> grantedAuthorities = authoritiesProvider.loadAuthorities(openIdAuthenticationContext);
             if (!CollectionUtils.isEmpty(grantedAuthorities)) {
                 String userNameAttributeName = userRequest.getClientRegistration()
-                        .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+                    .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
                 if (org.springframework.util.StringUtils.hasText(userNameAttributeName)) {
                     oidcUser = new DefaultOidcUser(new HashSet<>(grantedAuthorities), oidcUser.getIdToken(), oidcUser.getUserInfo(), userNameAttributeName);
                 } else {

@@ -42,7 +42,7 @@ import com.wavemaker.commons.classloader.ClassLoaderUtils;
 public class WMRequestFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(WMRequestFilter.class);
-    
+
     public static final String APP_NAME_KEY = "wm.app.name";
 
     private static ThreadLocal<HttpRequestResponseHolder> httpRequestResponseHolderThreadLocal = new ThreadLocal<>();

@@ -98,7 +98,7 @@ public class WMAuthentication extends AbstractAuthenticationToken {
     }
 
     private static Set<SimpleGrantedAuthority> mapAuthorities(
-            Collection<? extends GrantedAuthority> authorities) {
+        Collection<? extends GrantedAuthority> authorities) {
         HashSet<SimpleGrantedAuthority> mapped = new HashSet<>(authorities.size());
         for (GrantedAuthority authority : authorities) {
             mapped.add(mapAuthority(authority.getAuthority()));

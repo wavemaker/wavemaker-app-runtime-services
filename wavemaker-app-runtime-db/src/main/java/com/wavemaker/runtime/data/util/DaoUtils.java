@@ -49,7 +49,7 @@ public abstract class DaoUtils {
 
         if (!filter.existingChildren.isEmpty()) {
             query.select(root).where(builder.equal(root.get(filter.parentPropertyName), filter.parent),
-                    builder.not(root.in(filter.existingChildren)));
+                builder.not(root.in(filter.existingChildren)));
         } else {
             query.select(root).where(builder.equal(root.get(filter.parentPropertyName), filter.parent));
         }

@@ -92,9 +92,9 @@ public class OAuthProvidersManager {
 
     private static Map<String, Map<String, OAuth2ProviderConfig>> getOAuth2ImplicitProviderMap(List<OAuth2ProviderConfig> oAuth2ProviderConfigList) {
         Map<String, OAuth2ProviderConfig> oAuth2ProviderConfigMap = oAuth2ProviderConfigList.stream().filter(oAuth2ProviderConfig ->
-                        (oAuth2ProviderConfig.getOauth2Flow() == OAuth2Flow.IMPLICIT) || (oAuth2ProviderConfig.getoAuth2Pkce() != null &&
-                            oAuth2ProviderConfig.getoAuth2Pkce().isEnabled()))
-                .collect(Collectors.toMap(OAuth2ProviderConfig::getProviderId, o -> o));
+                (oAuth2ProviderConfig.getOauth2Flow() == OAuth2Flow.IMPLICIT) || (oAuth2ProviderConfig.getoAuth2Pkce() != null &&
+                    oAuth2ProviderConfig.getoAuth2Pkce().isEnabled()))
+            .collect(Collectors.toMap(OAuth2ProviderConfig::getProviderId, o -> o));
         Map<String, Map<String, OAuth2ProviderConfig>> oauthProvidersMap = new HashMap<>();
         oauthProvidersMap.put(OAUTH_PROVIDER, oAuth2ProviderConfigMap);
         return oauthProvidersMap;

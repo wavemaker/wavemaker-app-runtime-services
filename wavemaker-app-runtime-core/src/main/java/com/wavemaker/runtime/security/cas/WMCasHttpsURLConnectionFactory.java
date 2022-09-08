@@ -27,12 +27,11 @@ import org.jasig.cas.client.ssl.HttpURLConnectionFactory;
  * @author Uday Shankar
  */
 public class WMCasHttpsURLConnectionFactory implements HttpURLConnectionFactory {
-    
+
     private SSLSocketFactory sslSocketFactory;
-    
+
     private HostnameVerifier hostnameVerifier;
-    
-    
+
     @Override
     public HttpURLConnection buildHttpURLConnection(URLConnection conn) {
         if (conn instanceof HttpsURLConnection) {

@@ -41,13 +41,13 @@ public class LoginProcessFilter extends WebProcessFilter {
     @Override
     public String endProcess(WebProcess webProcess, HttpServletRequest request, HttpServletResponse response) throws IOException {
         SecurityContext ctx = SecurityContextHolder.getContext();
-        if (ctx != null)  {
+        if (ctx != null) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated()) {
-                Map<String,String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 for (Cookie c : request.getCookies()) {
                     if (c.getValue() != null
-                            && !WebProcessHelper.WEB_PROCESS_COOKIE_NAME.equalsIgnoreCase(c.getName())) {
+                        && !WebProcessHelper.WEB_PROCESS_COOKIE_NAME.equalsIgnoreCase(c.getName())) {
                         map.put(c.getName(), c.getValue());
                     }
                 }
@@ -69,7 +69,7 @@ public class LoginProcessFilter extends WebProcessFilter {
     private void transferCookies(WebProcess webProcess, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String process = CryptoUtils.decrypt(webProcess.getCommunicationKey(), request.getParameter("encodedProcessdata"));
         Map<String, String> cookieMap = WMObjectMapper.getInstance().readValue(process, Map.class);
-        for (String key: cookieMap.keySet()) {
+        for (String key : cookieMap.keySet()) {
             addCookie(key, cookieMap.get(key), -1, request, response);
         }
     }

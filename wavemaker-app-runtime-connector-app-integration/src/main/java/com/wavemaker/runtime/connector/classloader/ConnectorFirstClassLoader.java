@@ -36,7 +36,7 @@ public class ConnectorFirstClassLoader extends URLClassLoader {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        synchronized(this.getClassLoadingLock(name)) {
+        synchronized (this.getClassLoadingLock(name)) {
             // has the class loaded already?
             Class<?> loadedClass = findLoadedClass(name);
             if (loadedClass == null) {
@@ -59,7 +59,6 @@ public class ConnectorFirstClassLoader extends URLClassLoader {
                     // If class is still not found, then this method will throw class not found ex.
                     loadedClass = super.loadClass(name, resolve);
                 }
-
 
             }
 

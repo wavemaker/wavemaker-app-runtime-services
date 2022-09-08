@@ -27,7 +27,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-
 /**
  * Created by ArjunSahasranam on 22/3/16.
  */
@@ -38,7 +37,7 @@ public class DefaultActiveDirectoryAuthoritiesPopulator implements ActiveDirecto
 
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData, String username) {
-        if(StringUtils.isBlank(groupRoleAttribute)){
+        if (StringUtils.isBlank(groupRoleAttribute)) {
             return AuthorityUtils.NO_AUTHORITIES;
         }
         String[] groups = userData.getStringAttributes(groupRoleAttribute);
@@ -56,7 +55,7 @@ public class DefaultActiveDirectoryAuthoritiesPopulator implements ActiveDirecto
         ArrayList<GrantedAuthority> authorities = new ArrayList<>(groups.length);
 
         for (String group : groups) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_"+new DistinguishedName(group).removeLast().getValue()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + new DistinguishedName(group).removeLast().getValue()));
         }
 
         return authorities;
@@ -70,6 +69,5 @@ public class DefaultActiveDirectoryAuthoritiesPopulator implements ActiveDirecto
     public void setGroupRoleAttribute(String groupRoleAttribute) {
         this.groupRoleAttribute = groupRoleAttribute;
     }
-
 
 }

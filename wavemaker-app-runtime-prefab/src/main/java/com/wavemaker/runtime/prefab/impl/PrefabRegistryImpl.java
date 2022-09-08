@@ -26,7 +26,7 @@ import com.wavemaker.runtime.prefab.util.Utils;
 
 /**
  * Default implementation of {@link PrefabRegistry}.
- * 
+ *
  * @author Dilip Kumar
  */
 @Service("prefabRegistry")

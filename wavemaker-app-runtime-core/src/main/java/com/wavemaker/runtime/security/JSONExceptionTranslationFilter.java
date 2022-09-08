@@ -30,7 +30,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 /**
  * Extends from the normal <code>ExceptionTranslationFilter</code>, this filter will send 403 if the request is a JSON
  * service request.
- * 
+ *
  * @author Frankie Fu
  */
 public class JSONExceptionTranslationFilter extends ExceptionTranslationFilter {

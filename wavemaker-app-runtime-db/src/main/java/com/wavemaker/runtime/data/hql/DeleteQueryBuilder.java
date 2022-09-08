@@ -33,8 +33,8 @@ public class DeleteQueryBuilder extends QueryBuilder<DeleteQueryBuilder> {
         Map<String, WMQueryParamInfo> parameters = new HashMap<>();
 
         final String query = "delete " +
-                generateFromClause(parameters, true) +
-                generateWhereClause(parameters);
+            generateFromClause(parameters, true) +
+            generateWhereClause(parameters);
 
         return new WMQueryInfo(query, parameters);
     }

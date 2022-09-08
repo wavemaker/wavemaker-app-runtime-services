@@ -44,11 +44,10 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
-
 public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
     private static final List<Class<?>> EXCLUDED_CLASSES = Arrays.asList(HttpServletRequest.class,
-            HttpServletResponse.class, Pageable.class);
+        HttpServletResponse.class, Pageable.class);
 
     public WMRequestResponseBodyMethodProcessor(List<HttpMessageConverter<?>> converters) {
         super(converters);
@@ -60,8 +59,8 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         boolean xssDisable;
 
         xssDisable = Arrays.stream(Objects.requireNonNull(method).getDeclaringClass().getDeclaredAnnotations())
-                .anyMatch(an -> an instanceof XssDisable) || Arrays.stream(method.getDeclaredAnnotations())
-                .anyMatch(an -> an instanceof XssDisable);
+            .anyMatch(an -> an instanceof XssDisable) || Arrays.stream(method.getDeclaredAnnotations())
+            .anyMatch(an -> an instanceof XssDisable);
 
         if (!xssDisable) {
             ResponseTuple encodeResult = encode(returnValue, new ArrayList<>(), DataFlowType.OUTGOING);
@@ -77,8 +76,8 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         Object o = super.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
         boolean xssDisable;
         xssDisable = Arrays.stream(Objects.requireNonNull(parameter.getMethod()).getDeclaringClass().getDeclaredAnnotations())
-                .anyMatch(an -> an instanceof XssDisable) || Arrays.stream(parameter.getMethod().getDeclaredAnnotations())
-                .anyMatch(an -> an instanceof XssDisable);
+            .anyMatch(an -> an instanceof XssDisable) || Arrays.stream(parameter.getMethod().getDeclaredAnnotations())
+            .anyMatch(an -> an instanceof XssDisable);
         if (!xssDisable) {
             ResponseTuple responseTuple = encode(o, new ArrayList(), DataFlowType.INCOMING);
             return responseTuple.value;
@@ -127,7 +126,6 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         return modified;
     }
 
-
     private ResponseTuple encodeCustomClass(Object object, List<Object> manipulatedObjects, DataFlowType dataFlowType) {
         AtomicBoolean modified = new AtomicBoolean(false);
         if (object instanceof Page) {
@@ -147,7 +145,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
                     }
                 } catch (IllegalAccessException e) {
                     throw new WMRuntimeException(MessageResource.create("reflection.field.error"), e, field.getName(),
-                            field.getDeclaringClass().getName());
+                        field.getDeclaringClass().getName());
                 }
             }
         }

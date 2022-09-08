@@ -30,7 +30,7 @@ public class UpdateQueryCallback implements HibernateCallback<Integer> {
     private final ParametersProvider parametersProvider;
 
     public UpdateQueryCallback(
-            final QueryProvider<Integer> queryProvider, final ParametersProvider parametersProvider) {
+        final QueryProvider<Integer> queryProvider, final ParametersProvider parametersProvider) {
         this.queryProvider = queryProvider;
         this.parametersProvider = parametersProvider;
     }

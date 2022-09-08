@@ -26,7 +26,6 @@ import com.wavemaker.commons.MessageResource;
  */
 public class SortValidator {
 
-
     public void validate(Pageable pageable, Class<?> entityClass) {
         if (pageable != null && pageable.getSort() != null) {
             final Sort sort = pageable.getSort();
@@ -38,6 +37,5 @@ public class SortValidator {
             }
         }
     }
-
 
 }

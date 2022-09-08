@@ -29,16 +29,16 @@ import com.wavemaker.tools.api.core.annotations.WMAccessVisibility;
 import com.wavemaker.tools.api.core.models.AccessSpecifier;
 
 /**
- * @Author: sowmyad
+ *
  */
-public class WMAppRequestInterceptor implements HandlerInterceptor{
+public class WMAppRequestInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             if (handlerMethod.getMethod().getAnnotations() != null) {
                 for (Annotation annotation : handlerMethod.getMethod().getAnnotations()) {
-                    if(annotation instanceof WMAccessVisibility && ((WMAccessVisibility)annotation).value().equals(AccessSpecifier.UNAVAILABLE)){
+                    if (annotation instanceof WMAccessVisibility && ((WMAccessVisibility) annotation).value().equals(AccessSpecifier.UNAVAILABLE)) {
                         throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.methodAccessDenied"), handlerMethod.getMethod().getName());
                     }
                 }

@@ -101,7 +101,7 @@ public class HttpRequestDetailsBuilder {
         return this;
     }
 
-    public HttpRequestDetails  build() {
+    public HttpRequestDetails build() {
         if (requestBody != null) {
             InputStream inputStream;
             if (requestBody instanceof byte[]) {

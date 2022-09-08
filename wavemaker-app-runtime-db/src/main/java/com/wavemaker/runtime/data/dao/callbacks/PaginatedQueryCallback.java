@@ -43,8 +43,8 @@ public class PaginatedQueryCallback<R> implements HibernateCallback<Page<R>> {
     private final Pageable pageable;
 
     public PaginatedQueryCallback(
-            final PaginatedQueryProvider<R> queryProvider, final ParametersProvider parametersProvider,
-            final Pageable pageable) {
+        final PaginatedQueryProvider<R> queryProvider, final ParametersProvider parametersProvider,
+        final Pageable pageable) {
         this.queryProvider = queryProvider;
         this.parametersProvider = parametersProvider;
         this.pageable = pageable;

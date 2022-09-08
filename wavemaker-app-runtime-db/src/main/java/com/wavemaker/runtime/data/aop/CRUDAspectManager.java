@@ -37,10 +37,9 @@ public class CRUDAspectManager {
     @Autowired
     private List<CRUDMethodInvocationHandler> crudMethodInvocationHandlerList;
 
-
     @Around("execution(public * *(..)) && @within(entityService)")
     public Object crudMethodAccessAdvice(
-            final ProceedingJoinPoint joinPoint, EntityService entityService) throws Throwable {
+        final ProceedingJoinPoint joinPoint, EntityService entityService) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
         Object[] args = joinPoint.getArgs();
@@ -48,7 +47,7 @@ public class CRUDAspectManager {
         Class entityClass = entityService.entityClass();
         logger.debug("Inside around for method {}", method.getName());
         Optional<CRUDMethodInvocationHandler> crudMethodInvocationHandlerOptional = findMatchingCRUDMethodInvocationHandler(entityClass, method);
-        crudMethodInvocationHandlerOptional.ifPresent(crudMethodInvocationHandler ->  {
+        crudMethodInvocationHandlerOptional.ifPresent(crudMethodInvocationHandler -> {
             logger.debug("Calling preHandler in handler {}", crudMethodInvocationHandler);
             crudMethodInvocationHandler.preHandle(serviceId, entityClass, method, args);
         });
@@ -61,7 +60,7 @@ public class CRUDAspectManager {
         return retVal;
     }
 
-    private Optional<CRUDMethodInvocationHandler> findMatchingCRUDMethodInvocationHandler( Class entityClass, Method method) {
+    private Optional<CRUDMethodInvocationHandler> findMatchingCRUDMethodInvocationHandler(Class entityClass, Method method) {
         for (CRUDMethodInvocationHandler crudMethodInvocationHandler : crudMethodInvocationHandlerList) {
             if (crudMethodInvocationHandler.matches(entityClass, method)) {
                 return Optional.of(crudMethodInvocationHandler);

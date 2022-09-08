@@ -20,7 +20,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.web.context.ServletContextAware;
 
 public class ServletContextFactory implements ServletContextAware, FactoryBean<ServletContext> {
-    
+
     private ServletContext servletContext;
 
     @Override

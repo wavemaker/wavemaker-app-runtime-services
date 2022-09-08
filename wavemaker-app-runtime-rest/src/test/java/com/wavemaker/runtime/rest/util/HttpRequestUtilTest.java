@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.rest.util;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ import org.springframework.util.MultiValueMap;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
-
 public class HttpRequestUtilTest {
     private static final String CONTEXT_PATH = "HelloServlet";
     private static final String COM_WM_EMPTY_OBJECT = "com.wavemaker.runtime.empty.object";
@@ -50,7 +48,6 @@ public class HttpRequestUtilTest {
         Assert.assertNotNull(HttpRequestUtils.getFormMessage(getDetailMap()));
         Assert.assertNotNull(HttpRequestUtils.getMultipartMessage(getMultiValueMapMap()));
     }
-
 
     @Test
     public void jsonMessageTest() {

@@ -23,7 +23,7 @@ import com.wavemaker.commons.CommonConstants;
  * @author Dilip Kumar
  * @since 19/4/16
  */
-public class WMPostgresSQLDialect extends  PostgreSQL82Dialect {
+public class WMPostgresSQLDialect extends PostgreSQL82Dialect {
 
     public WMPostgresSQLDialect() {
         super();

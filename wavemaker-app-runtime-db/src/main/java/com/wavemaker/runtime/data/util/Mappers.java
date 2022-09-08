@@ -37,8 +37,8 @@ public class Mappers {
     public static <E, R> List<R> map(List<E> list, Function<E, R> mappingFunction) {
         if (list != null && !list.isEmpty()) {
             return list.stream()
-                    .map(mappingFunction)
-                    .collect(Collectors.toList());
+                .map(mappingFunction)
+                .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }

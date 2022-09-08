@@ -39,7 +39,6 @@ public class ReturnProperty {
     public ReturnProperty() {
     }
 
-
     public ReturnProperty(final String name, final FieldType fieldType) {
         this.name = name;
         this.fieldType = fieldType;

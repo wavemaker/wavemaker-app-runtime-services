@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
-public  class XSSRequestWrapper extends HttpServletRequestWrapper {
+public class XSSRequestWrapper extends HttpServletRequestWrapper {
 
     private XSSSecurityHandler xssSecurityHandler;
 

@@ -53,7 +53,7 @@ public class RestBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
             bd.setPrimary(true);
             bd.setConstructorArgumentValues(values);
             ((DefaultListableBeanFactory) configurableListableBeanFactory).registerBeanDefinition(
-                serviceId + StringUtils.capitalize(apiClass.getName()) +"VirtualControllerApi", bd);
+                serviceId + StringUtils.capitalize(apiClass.getName()) + "VirtualControllerApi", bd);
             logger.info("Bean definition is loaded for interface {} ", apiClass);
         });
     }

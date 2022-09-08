@@ -65,7 +65,7 @@ import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
  * @since 8/2/16
  */
 public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterBean implements
-        ApplicationEventPublisherAware {
+    ApplicationEventPublisherAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WMTokenBasedPreAuthenticatedProcessingFilter.class);
 
@@ -78,7 +78,6 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
     private AuthenticationSuccessHandler authenticationSuccessHandler;
 
     private boolean continueFilterChainOnUnsuccessfulAuthentication = true;
-
 
     public WMTokenBasedPreAuthenticatedProcessingFilter() {
     }
@@ -106,7 +105,7 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
 
         if (!wmTokenBasedAuthenticationService.isEnabled()) {
             LOGGER.debug("Token based authentication service is disabled. Skipping");

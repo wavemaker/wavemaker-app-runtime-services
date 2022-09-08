@@ -42,6 +42,4 @@ public class Message {
         this.inputStream = inputStream;
     }
 
-
-
 }

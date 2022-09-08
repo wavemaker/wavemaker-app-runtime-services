@@ -66,25 +66,25 @@ public class WMQueryInfo {
 
     public Map<String, Object> getParameterValueMap(WMQLTypeHelper wmqlTypeHelper) {
         return parameters.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-                m -> {
-                    WMQueryParamInfo paramInfo = m.getValue();
-                    Object value = paramInfo.getValue();
-                    JavaType javaType = paramInfo.getJavaType();
-                    if (javaType != null) {
-                        javaType = wmqlTypeHelper.aliasFor(javaType);
-                        value = javaType.fromString(String.valueOf(value));
-                    }
-                    return value;
-
+            m -> {
+                WMQueryParamInfo paramInfo = m.getValue();
+                Object value = paramInfo.getValue();
+                JavaType javaType = paramInfo.getJavaType();
+                if (javaType != null) {
+                    javaType = wmqlTypeHelper.aliasFor(javaType);
+                    value = javaType.fromString(String.valueOf(value));
                 }
+                return value;
+
+            }
         ));
     }
 
     @Override
     public String toString() {
         return "WMQueryInfo{" +
-                "query='" + query + '\'' +
-                ", parameters=" + parameters +
-                '}';
+            "query='" + query + '\'' +
+            ", parameters=" + parameters +
+            '}';
     }
 }

@@ -24,9 +24,10 @@ import org.apache.logging.log4j.status.StatusLogger;
 public class CustomLogConfigurationFactory extends ConfigurationFactory {
 
     private static final Logger logger = StatusLogger.getLogger();
+
     @Override
     protected String[] getSupportedTypes() {
-        return new String[] {".xml","*"};
+        return new String[]{".xml", "*"};
     }
 
     @Override

@@ -28,7 +28,6 @@ public abstract class AbstractHttpRequestProcessor implements HttpRequestProcess
         this.enabled = enabled;
     }
 
-
     @Override
     public void process(HttpRequestProcessorContext httpRequestProcessorContext) {
         if (isEnabled()) {
@@ -37,6 +36,5 @@ public abstract class AbstractHttpRequestProcessor implements HttpRequestProcess
     }
 
     protected abstract void doProcess(HttpRequestProcessorContext httpRequestProcessorContext);
-
 
 }

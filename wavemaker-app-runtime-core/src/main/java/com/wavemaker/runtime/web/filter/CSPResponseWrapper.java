@@ -30,7 +30,6 @@ class CSPResponseWrapper extends SkipEtagHttpServletResponseWrapper {
     private PrintWriter printWriter;
     private ServletOutputStream servletOutputStream;
 
-
     public CSPResponseWrapper(HttpServletResponse response) {
         super(response);
         byteArrayOutputStream = new ByteArrayOutputStream();

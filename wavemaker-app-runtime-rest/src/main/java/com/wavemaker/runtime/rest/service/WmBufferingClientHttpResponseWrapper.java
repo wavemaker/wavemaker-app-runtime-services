@@ -33,11 +33,9 @@ public class WmBufferingClientHttpResponseWrapper implements ClientHttpResponse 
 
     private byte[] body;
 
-
     WmBufferingClientHttpResponseWrapper(ClientHttpResponse response) {
         this.response = response;
     }
-
 
     @Override
     public HttpStatus getStatusCode() throws IOException {

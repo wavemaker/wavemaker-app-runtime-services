@@ -35,7 +35,6 @@ import com.wavemaker.commons.pattern.URLPattern;
 import com.wavemaker.commons.util.CoreFilterUtil;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 
-
 /**
  * SSL Filter for Wavemaker Runtime.
  *
@@ -60,7 +59,7 @@ public class SSLSecureFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(
-            ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 

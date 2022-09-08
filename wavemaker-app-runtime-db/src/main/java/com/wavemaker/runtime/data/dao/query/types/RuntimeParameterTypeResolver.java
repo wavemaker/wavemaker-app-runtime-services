@@ -40,8 +40,8 @@ public class RuntimeParameterTypeResolver implements ParameterTypeResolver {
 
     public RuntimeParameterTypeResolver(List<QueryParameter> parameters, TypeHelper typeHelper) {
         typesMap = parameters.stream()
-                .collect(Collectors.toMap(QueryParameter::getName,
-                        queryParameter -> typeHelper.heuristicType(queryParameter.getType().getClassName())));
+            .collect(Collectors.toMap(QueryParameter::getName,
+                queryParameter -> typeHelper.heuristicType(queryParameter.getType().getClassName())));
     }
 
     public RuntimeParameterTypeResolver(Map<String, WMQueryParamInfo> parameters, TypeHelper typeHelper, WMQLTypeHelper wmqlTypeHelper) {

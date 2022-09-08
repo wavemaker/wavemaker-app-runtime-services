@@ -39,11 +39,11 @@ public class WMObjectMapperTest {
     public void pageSerializationTest() throws JsonProcessingException, JSONException {
         WMObjectMapper objectMapper = new WMObjectMapper();
         Page<User> users = new PageImpl<>(Arrays.asList(new User("user1"), new User("user2")), PageRequest.of(0, 2),
-                100);
+            100);
 
         final String actual = objectMapper.writeValueAsString(users);
         String expected = "{\"content\":[{\"name\":\"user1\"},{\"name\":\"user2\"}],\"last\":false," +
-                "\"totalElements\":100,\"totalPages\":50,\"sort\":[],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0,\"empty\":false}\n";
+            "\"totalElements\":100,\"totalPages\":50,\"sort\":[],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0,\"empty\":false}\n";
         JSONAssert.assertEquals(expected, actual, true);
     }
 
@@ -51,12 +51,12 @@ public class WMObjectMapperTest {
     public void pageSerializationTest2() throws JsonProcessingException, JSONException {
         WMObjectMapper objectMapper = new WMObjectMapper();
         Page<User> users = new PageImpl<>(Arrays.asList(new User("user1"), new User("user2")), PageRequest.of(0, 2,
-                Sort.by(new Sort.Order(Sort.Direction.DESC, "name"))),
-                100);
+            Sort.by(new Sort.Order(Sort.Direction.DESC, "name"))),
+            100);
 
         final String actual = objectMapper.writeValueAsString(users);
         String expected = "{\"content\":[{\"name\":\"user1\"},{\"name\":\"user2\"}],\"totalElements\":100," +
-                "\"totalPages\":50,\"last\":false,\"sort\":[{\"direction\":\"DESC\",\"property\":\"name\",\"ignoreCase\":false,\"nullHandling\":\"NATIVE\",\"ascending\":false}],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0,\"empty\":false}";
+            "\"totalPages\":50,\"last\":false,\"sort\":[{\"direction\":\"DESC\",\"property\":\"name\",\"ignoreCase\":false,\"nullHandling\":\"NATIVE\",\"ascending\":false}],\"first\":true,\"numberOfElements\":2,\"size\":2,\"number\":0,\"empty\":false}";
 
         JSONAssert.assertEquals(expected, actual, true);
     }

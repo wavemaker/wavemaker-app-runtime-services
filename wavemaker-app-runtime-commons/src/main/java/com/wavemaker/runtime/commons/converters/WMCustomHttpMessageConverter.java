@@ -17,7 +17,7 @@ package com.wavemaker.runtime.commons.converters;
 import org.springframework.http.converter.HttpMessageConverter;
 
 /**
- * @Author: sowmyad
+ *
  */
 public interface WMCustomHttpMessageConverter<T> extends HttpMessageConverter<T> {
 

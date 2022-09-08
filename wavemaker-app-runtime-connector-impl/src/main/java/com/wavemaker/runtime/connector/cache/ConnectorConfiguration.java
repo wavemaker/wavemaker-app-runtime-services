@@ -45,7 +45,7 @@ public class ConnectorConfiguration {
         if (o == null || getClass() != o.getClass()) return false;
         ConnectorConfiguration that = (ConnectorConfiguration) o;
         return connectorId.equals(that.connectorId) &&
-                configurationId.equals(that.configurationId);
+            configurationId.equals(that.configurationId);
     }
 
     @Override

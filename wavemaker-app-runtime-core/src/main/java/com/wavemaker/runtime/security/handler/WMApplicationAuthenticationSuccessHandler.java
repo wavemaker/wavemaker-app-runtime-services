@@ -97,11 +97,9 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
         }
     }
 
-
     public void setDefaultSuccessHandlerList(List<AuthenticationSuccessHandler> defaultSuccessHandlerList) {
         this.defaultSuccessHandlerList = defaultSuccessHandlerList;
     }
-
 
     public void setAuthenticationSuccessRedirectionHandler(WMAuthenticationRedirectionHandler authenticationSuccessRedirectionHandler) {
         this.authenticationSuccessRedirectionHandler = authenticationSuccessRedirectionHandler;

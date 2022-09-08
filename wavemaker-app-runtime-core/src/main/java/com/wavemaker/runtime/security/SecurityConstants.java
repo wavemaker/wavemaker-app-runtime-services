@@ -19,7 +19,8 @@ package com.wavemaker.runtime.security;
  */
 public class SecurityConstants {
 
-    private SecurityConstants(){}
+    private SecurityConstants() {
+    }
 
     public static final String APPLICATION_JSON = "application/json";
     public static final String SESSION_NOT_FOUND = "Session Not Found";

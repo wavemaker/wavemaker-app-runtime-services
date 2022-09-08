@@ -116,7 +116,6 @@ public class WebProcessController {
         }
     }
 
-
     private String getCustomUrlScheme() {
         if (customUrlScheme == null) {
             synchronized (this) {

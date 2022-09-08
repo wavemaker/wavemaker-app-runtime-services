@@ -30,7 +30,7 @@ import com.wavemaker.runtime.web.filter.WMRequestFilter;
  * @author Uday Shankar
  */
 public class AcceptLanguageHeaderBasedLocaleProvider extends DefaultLocaleProvider {
-    
+
     @Override
     public String[] getLocales() {
         HttpServletRequest httpServletRequest = WMRequestFilter.getCurrentThreadHttpServletRequest();

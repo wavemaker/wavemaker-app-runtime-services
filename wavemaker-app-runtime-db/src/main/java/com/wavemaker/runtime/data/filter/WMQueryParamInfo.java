@@ -55,8 +55,8 @@ public class WMQueryParamInfo {
     @Override
     public String toString() {
         return "WMQueryParamInfo{" +
-                "value=" + value +
-                ", javaType=" + javaType +
-                '}';
+            "value=" + value +
+            ", javaType=" + javaType +
+            '}';
     }
 }

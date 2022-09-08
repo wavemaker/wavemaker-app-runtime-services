@@ -24,7 +24,7 @@ import com.wavemaker.commons.util.SSLUtils;
  * @author Uday Shankar
  */
 public class SSLSocketFactoryFactoryBean implements FactoryBean<SSLSocketFactory> {
-    
+
     @Override
     public SSLSocketFactory getObject() throws Exception {
         return SSLUtils.getAllTrustedCertificateSSLContext().getSocketFactory();

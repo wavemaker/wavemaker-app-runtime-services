@@ -19,7 +19,8 @@ package com.wavemaker.runtime.security.provider.saml;
  */
 public class SAMLConstants {
 
-    private SAMLConstants(){}
+    private SAMLConstants() {
+    }
 
     public static final String IDP_METADATA_XML = "idpMetadata.xml";
     public static final String IDP_KEY = "idpkey";

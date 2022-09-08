@@ -49,7 +49,6 @@ import com.wavemaker.runtime.rest.model.RestServiceInfoBeanEntry;
  */
 public class RestServiceBeanPostProcessor implements BeanPostProcessor {
 
-
     @Autowired
     private RestRuntimeController restRuntimeController;
 
@@ -61,7 +60,7 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
     @PostConstruct
     private void init() {
         Map<String, RequestMappingHandlerMapping> beans = applicationContext
-                .getBeansOfType(RequestMappingHandlerMapping.class);
+            .getBeansOfType(RequestMappingHandlerMapping.class);
         if (beans == null || beans.size() == 0) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.requestMappingHandlerMapping.not.found"), applicationContext);
         } else {
@@ -77,13 +76,12 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
         }
     }
 
-
     private static final Method HANDLE_REQUEST_METHOD;
 
     static {
         try {
             HANDLE_REQUEST_METHOD = RestRuntimeController.class
-                    .getDeclaredMethod("handleRequest", HttpServletRequest.class, HttpServletResponse.class);
+                .getDeclaredMethod("handleRequest", HttpServletRequest.class, HttpServletResponse.class);
         } catch (NoSuchMethodException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.method.not.found"), e);
         }
@@ -96,7 +94,7 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
             restServiceInfoBean.getEntryList().forEach(restInfoEntry -> {
                 RequestMappingInfo requestMappingInfo = getRequestMappingInfo(restInfoEntry);
                 requestMappingHandlerMapping
-                        .registerMapping(requestMappingInfo, restRuntimeController, HANDLE_REQUEST_METHOD);
+                    .registerMapping(requestMappingInfo, restRuntimeController, HANDLE_REQUEST_METHOD);
             });
         }
         return bean;
@@ -109,7 +107,7 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
 
     private RequestMappingInfo getRequestMappingInfo(RestServiceInfoBeanEntry restServiceEntry) {
         RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
-                RequestMethod.valueOf(restServiceEntry.getHttpMethod()));
+            RequestMethod.valueOf(restServiceEntry.getHttpMethod()));
         PatternsRequestCondition patterns = new PatternsRequestCondition(restServiceEntry.getUrl());
         ParamsRequestCondition params = new ParamsRequestCondition();
         HeadersRequestCondition headers = new HeadersRequestCondition();

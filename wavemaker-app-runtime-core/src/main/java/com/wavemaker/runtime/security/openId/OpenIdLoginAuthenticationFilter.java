@@ -44,7 +44,6 @@ import org.springframework.util.StringUtils;
 
 import com.wavemaker.commons.auth.openId.OpenIdConstants;
 
-
 /**
  * This class get's the id_token from the Identity provider using the code sent by the authorization server and returns
  * {@link WMAuthenticationToken} on successful authentication by the Identity provider.
@@ -61,7 +60,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
     private ClientRegistrationRepository clientRegistrationRepository;
     private OAuth2AuthorizedClientService authorizedClientService;
     private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
-            new HttpSessionOAuth2AuthorizationRequestRepository();
+        new HttpSessionOAuth2AuthorizationRequestRepository();
 
     /**
      * Constructs an {@code OAuth2LoginAuthenticationFilter} using the provided parameters.
@@ -93,7 +92,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+        throws AuthenticationException, IOException, ServletException {
 
         if (!this.authorizationResponseSuccess(request) && !this.authorizationResponseError(request)) {
             OAuth2Error oauth2Error = new OAuth2Error(OAuth2ErrorCodes.INVALID_REQUEST);
@@ -119,19 +118,19 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
         ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration == null) {
             OAuth2Error oauth2Error = new OAuth2Error(CLIENT_REGISTRATION_NOT_FOUND_ERROR_CODE,
-                    "Client Registration not found with Id: " + registrationId, null);
+                "Client Registration not found with Id: " + registrationId, null);
             throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
         }
         OAuth2AuthorizationResponse authorizationResponse = this.convert(request);
 
         OAuth2LoginAuthenticationToken authenticationRequest = new OAuth2LoginAuthenticationToken(
-                clientRegistration, new OAuth2AuthorizationExchange(authorizationRequest, authorizationResponse));
+            clientRegistration, new OAuth2AuthorizationExchange(authorizationRequest, authorizationResponse));
         authenticationRequest.setDetails(this.authenticationDetailsSource.buildDetails(request));
 
         OAuth2LoginAuthenticationToken authenticationResult = null;
         try {
             authenticationResult =
-                    (OAuth2LoginAuthenticationToken) this.getAuthenticationManager().authenticate(authenticationRequest);
+                (OAuth2LoginAuthenticationToken) this.getAuthenticationManager().authenticate(authenticationRequest);
         } catch (OAuth2AuthenticationException e) {
             logger.error("Could not authenticate using OpenID", e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -145,14 +144,14 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
         }
 
         OAuth2AuthenticationToken oauth2Authentication = new OAuth2AuthenticationToken(
-                authenticationResult.getPrincipal(),
-                authenticationResult.getAuthorities(),
-                authenticationResult.getClientRegistration().getRegistrationId());
+            authenticationResult.getPrincipal(),
+            authenticationResult.getAuthorities(),
+            authenticationResult.getClientRegistration().getRegistrationId());
 
         OAuth2AuthorizedClient authorizedClient = new OAuth2AuthorizedClient(
-                authenticationResult.getClientRegistration(),
-                oauth2Authentication.getName(),
-                authenticationResult.getAccessToken());
+            authenticationResult.getClientRegistration(),
+            oauth2Authentication.getName(),
+            authenticationResult.getAccessToken());
 
         this.authorizedClientService.saveAuthorizedClient(authorizedClient, oauth2Authentication);
         return authenticationResult;
@@ -176,28 +175,28 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
 
         if (StringUtils.hasText(code)) {
             return OAuth2AuthorizationResponse.success(code)
-                    .redirectUri(redirectUri)
-                    .state(state)
-                    .build();
+                .redirectUri(redirectUri)
+                .state(state)
+                .build();
         } else {
             String errorDescription = request.getParameter(OpenIdConstants.ERROR_DESCRIPTION);
             String errorUri = request.getParameter(OpenIdConstants.ERROR_URI);
             return OAuth2AuthorizationResponse.error(errorCode)
-                    .redirectUri(redirectUri)
-                    .errorDescription(errorDescription)
-                    .errorUri(errorUri)
-                    .state(state)
-                    .build();
+                .redirectUri(redirectUri)
+                .errorDescription(errorDescription)
+                .errorUri(errorUri)
+                .state(state)
+                .build();
         }
     }
 
     private boolean authorizationResponseSuccess(HttpServletRequest request) {
         return StringUtils.hasText(request.getParameter(OpenIdConstants.CODE)) &&
-                StringUtils.hasText(request.getParameter(OpenIdConstants.STATE));
+            StringUtils.hasText(request.getParameter(OpenIdConstants.STATE));
     }
 
     private boolean authorizationResponseError(HttpServletRequest request) {
         return StringUtils.hasText(request.getParameter(OpenIdConstants.ERROR)) &&
-                StringUtils.hasText(request.getParameter(OpenIdConstants.STATE));
+            StringUtils.hasText(request.getParameter(OpenIdConstants.STATE));
     }
 }

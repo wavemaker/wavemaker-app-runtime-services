@@ -55,10 +55,10 @@ public class WebProcess {
     @Override
     public String toString() {
         return "WebProcess{" +
-                "processName='" + processName + '\'' +
-                ", communicationKey='" + communicationKey + '\'' +
-                ", hookUrl='" + hookUrl + '\'' +
-                ", requestSourceType='" + requestSourceType + '\'' +
-                '}';
+            "processName='" + processName + '\'' +
+            ", communicationKey='" + communicationKey + '\'' +
+            ", hookUrl='" + hookUrl + '\'' +
+            ", requestSourceType='" + requestSourceType + '\'' +
+            '}';
     }
 }

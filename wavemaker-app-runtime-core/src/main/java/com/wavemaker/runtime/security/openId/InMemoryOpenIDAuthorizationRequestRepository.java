@@ -32,8 +32,7 @@ import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
 public class InMemoryOpenIDAuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     private static final Cache<String, OAuth2AuthorizationRequest> cache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).maximumSize(20).
-            build();
-
+        build();
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {

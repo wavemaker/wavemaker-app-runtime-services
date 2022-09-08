@@ -30,7 +30,6 @@ public class FieldValueReplacer implements Serializable {
     private final PropertyDescriptor descriptor;
     private final ValueProvider provider;
 
-
     public FieldValueReplacer(final PropertyDescriptor descriptor, final ValueProvider provider) {
         this.descriptor = descriptor;
         this.provider = provider;

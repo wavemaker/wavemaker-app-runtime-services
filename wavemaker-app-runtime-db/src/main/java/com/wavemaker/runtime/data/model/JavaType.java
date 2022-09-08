@@ -59,29 +59,29 @@ import com.wavemaker.runtime.data.converters.TimestampTypeConverter;
 public enum JavaType {
 
     BYTE(byte.class.getName(), Byte.class.getName(),
-            new HibernateBackedJavaTypeConverter(ByteType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(ByteType.INSTANCE.getJavaTypeDescriptor())),
     SHORT(short.class.getName(), Short.class.getName(),
-            new HibernateBackedJavaTypeConverter(ShortType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(ShortType.INSTANCE.getJavaTypeDescriptor())),
     INTEGER(int.class.getName(), Integer.class.getName(),
-            new HibernateBackedJavaTypeConverter(IntegerType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(IntegerType.INSTANCE.getJavaTypeDescriptor())),
     LONG(long.class.getName(), Long.class.getName(),
-            new HibernateBackedJavaTypeConverter(LongType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(LongType.INSTANCE.getJavaTypeDescriptor())),
     BIG_INTEGER(BigInteger.class.getName(),
-            new HibernateBackedJavaTypeConverter(BigIntegerType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(BigIntegerType.INSTANCE.getJavaTypeDescriptor())),
     FLOAT(float.class.getName(), Float.class.getName(),
-            new HibernateBackedJavaTypeConverter(FloatType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(FloatType.INSTANCE.getJavaTypeDescriptor())),
     DOUBLE(double.class.getName(), Double.class.getName(),
-            new HibernateBackedJavaTypeConverter(DoubleType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(DoubleType.INSTANCE.getJavaTypeDescriptor())),
     BIG_DECIMAL(BigDecimal.class.getName(),
-            new HibernateBackedJavaTypeConverter(BigDecimalType.INSTANCE.getJavaTypeDescriptor())), // OR NUMBER
+        new HibernateBackedJavaTypeConverter(BigDecimalType.INSTANCE.getJavaTypeDescriptor())), // OR NUMBER
     BOOLEAN(boolean.class.getName(), Boolean.class.getName(),
-            new HibernateBackedJavaTypeConverter(BooleanType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(BooleanType.INSTANCE.getJavaTypeDescriptor())),
     YES_OR_NO(boolean.class.getName(), Boolean.class.getName(),
-            new HibernateBackedJavaTypeConverter(YesNoType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(YesNoType.INSTANCE.getJavaTypeDescriptor())),
     TRUE_OR_FALSE(boolean.class.getName(), Boolean.class.getName(),
-            new HibernateBackedJavaTypeConverter(TrueFalseType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(TrueFalseType.INSTANCE.getJavaTypeDescriptor())),
     CHARACTER(char.class.getName(), Character.class.getName(),
-            new HibernateBackedJavaTypeConverter(CharacterType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(CharacterType.INSTANCE.getJavaTypeDescriptor())),
     STRING(String.class.getName(), new StringTypeConverter()),
     TEXT(String.class.getName(), new StringTypeConverter()),
     CLOB(String.class.getName(), new StringTypeConverter()),
@@ -105,13 +105,13 @@ public enum JavaType {
     private static Map<String, JavaType> javaTypeMap = new HashMap<>();
 
     private static List<JavaType> integerTypes = Arrays.asList(JavaType.SHORT,
-            JavaType.INTEGER,
-            JavaType.LONG,
-            JavaType.BIG_INTEGER);
+        JavaType.INTEGER,
+        JavaType.LONG,
+        JavaType.BIG_INTEGER);
 
     private static List<JavaType> decimalTypes = Arrays.asList(JavaType.FLOAT,
-            JavaType.DOUBLE,
-            JavaType.BIG_DECIMAL);
+        JavaType.DOUBLE,
+        JavaType.BIG_DECIMAL);
 
     private static List<JavaType> numericTypes = new ArrayList<>();
 

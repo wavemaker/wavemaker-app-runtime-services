@@ -39,7 +39,7 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author Kishore Routhu on 6/2/18 4:47 PM.
  */
 public class WMRememberMeAuthenticationFilter extends GenericFilterBean implements
-        ApplicationEventPublisherAware {
+    ApplicationEventPublisherAware {
 
     // ~ Instance fields
     // ================================================================================================
@@ -50,8 +50,8 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
     private RememberMeServices rememberMeServices;
 
     public WMRememberMeAuthenticationFilter(
-            AuthenticationManager authenticationManager,
-            RememberMeServices rememberMeServices) {
+        AuthenticationManager authenticationManager,
+        RememberMeServices rememberMeServices) {
         Assert.notNull(authenticationManager, "authenticationManager cannot be null");
         Assert.notNull(rememberMeServices, "rememberMeServices cannot be null");
         this.authenticationManager = authenticationManager;
@@ -69,13 +69,13 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             Authentication rememberMeAuth = rememberMeServices.autoLogin(request,
-                    response);
+                response);
 
             boolean isRememberMeAuthentication = false;
             if (rememberMeAuth != null) {
@@ -89,43 +89,43 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("SecurityContextHolder populated with remember-me token: '"
-                                + SecurityContextHolder.getContext().getAuthentication()
-                                + "'");
+                            + SecurityContextHolder.getContext().getAuthentication()
+                            + "'");
                     }
 
                     // Fire event
                     if (this.eventPublisher != null) {
                         eventPublisher
-                                .publishEvent(new InteractiveAuthenticationSuccessEvent(
-                                        SecurityContextHolder.getContext()
-                                                .getAuthentication(), this.getClass()));
+                            .publishEvent(new InteractiveAuthenticationSuccessEvent(
+                                SecurityContextHolder.getContext()
+                                    .getAuthentication(), this.getClass()));
                     }
 
                     if (successHandler != null) {
                         successHandler.onAuthenticationSuccess(request, response,
-                                rememberMeAuth);
+                            rememberMeAuth);
                     }
 
                 } catch (AuthenticationException authenticationException) {
                     if (logger.isDebugEnabled()) {
                         logger.debug(
-                                "SecurityContextHolder not populated with remember-me token, as "
-                                        + "AuthenticationManager rejected Authentication returned by RememberMeServices: '"
-                                        + rememberMeAuth
-                                        + "'; invalidating remember-me token",
-                                authenticationException);
+                            "SecurityContextHolder not populated with remember-me token, as "
+                                + "AuthenticationManager rejected Authentication returned by RememberMeServices: '"
+                                + rememberMeAuth
+                                + "'; invalidating remember-me token",
+                            authenticationException);
                     }
 
                     rememberMeServices.loginFail(request, response);
                     onUnsuccessfulAuthentication(request, response,
-                            authenticationException);
+                        authenticationException);
                 }
             }
             chain.doFilter(request, response);
         } else {
             if (logger.isDebugEnabled()) {
                 logger.debug("SecurityContextHolder not populated with remember-me token, as it already contained: '"
-                        + SecurityContextHolder.getContext().getAuthentication() + "'");
+                    + SecurityContextHolder.getContext().getAuthentication() + "'");
             }
 
             chain.doFilter(request, response);
@@ -139,8 +139,8 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
      * {@code autoLogin} reurns null.
      */
     protected void onUnsuccessfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response, AuthenticationException failed) {
+        HttpServletRequest request,
+        HttpServletResponse response, AuthenticationException failed) {
     }
 
     public RememberMeServices getRememberMeServices() {
@@ -164,7 +164,7 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
      *                       {@code doFilter()}.
      */
     public void setAuthenticationSuccessHandler(
-            AuthenticationSuccessHandler successHandler) {
+        AuthenticationSuccessHandler successHandler) {
         Assert.notNull(successHandler, "successHandler cannot be null");
         this.successHandler = successHandler;
     }

@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.constraints;
 
 /**
- * @author : Sanjana Raheja
  * @since : 01/10/20
  */
 

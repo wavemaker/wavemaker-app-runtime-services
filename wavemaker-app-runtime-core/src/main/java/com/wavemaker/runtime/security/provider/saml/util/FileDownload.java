@@ -52,7 +52,7 @@ public class FileDownload {
         try {
             if (!secure) {
                 closeableHttpClient = HttpClients.custom().
-                        setSSLContext(SSLUtils.getAllTrustedCertificateSSLContext()).build();
+                    setSSLContext(SSLUtils.getAllTrustedCertificateSSLContext()).build();
             } else {
                 closeableHttpClient = HttpClients.custom().build();
             }

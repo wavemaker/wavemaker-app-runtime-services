@@ -55,18 +55,18 @@ public class SimpleEntitiyQueryGenerator<E, I> implements EntityQueryGenerator<E
     @Override
     public SelectQueryBuilder findBy(final Map<String, Object> fieldValueMap) {
         return SelectQueryBuilder.newBuilder(entityClass)
-                .withFilterConditions(fieldValueMap);
+            .withFilterConditions(fieldValueMap);
     }
 
     @Override
     public SelectQueryBuilder searchByQuery(final String query) {
         return SelectQueryBuilder.newBuilder(entityClass)
-                .withFilter(query);
+            .withFilter(query);
     }
 
     @Override
     public SelectQueryBuilder getAggregatedValues(final AggregationInfo aggregationInfo) {
         return SelectQueryBuilder.newBuilder(entityClass)
-                .withAggregationInfo(aggregationInfo);
+            .withAggregationInfo(aggregationInfo);
     }
 }

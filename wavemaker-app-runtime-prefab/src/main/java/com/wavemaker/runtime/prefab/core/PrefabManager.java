@@ -18,21 +18,21 @@ import java.util.Collection;
 
 /**
  * A <code>PrefabManager</code> acts like a container to keep track of loaded {@link Prefab}s.
- * 
+ *
  * @author Dilip Kumar
  */
 public interface PrefabManager {
 
     /**
      * Adds a new {@link Prefab}.
-     * 
+     *
      * @param prefab prefab to be added
      */
     public void addPrefab(Prefab prefab);
 
     /**
      * Deletes an existing {@link Prefab}.
-     * 
+     *
      * @param prefabName name of the prefab to be deleted
      */
     public void deletePrefab(String prefabName);
@@ -41,15 +41,16 @@ public interface PrefabManager {
 
     /**
      * Returns all enabled {@link Prefab}s.
-     * 
+     *
      * @return enabled {@link Prefab}s
      */
     public Collection<Prefab> getPrefabs();
 
     /**
      * Returns the {@link Prefab} with the given name.
-     * 
+     *
      * @param name name of the prefab
+     *
      * @return {@link Prefab}
      */
     public Prefab getPrefab(String name);

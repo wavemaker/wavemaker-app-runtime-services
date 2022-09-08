@@ -20,7 +20,6 @@ import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 /**
  * @author Uday Shankar
  */

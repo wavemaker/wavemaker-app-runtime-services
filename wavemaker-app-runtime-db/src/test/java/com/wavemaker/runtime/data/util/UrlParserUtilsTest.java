@@ -47,7 +47,7 @@ public class UrlParserUtilsTest {
     @Test
     public void trimUrlForHostName() {
         List<String> sanitisedHostNames = inputHostNames.stream()
-                .map(UrlParserUtils::trimUrlForHostName).collect(Collectors.toList());
+            .map(UrlParserUtils::trimUrlForHostName).collect(Collectors.toList());
         Assert.assertEquals(sanitisedHostNames, expectedHostNames);
     }
 }

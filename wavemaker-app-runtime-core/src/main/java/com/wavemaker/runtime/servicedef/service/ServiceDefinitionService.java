@@ -151,7 +151,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
         Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
         authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s ->
-                putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
+            putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
         securityDefinitions = oAuthProvidersManager.getOAuth2ProviderWithImplicitFlow();
     }
 
@@ -166,7 +166,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                 String method = serviceDefinition.getWmServiceOperationInfo().getHttpMethod();
                 method = StringUtils.upperCase(method);
                 Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null,
-                        method));
+                    method));
                 List<ConfigAttribute> configAttributeList;
                 if (attributes instanceof List) {
                     configAttributeList = (List) attributes;
@@ -233,13 +233,12 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     private Map<String, ServiceDefinition> getServiceDefinition(Resource resource, PropertyResolver propertyResolver) {
         try {
             Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream(),
-                    propertyResolver);
+                propertyResolver);
             return serviceDefinitionHelper.build(reader);
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
         }
     }
-
 
     private void runInPrefabClassLoader(final Prefab prefab, Runnable runnable) {
         ClassLoader classLoader = prefab.getClassLoader();
@@ -281,12 +280,12 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private ServiceDefinition buildValueLessServiceDef(ServiceDefinition serviceDefinition) {
         return ServiceDefinition.getNewInstance()
-                .addId(serviceDefinition.getId())
-                .addController(serviceDefinition.getController())
-                .addType(serviceDefinition.getType())
-                .addCrudOperationId(serviceDefinition.getCrudOperationId())
-                .addOperationType(serviceDefinition.getOperationType())
-                .addService(serviceDefinition.getService())
-                .addWmServiceOperationInfo(null);
+            .addId(serviceDefinition.getId())
+            .addController(serviceDefinition.getController())
+            .addType(serviceDefinition.getType())
+            .addCrudOperationId(serviceDefinition.getCrudOperationId())
+            .addOperationType(serviceDefinition.getOperationType())
+            .addService(serviceDefinition.getService())
+            .addWmServiceOperationInfo(null);
     }
 }

@@ -22,8 +22,8 @@ import javax.validation.constraints.NotEmpty;
 
 public class CustomQuery {
 
-	@NotBlank
-	@NotEmpty
+    @NotBlank
+    @NotEmpty
     private String queryStr;
 
     private boolean nativeSql;
@@ -31,14 +31,14 @@ public class CustomQuery {
     private List<CustomQueryParam> queryParams = new ArrayList<>();
 
     public CustomQuery() {
-		super();
-	}
+        super();
+    }
 
-	public CustomQuery(String queryStr, List<CustomQueryParam> queryParams) {
-		super();
-		this.queryStr = queryStr;
-		this.queryParams = queryParams;
-	}
+    public CustomQuery(String queryStr, List<CustomQueryParam> queryParams) {
+        super();
+        this.queryStr = queryStr;
+        this.queryParams = queryParams;
+    }
 
     public String getQueryStr() {
         return queryStr;
@@ -47,7 +47,7 @@ public class CustomQuery {
     public void setQueryStr(String queryStr) {
         this.queryStr = queryStr;
     }
-    
+
     public List<CustomQueryParam> getQueryParams() {
         return queryParams;
     }

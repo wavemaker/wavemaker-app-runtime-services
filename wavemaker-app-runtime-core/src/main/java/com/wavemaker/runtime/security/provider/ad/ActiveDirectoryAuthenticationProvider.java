@@ -26,7 +26,6 @@ import com.wavemaker.runtime.security.ad.SpringActiveDirectoryLdapAuthentication
  */
 public class ActiveDirectoryAuthenticationProvider extends SpringActiveDirectoryLdapAuthenticationProvider {
 
-
     private ActiveDirectoryAuthoritiesPopulator authoritiesPopulator;
 
     /**

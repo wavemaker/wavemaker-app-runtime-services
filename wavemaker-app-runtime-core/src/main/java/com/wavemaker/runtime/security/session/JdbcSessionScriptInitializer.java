@@ -54,7 +54,7 @@ public class JdbcSessionScriptInitializer {
             } else {
                 ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
                 ClassPathResource classPathResource =
-                        new ClassPathResource("org/springframework/session/jdbc/schema-" + extractDbType(dataSource.getConnection().getMetaData().getURL()) + ".sql");
+                    new ClassPathResource("org/springframework/session/jdbc/schema-" + extractDbType(dataSource.getConnection().getMetaData().getURL()) + ".sql");
                 LOGGER.debug("executing sql script from resource: {}", classPathResource.getPath());
                 resourceDatabasePopulator.addScript(classPathResource);
                 resourceDatabasePopulator.execute(dataSource);

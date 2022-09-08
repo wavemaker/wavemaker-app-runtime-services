@@ -30,6 +30,7 @@ public class Prefab {
     private ClassLoader classLoader;
 
     private boolean installed;
+
     /**
      * Creates a new <code>Prefab</code> with the specified name and classloader.
      *
@@ -73,8 +74,8 @@ public class Prefab {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-                .append(classLoader)
-                .toHashCode();
+            .append(classLoader)
+            .toHashCode();
     }
 
     @Override
@@ -88,15 +89,15 @@ public class Prefab {
         Prefab prefab = (Prefab) that;
 
         return new EqualsBuilder().append(name, prefab.name)
-                .append(classLoader, prefab.classLoader)
-                .isEquals();
+            .append(classLoader, prefab.classLoader)
+            .isEquals();
     }
 
     @Override
     public String toString() {
         return "Prefab{" +
-                "name='" + name + '\'' +
-                ", classLoader=" + classLoader +
-                '}';
+            "name='" + name + '\'' +
+            ", classLoader=" + classLoader +
+            '}';
     }
 }

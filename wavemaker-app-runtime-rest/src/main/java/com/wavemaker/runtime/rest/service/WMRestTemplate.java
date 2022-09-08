@@ -53,20 +53,20 @@ import com.wavemaker.runtime.commons.converters.WMYamlJackson2HttpMessageConvert
 public class WMRestTemplate extends RestTemplate {
 
     private static final boolean ROME_PRESENT =
-            ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRestTemplate.class.getClassLoader());
+        ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRestTemplate.class.getClassLoader());
 
     private static final boolean JAXB_2_PRESENT =
-            ClassUtils.isPresent("javax.xml.bind.Binder", WMRestTemplate.class.getClassLoader());
+        ClassUtils.isPresent("javax.xml.bind.Binder", WMRestTemplate.class.getClassLoader());
 
     private static final boolean JACKSON_2_PRESENT =
-            ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", WMRestTemplate.class.getClassLoader()) &&
-                    ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", WMRestTemplate.class.getClassLoader());
+        ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", WMRestTemplate.class.getClassLoader()) &&
+            ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", WMRestTemplate.class.getClassLoader());
 
     private static final boolean JACKSON_2_XML_PRESENT =
-            ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", WMRestTemplate.class.getClassLoader());
+        ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", WMRestTemplate.class.getClassLoader());
 
     private static final boolean GSON_PRESENT =
-            ClassUtils.isPresent("com.google.gson.Gson", WMRestTemplate.class.getClassLoader());
+        ClassUtils.isPresent("com.google.gson.Gson", WMRestTemplate.class.getClassLoader());
 
     private static final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
 

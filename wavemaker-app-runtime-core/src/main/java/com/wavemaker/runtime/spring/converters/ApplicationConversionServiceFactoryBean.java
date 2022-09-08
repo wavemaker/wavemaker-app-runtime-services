@@ -29,7 +29,7 @@ import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.JavaType;
 
 /**
- * @Author: sowmyad
+ *
  */
 public class ApplicationConversionServiceFactoryBean extends FormattingConversionServiceFactoryBean {
 
@@ -82,7 +82,7 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
         }
     }
 
-    public static class WMStringToExportTypeConverter implements  Converter<String, ExportType> {
+    public static class WMStringToExportTypeConverter implements Converter<String, ExportType> {
 
         @Override
         public ExportType convert(final String source) {

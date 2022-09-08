@@ -33,9 +33,7 @@ import com.wavemaker.runtime.rest.model.HttpRequestDetails;
  */
 public class HttpRequestCookieProcessor extends AbstractHttpRequestProcessor {
 
-
     private static final String COOKIE = "Cookie";
-
 
     @Override
     protected void doProcess(HttpRequestProcessorContext httpRequestProcessorContext) {

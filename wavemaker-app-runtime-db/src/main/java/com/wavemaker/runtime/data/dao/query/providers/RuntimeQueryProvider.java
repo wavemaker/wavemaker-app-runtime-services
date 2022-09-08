@@ -56,20 +56,20 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
         }
 
         return RuntimeQueryProvider.newBuilder(returnType)
-                .withQueryString(query.getQueryString())
-                .withCountQueryString(countQueryString)
-                .withNativeSql(query.isNativeSql())
-                .build();
+            .withQueryString(query.getQueryString())
+            .withCountQueryString(countQueryString)
+            .withNativeSql(query.isNativeSql())
+            .build();
     }
 
     public static <R> RuntimeQueryProvider<R> from(WMQueryInfo queryInfo, Class<R> returnType) {
         String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
 
         return RuntimeQueryProvider.newBuilder(returnType)
-                .withQueryString(queryInfo.getQuery())
-                .withCountQueryString(countQuery)
-                .withNativeSql(false)
-                .build();
+            .withQueryString(queryInfo.getQuery())
+            .withCountQueryString(countQuery)
+            .withNativeSql(false)
+            .build();
     }
 
     public static <R> Builder<R> newBuilder(Class<R> responseType) {
@@ -84,7 +84,7 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
             final WMResultTransformer transformer = Transformers.aliasToMappedClass(responseType);
             if (nativeSql) {
                 sortedQuery = QueryHelper.applySortingForNativeQuery(queryString, pageable.getSort(),
-                        transformer, ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
+                    transformer, ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
             } else {
                 sortedQuery = QueryHelper.applySortingForHqlQuery(queryString, pageable.getSort(), transformer);
             }

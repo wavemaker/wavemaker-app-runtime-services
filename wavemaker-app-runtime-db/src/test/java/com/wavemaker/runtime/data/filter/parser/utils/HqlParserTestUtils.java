@@ -41,7 +41,7 @@ public interface HqlParserTestUtils {
             if (includesValues) {
                 for (Object value : values) {
                     queries.add(StringSubstitutor.replace(query, ImmutableMap.of("key", fieldName,
-                            "value", getObjectValue(value))));
+                        "value", getObjectValue(value))));
                 }
             } else {
                 queries.add(StringSubstitutor.replace(query, Collections.singletonMap("key", fieldName)));

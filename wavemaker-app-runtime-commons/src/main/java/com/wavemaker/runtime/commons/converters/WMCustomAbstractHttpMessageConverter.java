@@ -20,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 
 /**
- * @Author: Uday
+ *
  */
 public abstract class WMCustomAbstractHttpMessageConverter<T> extends AbstractHttpMessageConverter<T> implements WMCustomHttpMessageConverter<T> {
 
@@ -35,6 +35,6 @@ public abstract class WMCustomAbstractHttpMessageConverter<T> extends AbstractHt
 
     @Override
     protected MediaType getDefaultContentType(T t) throws IOException {
-          return null;
+        return null;
     }
 }

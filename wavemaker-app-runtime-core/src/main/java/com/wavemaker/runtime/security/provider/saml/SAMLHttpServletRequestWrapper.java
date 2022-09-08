@@ -39,7 +39,6 @@ public class SAMLHttpServletRequestWrapper extends HttpServletRequestWrapper {
     /**
      * Constructs a request object wrapping the given request.
      *
-     * @param request
      * @throws IllegalArgumentException if the request is null
      */
     public SAMLHttpServletRequestWrapper(HttpServletRequest request, Saml2AuthenticationToken saml2AuthenticationToken, EndpointType endpointType) {

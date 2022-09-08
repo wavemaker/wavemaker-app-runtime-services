@@ -37,11 +37,9 @@ public class SimpleGrantedAuthority implements GrantedAuthority {
         return role;
     }
 
-
     public void setAuthority(String role) {
         this.role = role;
     }
-
 
     @Override
     public boolean equals(Object obj) {

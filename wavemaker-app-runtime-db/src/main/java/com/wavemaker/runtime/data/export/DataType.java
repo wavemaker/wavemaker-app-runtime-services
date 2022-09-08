@@ -71,7 +71,7 @@ public enum DataType {
 
     },
     DATE(Arrays.asList(Date.class.getName(), java.sql.Date.class.getName(), Time.class.getName(),
-            Timestamp.class.getName())) {
+        Timestamp.class.getName())) {
 
     },
     DATETIME(Collections.singletonList(LocalDateTime.class.getName())) {
@@ -86,9 +86,7 @@ public enum DataType {
 
     private final List<String> classNames;
 
-
     private static Map<String, DataType> classNameVsTypesMap = new HashMap<>();
-
 
     static {
         for (final DataType types : DataType.values()) {

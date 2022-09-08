@@ -14,14 +14,12 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.expression;
 
-
 public class QueryFilter {
 
     private String attributeName;
     private Object attributeValue;
     private Type filterCondition;
     private AttributeType attributeType;
-
 
     public QueryFilter() {
         super();
@@ -71,11 +69,11 @@ public class QueryFilter {
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((attributeName == null) ? 0 : attributeName.hashCode());
+            + ((attributeName == null) ? 0 : attributeName.hashCode());
         result = prime * result
-                + ((attributeValue == null) ? 0 : attributeValue.hashCode());
+            + ((attributeValue == null) ? 0 : attributeValue.hashCode());
         result = prime * result
-                + ((filterCondition == null) ? 0 : filterCondition.hashCode());
+            + ((filterCondition == null) ? 0 : filterCondition.hashCode());
         return result;
     }
 

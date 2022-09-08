@@ -19,7 +19,7 @@ import java.io.File;
 /**
  * A <code>PrefabLoaderImpl</code> is responsible for loading {@link Prefab} from a single source
  * (local directory or remote system).
- * 
+ *
  * @author Dilip Kumar
  */
 public interface PrefabLoader {
@@ -33,8 +33,9 @@ public interface PrefabLoader {
 
     /**
      * Loads {@link Prefab} from the given jar file.
-     * 
+     *
      * @param jarFile prefab jar file
+     *
      * @throws Exception if the jar file is invalid
      */
     public void loadPrefab(final File jarFile) throws Exception;

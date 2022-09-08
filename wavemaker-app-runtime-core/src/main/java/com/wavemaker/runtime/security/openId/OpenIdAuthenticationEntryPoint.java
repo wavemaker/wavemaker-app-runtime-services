@@ -57,7 +57,7 @@ public class OpenIdAuthenticationEntryPoint implements SSOEntryPoint {
     private String createRedirectUrl(HttpServletRequest request) {
         StringBuilder stringBuilder = new StringBuilder(HttpRequestUtils.getApplicationBaseUrl(request)).append("/auth/oauth2/").append(providerId);
         return StringUtils.isNotEmpty(request.getParameter(OpenIdConstants.REDIRECT_PAGE)) ? stringBuilder.append("?redirectPage=").append(request.getParameter(
-                OpenIdConstants.REDIRECT_PAGE)).toString() : stringBuilder.toString();
+            OpenIdConstants.REDIRECT_PAGE)).toString() : stringBuilder.toString();
     }
 
     public String getProviderId() {

@@ -67,7 +67,7 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
 
         if (!pageable.isUnpaged()) {
             query.setFirstResult((int) pageable.getOffset())
-                    .setMaxResults(pageable.getPageSize());
+                .setMaxResults(pageable.getPageSize());
         }
 
         return query;
@@ -79,7 +79,7 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
 
         final String countQueryName = this.name + "__count";
         final NamedQueryRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
-                .getNamedQueryRepository();
+            .getNamedQueryRepository();
         if (queryExists(repository, countQueryName)) {
             query = getAndConfigureQuery(session, countQueryName, Number.class);
         } else {
@@ -107,11 +107,11 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
     private Query<R> createSortedQuery(final Session session, final Sort sort, final WMResultTransformer transformer) {
         final Query<R> query;
         final NamedQueryRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
-                .getNamedQueryRepository();
+            .getNamedQueryRepository();
         if (repository.getNamedQueryDefinition(name) != null) {
             final String sortedQuery = QueryHelper
-                    .applySortingForHqlQuery(repository.getNamedQueryDefinition(name).getQueryString(), sort,
-                            transformer);
+                .applySortingForHqlQuery(repository.getNamedQueryDefinition(name).getQueryString(), sort,
+                    transformer);
             if (isMappedType(responseType)) {
                 query = session.createQuery(sortedQuery, responseType);
             } else {
@@ -120,13 +120,13 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
             }
         } else if (repository.getNamedSQLQueryDefinition(name) != null) {
             final String sortedQuery = QueryHelper
-                    .applySortingForNativeQuery(repository.getNamedSQLQueryDefinition(name).getQueryString(),
-                            sort, transformer,
-                            ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
+                .applySortingForNativeQuery(repository.getNamedSQLQueryDefinition(name).getQueryString(),
+                    sort, transformer,
+                    ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
             query = session.createNativeQuery(sortedQuery).setResultTransformer(transformer);
         } else {
             throw ((SessionImplementor) session).getExceptionConverter()
-                    .convert(new IllegalArgumentException("No query defined for that name [" + name + "]"));
+                .convert(new IllegalArgumentException("No query defined for that name [" + name + "]"));
         }
         return query;
     }

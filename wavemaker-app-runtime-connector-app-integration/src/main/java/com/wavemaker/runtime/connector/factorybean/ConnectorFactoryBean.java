@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.connector.factorybean;
 
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
@@ -61,35 +60,35 @@ public class ConnectorFactoryBean<T> implements FactoryBean<T> {
         enhancer.setSuperclass(getObjectType());
 
         enhancer.setCallbacks(new Callback[]{
-                (MethodInterceptor) (o, method, methodArgs, methodProxy) -> {
-                    logger.info("Intercepting connector api invocation");
-                    ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-                    try {
+            (MethodInterceptor) (o, method, methodArgs, methodProxy) -> {
+                logger.info("Intercepting connector api invocation");
+                ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+                try {
 
-                        //step1 : get connector context which have connector impl classloader and metadata, and they are cached in builder
-                        ConnectorContext connectorContext = contextProvider.get(connectorId, currentClassLoader);
+                    //step1 : get connector context which have connector impl classloader and metadata, and they are cached in builder
+                    ConnectorContext connectorContext = contextProvider.get(connectorId, currentClassLoader);
 
-                        //step2: set impl classloader to current thread
-                        logger.info("Setting connector classloader {} to current thread ", connectorContext.getClassLoader());
-                        Thread.currentThread().setContextClassLoader(connectorContext.getClassLoader());
+                    //step2: set impl classloader to current thread
+                    logger.info("Setting connector classloader {} to current thread ", connectorContext.getClassLoader());
+                    Thread.currentThread().setContextClassLoader(connectorContext.getClassLoader());
 
-                        //step3: load connectormain which will build spring context and cache it for further request and get an instance of impl bean
-                        implBeanObject = getImplBeanObject(method, connectorContext.getClassLoader(), connectorContext.getConnectorMetadata());
+                    //step3: load connectormain which will build spring context and cache it for further request and get an instance of impl bean
+                    implBeanObject = getImplBeanObject(method, connectorContext.getClassLoader(), connectorContext.getConnectorMetadata());
 
-                        //step4: execute bean method
-                        return method.invoke(implBeanObject, methodArgs);
+                    //step4: execute bean method
+                    return method.invoke(implBeanObject, methodArgs);
 
-                    } catch (InvocationTargetException e) {
-                        logger.error("Exception during intercepting api invocation for connector {} ", connectorId);
-                        throw new RuntimeException("Exception during intercepting connector api invocation ", e.getTargetException());
-                    } catch (Exception e) {
-                        logger.error("Exception during intercepting api invocation for connector {} ", connectorId);
-                        throw new RuntimeException("Exception during intercepting connector api invocation ", e);
-                    } finally {
-                        Thread.currentThread().setContextClassLoader(currentClassLoader);
-                        logger.info("Intercepting connector api invocation is completed");
-                    }
+                } catch (InvocationTargetException e) {
+                    logger.error("Exception during intercepting api invocation for connector {} ", connectorId);
+                    throw new RuntimeException("Exception during intercepting connector api invocation ", e.getTargetException());
+                } catch (Exception e) {
+                    logger.error("Exception during intercepting api invocation for connector {} ", connectorId);
+                    throw new RuntimeException("Exception during intercepting connector api invocation ", e);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(currentClassLoader);
+                    logger.info("Intercepting connector api invocation is completed");
                 }
+            }
         });
         return (T) enhancer.create();
     }

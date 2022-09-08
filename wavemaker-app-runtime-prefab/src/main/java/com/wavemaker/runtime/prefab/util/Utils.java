@@ -35,6 +35,7 @@ public class Utils {
      *
      * @param key          property key
      * @param defaultValue default value
+     *
      * @return set value or default value in case of error
      */
     public static String getStringSystemProperty(final String key, final String defaultValue) {
@@ -54,12 +55,12 @@ public class Utils {
      * Checks if the given file is a usable jar file.
      *
      * @param file file
+     *
      * @return true, if a usable jar file
      */
     public static boolean isReadableJarFile(final File file) {
         return file != null && file.isFile() && file.getName().endsWith(".jar") && file.canRead();
     }
-
 
     /**
      * Returns a filter for a jar files.
@@ -96,9 +97,6 @@ public class Utils {
 
     /**
      * Returns the url list of files path.
-     *
-     * @param files
-     * @return
      */
     public static URL[] convertToURLS(File configDir, File[] files) {
         List<URL> urls = new ArrayList<>();
@@ -116,7 +114,6 @@ public class Utils {
         }
         return urls.toArray(new URL[]{});
     }
-
 
     /**
      * Returns a concrete implementation of {@link java.util.concurrent.ConcurrentMap}.

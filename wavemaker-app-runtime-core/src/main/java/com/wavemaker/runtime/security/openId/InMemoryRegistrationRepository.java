@@ -31,7 +31,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.commons.auth.openId.OpenIdProviderInfo;
 
-
 /**
  * Created by srujant on 30/7/18.
  */
@@ -53,19 +52,19 @@ public class InMemoryRegistrationRepository implements ClientRegistrationReposit
                 }
 
                 ClientRegistration client = ClientRegistration.withRegistrationId(openIdProviderInfo.getProviderId())
-                        .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                        .authorizationUri(openIdProviderInfo.getAuthorizationUrl())
-                        .tokenUri(openIdProviderInfo.getTokenUrl())
-                        .jwkSetUri(openIdProviderInfo.getJwkSetUrl())
-                        .userInfoUri(openIdProviderInfo.getUserInfoUrl())
-                        .scope(Arrays.copyOf(scopes.toArray(), scopes.size(), String[].class))
-                        .redirectUriTemplate(openIdProviderInfo.getRedirectUrlTemplate())
-                        .clientId(openIdProviderInfo.getClientId())
-                        .clientSecret(openIdProviderInfo.getClientSecret())
-                        .clientName(openIdProviderInfo.getProviderId())
-                        .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                        .userNameAttributeName(openIdProviderInfo.getUserNameAttributeName())
-                        .build();
+                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                    .authorizationUri(openIdProviderInfo.getAuthorizationUrl())
+                    .tokenUri(openIdProviderInfo.getTokenUrl())
+                    .jwkSetUri(openIdProviderInfo.getJwkSetUrl())
+                    .userInfoUri(openIdProviderInfo.getUserInfoUrl())
+                    .scope(Arrays.copyOf(scopes.toArray(), scopes.size(), String[].class))
+                    .redirectUriTemplate(openIdProviderInfo.getRedirectUrlTemplate())
+                    .clientId(openIdProviderInfo.getClientId())
+                    .clientSecret(openIdProviderInfo.getClientSecret())
+                    .clientName(openIdProviderInfo.getProviderId())
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                    .userNameAttributeName(openIdProviderInfo.getUserNameAttributeName())
+                    .build();
                 registrations.put(openIdProviderInfo.getProviderId(), client);
             }
         }

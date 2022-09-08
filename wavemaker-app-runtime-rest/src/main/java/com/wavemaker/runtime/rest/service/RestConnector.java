@@ -96,8 +96,8 @@ public class RestConnector {
     }
 
     private <T> ResponseEntity<T> getResponseEntity(
-            final HttpRequestDetails httpRequestDetails, final HttpClientContext
-            httpClientContext, Class<T> t, final WMRestTemplate wmRestTemplate) {
+        final HttpRequestDetails httpRequestDetails, final HttpClientContext
+        httpClientContext, Class<T> t, final WMRestTemplate wmRestTemplate) {
 
         String endpointAddress = httpRequestDetails.getEndpointAddress();
         HttpMethod httpMethod = HttpMethod.valueOf(httpRequestDetails.getMethod());
@@ -105,14 +105,13 @@ public class RestConnector {
 
         CloseableHttpClient httpClient = getHttpClient();
 
-
         final RequestConfig requestConfig = RequestConfig.custom()
-                .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
-                .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
-                .setSocketTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionSocketTimeoutInSeconds()))
-                .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionTimeoutInSeconds()))
-                .setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionRequestTimeoutInSeconds()))
-                .build();
+            .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
+            .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+            .setSocketTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionSocketTimeoutInSeconds()))
+            .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionTimeoutInSeconds()))
+            .setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionRequestTimeoutInSeconds()))
+            .build();
 
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient) {
             @Override
@@ -150,8 +149,8 @@ public class RestConnector {
         synchronized (RestConnector.class) {
             if (defaultHttpClient == null) {
                 HttpClientBuilder httpClientBuilder = HttpClients.custom()
-                        .setDefaultCredentialsProvider(getCredentialProvider())
-                        .setConnectionManager(getConnectionManager());
+                    .setDefaultCredentialsProvider(getCredentialProvider())
+                    .setConnectionManager(getConnectionManager());
                 if (httpConfiguration.isUseSystemProperties()) {
                     httpClientBuilder = httpClientBuilder.useSystemProperties();
                 }
@@ -167,7 +166,7 @@ public class RestConnector {
         if (httpConfiguration.isAppProxyEnabled()) {
             credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(httpConfiguration.getAppProxyHost(), httpConfiguration.getAppProxyPort()),
-                    new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
+                new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
         }
         return credentialsProvider;
     }
@@ -175,9 +174,9 @@ public class RestConnector {
     private PoolingHttpClientConnectionManager getConnectionManager() {
         SSLContextBuilder sslContextBuilder = new SSLContextBuilder(httpConfiguration);
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("http", PlainConnectionSocketFactory.getSocketFactory())
-                .register("https", new SSLConnectionSocketFactory(sslContextBuilder.getSslContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, sslContextBuilder.getHostNameVerifier()))
-                .build();
+            .register("http", PlainConnectionSocketFactory.getSocketFactory())
+            .register("https", new SSLConnectionSocketFactory(sslContextBuilder.getSslContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, sslContextBuilder.getHostNameVerifier()))
+            .build();
 
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);
         poolingHttpClientConnectionManager.setMaxTotal(httpConfiguration.getMaxTotalConnections());

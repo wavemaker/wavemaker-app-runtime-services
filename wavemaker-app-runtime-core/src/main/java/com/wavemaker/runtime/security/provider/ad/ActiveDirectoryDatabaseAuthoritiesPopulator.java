@@ -30,7 +30,7 @@ public class ActiveDirectoryDatabaseAuthoritiesPopulator implements ActiveDirect
 
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(
-            final DirContextOperations userData, final String username) {
+        final DirContextOperations userData, final String username) {
         return authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username));
     }
 
@@ -39,7 +39,7 @@ public class ActiveDirectoryDatabaseAuthoritiesPopulator implements ActiveDirect
     }
 
     public void setAuthoritiesProvider(
-            final AuthoritiesProvider authoritiesProvider) {
+        final AuthoritiesProvider authoritiesProvider) {
         this.authoritiesProvider = authoritiesProvider;
     }
 }

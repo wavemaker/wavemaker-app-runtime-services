@@ -33,8 +33,8 @@ public class WMAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint
 
     /**
      * @param loginFormUrl URL where the login page can be found. Should either be
-     * relative to the web-app context path (include a leading {@code /}) or an absolute
-     * URL.
+     *                     relative to the web-app context path (include a leading {@code /}) or an absolute
+     *                     URL.
      */
     public WMAuthenticationEntryPoint(final String loginFormUrl) {
         super(loginFormUrl);
@@ -43,7 +43,7 @@ public class WMAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         if (HttpRequestUtils.isAjaxRequest(request)) {
             response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

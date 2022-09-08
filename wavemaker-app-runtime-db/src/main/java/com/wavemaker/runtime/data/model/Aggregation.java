@@ -65,10 +65,10 @@ public class Aggregation {
     @Override
     public String toString() {
         return "Aggregation{" +
-                "field='" + field + '\'' +
-                ", type=" + type +
-                ", alias='" + alias + '\'' +
-                '}';
+            "field='" + field + '\'' +
+            ", type=" + type +
+            ", alias='" + alias + '\'' +
+            '}';
     }
 
     @Override
@@ -81,8 +81,8 @@ public class Aggregation {
         }
         final Aggregation that = (Aggregation) o;
         return Objects.equals(getField(), that.getField()) &&
-                Objects.equals(getType(), that.getType()) &&
-                Objects.equals(getAlias(), that.getAlias());
+            Objects.equals(getType(), that.getType()) &&
+            Objects.equals(getAlias(), that.getAlias());
     }
 
     @Override

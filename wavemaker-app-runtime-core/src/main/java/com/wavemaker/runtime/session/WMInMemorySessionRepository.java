@@ -48,7 +48,7 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
         }
         Map<String, MapSession> sessionMap = new HashMap<>();
         sessions.values().stream().filter(session -> Objects.equals(getPrincipal(session), value))
-                .forEach(session -> sessionMap.put(session.getId(), (MapSession) session));
+            .forEach(session -> sessionMap.put(session.getId(), (MapSession) session));
         return sessionMap;
     }
 

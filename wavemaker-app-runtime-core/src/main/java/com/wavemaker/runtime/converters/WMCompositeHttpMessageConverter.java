@@ -30,7 +30,7 @@ import com.wavemaker.runtime.commons.converters.WMCustomHttpMessageConverter;
 import com.wavemaker.runtime.commons.converters.WMYamlJackson2HttpMessageConverter;
 
 /**
- * @Author: Uday
+ *
  */
 public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<T> {
 
@@ -82,7 +82,7 @@ public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<
 
     @Override
     public void write(T t, MediaType contentType, HttpOutputMessage outputMessage)
-            throws IOException {
+        throws IOException {
         for (WMCustomHttpMessageConverter httpMessageConverter : httpMessageConverterList) {
             if (httpMessageConverter.supportsClazz(t.getClass())) {
                 httpMessageConverter.write(t, null, outputMessage);

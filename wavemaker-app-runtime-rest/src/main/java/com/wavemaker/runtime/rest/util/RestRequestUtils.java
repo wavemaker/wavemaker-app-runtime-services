@@ -32,7 +32,7 @@ import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
 public class RestRequestUtils {
 
     private static final List<String> VAR_TYPES = Arrays.asList(VariableType.SERVER.name(),
-            VariableType.APP_ENVIRONMENT.name());
+        VariableType.APP_ENVIRONMENT.name());
 
     public static Optional<String> findVariableValue(Parameter parameter) {
         final String variableType = (String) VendorUtils.getWMExtension(parameter, RestConstants.VARIABLE_TYPE);
@@ -49,6 +49,6 @@ public class RestRequestUtils {
         final String variableType = (String) VendorUtils.getWMExtension(parameter, RestConstants.VARIABLE_TYPE);
         final String variableValue = (String) VendorUtils.getWMExtension(parameter, RestConstants.VARIABLE_KEY);
         return StringUtils.isNotBlank(variableType) && VAR_TYPES.contains(variableType) && StringUtils
-                .isNotBlank(variableValue);
+            .isNotBlank(variableValue);
     }
 }

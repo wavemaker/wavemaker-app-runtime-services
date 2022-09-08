@@ -81,10 +81,10 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
         }
         if (StringUtils.isNotBlank(logoutUrl) && authentication != null) {
             StringBuilder targetUrl = new StringBuilder()
-                    .append(logoutUrl).append(QUESTION_MARK)
-                    .append(postLogoutUrlQueryParam(request))
-                    .append(QUERY_PARAM_DELIMITER)
-                    .append(idTokenHintQueryParam(((WMAuthentication) authentication).getAttributes()));
+                .append(logoutUrl).append(QUESTION_MARK)
+                .append(postLogoutUrlQueryParam(request))
+                .append(QUERY_PARAM_DELIMITER)
+                .append(idTokenHintQueryParam(((WMAuthentication) authentication).getAttributes()));
             logger.info("Using the {} logoutUrl", targetUrl);
             return targetUrl.toString();
         }
@@ -105,7 +105,7 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
         StringBuilder postLogoutUrl = new StringBuilder();
         postLogoutUrl.append(request.getScheme()).append(URL_DELIMITER).append(request.getServerName());
         if (!((request.getScheme().equals(SCHEME_HTTP) && request.getServerPort() == DEFAULT_HTTP_PORT)
-                || (request.getScheme().equals(SCHEME_HTTPS) && request.getServerPort() == DEFAULT_HTTPS_PORT))) {
+            || (request.getScheme().equals(SCHEME_HTTPS) && request.getServerPort() == DEFAULT_HTTPS_PORT))) {
             postLogoutUrl.append(COLON).append(request.getServerPort());
         }
         postLogoutUrl.append(request.getContextPath());

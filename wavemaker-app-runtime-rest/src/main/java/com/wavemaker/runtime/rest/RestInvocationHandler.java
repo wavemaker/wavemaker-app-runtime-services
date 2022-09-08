@@ -114,24 +114,24 @@ public class RestInvocationHandler implements InvocationHandler {
             Matcher matcher = splitHeaderPattern.matcher(header);
             while (matcher.find()) {
                 httpRequestData.getHttpHeaders().add(matcher.group(1), header.contains("{") ? headerVariableMap.get(matcher.group(2)) :
-                        matcher.group(2));
+                    matcher.group(2));
             }
         });
 
         String[] split = method.getAnnotation(RequestLine.class).value().split(" ");
         HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
-                split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
-                split[0],
-                httpRequestData, RestExecutor.getRequestContextThreadLocal());
+            split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
+            split[0],
+            httpRequestData, RestExecutor.getRequestContextThreadLocal());
 
         try {
             if (method.getReturnType() != void.class) {
                 if (responseDetails.getStatusCode() >= 200 && responseDetails.getStatusCode() < 300) {
                     if (method.getGenericReturnType() instanceof ParameterizedType) {
                         return WMObjectMapper.getInstance().readValue(responseDetails.getBody(),
-                                WMObjectMapper.getInstance().getTypeFactory()
-                                        .constructCollectionType((Class<? extends Collection>) Class.forName(method.getReturnType().getName()),
-                                                Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName())));
+                            WMObjectMapper.getInstance().getTypeFactory()
+                                .constructCollectionType((Class<? extends Collection>) Class.forName(method.getReturnType().getName()),
+                                    Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName())));
                     }
                     return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
                 } else {

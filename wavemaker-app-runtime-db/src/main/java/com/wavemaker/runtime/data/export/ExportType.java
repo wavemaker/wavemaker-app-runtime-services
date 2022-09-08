@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.export;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**

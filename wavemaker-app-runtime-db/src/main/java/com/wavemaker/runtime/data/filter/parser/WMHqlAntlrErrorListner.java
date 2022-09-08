@@ -27,12 +27,11 @@ public class WMHqlAntlrErrorListner extends BaseErrorListener {
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
-            throws ParseCancellationException {
+        throws ParseCancellationException {
         String inputQuery = ((TokenStream) recognizer.getInputStream()).getTokenSource().getInputStream().toString();
 
-
         throw new HqlGrammarException(
-                MessageResource.create("Syntax error in '{0}' at {1}."), inputQuery, charPositionInLine, msg
+            MessageResource.create("Syntax error in '{0}' at {1}."), inputQuery, charPositionInLine, msg
         );
     }
 }

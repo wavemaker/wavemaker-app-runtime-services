@@ -33,7 +33,7 @@ public interface TransactionUtils {
 
     static <T> T executeInTransaction(String txManagerId, boolean readOnly, TransactionCallback<T> callback) {
         PlatformTransactionManager transactionManager = WMAppContext.getInstance()
-                .getSpringBean(txManagerId);
+            .getSpringBean(txManagerId);
         TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         txTemplate.setReadOnly(readOnly);

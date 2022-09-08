@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.util;
 
-
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -37,8 +36,8 @@ import com.wavemaker.runtime.data.hql.SelectQueryBuilder;
 public class HqlQueryHelper {
 
     public static <R> Page<R> execute(
-            HibernateTemplate template, Class<R> returnType, SelectQueryBuilder builder,
-            Pageable pageable, WMQLTypeHelper wmqlTypeHelper) {
+        HibernateTemplate template, Class<R> returnType, SelectQueryBuilder builder,
+        Pageable pageable, WMQLTypeHelper wmqlTypeHelper) {
 
         final WMQueryInfo queryInfo = builder.build();
 
@@ -46,11 +45,11 @@ public class HqlQueryHelper {
         ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo, template.getSessionFactory().getTypeHelper(), wmqlTypeHelper);
 
         return template
-                .execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
+            .execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
     }
 
     public static <R> Optional<R> execute(
-            HibernateTemplate template, Class<R> returnType, SelectQueryBuilder builder, WMQLTypeHelper wmqlTypeHelper) {
+        HibernateTemplate template, Class<R> returnType, SelectQueryBuilder builder, WMQLTypeHelper wmqlTypeHelper) {
 
         final WMQueryInfo queryInfo = builder.build();
 

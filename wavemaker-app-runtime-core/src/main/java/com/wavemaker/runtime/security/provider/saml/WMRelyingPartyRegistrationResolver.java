@@ -47,7 +47,7 @@ public class WMRelyingPartyRegistrationResolver implements Converter<HttpServlet
     private String applicationUri;
 
     public WMRelyingPartyRegistrationResolver(
-            RelyingPartyRegistrationRepository relyingPartyRegistrationRepository) {
+        RelyingPartyRegistrationRepository relyingPartyRegistrationRepository) {
         Assert.notNull(relyingPartyRegistrationRepository, "relyingPartyRegistrationRepository cannot be null");
         this.relyingPartyRegistrationRepository = relyingPartyRegistrationRepository;
     }
@@ -66,7 +66,7 @@ public class WMRelyingPartyRegistrationResolver implements Converter<HttpServlet
         String registrationId = relyingParty.getRegistrationId();
         Map<String, String> uriVariables = new HashMap<>();
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(baseUrl).replaceQuery(null).fragment(null)
-                .build();
+            .build();
         String scheme = uriComponents.getScheme();
         uriVariables.put("baseScheme", (scheme != null) ? scheme : "");
         String host = uriComponents.getHost();
@@ -89,10 +89,10 @@ public class WMRelyingPartyRegistrationResolver implements Converter<HttpServlet
     public RelyingPartyRegistration resolve(HttpServletRequest request, String relyingPartyRegistrationId) {
         if (relyingPartyRegistrationId == null) {
             relyingPartyRegistrationId = this.registrationRequestMatcher.matcher(request).getVariables()
-                    .get("registrationId");
+                .get("registrationId");
         }
         RelyingPartyRegistration relyingPartyRegistration = this.relyingPartyRegistrationRepository
-                .findByRegistrationId(relyingPartyRegistrationId);
+            .findByRegistrationId(relyingPartyRegistrationId);
         if (relyingPartyRegistration == null) {
             return null;
         }
@@ -102,15 +102,15 @@ public class WMRelyingPartyRegistrationResolver implements Converter<HttpServlet
         Function<String, String> templateResolver = templateResolver(applicationUri, relyingPartyRegistration);
         String relyingPartyEntityId = templateResolver.apply(relyingPartyRegistration.getEntityId());
         String assertionConsumerServiceLocation = templateResolver
-                .apply(relyingPartyRegistration.getAssertionConsumerServiceLocation());
+            .apply(relyingPartyRegistration.getAssertionConsumerServiceLocation());
         String singleLogoutServiceLocation = templateResolver
-                .apply(relyingPartyRegistration.getSingleLogoutServiceLocation());
+            .apply(relyingPartyRegistration.getSingleLogoutServiceLocation());
         String singleLogoutServiceResponseLocation = templateResolver
-                .apply(relyingPartyRegistration.getSingleLogoutServiceResponseLocation());
+            .apply(relyingPartyRegistration.getSingleLogoutServiceResponseLocation());
         return RelyingPartyRegistration.withRelyingPartyRegistration(relyingPartyRegistration)
-                .entityId(relyingPartyEntityId).assertionConsumerServiceLocation(assertionConsumerServiceLocation)
-                .singleLogoutServiceLocation(singleLogoutServiceLocation)
-                .singleLogoutServiceResponseLocation(singleLogoutServiceResponseLocation).build();
+            .entityId(relyingPartyEntityId).assertionConsumerServiceLocation(assertionConsumerServiceLocation)
+            .singleLogoutServiceLocation(singleLogoutServiceLocation)
+            .singleLogoutServiceResponseLocation(singleLogoutServiceResponseLocation).build();
     }
 
     public void setApplicationUri(String applicationUri) {
@@ -133,7 +133,7 @@ public class WMRelyingPartyRegistrationResolver implements Converter<HttpServlet
 
             String redirectPage = request.getParameter("redirectPage");
             if (org.apache.commons.lang3.StringUtils.isNotEmpty(redirectPage) && org.apache.commons.lang3.StringUtils.isNotEmpty(appUrl) && !org.apache.commons.lang3.StringUtils
-                    .containsAny(appUrl, '#', '?')) {
+                .containsAny(appUrl, '#', '?')) {
                 appUrl = appUrl.concat("#").concat(redirectPage);
             }
             return appUrl;

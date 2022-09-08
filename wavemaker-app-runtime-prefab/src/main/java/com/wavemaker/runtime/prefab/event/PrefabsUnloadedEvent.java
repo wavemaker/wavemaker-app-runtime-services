@@ -21,7 +21,7 @@ import com.wavemaker.runtime.prefab.core.Prefab;
 /**
  * {@link PrefabsUnloadedEvent} is raised when all {@link Prefab}s have been
  * unloaded.
- * 
+ *
  * @author Frankline Francis
  */
 @SuppressWarnings("serial")
@@ -29,7 +29,7 @@ public class PrefabsUnloadedEvent extends PrefabEvent {
 
     /**
      * Creates a new {@link PrefabsUnloadedEvent} with the parent {@link ApplicationContext}.
-     * 
+     *
      * @param source parent context
      */
     public PrefabsUnloadedEvent(final ApplicationContext source) {

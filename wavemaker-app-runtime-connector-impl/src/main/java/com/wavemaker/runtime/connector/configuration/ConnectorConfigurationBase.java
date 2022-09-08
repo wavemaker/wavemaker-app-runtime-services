@@ -35,12 +35,13 @@ public abstract class ConnectorConfigurationBase {
     @Bean(name = "propertySourcesPlaceholderConfigurer")
     public PropertySourcesPlaceholderConfigurer properties() {
         PropertySourcesPlaceholderConfigurer placeholderConfigurer
-                = new PropertySourcesPlaceholderConfigurer();
+            = new PropertySourcesPlaceholderConfigurer();
         Resource[] resources = getClassPathResources();
         placeholderConfigurer.setLocations(resources);
         placeholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
         return placeholderConfigurer;
     }
+
     public abstract List<Resource> getClasspathPropertyResources();
 
     private Resource[] getClassPathResources() {
@@ -62,7 +63,6 @@ public abstract class ConnectorConfigurationBase {
         }
         return resources;
     }
-
 
     private boolean resourceExist(String resourceName) {
         URL resource = this.getClass().getClassLoader().getResource(resourceName);

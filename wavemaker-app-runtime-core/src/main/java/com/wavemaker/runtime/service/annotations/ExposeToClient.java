@@ -24,13 +24,13 @@ import java.lang.annotation.Target;
 /**
  * Exposes any method or type to which this annotation is applied to the client. Typically this will be used as the
  * top-level annotation on a service class.
- * 
- * @see HideFromClient
+ *
  * @author Matt Small
  * @author Jeremy Grelle
+ * @see HideFromClient
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
 @Documented
 public @interface ExposeToClient {

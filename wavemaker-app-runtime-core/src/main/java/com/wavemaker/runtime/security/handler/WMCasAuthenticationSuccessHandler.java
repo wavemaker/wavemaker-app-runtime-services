@@ -32,7 +32,7 @@ public class WMCasAuthenticationSuccessHandler implements WMAuthenticationSucces
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) {
-        CasAuthenticationToken casAuthentication = (CasAuthenticationToken)authentication.getAuthenticationSource();
+        CasAuthenticationToken casAuthentication = (CasAuthenticationToken) authentication.getAuthenticationSource();
         Map<String, Object> attributes = casAuthentication.getAssertion().getPrincipal().getAttributes();
         logger.debug("Cas authentication user attributes : {}", attributes);
         attributes.forEach((key, value) -> {

@@ -36,7 +36,7 @@ public class XSSSecurityHandler {
     private static final String WM_APP_SECURITY_CONFIG = "WMAppSecurityConfig";
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(XSSSecurityHandler.class);
+        .getLogger(XSSSecurityHandler.class);
 
     private static final XSSSecurityHandler instance = new XSSSecurityHandler();
 

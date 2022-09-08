@@ -53,7 +53,7 @@ public class WMCustomAuthenticationProvider implements AuthenticationProvider {
             }
         } else {
             throw new IllegalArgumentException(
-                    "Authentication type of class [" + authentication.getClass() + "] is not supported by this class");
+                "Authentication type of class [" + authentication.getClass() + "] is not supported by this class");
         }
     }
 

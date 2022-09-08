@@ -43,7 +43,7 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
 
     public CsrfSecurityRequestMatcher(List<String> patterns) {
         unprotectedMatchers = new ArrayList<>(patterns.size());
-        for(String pattern : patterns) {
+        for (String pattern : patterns) {
             unprotectedMatchers.add(new RegexRequestMatcher(pattern, null));
         }
     }
@@ -57,7 +57,7 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
         if (csrfConfig == null || !csrfConfig.isEnforceCsrfSecurity()) {
             return false;
         }
-        if(allowedMethods.matcher(httpServletRequest.getMethod()).matches()) {
+        if (allowedMethods.matcher(httpServletRequest.getMethod()).matches()) {
             return false;
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -65,8 +65,8 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
             return false;
         }
         if (unprotectedMatchers != null && !unprotectedMatchers.isEmpty()) {
-            for(RegexRequestMatcher unprotectedMatcher : unprotectedMatchers) {
-                if(unprotectedMatcher != null && unprotectedMatcher.matches(httpServletRequest)) {
+            for (RegexRequestMatcher unprotectedMatcher : unprotectedMatchers) {
+                if (unprotectedMatcher != null && unprotectedMatcher.matches(httpServletRequest)) {
                     return false;
                 }
             }

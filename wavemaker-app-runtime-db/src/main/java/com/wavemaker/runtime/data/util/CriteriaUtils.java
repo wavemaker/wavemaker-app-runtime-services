@@ -70,9 +70,8 @@ public abstract class CriteriaUtils {
         return count;
     }
 
-
     public static Criteria criteriaForRelatedProperty(
-            Criteria criteria, final String attributeName, final Set<String> aliases) {
+        Criteria criteria, final String attributeName, final Set<String> aliases) {
         final int indexOfDot = attributeName.lastIndexOf(SEARCH_PROPERTY_DELIMITER);
         if (indexOfDot != -1) {
             String relatedEntityName = attributeName.substring(0, indexOfDot);

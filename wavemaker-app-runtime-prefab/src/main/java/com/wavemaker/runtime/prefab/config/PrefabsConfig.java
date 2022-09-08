@@ -64,7 +64,6 @@ public class PrefabsConfig {
         this.prefabBuildDir = defaultOnEmpty(prefabBuildDir, PrefabConstants.PREFAB_DEFAULT_BUILD_DIR, PREFAB_BUILD_DIR_PROP);
     }
 
-
     public String getPrefabsHomeDir() {
         return prefabsHomeDir;
     }

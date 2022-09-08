@@ -39,7 +39,7 @@ import junit.framework.Assert;
 public class UtilsTest {
     private static final String SAMPLE_PREFAB_DIR = "/testPrefab";
     private static final String JAR_FILE = SAMPLE_PREFAB_DIR + File.separator + PrefabConstants.PREFAB_DEFAULT_LIB_DIR
-            + File.separator + "sample.jar";
+        + File.separator + "sample.jar";
     @Autowired
     private PrefabUtils prefabUtils;
 
@@ -59,7 +59,7 @@ public class UtilsTest {
     public void testReadJarFilesForPrefab() throws Exception {
         Assert.assertEquals(1, prefabUtils.readJarFilesForPrefab(getClassPathResourceAsFile("/testPrefab")).length);
         Assert.assertEquals(PrefabConstants.ZERO_FILES.length, prefabUtils.readJarFilesForPrefab(new File("not/valid/dir"))
-                .length);
+            .length);
         Assert.assertEquals(PrefabConstants.ZERO_FILES.length, prefabUtils.readJarFilesForPrefab(null).length);
     }
 
@@ -74,14 +74,14 @@ public class UtilsTest {
     @Test
     public void testGetPrefabLibDirectory() throws Exception {
         Assert.assertEquals(new File(SAMPLE_PREFAB_DIR, prefabsConfig.getPrefabLibDir()),
-                prefabUtils.getPrefabLibDirectory(new File(SAMPLE_PREFAB_DIR))
+            prefabUtils.getPrefabLibDirectory(new File(SAMPLE_PREFAB_DIR))
         );
     }
 
     @Test
     public void testGetPrefabConfigDirectory() throws Exception {
         Assert.assertEquals(new File(SAMPLE_PREFAB_DIR, prefabsConfig.getPrefabConfigDir()),
-                prefabUtils.getPrefabConfigDirectory(new File(SAMPLE_PREFAB_DIR))
+            prefabUtils.getPrefabConfigDirectory(new File(SAMPLE_PREFAB_DIR))
         );
     }
 
@@ -108,6 +108,5 @@ public class UtilsTest {
         Assert.assertEquals((files.length + 1), urls.length);
         Assert.assertTrue(Arrays.asList(urls).contains(files[0].toURI().toURL()));
     }
-
 
 }

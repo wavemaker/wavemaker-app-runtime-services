@@ -31,7 +31,6 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.FileValidationUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 
-
 @Service
 public class FileServiceManager {
 
@@ -53,7 +52,7 @@ public class FileServiceManager {
 
         File outputFile = createUniqueFile(file.getOriginalFilename(), relativeUploadDirectory);
 
-                /* Write the file to the filesystem */
+        /* Write the file to the filesystem */
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
@@ -98,18 +97,17 @@ public class FileServiceManager {
             WMIOUtils.closeSilently(outputStream);
         }
 
-
         return outputFile;
     }
 
     public File createUniqueFile(String originalFileName, File dir) {
-    /* Create a file object that does not point to an existing file.
-     * Loop through names until we find a filename not already in use */
+        /* Create a file object that does not point to an existing file.
+         * Loop through names until we find a filename not already in use */
         boolean hasExtension = originalFileName.indexOf('.') != -1;
         String name = (hasExtension) ?
-                originalFileName.substring(0, originalFileName.lastIndexOf('.')) : originalFileName;
+            originalFileName.substring(0, originalFileName.lastIndexOf('.')) : originalFileName;
         String ext = (hasExtension) ?
-                originalFileName.substring(originalFileName.lastIndexOf('.')) : "";
+            originalFileName.substring(originalFileName.lastIndexOf('.')) : "";
 
         File outputFile = new File(dir, originalFileName);
         for (int i = 0; i < 10000 && outputFile.exists(); i++) {
@@ -125,7 +123,6 @@ public class FileServiceManager {
         return listFiles(uploadDirectory, null);
     }
 
-
     /**
      * *****************************************************************************
      * NAME: listFiles
@@ -139,12 +136,11 @@ public class FileServiceManager {
         /*Get a list of files; ignore any filename starting with "." as these are
         typically private or temporary files not for users to interact with*/
         File[] files = relativeUploadDirectory.listFiles(
-                pathname -> !pathname.isDirectory() && (pathname.getName().indexOf('.') != 0));
+            pathname -> !pathname.isDirectory() && (pathname.getName().indexOf('.') != 0));
 
         if (files == null) {
             throw new FileNotFoundException("Given directory " + uploadDirectory + " does not exist.");
         }
-
 
         return files;
     }
@@ -153,7 +149,7 @@ public class FileServiceManager {
      * This method is deprecated, instead use the method {@link FileServiceManager#deleteFile(String, String, File)}
      */
     @Deprecated
-    public boolean deleteFile(String file, File uploadDirectory)  {
+    public boolean deleteFile(String file, File uploadDirectory) {
         return deleteFile(file, null, uploadDirectory);
     }
 
@@ -171,7 +167,7 @@ public class FileServiceManager {
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
 
         File f = (file.startsWith("/")) ? new File(FileValidationUtils.validateFilePath(file)) : new File(relativeUploadDirectory,
-                FileValidationUtils.validateFilePath(file));
+            FileValidationUtils.validateFilePath(file));
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your operating system, or your .password file.
@@ -206,7 +202,7 @@ public class FileServiceManager {
     public File downloadFile(String file, String relativePath, File uploadDirectory) throws Exception {
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
         File f = (file.startsWith("/")) ? new File(FileValidationUtils.validateFilePath(file)) : new File(relativeUploadDirectory,
-                FileValidationUtils.validateFilePath(file));
+            FileValidationUtils.validateFilePath(file));
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your .password file.
@@ -218,7 +214,7 @@ public class FileServiceManager {
             throw new Exception("File with name " + file + "  not found");
         }
 
-        if(!f.isFile()) {
+        if (!f.isFile()) {
             throw new Exception("Is a directory");
         }
 
@@ -233,7 +229,7 @@ public class FileServiceManager {
                 relativePath = relativePath + "/";
             }
             relativeUploadDirectory = new File(uploadDirectory.getAbsolutePath(),
-                    FileValidationUtils.validateFilePath(relativePath));
+                FileValidationUtils.validateFilePath(relativePath));
 
             /* Find our upload directory, make sure it exists */
             if (!relativeUploadDirectory.exists()) {

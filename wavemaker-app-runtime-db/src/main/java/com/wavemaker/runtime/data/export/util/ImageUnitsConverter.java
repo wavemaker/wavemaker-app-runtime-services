@@ -22,7 +22,8 @@ package com.wavemaker.runtime.data.export.util;
  */
 public class ImageUnitsConverter {
 
-    private ImageUnitsConverter(){}
+    private ImageUnitsConverter() {
+    }
 
     public static final int TOTAL_COLUMN_COORDINATE_POSITIONS = 1023; // MB
     public static final int TOTAL_ROW_COORDINATE_POSITIONS = 255;     // MB
@@ -34,35 +35,31 @@ public class ImageUnitsConverter {
     public static final int UNIT_OFFSET_LENGTH = 7;
     private static final int[] UNIT_OFFSET_MAP = {0, 36, 73, 109, 146, 182, 219};
 
-
     public static short pixel2WidthUnits(int pxs) {
         short widthUnits = (short) (EXCEL_COLUMN_WIDTH_FACTOR *
-                (pxs / UNIT_OFFSET_LENGTH));
+            (pxs / UNIT_OFFSET_LENGTH));
         widthUnits += UNIT_OFFSET_MAP[(pxs % UNIT_OFFSET_LENGTH)];
         return widthUnits;
     }
 
-
     public static int widthUnits2Pixel(short widthUnits) {
         int pixels = (widthUnits / EXCEL_COLUMN_WIDTH_FACTOR)
-                * UNIT_OFFSET_LENGTH;
+            * UNIT_OFFSET_LENGTH;
         int offsetWidthUnits = widthUnits % EXCEL_COLUMN_WIDTH_FACTOR;
         pixels += Math.round((float) offsetWidthUnits /
-                ((float) EXCEL_COLUMN_WIDTH_FACTOR / UNIT_OFFSET_LENGTH));
+            ((float) EXCEL_COLUMN_WIDTH_FACTOR / UNIT_OFFSET_LENGTH));
         return pixels;
     }
 
     public static double widthUnits2Millimetres(short widthUnits) {
         return (ImageUnitsConverter.widthUnits2Pixel(widthUnits) /
-                ImageUnitsConverter.PIXELS_PER_MILLIMETRES);
+            ImageUnitsConverter.PIXELS_PER_MILLIMETRES);
     }
-
 
     public static int millimetres2WidthUnits(double millimetres) {
         return (ImageUnitsConverter.pixel2WidthUnits((int) (millimetres *
-                ImageUnitsConverter.PIXELS_PER_MILLIMETRES)));
+            ImageUnitsConverter.PIXELS_PER_MILLIMETRES)));
     }
-
 
     public static class ClientAnchorDetail {
 
@@ -70,23 +67,19 @@ public class ImageUnitsConverter {
         private int toIndex;
         private int inset;
 
-
         public ClientAnchorDetail(int fromIndex, int toIndex, int inset) {
             this.fromIndex = fromIndex;
             this.toIndex = toIndex;
             this.inset = inset;
         }
 
-
         public int getFromIndex() {
             return (this.fromIndex);
         }
 
-
         public int getToIndex() {
             return (this.toIndex);
         }
-
 
         public int getInset() {
             return (this.inset);

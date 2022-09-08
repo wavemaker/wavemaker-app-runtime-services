@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.export.util;
 
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Drawing;
@@ -35,10 +34,10 @@ public class ImageUtils {
     private static final int EXPAND_ROW_AND_COLUMN = 3;
     private static final int OVERLAY_ROW_AND_COLUMN = 7;
 
-
     private static final int EMU_PER_MM = 36000;
 
-    private ImageUtils() {}
+    private ImageUtils() {
+    }
 
     public static void addImageToSheet(byte[] image, Cell cell) {
         final Row row = cell.getRow();
@@ -48,11 +47,11 @@ public class ImageUtils {
         int reqImageWidthMM = 20;
         int reqImageHeightMM = 30;
         ImageUnitsConverter.ClientAnchorDetail colClientAnchorDetail = fitImageToColumns(sheet, cell.getColumnIndex(),
-                reqImageWidthMM, resizeBehaviour);
+            reqImageWidthMM, resizeBehaviour);
         ImageUnitsConverter.ClientAnchorDetail rowClientAnchorDetail = fitImageToRows(sheet, row.getRowNum(),
-                reqImageHeightMM, resizeBehaviour);
+            reqImageHeightMM, resizeBehaviour);
 
-        if(colClientAnchorDetail != null && rowClientAnchorDetail != null) {
+        if (colClientAnchorDetail != null && rowClientAnchorDetail != null) {
             ClientAnchor anchor = getClientAnchor(sheet, colClientAnchorDetail, rowClientAnchorDetail);
 
             int index = sheet.getWorkbook().addPicture(image, Workbook.PICTURE_TYPE_JPEG);
@@ -62,40 +61,39 @@ public class ImageUtils {
     }
 
     private static ImageUnitsConverter.ClientAnchorDetail fitImageToColumns(
-            Sheet sheet, int colNumber, double reqImageWidthMM, int resizeBehaviour) {
+        Sheet sheet, int colNumber, double reqImageWidthMM, int resizeBehaviour) {
 
         ImageUnitsConverter.ClientAnchorDetail colClientAnchorDetail = null;
 
         double colWidthMM = ImageUnitsConverter.widthUnits2Millimetres(
-                (short) sheet.getColumnWidth(colNumber));
+            (short) sheet.getColumnWidth(colNumber));
 
         int pictureWidthCoordinates;
         if (colWidthMM < reqImageWidthMM) {
             if ((resizeBehaviour == ImageUtils.EXPAND_COLUMN) ||
-                    (resizeBehaviour == ImageUtils.EXPAND_ROW_AND_COLUMN)) {
+                (resizeBehaviour == ImageUtils.EXPAND_ROW_AND_COLUMN)) {
                 sheet.setColumnWidth(colNumber,
-                        ImageUnitsConverter.millimetres2WidthUnits(reqImageWidthMM));
+                    ImageUnitsConverter.millimetres2WidthUnits(reqImageWidthMM));
 
                 pictureWidthCoordinates = (int) reqImageWidthMM * ImageUtils.EMU_PER_MM;
 
                 colClientAnchorDetail = new ImageUnitsConverter.ClientAnchorDetail(colNumber,
-                        colNumber, pictureWidthCoordinates);
+                    colNumber, pictureWidthCoordinates);
             } else if ((resizeBehaviour == ImageUtils.OVERLAY_ROW_AND_COLUMN) ||
-                    (resizeBehaviour == ImageUtils.EXPAND_ROW)) {
+                (resizeBehaviour == ImageUtils.EXPAND_ROW)) {
                 colClientAnchorDetail = calculateColumnLocation(sheet,
-                        colNumber, reqImageWidthMM);
+                    colNumber, reqImageWidthMM);
             }
         } else {
             pictureWidthCoordinates = (int) reqImageWidthMM * ImageUtils.EMU_PER_MM;
             colClientAnchorDetail = new ImageUnitsConverter.ClientAnchorDetail(colNumber,
-                    colNumber, pictureWidthCoordinates);
+                colNumber, pictureWidthCoordinates);
         }
         return colClientAnchorDetail;
     }
 
-
     private static ImageUnitsConverter.ClientAnchorDetail fitImageToRows(
-            Sheet sheet, int rowNumber, double reqImageHeightMM, int resizeBehaviour) {
+        Sheet sheet, int rowNumber, double reqImageHeightMM, int resizeBehaviour) {
         Row row;
         double rowHeightMM;
         int pictureHeightCoordinates;
@@ -110,33 +108,33 @@ public class ImageUtils {
 
         if (rowHeightMM < reqImageHeightMM) {
             if ((resizeBehaviour == EXPAND_ROW) ||
-                    (resizeBehaviour == EXPAND_ROW_AND_COLUMN)) {
+                (resizeBehaviour == EXPAND_ROW_AND_COLUMN)) {
                 row.setHeightInPoints((float) (reqImageHeightMM *
-                        ImageUnitsConverter.POINTS_PER_MILLIMETRE));
+                    ImageUnitsConverter.POINTS_PER_MILLIMETRE));
                 pictureHeightCoordinates = (int) (reqImageHeightMM * EMU_PER_MM);
                 rowClientAnchorDetail = new ImageUnitsConverter.ClientAnchorDetail(rowNumber,
-                        rowNumber, pictureHeightCoordinates);
+                    rowNumber, pictureHeightCoordinates);
             } else if ((resizeBehaviour == OVERLAY_ROW_AND_COLUMN) ||
-                    (resizeBehaviour == EXPAND_COLUMN)) {
+                (resizeBehaviour == EXPAND_COLUMN)) {
                 rowClientAnchorDetail = calculateRowLocation(sheet, rowNumber, reqImageHeightMM);
             }
         } else {
             pictureHeightCoordinates = (int) (reqImageHeightMM * EMU_PER_MM);
             rowClientAnchorDetail = new ImageUnitsConverter.ClientAnchorDetail(rowNumber,
-                    rowNumber, pictureHeightCoordinates);
+                rowNumber, pictureHeightCoordinates);
         }
         return (rowClientAnchorDetail);
     }
 
     private static ImageUnitsConverter.ClientAnchorDetail calculateColumnLocation(
-            Sheet sheet, int startingColumn, double reqImageWidthMM) {
+        Sheet sheet, int startingColumn, double reqImageWidthMM) {
         double totalWidthMM = 0.0D;
         double colWidthMM = 0.0D;
         int toColumn = startingColumn;
 
         while (totalWidthMM < reqImageWidthMM) {
             colWidthMM = ImageUnitsConverter.widthUnits2Millimetres(
-                    (short) (sheet.getColumnWidth(toColumn)));
+                (short) (sheet.getColumnWidth(toColumn)));
 
             totalWidthMM += (colWidthMM + ImageUnitsConverter.CELL_BORDER_WIDTH_MILLIMETRES);
             toColumn++;
@@ -146,7 +144,7 @@ public class ImageUtils {
     }
 
     private static ImageUnitsConverter.ClientAnchorDetail calculateRowLocation(
-            Sheet sheet, int startingRow, double reqImageHeightMM) {
+        Sheet sheet, int startingRow, double reqImageHeightMM) {
         Row row;
         double rowHeightMM = 0.0D;
         double totalRowHeightMM = 0.0D;
@@ -158,7 +156,7 @@ public class ImageUtils {
                 row = sheet.createRow(toRow);
             }
             rowHeightMM = row.getHeightInPoints() /
-                    ImageUnitsConverter.POINTS_PER_MILLIMETRE;
+                ImageUnitsConverter.POINTS_PER_MILLIMETRE;
             totalRowHeightMM += rowHeightMM;
             toRow++;
         }
@@ -167,13 +165,13 @@ public class ImageUtils {
     }
 
     private static ImageUnitsConverter.ClientAnchorDetail getClientAnchorDetail(
-            final int fromIndex, final double requiredDimension, final double indexDimension,
-            final double totalDimension, final int toIndex) {
+        final int fromIndex, final double requiredDimension, final double indexDimension,
+        final double totalDimension, final int toIndex) {
         ImageUnitsConverter.ClientAnchorDetail clientAnchorDetail;
 
         if ((int) totalDimension == (int) requiredDimension) {
             clientAnchorDetail = new ImageUnitsConverter.ClientAnchorDetail(fromIndex, toIndex,
-                    (int) requiredDimension * ImageUtils.EMU_PER_MM);
+                (int) requiredDimension * ImageUtils.EMU_PER_MM);
         } else {
             double overlapMM = requiredDimension - (totalDimension - indexDimension);
             if (overlapMM < 0) {
@@ -186,8 +184,8 @@ public class ImageUtils {
     }
 
     private static ClientAnchor getClientAnchor(
-            final Sheet sheet, final ImageUnitsConverter.ClientAnchorDetail colClientAnchorDetail,
-            final ImageUnitsConverter.ClientAnchorDetail rowClientAnchorDetail) {
+        final Sheet sheet, final ImageUnitsConverter.ClientAnchorDetail colClientAnchorDetail,
+        final ImageUnitsConverter.ClientAnchorDetail rowClientAnchorDetail) {
         ClientAnchor anchor = sheet.getWorkbook().getCreationHelper().createClientAnchor();
 
         anchor.setDx1(0);

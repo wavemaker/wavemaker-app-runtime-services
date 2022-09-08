@@ -71,8 +71,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
         String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
         ServletContext servletContext = beanFactory.getBean(ServletContext.class);
         ClassLoader appClassLoader = servletContext.getClassLoader();
-        if(appClassLoader == Thread.currentThread().getContextClassLoader())
-        {
+        if (appClassLoader == Thread.currentThread().getContextClassLoader()) {
             for (String beanName : beanDefinitionNames) {
                 Class<?> aClass = null;
                 String beanClassName = getBeanClassName(beanName, beanFactory);
@@ -112,13 +111,14 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                                     bd.setConstructorArgumentValues(values);
                                     // if bean have qualifier then bean name is qualifier name, if it doesn't have qualifier then assigning bean class name as bean name.
                                     ((DefaultListableBeanFactory) beanFactory)
-                                            .registerBeanDefinition(connectorBeanName, bd);
+                                        .registerBeanDefinition(connectorBeanName, bd);
                                     logger.info("Bean definition is loaded for connector {} in bean class {}", field.getType().getName(), beanClassName);
                                 }
                             }
                         }
 
-                    } }
+                    }
+                }
 
             }
         }

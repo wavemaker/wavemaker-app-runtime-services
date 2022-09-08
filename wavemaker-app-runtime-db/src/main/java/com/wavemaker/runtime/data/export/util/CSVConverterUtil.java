@@ -94,7 +94,7 @@ public class CSVConverterUtil {
                         csvLineElement = line.get(j);
                         if (csvLineElement != null) {
                             buffer.append(this.escapeEmbeddedCharacters(
-                                    csvLineElement));
+                                csvLineElement));
                         }
                     }
                     if (j < (this.maxRowWidth - 1)) {
@@ -124,14 +124,13 @@ public class CSVConverterUtil {
         } else {
             builder = new StringBuilder(field);
             if ((builder.indexOf(this.separator)) > -1 ||
-                    (builder.indexOf("\n")) > -1) {
+                (builder.indexOf("\n")) > -1) {
                 builder.insert(0, "\"");
                 builder.append("\"");
             }
         }
         return (builder.toString().trim());
     }
-
 
     /**
      * Called to convert a row of cells into a line of data that can later be output to the CSV file.

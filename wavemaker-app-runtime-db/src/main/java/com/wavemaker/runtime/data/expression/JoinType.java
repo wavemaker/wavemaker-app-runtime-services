@@ -64,5 +64,4 @@ public enum JoinType {
         return nameVsJoinType.get(typeName.toLowerCase());
     }
 
-
 }

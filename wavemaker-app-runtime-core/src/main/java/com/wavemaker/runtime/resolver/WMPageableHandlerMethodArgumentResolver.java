@@ -101,8 +101,6 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
     /**
      * Returns whether the given {@link Pageable} is the fallback one.
      *
-     * @param pageable
-     * @return
      * @since 1.9
      */
     public boolean isFallbackPageable(Pageable pageable) {
@@ -265,6 +263,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
      *
      * @param source    the basic parameter name.
      * @param parameter the {@link MethodParameter} potentially qualified.
+     *
      * @return the name of the request parameter.
      */
     protected String getParameterNameToUse(String source, MethodParameter parameter) {
@@ -310,11 +309,6 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
     /**
      * Tries to parse the given {@link String} into an integer and applies the given boundaries. Will return the lower
      * boundary if the {@link String} cannot be parsed.
-     *
-     * @param parameterName
-     * @param parameter
-     * @param upper
-     * @return
      */
     private int parseAndApplyBoundaries(String parameterName, String parameter, int upper) {
         try {
@@ -336,7 +330,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
         Object propertyValue = AnnotationUtils.getValue(annotation, property);
 
         return (T) (ObjectUtils.nullSafeEquals(propertyDefaultValue, propertyValue) ? AnnotationUtils.getValue(annotation)
-                : propertyValue);
+            : propertyValue);
     }
 
     public static void assertPageableUniqueness(MethodParameter parameter) {
@@ -379,7 +373,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
 
                 if (null == qualifier) {
                     throw new IllegalStateException(
-                            "Ambiguous Pageable arguments in handler method. If you use multiple parameters of type Pageable you need to qualify them with @Qualifier");
+                        "Ambiguous Pageable arguments in handler method. If you use multiple parameters of type Pageable you need to qualify them with @Qualifier");
                 }
 
                 if (values.contains(qualifier.value())) {

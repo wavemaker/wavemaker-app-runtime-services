@@ -49,9 +49,9 @@ public class TimestampTypeConverter extends HibernateBackedJavaTypeConverter {
         if (value != null && ORACLE_SQL_TIMESTAMP.equals(value.getClass().getCanonicalName())) {
             try {
                 Class<?> oracleTimestamp = ClassUtils.forName(ORACLE_SQL_TIMESTAMP, Thread.currentThread()
-                        .getContextClassLoader());
+                    .getContextClassLoader());
                 convertedValue = ReflectionUtils.invokeMethod(ClassUtils.getMethod(oracleTimestamp, "timestampValue"),
-                        value);
+                    value);
             } catch (ClassNotFoundException e) {
                 // ignore this exception
             }

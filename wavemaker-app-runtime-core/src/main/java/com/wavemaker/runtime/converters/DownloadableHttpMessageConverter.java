@@ -34,7 +34,7 @@ import com.wavemaker.runtime.commons.file.model.DownloadResponse;
 import com.wavemaker.runtime.commons.file.model.Downloadable;
 
 /**
- * @Author: sowmyad
+ *
  */
 public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessageConverter<Downloadable> {
 
@@ -51,7 +51,7 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
 
     @Override
     protected DownloadResponse readInternal(
-            Class<? extends Downloadable> clazz, HttpInputMessage inputMessage) throws IOException {
+        Class<? extends Downloadable> clazz, HttpInputMessage inputMessage) throws IOException {
         throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unsupported.de-serialization"));
     }
 
@@ -70,7 +70,7 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
             if (contents != null) {
                 String fileName = downloadable.getFileName();
                 String contentType = StringUtils.isNotBlank(downloadable.getContentType()) ? downloadable
-                        .getContentType() : new Tika().detect(fileName);
+                    .getContentType() : new Tika().detect(fileName);
                 if (downloadable.isInline()) {
                     httpServletResponse.setHeader(CONTENT_DISPOSITION_HEADER, "inline;filename=\"" + fileName + "\"");
                 } else {

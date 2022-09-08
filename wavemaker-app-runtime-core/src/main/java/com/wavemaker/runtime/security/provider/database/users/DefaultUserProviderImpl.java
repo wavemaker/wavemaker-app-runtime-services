@@ -49,18 +49,18 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
     @Override
     public UserDetails loadUser(final String username) {
         return getTransactionTemplate()
-                .execute(status -> getHibernateTemplate().execute(session -> getWmUser(session, username)));
+            .execute(status -> getHibernateTemplate().execute(session -> getWmUser(session, username)));
     }
 
     @Override
     public UserDetails createUserDetails(
-            String username, UserDetails userDetails,
-            List<GrantedAuthority> combinedAuthorities) {
+        String username, UserDetails userDetails,
+        List<GrantedAuthority> combinedAuthorities) {
         WMUserDetails wmUserDetails = (WMUserDetails) userDetails;
         return new WMUser(wmUserDetails.getUserId(), wmUserDetails.getUsername(), wmUserDetails.getPassword(),
-                wmUserDetails.getUserLongName(),
-                wmUserDetails.getTenantId(), wmUserDetails.isEnabled(), true, true, true, combinedAuthorities,
-                wmUserDetails.getLoginTime());
+            wmUserDetails.getUserLongName(),
+            wmUserDetails.getTenantId(), wmUserDetails.isEnabled(), true, true, true, combinedAuthorities,
+            wmUserDetails.getLoginTime());
     }
 
     private WMUser getWmUser(final Session session, final String username) {
@@ -93,8 +93,8 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
             long loginTime = System.currentTimeMillis();
             boolean isEnabled = enabled == 1 ? true : false;
             return new WMUser(userId, userName, password, userName, tenantId,
-                    isEnabled, true, true,
-                    true, AuthorityUtils.NO_AUTHORITIES, loginTime);
+                isEnabled, true, true,
+                true, AuthorityUtils.NO_AUTHORITIES, loginTime);
         }
         return null;
     }

@@ -14,28 +14,26 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.model;
 
-
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 
-public class CustomProcedureParam  {
-
+public class CustomProcedureParam {
 
     private Object paramValue;
     private String paramName;
     private ProcedureParameterType procedureParamType;
     private String valueType;
 
-	public CustomProcedureParam() {
-		super();
-	}
+    public CustomProcedureParam() {
+        super();
+    }
 
     public CustomProcedureParam(
-            String paramName, Object paramValue, ProcedureParameterType procedureParamType, String valueType) {
+        String paramName, Object paramValue, ProcedureParameterType procedureParamType, String valueType) {
         this.procedureParamType = procedureParamType;
         this.paramName = paramName;
         this.valueType = valueType;
-		this.paramValue = paramValue;
-	}
+        this.paramValue = paramValue;
+    }
 
     public String getParamName() {
         return paramName;
@@ -62,15 +60,16 @@ public class CustomProcedureParam  {
     }
 
     public void setParamValue(Object paramValue) {
-		this.paramValue = paramValue;
-	}
-    public Object getParamValue(){
+        this.paramValue = paramValue;
+    }
+
+    public Object getParamValue() {
         return this.paramValue;
     }
 
-	@Override
-	public String toString() {
-		return "CustomQueryParam [paramName=" + getParamName() + ",  paramValue=" + paramValue + "]";
-	}
+    @Override
+    public String toString() {
+        return "CustomQueryParam [paramName=" + getParamName() + ",  paramValue=" + paramValue + "]";
+    }
 
 }

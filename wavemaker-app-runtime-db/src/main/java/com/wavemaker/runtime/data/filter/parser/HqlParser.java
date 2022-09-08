@@ -23,7 +23,6 @@ import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.filter.parser.antlr4.HqlFilterLexer;
 import com.wavemaker.runtime.data.filter.parser.antlr4.HqlFilterParser;
 
-
 /**
  * @author Sujith Simon
  * Created on : 26/10/18

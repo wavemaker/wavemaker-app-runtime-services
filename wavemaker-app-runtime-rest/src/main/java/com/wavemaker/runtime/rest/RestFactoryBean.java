@@ -42,8 +42,8 @@ public class RestFactoryBean<T> implements FactoryBean<T> {
     @Override
     public T getObject() throws Exception {
         return (T) Proxy.newProxyInstance(
-                classLoader,
-                new Class[]{serviceKlass}, new RestInvocationHandler(serviceId, restRuntimeService));
+            classLoader,
+            new Class[]{serviceKlass}, new RestInvocationHandler(serviceId, restRuntimeService));
     }
 
     @Override

@@ -23,7 +23,7 @@ import org.springframework.beans.factory.FactoryBean;
  * @author Uday Shankar
  */
 public class HostnameVerifierFactoryBean implements FactoryBean<HostnameVerifier> {
-    
+
     @Override
     public HostnameVerifier getObject() throws Exception {
         return NoopHostnameVerifier.INSTANCE;

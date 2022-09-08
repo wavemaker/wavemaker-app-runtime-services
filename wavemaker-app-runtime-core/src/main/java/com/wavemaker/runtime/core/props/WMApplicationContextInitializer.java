@@ -40,7 +40,7 @@ public class WMApplicationContextInitializer implements ApplicationContextInitia
                     bootstrapPropertySource.init(applicationContext);
                 } else {
                     throw new WMRuntimeException("Parameter 'bootstrapPropertySource' " + bootstrapPropertySourceParam +
-                            " should extend " + AbstractBootstrapPropertySource.class.getName());
+                        " should extend " + AbstractBootstrapPropertySource.class.getName());
                 }
             } catch (Exception e) {
                 throw new WMRuntimeException("Failed to instantiate bootstrap property source class " + bootstrapPropertySourceParam, e);

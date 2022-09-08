@@ -98,7 +98,7 @@ public class HttpRequestUtils {
         formHttpMessageConverter.setPartConverters(getPartConverters());
         try {
             File file = File.createTempFile("requestBody", ".tmp");
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))){
+            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
                 httpOutputMessage.setBody(outputStream);
                 formHttpMessageConverter.write(map, MediaType.valueOf(contentType), httpOutputMessage);
             }
@@ -111,7 +111,7 @@ public class HttpRequestUtils {
         }
     }
 
-    private static List<HttpMessageConverter<?>> getPartConverters(){
+    private static List<HttpMessageConverter<?>> getPartConverters() {
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter() {
 
@@ -125,7 +125,6 @@ public class HttpRequestUtils {
         messageConverters.add(new WmFileSystemResourceConverter());
         return messageConverters;
     }
-
 
     private static MultiValueMap<String, Object> getMultiValueMap(Map<String, Object> map) {
         MultiValueMap<String, Object> multiValueMap;

@@ -25,7 +25,6 @@ import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.web.filter.WMRequestFilter;
 
 /**
- *
  * This class provides a workaround to the staticLog Issue mentioned in the below link.
  * <a href="http://wiki.apache.org/commons/Logging/StaticLog">http://wiki.apache.org/commons/Logging/StaticLog</a>
  *

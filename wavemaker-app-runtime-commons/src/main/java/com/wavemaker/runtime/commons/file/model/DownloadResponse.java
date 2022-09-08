@@ -42,7 +42,7 @@ public class DownloadResponse implements Downloadable {
     }
 
     public DownloadResponse(
-            final InputStream contents, final String contentType, final String fileName, final boolean inline) {
+        final InputStream contents, final String contentType, final String fileName, final boolean inline) {
         this.contents = contents;
         this.contentType = contentType;
         this.fileName = fileName;

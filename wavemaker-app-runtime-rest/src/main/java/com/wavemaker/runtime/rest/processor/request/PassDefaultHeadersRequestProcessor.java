@@ -27,7 +27,6 @@ import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 
 /**
- *
  * Adds default headers if not already exists in HttpRequestDetails
  *
  * @author Uday Shankar

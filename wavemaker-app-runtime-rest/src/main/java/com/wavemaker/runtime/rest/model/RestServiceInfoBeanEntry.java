@@ -50,8 +50,8 @@ public class RestServiceInfoBeanEntry {
     @Override
     public String toString() {
         return "RestServiceInfoBeanEntry{" +
-                "url='" + url + '\'' +
-                ", httpMethod='" + httpMethod + '\'' +
-                '}';
+            "url='" + url + '\'' +
+            ", httpMethod='" + httpMethod + '\'' +
+            '}';
     }
 }

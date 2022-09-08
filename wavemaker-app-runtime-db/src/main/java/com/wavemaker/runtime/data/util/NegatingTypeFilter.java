@@ -34,7 +34,7 @@ public class NegatingTypeFilter implements TypeFilter {
 
     @Override
     public boolean match(
-            final MetadataReader metadataReader, final MetadataReaderFactory metadataReaderFactory) throws IOException {
+        final MetadataReader metadataReader, final MetadataReaderFactory metadataReaderFactory) throws IOException {
         return !target.match(metadataReader, metadataReaderFactory);
     }
 }

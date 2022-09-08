@@ -37,7 +37,6 @@ import com.wavemaker.runtime.web.SkipEtagHttpServletResponseWrapper;
  */
 public class CacheManagementFilter extends GenericFilterBean {
 
-
     @Autowired
     private EtagFilter etagFilter;
 
@@ -59,7 +58,7 @@ public class CacheManagementFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (matches(httpServletRequest, cacheRequestMatcher) && !matches(httpServletRequest,cacheExclusionRequestMatcher)) {
+        if (matches(httpServletRequest, cacheRequestMatcher) && !matches(httpServletRequest, cacheExclusionRequestMatcher)) {
             httpServletResponse.addHeader("Cache-Control", "public, max-age=1296000");
             chain.doFilter(request, new SkipEtagHttpServletResponseWrapper(httpServletResponse));
         } else if (matches(httpServletRequest, etagRequestMatcher)) {
@@ -71,7 +70,6 @@ public class CacheManagementFilter extends GenericFilterBean {
             chain.doFilter(request, response);
         }
     }
-
 
     private boolean matches(HttpServletRequest httpServletRequest, RequestMatcher requestMatcher) {
         return requestMatcher == null ? false : requestMatcher.matches(httpServletRequest);

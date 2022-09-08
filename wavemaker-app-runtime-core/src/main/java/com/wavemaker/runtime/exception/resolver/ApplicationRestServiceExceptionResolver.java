@@ -74,10 +74,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     @Override
     protected ModelAndView doResolveException(
-            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
         logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
-
 
         // Validator Errors/ Invalid data validated at controller level
         if (ex instanceof MethodArgumentTypeMismatchException) {
@@ -166,7 +165,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
                     }
                 }
                 errorResponseList.add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, paramName,
-                        constraintViolation.getMessage()));
+                    constraintViolation.getMessage()));
             }
         }
         return getModelAndView(errorResponseList);
@@ -178,7 +177,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     private ModelAndView handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         return getModelAndView(
-                getErrorResponse(MessageResource.INVALID_INPUT, "The input for " + ex.getName() + " is invalid."));
+            getErrorResponse(MessageResource.INVALID_INPUT, "The input for " + ex.getName() + " is invalid."));
     }
 
     private ModelAndView handleHibernateJdbcException(HibernateJdbcException ex) {
@@ -192,7 +191,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     }
 
     private ModelAndView handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException methodArgumentNotValidException, HttpServletResponse response) {
+        MethodArgumentNotValidException methodArgumentNotValidException, HttpServletResponse response) {
         BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
         if (allErrors != null) {
@@ -201,12 +200,12 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
                 if (objectError instanceof FieldError) {
                     FieldError fieldError = (FieldError) objectError;
                     errorResponseList
-                            .add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, fieldError.getField(),
-                                    fieldError.getDefaultMessage()));
+                        .add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, fieldError.getField(),
+                            fieldError.getDefaultMessage()));
                 } else {
                     errorResponseList
-                            .add(getErrorResponse(MessageResource.INVALID_OBJECT, objectError.getObjectName(),
-                                    objectError.getDefaultMessage()));
+                        .add(getErrorResponse(MessageResource.INVALID_OBJECT, objectError.getObjectName(),
+                            objectError.getDefaultMessage()));
                 }
                 objectError.getObjectName();
             }
@@ -224,7 +223,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     private ModelAndView handleRuntimeException(DataIntegrityViolationException ex) {
         ErrorResponse errorResponse = getErrorResponse(MessageResource.DATA_INTEGRITY_VIOALATION,
-                ex.getMostSpecificCause().getMessage());
+            ex.getMostSpecificCause().getMessage());
         return getModelAndView(errorResponse);
     }
 
@@ -255,14 +254,14 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     }
 
     private ModelAndView handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException ex,
-            HttpServletResponse response) {
+        HttpMessageNotReadableException ex,
+        HttpServletResponse response) {
         Throwable exCause = ex.getCause();
         ErrorResponse errorResponse = null;
         if (exCause != null) {
             if (exCause instanceof UnrecognizedPropertyException) {
                 errorResponse = getErrorResponse(MessageResource.UNRECOGNIZED_FIELD,
-                        ((UnrecognizedPropertyException) exCause).getPropertyName());
+                    ((UnrecognizedPropertyException) exCause).getPropertyName());
             } else if (exCause instanceof JsonMappingException) {
                 errorResponse = getErrorResponse(MessageResource.INVALID_JSON, exCause.getMessage());
             }

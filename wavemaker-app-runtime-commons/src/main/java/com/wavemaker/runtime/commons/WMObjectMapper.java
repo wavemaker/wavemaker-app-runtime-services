@@ -83,31 +83,31 @@ public class WMObjectMapper extends ObjectMapper {
      */
     @Override
     public void writeValue(File resultFile, Object value)
-            throws IOException {
+        throws IOException {
         writeMapper.writeValue(resultFile, value);
     }
 
     @Override
     public void writeValue(OutputStream out, Object value)
-            throws IOException {
+        throws IOException {
         writeMapper.writeValue(out, value);
     }
 
     @Override
     public void writeValue(Writer w, Object value)
-            throws IOException {
+        throws IOException {
         writeMapper.writeValue(w, value);
     }
 
     @Override
     public String writeValueAsString(Object value)
-            throws JsonProcessingException {
+        throws JsonProcessingException {
         return writeMapper.writeValueAsString(value);
     }
 
     @Override
     public byte[] writeValueAsBytes(Object value)
-            throws JsonProcessingException {
+        throws JsonProcessingException {
         return writeMapper.writeValueAsBytes(value);
     }
 
@@ -143,38 +143,38 @@ public class WMObjectMapper extends ObjectMapper {
 
     @Override
     public <T> T readValue(File src, Class<T> valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(File src, TypeReference<T> valueTypeRef)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     @Override
     public <T> T readValue(File src, JavaType valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(URL src, Class<T> valueType)
-            throws IOException {
+        throws IOException {
 
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(URL src, TypeReference<T> valueTypeRef)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     @Override
     public <T> T readValue(URL src, JavaType valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
@@ -195,73 +195,73 @@ public class WMObjectMapper extends ObjectMapper {
 
     @Override
     public <T> T readValue(Reader src, Class<T> valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(Reader src, TypeReference<T> valueTypeRef)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     @Override
     public <T> T readValue(Reader src, JavaType valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(InputStream src, Class<T> valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(InputStream src, TypeReference<T> valueTypeRef)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     @Override
     public <T> T readValue(byte[] src, Class<T> valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(
-            byte[] src, int offset, int len,
-            Class<T> valueType)
-            throws IOException {
+        byte[] src, int offset, int len,
+        Class<T> valueType)
+        throws IOException {
         return readMapper.readValue(src, offset, len, valueType);
     }
 
     @Override
     public <T> T readValue(byte[] src, TypeReference<T> valueTypeRef)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     @Override
     public <T> T readValue(
-            byte[] src, int offset, int len,
-            TypeReference<T> valueTypeRef)
-            throws IOException {
+        byte[] src, int offset, int len,
+        TypeReference<T> valueTypeRef)
+        throws IOException {
         return readMapper.readValue(src, offset, len, valueTypeRef);
     }
 
     @Override
     public <T> T readValue(byte[] src, JavaType valueType)
-            throws IOException {
+        throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     @Override
     public <T> T readValue(
-            byte[] src, int offset, int len,
-            JavaType valueType)
-            throws IOException {
+        byte[] src, int offset, int len,
+        JavaType valueType)
+        throws IOException {
         return readMapper.readValue(src, offset, len, valueType);
     }
 
@@ -342,7 +342,7 @@ public class WMObjectMapper extends ObjectMapper {
 
             SimpleModule dateModule = new SimpleModule();
             dateModule.addSerializer(java.sql.Date.class,
-                    new SqlDateSerializer().withFormat(false, new SimpleDateFormat("yyyy-MM-dd")));
+                new SqlDateSerializer().withFormat(false, new SimpleDateFormat("yyyy-MM-dd")));
 
             registerModule(dateModule);
 
@@ -366,7 +366,7 @@ public class WMObjectMapper extends ObjectMapper {
         }
 
         private String getPossibleFieldName(
-                AnnotatedMethod method, String defaultName, String[] possibleMethodStartNames) {
+            AnnotatedMethod method, String defaultName, String[] possibleMethodStartNames) {
             String name = method.getName();
             for (String possibleStartName : possibleMethodStartNames) {
                 if (name.startsWith(possibleStartName)) {

@@ -39,7 +39,7 @@ public class OAuth2RuntimeIntegrationController {
     @XssDisable
     @GetMapping(value = "authorizationUrl")
     public String getAuthorizationUrl(@PathVariable("providerId") String providerId, @RequestParam(name = "key", required = false) String key, @RequestParam
-            (name = "requestSourceType", required = false) String requestSourceType, HttpServletRequest httpServletRequest) {
+        (name = "requestSourceType", required = false) String requestSourceType, HttpServletRequest httpServletRequest) {
         return oAuth2RuntimeServiceManager.getAuthorizationUrl(providerId, requestSourceType, key, httpServletRequest);
     }
 
@@ -47,7 +47,7 @@ public class OAuth2RuntimeIntegrationController {
     @GetMapping(value = "callback", produces = "text/html")
     public String callBack(@PathVariable("providerId") String providerId, @RequestParam(name = "redirect_url", required = false) String redirectUrl,
                            @RequestParam(name = "code") String code, @RequestParam(name = "state", required = false) String state, HttpServletRequest
-                                   httpServletRequest) {
+                               httpServletRequest) {
         return oAuth2RuntimeServiceManager.callBack(providerId, redirectUrl, code, state, httpServletRequest);
     }
 

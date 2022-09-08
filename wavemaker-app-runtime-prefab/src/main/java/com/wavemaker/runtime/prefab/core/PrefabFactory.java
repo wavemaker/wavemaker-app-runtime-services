@@ -27,7 +27,9 @@ public interface PrefabFactory {
      * Returns an appropriate {@link Prefab} for the jar file.
      *
      * @param prefabDir source file
+     *
      * @return {@link Prefab} object
+     *
      * @throws Exception if {@link Prefab} cannot be created
      */
     public Prefab newPrefab(File prefabDir) throws Exception;

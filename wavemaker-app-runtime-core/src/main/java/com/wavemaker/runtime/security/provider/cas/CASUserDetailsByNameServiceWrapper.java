@@ -72,8 +72,8 @@ public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDet
             String password = userDetails.getPassword();
             long loginTime = System.currentTimeMillis();
             return new WMUser(userId, username, password, username, 0, true, true, true, true,
-                    AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)),
-                    loginTime);
+                AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)),
+                loginTime);
         } else {
             return userDetailsService.loadUserByUsername(authentication.getName());
         }
@@ -86,6 +86,5 @@ public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDet
     public void setRoleAttributeName(final String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
     }
-
 
 }

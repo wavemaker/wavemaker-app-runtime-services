@@ -39,7 +39,7 @@ public class RuntimeParametersProvider implements ParametersProvider {
     public RuntimeParametersProvider(final RuntimeQuery query) {
         this.query = query;
         parameterMap = query.getParameters().stream()
-                .collect(Collectors.toMap(QueryParameter::getName, parameter -> parameter));
+            .collect(Collectors.toMap(QueryParameter::getName, parameter -> parameter));
     }
 
     @Override

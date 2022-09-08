@@ -38,13 +38,13 @@ import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 public abstract class AbstractDesignService {
 
     private static final StringTemplate TRANSACTION_MANAGER_BEAN_ST = new StringTemplate(
-            "${serviceId}TransactionManager");
+        "${serviceId}TransactionManager");
 
     protected <T> T executeInTransaction(String serviceId, TransactionCallback<T> callback) {
         final String transactionManagerBeanName = TRANSACTION_MANAGER_BEAN_ST
-                .substitute(getStringTemplateMap(serviceId));
+            .substitute(getStringTemplateMap(serviceId));
         PlatformTransactionManager transactionManager = WMAppContext.getInstance()
-                .getSpringBean(transactionManagerBeanName);
+            .getSpringBean(transactionManagerBeanName);
         TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
@@ -80,7 +80,6 @@ public abstract class AbstractDesignService {
 
         return properties;
     }
-
 
     protected Map<String, String> getStringTemplateMap(final String serviceId) {
         return Collections.singletonMap("serviceId", serviceId);

@@ -24,10 +24,9 @@ import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
  * @since 27/6/16
  */
 public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetResultTransformer implements
-        WMResultTransformer {
+    WMResultTransformer {
 
     public static final AliasToEntityLinkedHashMapTransformer INSTANCE = new AliasToEntityLinkedHashMapTransformer();
-
 
     AliasToEntityLinkedHashMapTransformer() {
     }

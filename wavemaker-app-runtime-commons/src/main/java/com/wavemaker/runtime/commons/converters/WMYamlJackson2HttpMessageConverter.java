@@ -32,7 +32,7 @@ public class WMYamlJackson2HttpMessageConverter extends WMCustomAbstractHttpMess
 
     public WMYamlJackson2HttpMessageConverter() {
         super(new MediaType("application", "x-yaml"), new MediaType("text", "x-yaml"),
-                new MediaType("application", "yml"), new MediaType("text", "yml"));
+            new MediaType("application", "yml"), new MediaType("text", "yml"));
     }
 
     @Override

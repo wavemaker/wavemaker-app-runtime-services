@@ -48,10 +48,10 @@ public class NamedQueryExporterCallback<R> implements HibernateCallback<Void> {
     private final Class<R> responseType;
 
     public NamedQueryExporterCallback(
-            final PaginatedQueryProvider<R> queryProvider,
-            final ParametersProvider parametersProvider, final Pageable pageable,
-            final ExportOptions exportOptions,
-            final OutputStream outputStream, final Class<R> responseType) {
+        final PaginatedQueryProvider<R> queryProvider,
+        final ParametersProvider parametersProvider, final Pageable pageable,
+        final ExportOptions exportOptions,
+        final OutputStream outputStream, final Class<R> responseType) {
         this.queryProvider = queryProvider;
         this.parametersProvider = parametersProvider;
         this.pageable = pageable;
@@ -59,7 +59,6 @@ public class NamedQueryExporterCallback<R> implements HibernateCallback<Void> {
         this.outputStream = outputStream;
         this.responseType = responseType;
     }
-
 
     @Override
     public Void doInHibernate(final Session session) {

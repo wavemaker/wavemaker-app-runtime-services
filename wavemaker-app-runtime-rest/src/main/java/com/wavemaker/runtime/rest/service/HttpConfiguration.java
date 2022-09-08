@@ -153,23 +153,23 @@ public class HttpConfiguration {
     @Override
     public String toString() {
         return "HttpConfiguration{" +
-                "useSystemProperties=" + useSystemProperties +
-                ", connectionSocketTimeoutInSeconds=" + connectionSocketTimeoutInSeconds +
-                ", connectionTimeoutInSeconds=" + connectionTimeoutInSeconds +
-                ", connectionRequestTimeoutInSeconds=" + connectionRequestTimeoutInSeconds +
-                ", maxTotalConnections=" + maxTotalConnections +
-                ", maxTotalConnectionsPerRoute=" + maxTotalConnectionsPerRoute +
-                ", appProxyEnabled=" + appProxyEnabled +
-                ", appProxyHost='" + appProxyHost + '\'' +
-                ", appProxyPort=" + appProxyPort +
-                ", appProxyUsername='" + appProxyUsername + '\'' +
-                ", mtlsEnabled=" + mtlsEnabled +
-                ", keyStoreFile='" + keyStoreFile + '\'' +
-                ", keyStoreFileType='" + keyStoreFileType + '\'' +
-                ", trustStoreConfig=" + trustStoreConfig +
-                ", trustStoreFile='" + trustStoreFile + '\'' +
-                ", trustStoreFileType='" + trustStoreFileType + '\'' +
-                ", hostNameVerificationEnabled=" + hostNameVerificationEnabled +
-                '}';
+            "useSystemProperties=" + useSystemProperties +
+            ", connectionSocketTimeoutInSeconds=" + connectionSocketTimeoutInSeconds +
+            ", connectionTimeoutInSeconds=" + connectionTimeoutInSeconds +
+            ", connectionRequestTimeoutInSeconds=" + connectionRequestTimeoutInSeconds +
+            ", maxTotalConnections=" + maxTotalConnections +
+            ", maxTotalConnectionsPerRoute=" + maxTotalConnectionsPerRoute +
+            ", appProxyEnabled=" + appProxyEnabled +
+            ", appProxyHost='" + appProxyHost + '\'' +
+            ", appProxyPort=" + appProxyPort +
+            ", appProxyUsername='" + appProxyUsername + '\'' +
+            ", mtlsEnabled=" + mtlsEnabled +
+            ", keyStoreFile='" + keyStoreFile + '\'' +
+            ", keyStoreFileType='" + keyStoreFileType + '\'' +
+            ", trustStoreConfig=" + trustStoreConfig +
+            ", trustStoreFile='" + trustStoreFile + '\'' +
+            ", trustStoreFileType='" + trustStoreFileType + '\'' +
+            ", hostNameVerificationEnabled=" + hostNameVerificationEnabled +
+            '}';
     }
 }

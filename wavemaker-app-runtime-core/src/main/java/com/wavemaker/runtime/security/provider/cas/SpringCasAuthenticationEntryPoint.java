@@ -28,9 +28,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.Assert;
 
-
 /**
- *
  * Copied from {@link CasAuthenticationEntryPoint}
  *
  * Used by the <code>ExceptionTranslationFilter</code> to commence authentication via the JA-SIG Central
@@ -58,6 +56,7 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
      * disable the session encoding is provided for backwards compatibility.
      *
      * By default, encoding is enabled.
+     *
      * @deprecated since 3.0.0 because CAS is currently on 3.3.5.
      */
     @Deprecated
@@ -86,8 +85,10 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
 
     /**
      * Constructs a new Service Url.  The default implementation relies on the CAS client to do the bulk of the work.
-     * @param request the HttpServletRequest
+     *
+     * @param request  the HttpServletRequest
      * @param response the HttpServlet Response
+     *
      * @return the constructed service url.  CANNOT be NULL.
      */
     protected String createServiceUrl(final HttpServletRequest request, final HttpServletResponse response) {
@@ -98,6 +99,7 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
      * Constructs the Url for Redirection to the CAS server.  Default implementation relies on the CAS client to do the bulk of the work.
      *
      * @param serviceUrl the service url that should be included.
+     *
      * @return the redirect url.  CANNOT be NULL.
      */
     protected String createRedirectUrl(final String serviceUrl) {
@@ -107,7 +109,7 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
     /**
      * Template method for you to do your own pre-processing before the redirect occurs.
      *
-     * @param request the HttpServletRequest
+     * @param request  the HttpServletRequest
      * @param response the HttpServletResponse
      */
     protected void preCommence(final HttpServletRequest request, final HttpServletResponse response) {
@@ -140,6 +142,7 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
      * Sets whether to encode the service url with the session id or not.
      *
      * @param encodeServiceUrlWithSessionId whether to encode the service url with the session id or not.
+     *
      * @deprecated since 3.0.0 because CAS is currently on 3.3.5.
      */
     @Deprecated
@@ -149,6 +152,7 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
 
     /**
      * Sets whether to encode the service url with the session id or not.
+     *
      * @return whether to encode the service url with the session id or not.
      *
      * @deprecated since 3.0.0 because CAS is currently on 3.3.5.

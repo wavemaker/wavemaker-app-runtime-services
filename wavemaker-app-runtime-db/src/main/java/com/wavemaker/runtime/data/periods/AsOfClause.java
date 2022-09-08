@@ -39,7 +39,7 @@ public class AsOfClause implements PeriodClause {
     public WMQueryInfo asWMQueryClause() {
         String variableName = "wm_" + type.asHqlKeyword() + "_as_of_timestamp";
         final String hql = type.asHqlKeyword()
-                + " as of :" + variableName;
+            + " as of :" + variableName;
         return new WMQueryInfo(hql, Collections.singletonMap(variableName, new WMQueryParamInfo(timestamp)));
     }
 }

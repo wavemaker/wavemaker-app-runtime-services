@@ -33,8 +33,8 @@ public class QueryCallback<R> implements HibernateCallback<Optional<R>> {
     private final ParametersProvider parametersProvider;
 
     public QueryCallback(
-            final QueryProvider<R> queryProvider,
-            final ParametersProvider parametersProvider) {
+        final QueryProvider<R> queryProvider,
+        final ParametersProvider parametersProvider) {
         this.queryProvider = queryProvider;
         this.parametersProvider = parametersProvider;
     }

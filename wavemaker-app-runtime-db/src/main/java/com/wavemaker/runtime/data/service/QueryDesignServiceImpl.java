@@ -45,7 +45,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
 
     @Override
     public DesignServiceResponse testRunQuery(
-            final String serviceId, final MultipartHttpServletRequest request, final Pageable pageable) {
+        final String serviceId, final MultipartHttpServletRequest request, final Pageable pageable) {
         RuntimeQuery query = MultipartQueryUtils.readContent(request, RuntimeQuery.class);
         MultipartQueryUtils.setMultiparts(query.getParameters(), request.getMultiFileMap());
         return testRunQuery(serviceId, query, pageable);
@@ -53,7 +53,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
 
     @Override
     public DesignServiceResponse testRunQuery(
-            final String serviceId, final RuntimeQuery query, final Pageable pageable) {
+        final String serviceId, final RuntimeQuery query, final Pageable pageable) {
         final Object results = _runQuery(serviceId, query, pageable);
         List<ReturnProperty> meta;
 

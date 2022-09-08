@@ -41,7 +41,6 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     private boolean rolesByQuery;
     private static final String LOGGED_IN_USERNAME = ":LOGGED_IN_USERNAME";
 
-
     @PostConstruct
     protected void init() {
         if (authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
@@ -55,7 +54,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     @Override
     public List<GrantedAuthority> loadAuthorities(AuthenticationContext authenticationContext) {
         return getTransactionTemplate()
-                .execute(status -> getHibernateTemplate().execute(session -> getGrantedAuthorities(session, authenticationContext.getUsername())));
+            .execute(status -> getHibernateTemplate().execute(session -> getGrantedAuthorities(session, authenticationContext.getUsername())));
     }
 
     public String getAuthoritiesByUsernameQuery() {
@@ -84,7 +83,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     public List<GrantedAuthority> loadUserAuthorities(final String username) {
         return getTransactionTemplate()
-                .execute(status -> getHibernateTemplate().execute(session -> getGrantedAuthorities(session, username)));
+            .execute(status -> getHibernateTemplate().execute(session -> getGrantedAuthorities(session, username)));
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(final Session session, final String username) {
@@ -97,13 +96,13 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     }
 
     private List<GrantedAuthority> getGrantedAuthoritiesByHQL(
-            Session session, String authoritiesByUsernameQuery, String username) {
+        Session session, String authoritiesByUsernameQuery, String username) {
         final List list = session.createQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
         return getAuthorities(list);
     }
 
     private List<GrantedAuthority> getGrantedAuthoritiesByNativeSql(
-            Session session, String authoritiesByUsernameQuery, String username) {
+        Session session, String authoritiesByUsernameQuery, String username) {
         final List list = session.createNativeQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
         return getAuthorities(list);
     }

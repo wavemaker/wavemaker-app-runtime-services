@@ -64,7 +64,6 @@ public class WMTokenBasedAuthenticationService {
     private int tokenValiditySeconds = DEFAULT_VALIDITY_SECONDS;
     private String key = DEFAULT_KEY;
 
-
     public WMTokenBasedAuthenticationService() {
     }
 
@@ -160,6 +159,5 @@ public class WMTokenBasedAuthenticationService {
     private boolean isInstanceOfUserDetails(Authentication authentication) {
         return authentication.getPrincipal() instanceof UserDetails;
     }
-
 
 }

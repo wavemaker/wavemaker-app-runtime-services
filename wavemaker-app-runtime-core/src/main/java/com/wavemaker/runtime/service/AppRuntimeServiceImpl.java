@@ -44,16 +44,16 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     private static final String APP_PROPERTIES = ".wmproject.properties";
 
     private String[] uiProperties = {
-            "version",
-            "defaultLanguage",
-            "type",
-            "homePage",
-            "platformType",
-            "activeTheme",
-            "displayName",
-            "dateFormat",
-            "timeFormat",
-            "preferBrowserLang"};
+        "version",
+        "defaultLanguage",
+        "type",
+        "homePage",
+        "platformType",
+        "activeTheme",
+        "displayName",
+        "dateFormat",
+        "timeFormat",
+        "preferBrowserLang"};
 
     private Map<String, Object> applicationProperties;
 
@@ -73,13 +73,13 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 for (String s : uiProperties) {
                     appProperties.put(s, properties.get(s));
                 }
-                if("APPLICATION".equals(getApplicationType(appProperties))) {
+                if ("APPLICATION".equals(getApplicationType(appProperties))) {
                     appProperties.put("securityEnabled", securityService.isSecurityEnabled());
                     appProperties.put("xsrf_header_name", securityService.getSecurityInfo().getCsrfHeaderName());
                     appProperties.put("xsrf_cookie_name", securityService.getSecurityInfo().getCsrfCookieName());
                 }
                 appProperties
-                        .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
+                    .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
                 appProperties.put("isTestRuntime", RuntimeEnvironment.isTestRunEnvironment());
                 this.applicationProperties = appProperties;
             }

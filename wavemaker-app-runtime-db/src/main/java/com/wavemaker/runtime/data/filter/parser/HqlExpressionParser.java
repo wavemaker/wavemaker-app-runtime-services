@@ -32,14 +32,14 @@ import com.wavemaker.runtime.data.util.QueryParserConstants;
 public class HqlExpressionParser {
 
     private static final List<Integer> valueTerminals = Arrays.asList(
-            HqlFilterParser.NUMBER_VALUE,
-            HqlFilterParser.STRING_VALUE,
-            HqlFilterParser.NULL,
-            HqlFilterParser.BOOLEAN_VALUE
+        HqlFilterParser.NUMBER_VALUE,
+        HqlFilterParser.STRING_VALUE,
+        HqlFilterParser.NULL,
+        HqlFilterParser.BOOLEAN_VALUE
     );
     private static final List<Class<?>> nullContexts = Arrays.asList(
-            HqlFilterParser.IsNullContext.class,
-            HqlFilterParser.IsNotNullContext.class
+        HqlFilterParser.IsNullContext.class,
+        HqlFilterParser.IsNotNullContext.class
     );
     private static final String PARAMETER_PREFIX = "wm_parsed_param";
     private ParseTree condition;
@@ -95,6 +95,5 @@ public class HqlExpressionParser {
     private String getNextPlaceHolderKey(HqlParserContext hqlParserContext) {
         return PARAMETER_PREFIX + hqlParserContext.getParameters().size();
     }
-
 
 }

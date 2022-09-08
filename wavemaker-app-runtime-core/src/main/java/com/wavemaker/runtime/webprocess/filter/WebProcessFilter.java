@@ -47,7 +47,7 @@ public abstract class WebProcessFilter extends GenericFilterBean {
             WebProcess webProcess = WebProcessHelper.decodeWebProcess(webProcessCookie.getValue());
             if (webProcess.getProcessName().equals(this.processName)) {
                 if (request.getRequestURI().endsWith("/services/webprocess/decode")
-                        && this.onDecode(webProcess, request, response)) {
+                    && this.onDecode(webProcess, request, response)) {
                     return;
                 }
                 String processOutput = this.endProcess(webProcess, request, response);

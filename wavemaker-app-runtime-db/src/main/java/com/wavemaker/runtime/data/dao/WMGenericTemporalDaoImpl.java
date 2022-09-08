@@ -56,7 +56,7 @@ import com.wavemaker.runtime.data.util.PropertyDescription;
  * @since 3/1/18
  */
 public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends Serializable>
-        extends WMGenericDaoImpl<E, I> implements WMGenericTemporalDao<E, I> {
+    extends WMGenericDaoImpl<E, I> implements WMGenericTemporalDao<E, I> {
 
     private Class<TemporalHistoryEntity<E>> historyClass;
 
@@ -72,7 +72,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
             final TableTemporal temporal = entityClass.getAnnotation(TableTemporal.class);
             // decorating with given temporal types
             final boolean applicationTemporalExists = Arrays.stream(temporal.value())
-                    .anyMatch(temporalType -> temporalType == TableTemporal.TemporalType.APPLICATION);
+                .anyMatch(temporalType -> temporalType == TableTemporal.TemporalType.APPLICATION);
 
             if (applicationTemporalExists) {
                 queryGenerator = new TemporalQueryGenerator<>(queryGenerator, TableTemporal.TemporalType.APPLICATION);
@@ -81,16 +81,16 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
             historyClass = (Class<TemporalHistoryEntity<E>>) temporal.historyClass();
 
             updatableProperties = AnnotationUtils.findProperties(historyClass).stream()
-                    .filter(description -> description.isAnnotationNotPresent(Id.class))
-                    .filter(description -> description.isAnnotationNotPresent(Transient.class))
-                    .filter(description -> {
-                        final Optional<Column> optionalColumn = description.findAnnotation(Column.class);
-                        return optionalColumn.isPresent() && optionalColumn.get().updatable();
-                    })
-                    .map(PropertyDescription::getDescriptor)
-                    .map(PropertyDescriptor::getName)
-                    .map(name -> BeanUtils.getPropertyDescriptor(entityClass, name))
-                    .collect(Collectors.toList());
+                .filter(description -> description.isAnnotationNotPresent(Id.class))
+                .filter(description -> description.isAnnotationNotPresent(Transient.class))
+                .filter(description -> {
+                    final Optional<Column> optionalColumn = description.findAnnotation(Column.class);
+                    return optionalColumn.isPresent() && optionalColumn.get().updatable();
+                })
+                .map(PropertyDescription::getDescriptor)
+                .map(PropertyDescriptor::getName)
+                .map(name -> BeanUtils.getPropertyDescriptor(entityClass, name))
+                .collect(Collectors.toList());
         } else {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.tableTemporal.annotation.error"), entityClass.getName());
         }
@@ -100,41 +100,41 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
 
     @Override
     public Page<E> findByPeriod(
-            final List<PeriodClause> periodClauses, final String query, final Pageable pageable) {
+        final List<PeriodClause> periodClauses, final String query, final Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
 
         sortValidator.validate(validPageable, historyClass);
 
         final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass)
-                .withFilter(query);
+            .withFilter(query);
         periodClauses.forEach(builder::withPeriodClause);
 
         final Page<TemporalHistoryEntity<E>> responsePage = HqlQueryHelper
-                .execute(getHistoryTemplate(), historyClass, builder, validPageable, getWMQLTypeHelper());
+            .execute(getHistoryTemplate(), historyClass, builder, validPageable, getWMQLTypeHelper());
 
         return responsePage.map(TemporalHistoryEntity::asParent);
     }
 
     @Override
     public Page<E> findByIdAndPeriod(
-            final Map<String, Object> identifier, final List<PeriodClause> periodClauses, final Pageable pageable) {
+        final Map<String, Object> identifier, final List<PeriodClause> periodClauses, final Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
 
         sortValidator.validate(validPageable, historyClass);
 
         final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass)
-                .withFilterConditions(identifier);
+            .withFilterConditions(identifier);
         periodClauses.forEach(builder::withPeriodClause);
 
         final Page<TemporalHistoryEntity<E>> responsePage = HqlQueryHelper
-                .execute(getHistoryTemplate(), historyClass, builder, validPageable, getWMQLTypeHelper());
+            .execute(getHistoryTemplate(), historyClass, builder, validPageable, getWMQLTypeHelper());
 
         return responsePage.map(TemporalHistoryEntity::asParent);
     }
 
     @Override
     public int update(
-            final Map<String, Object> identifier, final PeriodClause periodClause, final E entity) {
+        final Map<String, Object> identifier, final PeriodClause periodClause, final E entity) {
         UpdateQueryBuilder builder = new UpdateQueryBuilder(historyClass);
 
         builder.withFilterConditions(identifier);
@@ -143,7 +143,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
         updatableProperties.forEach(property -> {
             try {
                 builder.withSetter(property.getName(),
-                        property.getReadMethod().invoke(entity));
+                    property.getReadMethod().invoke(entity));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.property.read.error"), e, property.getName());
             }
@@ -154,7 +154,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
 
     @Override
     public int update(
-            final PeriodClause periodClause, final String filter, final E entity) {
+        final PeriodClause periodClause, final String filter, final E entity) {
         UpdateQueryBuilder builder = new UpdateQueryBuilder(historyClass);
 
         builder.withFilter(filter);
@@ -163,7 +163,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
         updatableProperties.forEach(property -> {
             try {
                 builder.withSetter(property.getName(),
-                        property.getReadMethod().invoke(entity));
+                    property.getReadMethod().invoke(entity));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new WMRuntimeException("Error while reading property: " + property.getName() + " value", e);
             }
@@ -196,7 +196,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
         return getHistoryTemplate().execute(session -> {
             final Query<?> query = session.createQuery(queryInfo.getQuery());
             ParametersConfigurator.configure(query, queryInfo.getParameterValueMap(getWMQLTypeHelper()),
-                    new RuntimeParameterTypeResolver(queryInfo.getParameters(), session.getTypeHelper(), getWMQLTypeHelper()));
+                new RuntimeParameterTypeResolver(queryInfo.getParameters(), session.getTypeHelper(), getWMQLTypeHelper()));
             return query.executeUpdate();
         });
     }

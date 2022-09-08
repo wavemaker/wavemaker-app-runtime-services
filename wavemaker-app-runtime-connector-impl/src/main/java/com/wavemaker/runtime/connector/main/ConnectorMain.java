@@ -46,7 +46,6 @@ public class ConnectorMain {
         }
     }
 
-
     private static ApplicationContext prepareSpringContext(Properties properties, String connectorSpringConfigurationClass) {
         logger.info("Loading Impl Spring context from connector spring metadata class {}", connectorSpringConfigurationClass);
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();

@@ -16,42 +16,45 @@ package com.wavemaker.runtime.data.model;
 
 public class CustomQueryParam {
 
-	private String paramName;
+    private String paramName;
     private String paramType;
     private Object paramValue;
     private boolean isList;
-        
-	public CustomQueryParam() {
-		super();
-	}
-	
-	public CustomQueryParam(String paramName, String paramType, Object paramValue) {
-		super();
-		this.paramName = paramName;
-		this.paramType = paramType;
-		this.paramValue = paramValue;
-	}
-	
-	public String getParamName() {
-		return paramName;
-	}
-	public void setParamName(String paramName) {
-		this.paramName = paramName;
-	}
 
-	public String getParamType() {
-		return paramType;
-	}
-	public void setParamType(String paramType) {
-		this.paramType = paramType;
-	}
+    public CustomQueryParam() {
+        super();
+    }
 
-	public Object getParamValue() {
-		return paramValue;
-	}
-	public void setParamValue(Object paramValue) {
-		this.paramValue = paramValue;
-	}
+    public CustomQueryParam(String paramName, String paramType, Object paramValue) {
+        super();
+        this.paramName = paramName;
+        this.paramType = paramType;
+        this.paramValue = paramValue;
+    }
+
+    public String getParamName() {
+        return paramName;
+    }
+
+    public void setParamName(String paramName) {
+        this.paramName = paramName;
+    }
+
+    public String getParamType() {
+        return paramType;
+    }
+
+    public void setParamType(String paramType) {
+        this.paramType = paramType;
+    }
+
+    public Object getParamValue() {
+        return paramValue;
+    }
+
+    public void setParamValue(Object paramValue) {
+        this.paramValue = paramValue;
+    }
 
     public boolean isList() {
         return isList;
@@ -62,9 +65,9 @@ public class CustomQueryParam {
     }
 
     @Override
-	public String toString() {
-		return "CustomQueryParam [paramName=" + paramName + ", paramType="
-				+ paramType + ", paramValue=" + paramValue + "]";
-	}
+    public String toString() {
+        return "CustomQueryParam [paramName=" + paramName + ", paramType="
+            + paramType + ", paramValue=" + paramValue + "]";
+    }
 
 }

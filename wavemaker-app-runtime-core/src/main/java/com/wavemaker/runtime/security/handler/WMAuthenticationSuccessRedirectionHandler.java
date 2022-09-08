@@ -39,12 +39,12 @@ public class WMAuthenticationSuccessRedirectionHandler extends SavedRequestAware
 
         if (StringUtils.isEmpty(redirectPage) && StringUtils.isNotEmpty(request.getParameter(OpenIdConstants.STATE))) {
             Map<String, String> scope = OAuth2Helper.getStateObject(request.getParameter(OpenIdConstants.STATE));
-            if (scope.get(OpenIdConstants.REDIRECT_PAGE)!= null) {
+            if (scope.get(OpenIdConstants.REDIRECT_PAGE) != null) {
                 redirectPage = scope.get(OpenIdConstants.REDIRECT_PAGE);
             }
         }
         if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(targetUrl) && !StringUtils
-                .containsAny(targetUrl, '#', '?') && StringUtils.endsWith(targetUrl, "/")) {
+            .containsAny(targetUrl, '#', '?') && StringUtils.endsWith(targetUrl, "/")) {
             targetUrl += "#" + redirectPage;
         }
         return targetUrl;

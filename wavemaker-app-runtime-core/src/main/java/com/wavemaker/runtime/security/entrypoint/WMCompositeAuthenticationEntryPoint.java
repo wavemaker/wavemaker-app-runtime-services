@@ -38,7 +38,6 @@ public class WMCompositeAuthenticationEntryPoint implements AuthenticationEntryP
     private static final Logger logger = LoggerFactory.getLogger(WMCompositeAuthenticationEntryPoint.class);
     private List<AuthenticationEntryPoint> authenticationEntryPointList = new ArrayList<>();
 
-
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         if (authenticationEntryPointList.size() == 1) {

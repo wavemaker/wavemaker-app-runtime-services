@@ -34,14 +34,15 @@ import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
 // TODO Redundant class, remove
 public class ParametersConfigurator {
 
-    private ParametersConfigurator(){}
+    private ParametersConfigurator() {
+    }
 
     public static <R> Query<R> configure(Query<R> query, Map<String, Object> parameters) {
         return configure(query, parameters, new HqlParameterTypeResolver());
     }
 
     public static <R> Query<R> configure(
-            Query<R> query, Map<String, Object> parameters, ParameterTypeResolver resolver) {
+        Query<R> query, Map<String, Object> parameters, ParameterTypeResolver resolver) {
         query.getParameterMetadata().getNamedParameterNames().forEach(parameterName -> {
             final Object value = getValue(parameters, parameterName);
             final Optional<Type> typeOptional = resolver.resolveType(parameterName);
@@ -79,6 +80,5 @@ public class ParametersConfigurator {
         }
         return value;
     }
-
 
 }

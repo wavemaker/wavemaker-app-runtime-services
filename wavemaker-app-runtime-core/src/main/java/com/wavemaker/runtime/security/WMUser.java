@@ -43,7 +43,7 @@ public class WMUser extends User implements WMUserDetails {
     }
 
     /**
-     * @deprecated  use WMUserBuilder to create this class objects
+     * @deprecated use WMUserBuilder to create this class objects
      */
     @Deprecated
     public WMUser(String userName, String password, Collection<String> roles) {
@@ -51,7 +51,7 @@ public class WMUser extends User implements WMUserDetails {
     }
 
     /**
-     * @deprecated  use WMUserBuilder to create this class objects
+     * @deprecated use WMUserBuilder to create this class objects
      */
     @Deprecated
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, Collection<String> roles) {
@@ -59,7 +59,7 @@ public class WMUser extends User implements WMUserDetails {
     }
 
     /**
-     * @deprecated  use WMUserBuilder to create this class objects
+     * @deprecated use WMUserBuilder to create this class objects
      */
     @Deprecated
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, boolean enabled, boolean accountNonExpired,

@@ -57,7 +57,6 @@ public class Proxy {
         this.hostname = hostname;
     }
 
-
     public String getUsername() {
         return username;
     }
@@ -77,10 +76,10 @@ public class Proxy {
     @Override
     public String toString() {
         return "Proxy{" +
-                "hostname='" + hostname + '\'' +
-                ", port=" + port +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+            "hostname='" + hostname + '\'' +
+            ", port=" + port +
+            ", username='" + username + '\'' +
+            ", password='" + password + '\'' +
+            '}';
     }
 }

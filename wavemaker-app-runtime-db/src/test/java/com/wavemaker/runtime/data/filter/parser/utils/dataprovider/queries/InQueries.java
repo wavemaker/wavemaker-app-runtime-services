@@ -47,5 +47,4 @@ public class InQueries {
         return HqlParserTestUtils.getNormalizedHql(dataType, negativeQueries);
     }
 
-
 }

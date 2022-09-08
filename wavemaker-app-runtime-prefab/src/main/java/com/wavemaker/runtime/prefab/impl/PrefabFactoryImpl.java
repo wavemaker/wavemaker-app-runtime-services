@@ -38,12 +38,12 @@ public class PrefabFactoryImpl implements PrefabFactory {
 
     private URL[] getPrefabFiles(final File prefabDir) {
         return Utils.convertToURLS(prefabUtils.getPrefabBuildDirectory(prefabDir),
-                prefabUtils.readJarFilesForPrefab(prefabDir));
+            prefabUtils.readJarFilesForPrefab(prefabDir));
     }
 
     @Override
     public Prefab newPrefab(final File prefabDir)
-            throws Exception {
+        throws Exception {
         String prefabName = prefabDir.getName();
         WMUrlClassLoader classLoader = new WMUrlClassLoader(getPrefabFiles(prefabDir), prefabName);
         return new Prefab(prefabName, classLoader);

@@ -33,7 +33,7 @@ public class NativeQueryExtractor implements QueryExtractor {
     private int currentIndex;
 
     public NativeQueryExtractor(
-            final ResultSet resultSet, final WMResultTransformer resultTransformer) {
+        final ResultSet resultSet, final WMResultTransformer resultTransformer) {
         this.resultSet = resultSet;
         this.resultTransformer = resultTransformer;
     }

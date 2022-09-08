@@ -71,7 +71,7 @@ public class WMMultipartUtils {
     }
 
     public static <T> T toObject(
-            MultipartHttpServletRequest multipartHttpServletRequest, Class<T> instance, String serviceId) {
+        MultipartHttpServletRequest multipartHttpServletRequest, Class<T> instance, String serviceId) {
         T t = null;
         try {
             MultipartFile multipartFile = multipartHttpServletRequest.getFile(MultipartConstants.WM_DATA_JSON);
@@ -103,14 +103,13 @@ public class WMMultipartUtils {
         return objectMapper.readValue(json, instance);
     }
 
-
     /**
      * This Api is used to update blob content from old instance to new instance when blob type content is NULL in the
      * new instance
      *
      * @param oldInstance : persisted instance.
      * @param newInstance : changes in the persisted instance.
-     * @param <T>
+     *
      * @return returns newInstance with updated blob content
      */
     public static <T> T updateLobsContent(T oldInstance, T newInstance) {
@@ -138,8 +137,8 @@ public class WMMultipartUtils {
     }
 
     private static <T> T setMultipartsToObject(
-            Map<String, MultipartFile> multiparts, T instance,
-            String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Map<String, MultipartFile> multiparts, T instance,
+        String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Class aClass = instance.getClass();
         for (Map.Entry<String, MultipartFile> part : multiparts.entrySet()) {
             if (!part.getKey().equals(MultipartConstants.WM_DATA_JSON)) {
@@ -154,8 +153,8 @@ public class WMMultipartUtils {
     }
 
     private static <T> T invokeMethod(
-            T instance, InputStream inputStream, Method method, Field field,
-            String serviceId) throws IOException, IllegalAccessException, InvocationTargetException {
+        T instance, InputStream inputStream, Method method, Field field,
+        String serviceId) throws IOException, IllegalAccessException, InvocationTargetException {
         byte[] byteArray = IOUtils.toByteArray(inputStream);
         if (field.getType().isInstance("")) {
             String content = WMIOUtils.toString(inputStream);
@@ -166,14 +165,14 @@ public class WMMultipartUtils {
             SessionFactory sessionFactory = WMAppContext.getInstance().getSpringBean(serviceId + "SessionFactory");
             try (Session session = sessionFactory.openSession()) {
                 Blob blob = Hibernate.getLobCreator(session)
-                        .createBlob(new ByteArrayInputStream(byteArray), byteArray.length);
+                    .createBlob(new ByteArrayInputStream(byteArray), byteArray.length);
                 method.invoke(instance, blob);
             }
         } else {
             LOGGER.error("Casting multipart {} to {} is not supported", field.getName(),
-                    field.getType().getSimpleName());
+                field.getType().getSimpleName());
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.multipart.casting.exception"), field.getName(), field.getType()
-                    .getSimpleName());
+                .getSimpleName());
         }
         return instance;
     }
@@ -190,6 +189,7 @@ public class WMMultipartUtils {
      * get a match from a stream of data
      *
      * @param data bytes of data
+     *
      * @return Guessed content type of given bytes
      */
     public static String guessContentType(byte[] data) {
@@ -205,13 +205,13 @@ public class WMMultipartUtils {
      * @param httpServletResponse to generate response for the given field
      */
     public static <T> void buildHttpResponseForBlob(
-            T instance, String fieldName, HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse) {
+        T instance, String fieldName, HttpServletRequest httpServletRequest,
+        HttpServletResponse httpServletResponse) {
         try {
             byte[] bytes = getBlobBytes((T) instance, fieldName);
             httpServletResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
             httpServletResponse.setHeader("Content-Disposition",
-                    "filename=" + fieldName + new SecureRandom().nextInt(99) + ";size=" + bytes.length);
+                "filename=" + fieldName + new SecureRandom().nextInt(99) + ";size=" + bytes.length);
             int contentLength = IOUtils.copy(new ByteArrayInputStream(bytes), httpServletResponse.getOutputStream());
             httpServletResponse.setContentLength(contentLength);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -221,7 +221,7 @@ public class WMMultipartUtils {
     }
 
     public static <T> DownloadResponse buildDownloadResponseForBlob(
-            T instance, String fieldName, HttpServletRequest httpServletRequest, boolean download) {
+        T instance, String fieldName, HttpServletRequest httpServletRequest, boolean download) {
         DownloadResponse downloadResponse = new DownloadResponse();
         try {
             byte[] bytes = getBlobBytes(instance, fieldName);
@@ -274,7 +274,7 @@ public class WMMultipartUtils {
     }
 
     public static DownloadResponse buildDownloadResponse(
-            HttpServletRequest request, InputStream is, boolean download) {
+        HttpServletRequest request, InputStream is, boolean download) {
         DownloadResponse downloadResponse = new DownloadResponse();
 
         downloadResponse.setContents(is);
@@ -310,8 +310,8 @@ public class WMMultipartUtils {
     }
 
     private static <T> byte[] getBlobBytes(
-            final T instance,
-            final String fieldName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
+        final T instance,
+        final String fieldName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
         String methodName = "get" + StringUtils.capitalize(fieldName);
         Method method = instance.getClass().getMethod(methodName);
         byte[] bytes = null;
@@ -335,8 +335,8 @@ public class WMMultipartUtils {
      * Guess Content type for the given bytes using Tika
      * If any exception using Tika api, then getting content type from request.
      *
-     * @param bytes              stream of bytes
-     * @param httpServletRequest
+     * @param bytes stream of bytes
+     *
      * @return content type for given bytes
      */
     private static String getMatchingContentType(byte[] bytes, HttpServletRequest httpServletRequest) {

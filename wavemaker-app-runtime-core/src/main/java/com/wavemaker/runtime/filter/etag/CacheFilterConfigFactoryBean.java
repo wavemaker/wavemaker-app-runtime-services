@@ -44,7 +44,6 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
 
     private List<String> etagContentPath = Arrays.asList("/**");
 
-
     @Override
     public CacheFilterConfig getObject() throws Exception {
         CacheFilterConfig cacheFilterConfig = new CacheFilterConfig();

@@ -38,7 +38,8 @@ import com.wavemaker.runtime.data.model.queries.QueryParameter;
  */
 public class MultipartQueryUtils {
 
-    private MultipartQueryUtils(){}
+    private MultipartQueryUtils() {
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipartQueryUtils.class);
 
@@ -63,7 +64,7 @@ public class MultipartQueryUtils {
     }
 
     public static <T extends QueryParameter> void setMultiparts(
-            List<T> parameters, MultiValueMap<String, MultipartFile> parts) {
+        List<T> parameters, MultiValueMap<String, MultipartFile> parts) {
         if (!parts.isEmpty()) {
             for (final String partName : parts.keySet()) {
                 if (!MultipartConstants.WM_DATA_JSON.equals(partName)) {

@@ -28,13 +28,13 @@ import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
  * Created by ArjunSahasranam on 15/3/16.
  */
 public class LdapDatabaseAuthoritiesPopulator implements
-        org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator {
+    org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator {
 
     private AuthoritiesProvider authoritiesProvider;
 
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(
-            final DirContextOperations userData, final String username) {
+        final DirContextOperations userData, final String username) {
         List<GrantedAuthority> dbAuthsSet = new ArrayList<>();
         dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
         return dbAuthsSet;
@@ -45,7 +45,7 @@ public class LdapDatabaseAuthoritiesPopulator implements
     }
 
     public void setAuthoritiesProvider(
-            final AuthoritiesProvider authoritiesProvider) {
+        final AuthoritiesProvider authoritiesProvider) {
         this.authoritiesProvider = authoritiesProvider;
     }
 }

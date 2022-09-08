@@ -76,8 +76,6 @@ public class PrefabWebContentServlet extends HttpServlet {
         }
     }
 
-
-
     private void writeErrorResponse(HttpServletRequest request, HttpServletResponse response, String prefabResourcePath) throws IOException {
         LOGGER.warn("Invalid prefab uri {} received", request.getRequestURI());
         HttpRequestUtils.writeJsonErrorResponse("Invalid prefab url " + request.getRequestURI(), HttpStatus.SC_BAD_REQUEST, response);

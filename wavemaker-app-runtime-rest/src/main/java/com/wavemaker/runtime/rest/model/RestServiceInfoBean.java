@@ -29,7 +29,6 @@ public class RestServiceInfoBean {
     private String serviceName;
     private RestRuntimeConfig restRuntimeConfig;
 
-
     private List<RestServiceInfoBeanEntry> entryList;
 
     public String getServiceName() {
@@ -53,7 +52,7 @@ public class RestServiceInfoBean {
     }
 
     public RestServiceInfoBean setEntryList(
-            final List<RestServiceInfoBeanEntry> entryList) {
+        final List<RestServiceInfoBeanEntry> entryList) {
         this.entryList = entryList;
         return this;
     }
@@ -61,8 +60,8 @@ public class RestServiceInfoBean {
     @Override
     public String toString() {
         return "RestServiceInfoBean{" +
-                "serviceName='" + serviceName + '\'' +
-                ", entryList=" + entryList +
-                '}';
+            "serviceName='" + serviceName + '\'' +
+            ", entryList=" + entryList +
+            '}';
     }
 }

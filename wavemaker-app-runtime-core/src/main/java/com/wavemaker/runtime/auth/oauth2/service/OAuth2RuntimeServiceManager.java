@@ -98,22 +98,22 @@ public class OAuth2RuntimeServiceManager {
         OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
         if (StringUtils.isBlank(redirectUrl)) {
             redirectUrl = new StringBuilder().append(HttpRequestUtils.getApplicationBaseUrl(httpServletRequest))
-                    .append("/services/oauth2/").append(providerId).append("/callback").toString();
+                .append("/services/oauth2/").append(providerId).append("/callback").toString();
         }
 
         String requestBody = OAuth2Helper.getAccessTokenApiRequestBody(oAuth2ProviderConfig, code, redirectUrl);
 
         HttpRequestDetails httpRequestDetails = HttpRequestDetailsBuilder.create(oAuth2ProviderConfig.getAccessTokenUrl())
-                .setMethod("POST")
-                .setContentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .setRequestBody(requestBody).build();
+            .setMethod("POST")
+            .setContentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            .setRequestBody(requestBody).build();
 
         HttpResponseDetails httpResponseDetails = RestConnector.DEFAULT_INSTANCE.invokeRestCall(httpRequestDetails);
 
         if (httpResponseDetails.getStatusCode() == 200) {
             String response = WMIOUtils.toString(httpResponseDetails.getBody());
             AccessTokenRequestContext accessTokenRequestContext = new AccessTokenRequestContext(httpResponseDetails.getHeaders().getContentType(),
-                    oAuth2ProviderConfig.getAccessTokenUrl(), response);
+                oAuth2ProviderConfig.getAccessTokenUrl(), response);
 
             String accessToken = OAuth2Helper.extractAccessToken(accessTokenRequestContext);
             String requestSourceType = null;

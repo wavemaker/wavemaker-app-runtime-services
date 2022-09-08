@@ -73,7 +73,6 @@ public class SecurityService {
         return 0;
     }
 
-
     /**
      * Checks whether the security is enabled or not. It returns true if it is enable, else, false.
      *
@@ -118,11 +117,11 @@ public class SecurityService {
             Map<String, Object> customAttributes = new HashMap<>();
             Map<String, Attribute> attributeMap = wmAuthentication.getAttributes();
             attributeMap.entrySet().stream().forEach(entry -> {
-                        Attribute attribute = entry.getValue();
-                        if (attribute.getScope() != Attribute.AttributeScope.SERVER_ONLY) {
-                            customAttributes.put(entry.getKey(), attribute.getValue());
-                        }
+                    Attribute attribute = entry.getValue();
+                    if (attribute.getScope() != Attribute.AttributeScope.SERVER_ONLY) {
+                        customAttributes.put(entry.getKey(), attribute.getValue());
                     }
+                }
             );
             return customAttributes;
         }
@@ -137,9 +136,9 @@ public class SecurityService {
             Map<String, Object> customAttributes = new HashMap<>();
             Map<String, Attribute> attributeMap = wmAuthentication.getAttributes();
             attributeMap.entrySet().stream().forEach(entry -> {
-                        Attribute attribute = entry.getValue();
-                        customAttributes.put(entry.getKey(), attribute.getValue());
-                    }
+                    Attribute attribute = entry.getValue();
+                    customAttributes.put(entry.getKey(), attribute.getValue());
+                }
             );
             return customAttributes;
         }

@@ -38,5 +38,4 @@ public class DataTypeQueries {
         return HqlParserTestUtils.getNormalizedHql(dataType, queries);
     }
 
-
 }

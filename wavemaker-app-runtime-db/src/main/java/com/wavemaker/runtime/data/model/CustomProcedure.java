@@ -25,21 +25,21 @@ import javax.validation.constraints.NotEmpty;
  */
 public class CustomProcedure {
 
-	@NotBlank
-	@NotEmpty
+    @NotBlank
+    @NotEmpty
     private String procedureStr;
 
     private List<CustomProcedureParam> procedureParams = new ArrayList<>();
 
     public CustomProcedure() {
-		super();
-	}
+        super();
+    }
 
-	public CustomProcedure(String procedureStr, List<CustomProcedureParam> procedureParams) {
-		super();
-		this.procedureStr = procedureStr;
-		this.procedureParams = procedureParams;
-	}
+    public CustomProcedure(String procedureStr, List<CustomProcedureParam> procedureParams) {
+        super();
+        this.procedureStr = procedureStr;
+        this.procedureParams = procedureParams;
+    }
 
     public String getProcedureStr() {
         return procedureStr;
@@ -48,7 +48,7 @@ public class CustomProcedure {
     public void setProcedureStr(String procedureStr) {
         this.procedureStr = procedureStr;
     }
-    
+
     public List<CustomProcedureParam> getProcedureParams() {
         return procedureParams;
     }
@@ -56,6 +56,5 @@ public class CustomProcedure {
     public void setProcedureParams(List<CustomProcedureParam> procedureParams) {
         this.procedureParams = procedureParams;
     }
-
 
 }

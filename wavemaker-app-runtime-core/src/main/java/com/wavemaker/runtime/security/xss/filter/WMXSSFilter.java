@@ -30,7 +30,6 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.wavemaker.runtime.security.xss.XSSRequestWrapper;
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
-
 /**
  * Filter implementation to add header X-XSS-Protection and XSS encode filter.
  */
@@ -59,7 +58,7 @@ public class WMXSSFilter extends GenericFilterBean {
         } else {
             chain.doFilter(request, response);
         }
-        
+
     }
 
     @Override

@@ -34,10 +34,9 @@ import com.wavemaker.runtime.commons.variable.Scope;
  */
 public class EntityValueReplacerBuilder {
 
-
     public EntityValueReplacer build(Class<?> type) {
         MultiValueMap<Scope, FieldValueReplacer> overriderMultiValueMap = new LinkedMultiValueMap<>(
-                Scope.values().length);
+            Scope.values().length);
 
         for (final Scope phase : Scope.values()) {
             overriderMultiValueMap.put(phase, new ArrayList<>());

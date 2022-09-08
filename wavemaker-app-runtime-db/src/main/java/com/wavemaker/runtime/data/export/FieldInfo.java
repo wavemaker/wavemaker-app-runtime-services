@@ -19,7 +19,8 @@ public class FieldInfo {
     private String field;
     private String expression;
 
-    public FieldInfo(){}
+    public FieldInfo() {
+    }
 
     public FieldInfo(String field) {
         this.field = field;

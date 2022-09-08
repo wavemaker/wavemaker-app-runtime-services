@@ -60,14 +60,14 @@ public class QueryHelper {
     }
 
     public static String applySortingForNativeQuery(
-            String queryString, Sort sort, WMResultTransformer transformer, Dialect dialect) {
+        String queryString, Sort sort, WMResultTransformer transformer, Dialect dialect) {
         String withOrderBy = queryString;
         if (sort != null && sort.iterator().hasNext()) {
             withOrderBy = ORDER_BY_QUERY_TEMPLATE.replace("{0}", queryString) +
-                    ORDER_BY +
-                    buildOrderByClause(sort, ((Function<String, String>) transformer::aliasFromFieldName)
-                            .andThen(QueryHelper::quoteWithBackTick)
-                            .andThen(dialect::quote));
+                ORDER_BY +
+                buildOrderByClause(sort, ((Function<String, String>) transformer::aliasFromFieldName)
+                    .andThen(QueryHelper::quoteWithBackTick)
+                    .andThen(dialect::quote));
         }
         return withOrderBy;
     }
@@ -104,8 +104,8 @@ public class QueryHelper {
                 direction = Sort.Direction.ASC;
             }
             orderBy.append(property)
-                    .append(EMPTY_SPACE)
-                    .append(direction.name());
+                .append(EMPTY_SPACE)
+                .append(direction.name());
             if (iterator.hasNext()) {
                 orderBy.append(ORDER_PROPERTY_SEPARATOR);
             }
@@ -128,7 +128,7 @@ public class QueryHelper {
     public static void setResultTransformer(Query query, Class<?> type) {
 //        TODO replace deprecated methods
         if (query instanceof NativeQuery || (query.getReturnAliases() != null && query
-                .getReturnAliases().length != 0)) {
+            .getReturnAliases().length != 0)) {
             query.setResultTransformer(Transformers.aliasToMappedClass(type));
         }
     }
@@ -136,7 +136,6 @@ public class QueryHelper {
     public static Query createQuery(final Session session, final boolean isNative, final String query) {
         return (isNative) ? session.createNativeQuery(query) : session.createQuery(query);
     }
-
 
     public static Long getQueryResultCount(WMQueryInfo wmQueryInfo, boolean isNative, HibernateTemplate template, WMQLTypeHelper wmqlTypeHelper) {
         return getCountFromCountStringQuery(wmQueryInfo, isNative, template, wmqlTypeHelper);
@@ -158,10 +157,10 @@ public class QueryHelper {
     }
 
     public static Long executeCountQuery(
-            final Session session, final boolean isNative, final String strQuery, final WMQueryInfo wmQueryInfo, WMQLTypeHelper wmqlTypeHelper) {
+        final Session session, final boolean isNative, final String strQuery, final WMQueryInfo wmQueryInfo, WMQLTypeHelper wmqlTypeHelper) {
         Query<Integer> query = isNative ? session.createNativeQuery(strQuery) : session.createQuery(strQuery);
         ParametersConfigurator.configure(query, wmQueryInfo.getParameterValueMap(wmqlTypeHelper),
-                new RuntimeParameterTypeResolver(wmQueryInfo.getParameters(), session.getTypeHelper(), wmqlTypeHelper));
+            new RuntimeParameterTypeResolver(wmQueryInfo.getParameters(), session.getTypeHelper(), wmqlTypeHelper));
         Object result = query.uniqueResult();
         return result == null ? 0 : ((Number) result).longValue();
     }
@@ -239,7 +238,7 @@ public class QueryHelper {
     }
 
     public static Query createQuery(
-            RuntimeQuery runtimeQuery, final Map<String, Object> params, final Session session) {
+        RuntimeQuery runtimeQuery, final Map<String, Object> params, final Session session) {
         final Query query;
         if (runtimeQuery.isNativeSql()) {
             query = createNativeQuery(runtimeQuery.getQueryString(), params, session);

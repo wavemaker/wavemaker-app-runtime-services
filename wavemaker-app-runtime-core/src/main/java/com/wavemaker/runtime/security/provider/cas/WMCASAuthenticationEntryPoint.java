@@ -55,7 +55,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
 
         String service = this.serviceProperties.getService();
         String redirectToPage = request.getParameter("redirectPage");
-        if(StringUtils.isNotEmpty(redirectToPage)) {
+        if (StringUtils.isNotEmpty(redirectToPage)) {
             try {
                 service = service + "?redirectPage=" + URLEncoder.encode(redirectToPage, "UTF-8");
             } catch (UnsupportedEncodingException e) {
@@ -63,7 +63,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
             }
         }
         return CommonUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),
-                this.serviceProperties.getArtifactParameter(), true);
+            this.serviceProperties.getArtifactParameter(), true);
     }
 
     @Override
@@ -79,6 +79,5 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
             response.sendRedirect(redirectUrl);
         }
     }
-
 
 }

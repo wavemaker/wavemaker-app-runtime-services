@@ -126,7 +126,7 @@ import org.springframework.util.StringUtils;
  * @since 2.2.0
  */
 public class WMJdbcIndexedSessionRepository
-        implements FindByIndexNameSessionRepository<WMJdbcIndexedSessionRepository.JdbcSession> {
+    implements FindByIndexNameSessionRepository<WMJdbcIndexedSessionRepository.JdbcSession> {
 
     /**
      * The default name of database table used by Spring Session to store sessions.
@@ -137,54 +137,54 @@ public class WMJdbcIndexedSessionRepository
 
     // @formatter:off
     private static final String CREATE_SESSION_QUERY = "INSERT INTO %TABLE_NAME%(PRIMARY_ID, SESSION_ID, CREATION_TIME, LAST_ACCESS_TIME, MAX_INACTIVE_INTERVAL, EXPIRY_TIME, PRINCIPAL_NAME) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
     // @formatter:on
 
     // @formatter:off
     private static final String CREATE_SESSION_ATTRIBUTE_QUERY = ""
-            + "INSERT INTO %TABLE_NAME%_ATTRIBUTES (SESSION_PRIMARY_ID, ATTRIBUTE_NAME, ATTRIBUTE_BYTES) "
-            + "VALUES (?, ?, ?)";
+        + "INSERT INTO %TABLE_NAME%_ATTRIBUTES (SESSION_PRIMARY_ID, ATTRIBUTE_NAME, ATTRIBUTE_BYTES) "
+        + "VALUES (?, ?, ?)";
     // @formatter:on
 
     // @formatter:off
     private static final String GET_SESSION_QUERY = "SELECT S.PRIMARY_ID, S.SESSION_ID, S.CREATION_TIME, S.LAST_ACCESS_TIME, S.MAX_INACTIVE_INTERVAL, SA.ATTRIBUTE_NAME, SA.ATTRIBUTE_BYTES "
-            + "FROM %TABLE_NAME% S "
-            + "LEFT OUTER JOIN %TABLE_NAME%_ATTRIBUTES SA ON S.PRIMARY_ID = SA.SESSION_PRIMARY_ID "
-            + "WHERE S.SESSION_ID = ?";
+        + "FROM %TABLE_NAME% S "
+        + "LEFT OUTER JOIN %TABLE_NAME%_ATTRIBUTES SA ON S.PRIMARY_ID = SA.SESSION_PRIMARY_ID "
+        + "WHERE S.SESSION_ID = ?";
     // @formatter:on
 
     // @formatter:off
     private static final String UPDATE_SESSION_QUERY = "UPDATE %TABLE_NAME% SET SESSION_ID = ?, LAST_ACCESS_TIME = ?, MAX_INACTIVE_INTERVAL = ?, EXPIRY_TIME = ?, PRINCIPAL_NAME = ? "
-            + "WHERE PRIMARY_ID = ?";
+        + "WHERE PRIMARY_ID = ?";
     // @formatter:on
 
     // @formatter:off
     private static final String UPDATE_SESSION_ATTRIBUTE_QUERY = "UPDATE %TABLE_NAME%_ATTRIBUTES SET ATTRIBUTE_BYTES = ? "
-            + "WHERE SESSION_PRIMARY_ID = ? "
-            + "AND ATTRIBUTE_NAME = ?";
+        + "WHERE SESSION_PRIMARY_ID = ? "
+        + "AND ATTRIBUTE_NAME = ?";
     // @formatter:on
 
     // @formatter:off
     private static final String DELETE_SESSION_ATTRIBUTE_QUERY = "DELETE FROM %TABLE_NAME%_ATTRIBUTES "
-            + "WHERE SESSION_PRIMARY_ID = ? "
-            + "AND ATTRIBUTE_NAME = ?";
+        + "WHERE SESSION_PRIMARY_ID = ? "
+        + "AND ATTRIBUTE_NAME = ?";
     // @formatter:on
 
     // @formatter:off
     private static final String DELETE_SESSION_QUERY = "DELETE FROM %TABLE_NAME% "
-            + "WHERE SESSION_ID = ?";
+        + "WHERE SESSION_ID = ?";
     // @formatter:on
 
     // @formatter:off
     private static final String LIST_SESSIONS_BY_PRINCIPAL_NAME_QUERY = "SELECT S.PRIMARY_ID, S.SESSION_ID, S.CREATION_TIME, S.LAST_ACCESS_TIME, S.MAX_INACTIVE_INTERVAL, SA.ATTRIBUTE_NAME, SA.ATTRIBUTE_BYTES "
-            + "FROM %TABLE_NAME% S "
-            + "LEFT OUTER JOIN %TABLE_NAME%_ATTRIBUTES SA ON S.PRIMARY_ID = SA.SESSION_PRIMARY_ID "
-            + "WHERE S.PRINCIPAL_NAME = ?";
+        + "FROM %TABLE_NAME% S "
+        + "LEFT OUTER JOIN %TABLE_NAME%_ATTRIBUTES SA ON S.PRIMARY_ID = SA.SESSION_PRIMARY_ID "
+        + "WHERE S.PRINCIPAL_NAME = ?";
     // @formatter:on
 
     // @formatter:off
     private static final String DELETE_SESSIONS_BY_EXPIRY_TIME_QUERY = "DELETE FROM %TABLE_NAME% "
-            + "WHERE EXPIRY_TIME < ?";
+        + "WHERE EXPIRY_TIME < ?";
     // @formatter:on
 
     private static final Log logger = LogFactory.getLog(WMJdbcIndexedSessionRepository.class);
@@ -237,7 +237,8 @@ public class WMJdbcIndexedSessionRepository
     /**
      * Create a new {@link JdbcIndexedSessionRepository} instance which uses the provided
      * {@link JdbcOperations} and {@link TransactionOperations} to manage sessions.
-     * @param jdbcOperations the {@link JdbcOperations} to use
+     *
+     * @param jdbcOperations        the {@link JdbcOperations} to use
      * @param transactionOperations the {@link TransactionOperations} to use
      */
     public WMJdbcIndexedSessionRepository(JdbcOperations jdbcOperations, TransactionOperations transactionOperations) {
@@ -250,6 +251,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the name of database table used to store sessions.
+     *
      * @param tableName the database table name
      */
     public void setTableName(String tableName) {
@@ -260,6 +262,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to create the session.
+     *
      * @param createSessionQuery the SQL query string
      */
     public void setCreateSessionQuery(String createSessionQuery) {
@@ -269,6 +272,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to create the session attribute.
+     *
      * @param createSessionAttributeQuery the SQL query string
      */
     public void setCreateSessionAttributeQuery(String createSessionAttributeQuery) {
@@ -278,6 +282,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to retrieve the session.
+     *
      * @param getSessionQuery the SQL query string
      */
     public void setGetSessionQuery(String getSessionQuery) {
@@ -287,6 +292,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to update the session.
+     *
      * @param updateSessionQuery the SQL query string
      */
     public void setUpdateSessionQuery(String updateSessionQuery) {
@@ -296,6 +302,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to update the session attribute.
+     *
      * @param updateSessionAttributeQuery the SQL query string
      */
     public void setUpdateSessionAttributeQuery(String updateSessionAttributeQuery) {
@@ -305,6 +312,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to delete the session attribute.
+     *
      * @param deleteSessionAttributeQuery the SQL query string
      */
     public void setDeleteSessionAttributeQuery(String deleteSessionAttributeQuery) {
@@ -314,6 +322,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to delete the session.
+     *
      * @param deleteSessionQuery the SQL query string
      */
     public void setDeleteSessionQuery(String deleteSessionQuery) {
@@ -323,6 +332,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to retrieve the sessions by principal name.
+     *
      * @param listSessionsByPrincipalNameQuery the SQL query string
      */
     public void setListSessionsByPrincipalNameQuery(String listSessionsByPrincipalNameQuery) {
@@ -332,6 +342,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the custom SQL query used to delete the sessions by last access time.
+     *
      * @param deleteSessionsByExpiryTimeQuery the SQL query string
      */
     public void setDeleteSessionsByExpiryTimeQuery(String deleteSessionsByExpiryTimeQuery) {
@@ -343,6 +354,7 @@ public class WMJdbcIndexedSessionRepository
      * Set the maximum inactive interval in seconds between requests before newly created
      * sessions will be invalidated. A negative time indicates that the session will never
      * timeout. The default is 1800 (30 minutes).
+     *
      * @param defaultMaxInactiveInterval the maximum inactive interval in seconds
      */
     public void setDefaultMaxInactiveInterval(Integer defaultMaxInactiveInterval) {
@@ -351,6 +363,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the {@link IndexResolver} to use.
+     *
      * @param indexResolver the index resolver
      */
     public void setIndexResolver(IndexResolver<Session> indexResolver) {
@@ -365,6 +378,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Sets the {@link ConversionService} to use.
+     *
      * @param conversionService the converter to set
      */
     public void setConversionService(ConversionService conversionService) {
@@ -374,6 +388,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the flush mode. Default is {@link FlushMode#ON_SAVE}.
+     *
      * @param flushMode the flush mode
      */
     public void setFlushMode(FlushMode flushMode) {
@@ -383,6 +398,7 @@ public class WMJdbcIndexedSessionRepository
 
     /**
      * Set the save mode.
+     *
      * @param saveMode the save mode
      */
     public void setSaveMode(SaveMode saveMode) {
@@ -410,8 +426,8 @@ public class WMJdbcIndexedSessionRepository
     public JdbcSession findById(final String id) {
         final JdbcSession session = this.transactionOperations.execute((status) -> {
             List<JdbcSession> sessions = WMJdbcIndexedSessionRepository.this.jdbcOperations.query(
-                    WMJdbcIndexedSessionRepository.this.getSessionQuery, (ps) -> ps.setString(1, id),
-                    WMJdbcIndexedSessionRepository.this.extractor);
+                WMJdbcIndexedSessionRepository.this.getSessionQuery, (ps) -> ps.setString(1, id),
+                WMJdbcIndexedSessionRepository.this.extractor);
             if (sessions.isEmpty()) {
                 return null;
             }
@@ -421,8 +437,7 @@ public class WMJdbcIndexedSessionRepository
         if (session != null) {
             if (session.isExpired()) {
                 deleteById(id);
-            }
-            else {
+            } else {
                 return session;
             }
         }
@@ -432,7 +447,7 @@ public class WMJdbcIndexedSessionRepository
     @Override
     public void deleteById(final String id) {
         this.transactionOperations.executeWithoutResult((status) -> WMJdbcIndexedSessionRepository.this.jdbcOperations
-                .update(WMJdbcIndexedSessionRepository.this.deleteSessionQuery, id));
+            .update(WMJdbcIndexedSessionRepository.this.deleteSessionQuery, id));
     }
 
     @Override
@@ -442,9 +457,9 @@ public class WMJdbcIndexedSessionRepository
         }
 
         List<JdbcSession> sessions = this.transactionOperations
-                .execute((status) -> WMJdbcIndexedSessionRepository.this.jdbcOperations.query(
-                        WMJdbcIndexedSessionRepository.this.listSessionsByPrincipalNameQuery,
-                        (ps) -> ps.setString(1, indexValue), WMJdbcIndexedSessionRepository.this.extractor));
+            .execute((status) -> WMJdbcIndexedSessionRepository.this.jdbcOperations.query(
+                WMJdbcIndexedSessionRepository.this.listSessionsByPrincipalNameQuery,
+                (ps) -> ps.setString(1, indexValue), WMJdbcIndexedSessionRepository.this.extractor));
 
         Map<String, JdbcSession> sessionMap = new HashMap<>(sessions.size());
 
@@ -474,8 +489,7 @@ public class WMJdbcIndexedSessionRepository
                 }
 
             });
-        }
-        else {
+        } else {
             this.jdbcOperations.update(this.createSessionAttributeQuery, (ps) -> {
                 String attributeName = attributeNames.get(0);
                 ps.setString(1, session.primaryKey);
@@ -494,7 +508,7 @@ public class WMJdbcIndexedSessionRepository
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     String attributeName = attributeNames.get(i);
                     getLobHandler().getLobCreator().setBlobAsBytes(ps, 1,
-                            serialize(session.getAttribute(attributeName)));
+                        serialize(session.getAttribute(attributeName)));
                     ps.setString(2, session.primaryKey);
                     ps.setString(3, attributeName);
                 }
@@ -505,8 +519,7 @@ public class WMJdbcIndexedSessionRepository
                 }
 
             });
-        }
-        else {
+        } else {
             this.jdbcOperations.update(this.updateSessionAttributeQuery, (ps) -> {
                 String attributeName = attributeNames.get(0);
                 getLobHandler().getLobCreator().setBlobAsBytes(ps, 1, serialize(session.getAttribute(attributeName)));
@@ -534,8 +547,7 @@ public class WMJdbcIndexedSessionRepository
                 }
 
             });
-        }
-        else {
+        } else {
             this.jdbcOperations.update(this.deleteSessionAttributeQuery, (ps) -> {
                 String attributeName = attributeNames.get(0);
                 ps.setString(1, session.primaryKey);
@@ -546,8 +558,8 @@ public class WMJdbcIndexedSessionRepository
 
     public void cleanUpExpiredSessions() {
         Integer deletedCount = this.transactionOperations
-                .execute((status) -> WMJdbcIndexedSessionRepository.this.jdbcOperations.update(
-                        WMJdbcIndexedSessionRepository.this.deleteSessionsByExpiryTimeQuery, System.currentTimeMillis()));
+            .execute((status) -> WMJdbcIndexedSessionRepository.this.jdbcOperations.update(
+                WMJdbcIndexedSessionRepository.this.deleteSessionsByExpiryTimeQuery, System.currentTimeMillis()));
 
         if (logger.isDebugEnabled()) {
             logger.debug("Cleaned up " + deletedCount + " expired sessions");
@@ -583,12 +595,12 @@ public class WMJdbcIndexedSessionRepository
 
     private byte[] serialize(Object object) {
         return (byte[]) this.conversionService.convert(object, TypeDescriptor.valueOf(Object.class),
-                TypeDescriptor.valueOf(byte[].class));
+            TypeDescriptor.valueOf(byte[].class));
     }
 
     private Object deserialize(byte[] bytes) {
         return this.conversionService.convert(bytes, TypeDescriptor.valueOf(byte[].class),
-                TypeDescriptor.valueOf(Object.class));
+            TypeDescriptor.valueOf(Object.class));
     }
 
     private enum DeltaValue {
@@ -686,7 +698,7 @@ public class WMJdbcIndexedSessionRepository
             }
             T attributeValue = supplier.get();
             if (attributeValue != null
-                    && WMJdbcIndexedSessionRepository.this.saveMode.equals(SaveMode.ON_GET_ATTRIBUTE)) {
+                && WMJdbcIndexedSessionRepository.this.saveMode.equals(SaveMode.ON_GET_ATTRIBUTE)) {
                 this.delta.put(attributeName, DeltaValue.UPDATED);
             }
             return attributeValue;
@@ -707,14 +719,12 @@ public class WMJdbcIndexedSessionRepository
             if (attributeExists) {
                 if (attributeRemoved) {
                     this.delta.merge(attributeName, DeltaValue.REMOVED,
-                            (oldDeltaValue, deltaValue) -> (oldDeltaValue == DeltaValue.ADDED) ? null : deltaValue);
-                }
-                else {
+                        (oldDeltaValue, deltaValue) -> (oldDeltaValue == DeltaValue.ADDED) ? null : deltaValue);
+                } else {
                     this.delta.merge(attributeName, DeltaValue.UPDATED, (oldDeltaValue,
                                                                          deltaValue) -> (oldDeltaValue == DeltaValue.ADDED) ? oldDeltaValue : deltaValue);
                 }
-            }
-            else {
+            } else {
                 this.delta.merge(attributeName, DeltaValue.ADDED, (oldDeltaValue,
                                                                    deltaValue) -> (oldDeltaValue == DeltaValue.ADDED) ? oldDeltaValue : DeltaValue.UPDATED);
             }
@@ -774,53 +784,52 @@ public class WMJdbcIndexedSessionRepository
             if (this.isNew) {
                 WMJdbcIndexedSessionRepository.this.transactionOperations.executeWithoutResult((status) -> {
                     Map<String, String> indexes = WMJdbcIndexedSessionRepository.this.indexResolver
-                            .resolveIndexesFor(JdbcSession.this);
+                        .resolveIndexesFor(JdbcSession.this);
                     WMJdbcIndexedSessionRepository.this.jdbcOperations
-                            .update(WMJdbcIndexedSessionRepository.this.createSessionQuery, (ps) -> {
-                                ps.setString(1, JdbcSession.this.primaryKey);
-                                ps.setString(2, getId());
-                                ps.setLong(3, getCreationTime().toEpochMilli());
-                                ps.setLong(4, getLastAccessedTime().toEpochMilli());
-                                ps.setInt(5, (int) getMaxInactiveInterval().getSeconds());
-                                ps.setLong(6, getExpiryTime().toEpochMilli());
-                                ps.setString(7, indexes.get(PRINCIPAL_NAME_INDEX_NAME));
-                            });
+                        .update(WMJdbcIndexedSessionRepository.this.createSessionQuery, (ps) -> {
+                            ps.setString(1, JdbcSession.this.primaryKey);
+                            ps.setString(2, getId());
+                            ps.setLong(3, getCreationTime().toEpochMilli());
+                            ps.setLong(4, getLastAccessedTime().toEpochMilli());
+                            ps.setInt(5, (int) getMaxInactiveInterval().getSeconds());
+                            ps.setLong(6, getExpiryTime().toEpochMilli());
+                            ps.setString(7, indexes.get(PRINCIPAL_NAME_INDEX_NAME));
+                        });
                     Set<String> attributeNames = getAttributeNames();
                     if (!attributeNames.isEmpty()) {
                         insertSessionAttributes(JdbcSession.this, new ArrayList<>(attributeNames));
                     }
                 });
-            }
-            else {
+            } else {
                 WMJdbcIndexedSessionRepository.this.transactionOperations.executeWithoutResult((status) -> {
                     if (JdbcSession.this.changed) {
                         Map<String, String> indexes = WMJdbcIndexedSessionRepository.this.indexResolver
-                                .resolveIndexesFor(JdbcSession.this);
+                            .resolveIndexesFor(JdbcSession.this);
                         WMJdbcIndexedSessionRepository.this.jdbcOperations
-                                .update(WMJdbcIndexedSessionRepository.this.updateSessionQuery, (ps) -> {
-                                    ps.setString(1, getId());
-                                    ps.setLong(2, getLastAccessedTime().toEpochMilli());
-                                    ps.setInt(3, (int) getMaxInactiveInterval().getSeconds());
-                                    ps.setLong(4, getExpiryTime().toEpochMilli());
-                                    ps.setString(5, indexes.get(PRINCIPAL_NAME_INDEX_NAME));
-                                    ps.setString(6, JdbcSession.this.primaryKey);
-                                });
+                            .update(WMJdbcIndexedSessionRepository.this.updateSessionQuery, (ps) -> {
+                                ps.setString(1, getId());
+                                ps.setLong(2, getLastAccessedTime().toEpochMilli());
+                                ps.setInt(3, (int) getMaxInactiveInterval().getSeconds());
+                                ps.setLong(4, getExpiryTime().toEpochMilli());
+                                ps.setString(5, indexes.get(PRINCIPAL_NAME_INDEX_NAME));
+                                ps.setString(6, JdbcSession.this.primaryKey);
+                            });
                     }
                     List<String> addedAttributeNames = JdbcSession.this.delta.entrySet().stream()
-                            .filter((entry) -> entry.getValue() == DeltaValue.ADDED).map(Map.Entry::getKey)
-                            .collect(Collectors.toList());
+                        .filter((entry) -> entry.getValue() == DeltaValue.ADDED).map(Map.Entry::getKey)
+                        .collect(Collectors.toList());
                     if (!addedAttributeNames.isEmpty()) {
                         insertSessionAttributes(JdbcSession.this, addedAttributeNames);
                     }
                     List<String> updatedAttributeNames = JdbcSession.this.delta.entrySet().stream()
-                            .filter((entry) -> entry.getValue() == DeltaValue.UPDATED).map(Map.Entry::getKey)
-                            .collect(Collectors.toList());
+                        .filter((entry) -> entry.getValue() == DeltaValue.UPDATED).map(Map.Entry::getKey)
+                        .collect(Collectors.toList());
                     if (!updatedAttributeNames.isEmpty()) {
                         updateSessionAttributes(JdbcSession.this, updatedAttributeNames);
                     }
                     List<String> removedAttributeNames = JdbcSession.this.delta.entrySet().stream()
-                            .filter((entry) -> entry.getValue() == DeltaValue.REMOVED).map(Map.Entry::getKey)
-                            .collect(Collectors.toList());
+                        .filter((entry) -> entry.getValue() == DeltaValue.REMOVED).map(Map.Entry::getKey)
+                        .collect(Collectors.toList());
                     if (!removedAttributeNames.isEmpty()) {
                         deleteSessionAttributes(JdbcSession.this, removedAttributeNames);
                     }
@@ -841,8 +850,7 @@ public class WMJdbcIndexedSessionRepository
                 JdbcSession session;
                 if (sessions.size() > 0 && getLast(sessions).getId().equals(id)) {
                     session = getLast(sessions);
-                }
-                else {
+                } else {
                     MapSession delegate = new MapSession(id);
                     String primaryKey = rs.getString("PRIMARY_ID");
                     delegate.setCreationTime(Instant.ofEpochMilli(rs.getLong("CREATION_TIME")));

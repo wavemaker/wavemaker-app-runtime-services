@@ -50,7 +50,6 @@ public class ExportBuilder {
 
     private ExportCellStyles cellStyles; // todo should have separate class for context.
 
-
     public ExportBuilder(final QueryExtractor queryExtractor, ExportOptions options, final Class<?> entityClass) {
         this.queryExtractor = queryExtractor;
         this.options = options;
@@ -122,7 +121,6 @@ public class ExportBuilder {
             colNum++;
         }
     }
-
 
     private void fillData(List<Object> rowValues, Row row) {
         int colNum = FIRST_COLUMN_NUMBER;

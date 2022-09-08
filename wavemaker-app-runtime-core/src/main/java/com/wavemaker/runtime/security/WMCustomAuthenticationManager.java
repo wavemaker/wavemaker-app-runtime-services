@@ -22,8 +22,6 @@ public interface WMCustomAuthenticationManager {
     /**
      * should return WMUser object if the authentication details can be extracted from authRequestContext.
      * Otherwise the method should return null.
-     * @param authRequestContext
-     * @return
      */
     public WMUser authenticate(AuthRequestContext authRequestContext);
 }

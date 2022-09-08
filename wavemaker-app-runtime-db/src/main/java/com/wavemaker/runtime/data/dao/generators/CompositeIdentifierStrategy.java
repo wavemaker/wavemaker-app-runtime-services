@@ -37,8 +37,8 @@ public class CompositeIdentifierStrategy<Entity, Identifier> implements Identifi
 
     public CompositeIdentifierStrategy(Class<Identifier> idClass) {
         idProperties = Arrays.stream(idClass.getDeclaredFields())
-                .map(field -> BeanUtils.getPropertyDescriptor(idClass, field.getName()))
-                .collect(Collectors.toList());
+            .map(field -> BeanUtils.getPropertyDescriptor(idClass, field.getName()))
+            .collect(Collectors.toList());
     }
 
     @Override

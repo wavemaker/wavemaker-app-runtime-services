@@ -19,7 +19,6 @@ import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- *
  * @author Seung Lee
  */
 public interface WMUserDetails extends UserDetails {
@@ -36,6 +35,6 @@ public interface WMUserDetails extends UserDetails {
     int getTenantId();
 
     long getLoginTime();
-    
-    Map<String, Object> getCustomAttributes(); 
+
+    Map<String, Object> getCustomAttributes();
 }

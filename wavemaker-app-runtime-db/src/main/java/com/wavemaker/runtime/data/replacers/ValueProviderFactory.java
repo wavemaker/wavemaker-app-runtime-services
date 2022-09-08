@@ -26,16 +26,16 @@ import com.wavemaker.runtime.commons.annotations.WMValueInject;
  */
 public class ValueProviderFactory {
 
-    private ValueProviderFactory(){}
+    private ValueProviderFactory() {
+    }
 
     private static Map<Class<? extends Annotation>, ValueProviderBuilder> annotationValueProviderBuilderMap;
 
     static {
         annotationValueProviderBuilderMap = new HashMap<>();
         annotationValueProviderBuilderMap.put(WMValueInject.class,
-                new VariableDefinedPropertyProvider.VariableDefinedPropertyProviderBuilder());
+            new VariableDefinedPropertyProvider.VariableDefinedPropertyProviderBuilder());
     }
-
 
     public static ValueProviderBuilder getBuilder(Class<? extends Annotation> annotationType) {
 

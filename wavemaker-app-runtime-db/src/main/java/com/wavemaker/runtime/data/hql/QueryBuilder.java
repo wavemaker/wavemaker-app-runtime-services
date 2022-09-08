@@ -92,18 +92,18 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
         }
 
         builder.append(entityClass.getCanonicalName())
-                .append(" ");
+            .append(" ");
 
         periodClauses.stream()
-                .map(PeriodClause::asWMQueryClause)
-                .forEach(queryInfo -> {
-                    builder.append("for ");
-                    if (updateDelete) {
-                        builder.append("portion of ");
-                    }
-                    builder.append(queryInfo.getQuery()).append(" ");
-                    parameters.putAll(queryInfo.getParameters());
-                });
+            .map(PeriodClause::asWMQueryClause)
+            .forEach(queryInfo -> {
+                builder.append("for ");
+                if (updateDelete) {
+                    builder.append("portion of ");
+                }
+                builder.append(queryInfo.getQuery()).append(" ");
+                parameters.putAll(queryInfo.getParameters());
+            });
         return builder.toString();
     }
 
@@ -114,10 +114,10 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
             builder.append("where ");
 
             builder.append(filterConditions.entrySet().stream()
-                    .map(entry -> ImmutablePair.of(entry, "wm_filter_" + entry.getKey()))
-                    .peek(pair -> parameters.put(pair.getRight(), new WMQueryParamInfo(pair.getLeft().getValue())))
-                    .map(pair -> pair.getLeft().getKey() + " = :" + pair.getRight())
-                    .collect(Collectors.joining(" and ", " ", " ")));
+                .map(entry -> ImmutablePair.of(entry, "wm_filter_" + entry.getKey()))
+                .peek(pair -> parameters.put(pair.getRight(), new WMQueryParamInfo(pair.getLeft().getValue())))
+                .map(pair -> pair.getLeft().getKey() + " = :" + pair.getRight())
+                .collect(Collectors.joining(" and ", " ", " ")));
 
             if (StringUtils.isNotBlank(filter)) {
                 final WMQueryInfo queryInfo = interceptFilter(filter);
@@ -126,7 +126,7 @@ public abstract class QueryBuilder<T extends QueryBuilder> {
                     builder.append("and ");
                 }
                 builder.append(queryInfo.getQuery())
-                        .append(" ");
+                    .append(" ");
 
                 parameters.putAll(queryInfo.getParameters());
             }

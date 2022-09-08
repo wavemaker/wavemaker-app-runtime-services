@@ -27,7 +27,6 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.util.QueryParserConstants;
 
-
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
  * @since 17/2/16
@@ -169,7 +168,6 @@ public enum Type implements Criteria {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.IS.operator.value"), value.getClass());
         }
     };
-
 
     static Map<String, Type> nameVsType = new HashMap<>();
 

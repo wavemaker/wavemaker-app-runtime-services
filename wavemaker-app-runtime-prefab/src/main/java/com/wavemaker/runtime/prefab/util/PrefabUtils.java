@@ -42,11 +42,11 @@ public class PrefabUtils {
     @Autowired
     private PrefabsConfig prefabsConfig;
 
-
     /**
      * Returns {@link java.io.File} equivalent of the given directory path.
      *
      * @param path directory path
+     *
      * @return {@link java.io.File} representing the given directory path, null, if incorrect
      */
     public File getDirectory(String path) throws IOException {
@@ -57,14 +57,13 @@ public class PrefabUtils {
         File directory = new File(realPath);
         if (!directory.exists()) {
             throw new FileNotFoundException(
-                    "File not exist in ServletContext resource with given path: [" + path + "]");
+                "File not exist in ServletContext resource with given path: [" + path + "]");
         } else if (Utils.isNotReadableDirectory(directory)) {
             throw new IOException("Given path [" + path + "] is not a directory (or) doesn't have read permissions.");
         } else {
             return directory;
         }
     }
-
 
     /**
      * Reads jar files for the given prefab.
@@ -117,8 +116,6 @@ public class PrefabUtils {
 
     /**
      * Returns the filter for identify prefab directories
-     *
-     * @return
      */
     public FileFilter getPrefabDirectoryFilter() {
         return new FileFilter() {
@@ -133,9 +130,6 @@ public class PrefabUtils {
 
     /**
      * Scans for the prefab directories. i.e Prefab directory must contain atleast one jar
-     *
-     * @param directory
-     * @return
      */
     public File[] listPrefabDirectories(File directory) {
         File[] dirs = directory.listFiles(getPrefabDirectoryFilter());

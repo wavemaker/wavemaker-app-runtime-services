@@ -53,5 +53,4 @@ public class HqlFilterPropertyResolverImpl implements HqlFilterPropertyResolver 
         return javaType;
     }
 
-
 }

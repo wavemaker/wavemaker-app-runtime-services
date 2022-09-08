@@ -49,7 +49,7 @@ public class RestRuntimeController {
 
         try {
             restRuntimeService.executeRestCall(serviceId, path, httpServletRequest, httpServletResponse);
-        }catch (WMRuntimeException e) {
+        } catch (WMRuntimeException e) {
             throw e;
         } catch (Throwable e) {
             throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, e);

@@ -22,7 +22,6 @@ import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopul
  */
 public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
 
-
     public LdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase) {
         super(contextSource, groupSearchBase);
     }

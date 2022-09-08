@@ -20,7 +20,7 @@ import com.wavemaker.runtime.prefab.core.Prefab;
 
 /**
  * A {@link PrefabEvent} abstracts an event raised during {@link Prefab}'s lifecycle.
- * 
+ *
  * @author Frankline Francis
  */
 @SuppressWarnings("serial")
@@ -28,7 +28,7 @@ public abstract class PrefabEvent extends ApplicationEvent {
 
     /**
      * Creates a new {@link PrefabEvent} with the specified source.
-     * 
+     *
      * @param source event source
      */
     public PrefabEvent(final Object source) {

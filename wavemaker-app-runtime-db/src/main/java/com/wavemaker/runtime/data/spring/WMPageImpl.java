@@ -20,10 +20,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 /**
- * @author: sowmyad
+ *
  */
 public class WMPageImpl<T> extends PageImpl {
-
 
     public WMPageImpl(List content, Pageable pageable, long total) {
         super(content, pageable, total);
@@ -34,7 +33,7 @@ public class WMPageImpl<T> extends PageImpl {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
 
         String contentType = "UNKNOWN";
         List<T> content = getContent();

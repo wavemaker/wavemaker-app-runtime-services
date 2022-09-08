@@ -40,7 +40,6 @@ public class DataSourceExporterUtil {
     private DataSourceExporterUtil() {
     }
 
-
     public static ResultSet constructResultSet(ScrollableResults scroll) {
         try {
             Method resultSetMethod = AbstractScrollableResults.class.getDeclaredMethod("getResultSet");
@@ -50,7 +49,6 @@ public class DataSourceExporterUtil {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.fetch.resultset"), e);
         }
     }
-
 
     public static void setCellValue(Object data, final Cell cell, ExportCellStyles cellStyles) {
         try {

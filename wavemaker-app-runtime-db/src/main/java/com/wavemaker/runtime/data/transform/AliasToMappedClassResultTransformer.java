@@ -45,7 +45,7 @@ import com.wavemaker.runtime.data.util.JavaTypeUtils;
  * @since 15/11/16
  */
 public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResultTransformer implements
-        WMResultTransformer {
+    WMResultTransformer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AliasToMappedClassResultTransformer.class);
 
@@ -118,7 +118,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     }
 
     private void applyValue(
-            Object object, String alias, Object value) {
+        Object object, String alias, Object value) {
         if (aliasVsDescriptorMap.containsKey(alias)) {
             final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(alias);
             Object transformedValue = transformField(descriptor, value);
@@ -126,7 +126,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
                 descriptor.getWriteMethod().invoke(object, transformedValue);
             } catch (Throwable e) {
                 throw new TypeMappingException(MessageResource.TYPE_MAPPING_FAILURE, e, alias, object.getClass()
-                        .getName());
+                    .getName());
             }
         } else {
             if (!ignorableAliases.contains(alias)) {
@@ -142,10 +142,10 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
             if (value instanceof List) {
                 transformedValue = new ArrayList<>();
                 final Type innerType = ((ParameterizedType) descriptor.getReadMethod().getGenericReturnType())
-                        .getActualTypeArguments()[0];
+                    .getActualTypeArguments()[0];
 
                 final WMResultTransformer childTransformer = Transformers
-                        .aliasToMappedClass(TypeUtils.getRawType(innerType, null));
+                    .aliasToMappedClass(TypeUtils.getRawType(innerType, null));
                 for (final Map<String, Object> val : ((List<Map<String, Object>>) value)) {
                     ((List) transformedValue).add(childTransformer.transformFromMap(val));
                 }

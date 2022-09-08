@@ -52,8 +52,8 @@ public class CustomUriComponentsBuilder extends UriComponentsBuilder {
     private static final String LAST_PATTERN = "(.*)";
 
     private static final Pattern URI_PATTERN = Pattern.compile(
-            "^(" + SCHEME_PATTERN + ")?" + "(//(" + USERINFO_PATTERN + "@)?" + HOST_PATTERN + "(:" + PORT_PATTERN +
-                    ")?" + ")?" + PATH_PATTERN + "(\\?" + QUERY_PATTERN + ")?" + "(#" + LAST_PATTERN + ")?");
+        "^(" + SCHEME_PATTERN + ")?" + "(//(" + USERINFO_PATTERN + "@)?" + HOST_PATTERN + "(:" + PORT_PATTERN +
+            ")?" + ")?" + PATH_PATTERN + "(\\?" + QUERY_PATTERN + ")?" + "(#" + LAST_PATTERN + ")?");
 
     private static final Pattern QUERY_PARAM_PATTERN = Pattern.compile("([^&=]+)(=?)([^&]+)?");
 
@@ -113,10 +113,8 @@ public class CustomUriComponentsBuilder extends UriComponentsBuilder {
             logger.error("Failed to decode path {}", path);
         }
 
-
         return this;
     }
-
 
     @Override
     public UriComponentsBuilder query(String query) {

@@ -27,18 +27,18 @@ import com.wavemaker.commons.model.security.XSSSanitizationLayer;
 public class XSSEncodeSanitizer implements XSSSanitizer {
 
     private static final CharSequenceTranslator UNESCAPE_HTML4 =
-            new AggregateTranslator(
-                    new LookupTranslator(EntityArrays.BASIC_UNESCAPE),
-                    new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE),
-                    new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE)
-            );
+        new AggregateTranslator(
+            new LookupTranslator(EntityArrays.BASIC_UNESCAPE),
+            new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE),
+            new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE)
+        );
 
     private static final CharSequenceTranslator ESCAPE_HTML4 =
-            new AggregateTranslator(
-                    new LookupTranslator(EntityArrays.BASIC_ESCAPE),
-                    new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE),
-                    new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE)
-            );
+        new AggregateTranslator(
+            new LookupTranslator(EntityArrays.BASIC_ESCAPE),
+            new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE),
+            new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE)
+        );
 
     private boolean dataPreSanitized;
     private XSSSanitizationLayer xssSanitizationLayer;

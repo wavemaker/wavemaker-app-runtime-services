@@ -18,7 +18,7 @@ import java.io.File;
 
 /**
  * Holds constants used throughout the library.
- * 
+ *
  * @author Dilip Kumar
  */
 public class PrefabConstants {
@@ -30,5 +30,5 @@ public class PrefabConstants {
     public static final String PREFAB_DEFAULT_DIRECTORY = "WEB-INF/prefabs";
     public static final String PREFAB_DEFAULT_LIB_DIR = "lib";
     public static final String PREFAB_DEFAULT_CONF_DIR = "config";
-    public  static final String PREFAB_DEFAULT_BUILD_DIR = "build";
+    public static final String PREFAB_DEFAULT_BUILD_DIR = "build";
 }

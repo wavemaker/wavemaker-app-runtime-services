@@ -45,7 +45,6 @@ public class CASDatabaseUserDetailsService implements UserDetailsService {
         return new WMUser("", username, "", username, 0, true, true, true, true, dbAuthsSet, loginTime);
     }
 
-
     public AuthoritiesProvider getAuthoritiesProvider() {
         return authoritiesProvider;
     }

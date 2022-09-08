@@ -31,15 +31,15 @@ public class VariableTypeHelper {
 
     static {
         final String typePrefixes = Arrays.stream(VariableType.values())
-                .filter(VariableType::isVariable)
-                .map(VariableType::name)
-                .reduce((r, e) -> r + "|" + e)
-                .get();
+            .filter(VariableType::isVariable)
+            .map(VariableType::name)
+            .reduce((r, e) -> r + "|" + e)
+            .get();
         variablePattern = Pattern.compile("(" + typePrefixes + ")__(.+)__.+");
 
         prefixVsType = Arrays.stream(VariableType.values())
-                .filter(VariableType::isVariable)
-                .collect(Collectors.toMap(VariableType::name, variableType -> variableType));
+            .filter(VariableType::isVariable)
+            .collect(Collectors.toMap(VariableType::name, variableType -> variableType));
     }
 
     private static final int PREFIX_GROUP = 1;

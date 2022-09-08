@@ -51,13 +51,13 @@ public class QueryTestRunController {
 
     @PostMapping(value = "/{serviceId}/queries/test_run")
     public DesignServiceResponse testRunQuery(
-            @PathVariable("serviceId") String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
+        @PathVariable("serviceId") String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
         return queryDesignService.testRunQuery(serviceId, request, pageable);
     }
 
     @PostMapping(value = "/{serviceId}/queries/execute")
     public Object executeQuery(
-            @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
+        @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
         return queryDesignService.executeQuery(serviceId, query, pageable);
     }
 

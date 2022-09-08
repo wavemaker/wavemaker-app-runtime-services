@@ -36,7 +36,8 @@ import com.wavemaker.runtime.data.util.DataServiceUtils;
  */
 public class DesignTimeServiceUtils {
 
-    private DesignTimeServiceUtils(){}
+    private DesignTimeServiceUtils() {
+    }
 
     public static boolean isDMLOrUpdateQuery(RuntimeQuery query) {
         return query.getType() != QueryType.SELECT && DataServiceUtils.isDML(query.getQueryString());
@@ -44,7 +45,7 @@ public class DesignTimeServiceUtils {
 
     public static List<ReturnProperty> getMetaForDML() {
         return Collections.singletonList(new ReturnProperty(null, new FieldType(ReferenceType.PRIMITIVE, Integer
-                .class.getName())));
+            .class.getName())));
     }
 
     public static List<ResolvableParam> prepareParameters(final RuntimeProcedure procedure) {

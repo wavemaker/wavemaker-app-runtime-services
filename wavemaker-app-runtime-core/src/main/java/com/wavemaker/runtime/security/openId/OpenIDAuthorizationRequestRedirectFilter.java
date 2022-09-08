@@ -54,13 +54,12 @@ import com.wavemaker.runtime.RuntimeEnvironment;
  */
 public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilter {
 
-
     public static final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = "/oauth2/authorization";
     private final AntPathRequestMatcher authorizationRequestMatcher;
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final RedirectStrategy authorizationRedirectStrategy = new DefaultRedirectStrategy();
     private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
-            new HttpSessionOAuth2AuthorizationRequestRepository();
+        new HttpSessionOAuth2AuthorizationRequestRepository();
 
     /**
      * Constructs an {@code OAuth2AuthorizationRequestRedirectFilter} using the provided parameters.
@@ -78,12 +77,12 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
      * @param authorizationRequestBaseUri  the base {@code URI} used for authorization requests
      */
     public OpenIDAuthorizationRequestRedirectFilter(
-            ClientRegistrationRepository clientRegistrationRepository, String authorizationRequestBaseUri) {
+        ClientRegistrationRepository clientRegistrationRepository, String authorizationRequestBaseUri) {
 
         Assert.hasText(authorizationRequestBaseUri, "authorizationRequestBaseUri cannot be empty");
         Assert.notNull(clientRegistrationRepository, "clientRegistrationRepository cannot be null");
         this.authorizationRequestMatcher = new AntPathRequestMatcher(
-                authorizationRequestBaseUri + "/{" + OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME + "}");
+            authorizationRequestBaseUri + "/{" + OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME + "}");
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 
@@ -99,7 +98,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
         if (this.shouldRequestAuthorization(request)) {
             try {
@@ -118,10 +117,10 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
     }
 
     private void sendRedirectForAuthorization(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+        throws IOException {
 
         String registrationId = this.authorizationRequestMatcher
-                .extractUriTemplateVariables(request).get(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME);
+            .extractUriTemplateVariables(request).get(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME);
         ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration == null) {
             throw new IllegalArgumentException("Invalid Client Registration with Id: " + registrationId);
@@ -134,7 +133,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
             builder = OAuth2AuthorizationRequest.implicit();
         } else {
             throw new IllegalArgumentException("Invalid Authorization Grant Type for Client Registration (" +
-                    clientRegistration.getRegistrationId() + "): " + clientRegistration.getAuthorizationGrantType());
+                clientRegistration.getRegistrationId() + "): " + clientRegistration.getAuthorizationGrantType());
         }
 
         String appPath = HttpRequestUtils.getApplicationBaseUrl(request);
@@ -155,13 +154,13 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         String encodedState = OAuth2Helper.getStateParameterValue(stateObject);
 
         OAuth2AuthorizationRequest authorizationRequest = builder
-                .clientId(clientRegistration.getClientId())
-                .authorizationUri(clientRegistration.getProviderDetails().getAuthorizationUri())
-                .redirectUri(redirectUrl)
-                .scopes(clientRegistration.getScopes())
-                .state(encodedState)
-                .additionalParameters(additionalParameters)
-                .build();
+            .clientId(clientRegistration.getClientId())
+            .authorizationUri(clientRegistration.getProviderDetails().getAuthorizationUri())
+            .redirectUri(redirectUrl)
+            .scopes(clientRegistration.getScopes())
+            .state(encodedState)
+            .additionalParameters(additionalParameters)
+            .build();
         URI redirectUri = this.buildURI(authorizationRequest);
 
         if (AuthorizationGrantType.AUTHORIZATION_CODE.equals(authorizationRequest.getGrantType())) {
@@ -175,11 +174,11 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         Assert.notNull(authorizationRequest, "authorizationRequest cannot be null");
         Set<String> scopes = authorizationRequest.getScopes();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder
-                .fromUriString(authorizationRequest.getAuthorizationUri())
-                .queryParam(OpenIdConstants.RESPONSE_TYPE, authorizationRequest.getResponseType().getValue())
-                .queryParam(OpenIdConstants.CLIENT_ID, authorizationRequest.getClientId())
-                .queryParam(OpenIdConstants.SCOPE, StringUtils.collectionToDelimitedString(scopes, " "))
-                .queryParam(OpenIdConstants.STATE, authorizationRequest.getState());
+            .fromUriString(authorizationRequest.getAuthorizationUri())
+            .queryParam(OpenIdConstants.RESPONSE_TYPE, authorizationRequest.getResponseType().getValue())
+            .queryParam(OpenIdConstants.CLIENT_ID, authorizationRequest.getClientId())
+            .queryParam(OpenIdConstants.SCOPE, StringUtils.collectionToDelimitedString(scopes, " "))
+            .queryParam(OpenIdConstants.STATE, authorizationRequest.getState());
         if (authorizationRequest.getRedirectUri() != null) {
             uriBuilder.queryParam(OpenIdConstants.REDIRECT_URI, authorizationRequest.getRedirectUri());
         }
@@ -200,7 +199,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         if (org.apache.commons.lang3.StringUtils.isNotBlank(studioUrl)) {
             redirectUrl = studioUrl + OpenIdConstants.REDIRECT_URL;
         } else {
-                redirectUrl = new StringBuilder(appPath).append(OpenIdConstants.REDIRECT_URL).toString();
+            redirectUrl = new StringBuilder(appPath).append(OpenIdConstants.REDIRECT_URL).toString();
         }
         Map<String, String> valuesMap = Collections.singletonMap(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME, clientRegistration.getRegistrationId());
         redirectUrl = StringSubstitutor.replace(redirectUrl, valuesMap);

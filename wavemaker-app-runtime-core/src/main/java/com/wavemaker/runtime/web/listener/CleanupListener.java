@@ -67,7 +67,7 @@ public class CleanupListener implements ServletContextListener {
     private static Logger logger;
 
     private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer
-            .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
+        .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
 
     private boolean isSharedLib() {
         return RuntimeEnvironment.isTestRunEnvironment();
@@ -158,15 +158,15 @@ public class CleanupListener implements ServletContextListener {
                 Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
                 if (klass != null) {
                     logger.info(
-                            "Attempting to clear annotation map from {} JacksonAnnotationIntrospector class instance",
-                            klass);
+                        "Attempting to clear annotation map from {} JacksonAnnotationIntrospector class instance",
+                        klass);
                     Field defaultAnnotationIntrospectorField = klass
-                            .getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
+                        .getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
                     ReflectionUtils.makeAccessible(defaultAnnotationIntrospectorField);
                     JacksonAnnotationIntrospector jacksonAnnotationIntrospector = (JacksonAnnotationIntrospector) defaultAnnotationIntrospectorField
-                            .get(null);
+                        .get(null);
                     Field annotationsInsideField = jacksonAnnotationIntrospector.getClass()
-                            .getDeclaredField("_annotationsInside");
+                        .getDeclaredField("_annotationsInside");
                     ReflectionUtils.makeAccessible(annotationsInsideField);
                     LRUMap lruMap = (LRUMap) annotationsInsideField.get(jacksonAnnotationIntrospector);
                     if (lruMap != null) {
@@ -254,7 +254,7 @@ public class CleanupListener implements ServletContextListener {
                 logger.debug("Oracle OracleDiagnosabilityMBean {} not found", mBeanName, e);
                 //Trying with different mBeanName as some versions of oracle driver uses the second formula for mBeanName
                 mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode())
-                        .toLowerCase();
+                    .toLowerCase();
                 try {
                     deRegisterOracleDiagnosabilityMBean(mBeanName);
                 } catch (InstanceNotFoundException e1) {
@@ -267,7 +267,7 @@ public class CleanupListener implements ServletContextListener {
     }
 
     private static void deRegisterOracleDiagnosabilityMBean(String nameValue)
-            throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
+        throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         final Hashtable<String, String> keys = new Hashtable<>();
         keys.put("type", "diagnosability");
@@ -289,29 +289,29 @@ public class CleanupListener implements ServletContextListener {
     }
 
     private static void cleanupNotificationListener(
-            ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
+        ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
         try {
             NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
             Field listenerListField = findField(notificationEmitter.getClass(), "listenerList");
             if (listenerListField == null) {
                 throw new WMRuntimeException(
-                        MessageResource.create("com.wavemaker.runtime.unrecognized.notificationEmitter"),
-                        notificationEmitter.getClass().getName());
+                    MessageResource.create("com.wavemaker.runtime.unrecognized.notificationEmitter"),
+                    notificationEmitter.getClass().getName());
             }
             List listenerInfoList = (List) listenerListField
-                    .get(notificationEmitter); //This object would be List<ListenerInfo>
+                .get(notificationEmitter); //This object would be List<ListenerInfo>
             for (Object o : listenerInfoList) {
                 Field listenerField = findField(o.getClass(), "listener");
                 if (listenerListField == null) {
                     throw new WMRuntimeException(
-                            MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"),
-                            o.getClass().getName());
+                        MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"),
+                        o.getClass().getName());
                 }
-                if(listenerField != null) {
+                if (listenerField != null) {
                     NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
                     if (notificationListener.getClass().getClassLoader() == classLoader) {
                         logger.info("Removing registered mBean notification listener {}",
-                                notificationListener.getClass().getName());
+                            notificationListener.getClass().getName());
                         notificationEmitter.removeNotificationListener(notificationListener);
                     }
                 }
@@ -326,12 +326,12 @@ public class CleanupListener implements ServletContextListener {
             }
             if (loadedClass == null) {
                 logger.info(
-                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
+                    "MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
                 logger.trace("Exception Stack trace", e);
             } else {
                 logger.warn(
-                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
-                        e);
+                    "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
+                    e);
             }
         }
     }
@@ -507,7 +507,7 @@ public class CleanupListener implements ServletContextListener {
         for (Provider provider : providers) {
             if (provider.getClass().getClassLoader() == classLoader) {
                 logger.info("De registering security provider {} with name {} which is registered in the class loader",
-                        provider, provider.getName());
+                    provider, provider.getName());
                 Security.removeProvider(provider.getName());
             }
         }
@@ -539,12 +539,12 @@ public class CleanupListener implements ServletContextListener {
                     if (thread.isAlive()) {
                         StackTraceElement[] stackTrace = thread.getStackTrace();
                         Throwable throwable = new IllegalThreadStateException(
-                                "Thread [" + thread.getName() + "] is Still running");
+                            "Thread [" + thread.getName() + "] is Still running");
                         throwable.setStackTrace(stackTrace);
                         logger.warn(
-                                "Thread {} is still alive after waiting for {} and will mostly probably create a memory leak",
-                                thread.getName(),
-                                waitTimeOutInMillis, throwable);
+                            "Thread {} is still alive after waiting for {} and will mostly probably create a memory leak",
+                            thread.getName(),
+                            waitTimeOutInMillis, throwable);
                     }
                 }
             }
@@ -577,18 +577,15 @@ public class CleanupListener implements ServletContextListener {
             }
         } else {
             logger.warn(
-                    "Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}",
-                    thread, thread
-                            .getClass().getName());
+                "Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}",
+                thread, thread
+                    .getClass().getName());
         }
 
     }
 
     /**
      * returns threads running in the given in class loader context or whose class is loaded from given class loader
-     *
-     * @param classLoader
-     * @return
      */
     private static List<Thread> getThreads(ClassLoader classLoader) {
         return Thread.getAllStackTraces().keySet().stream().filter(thread -> {

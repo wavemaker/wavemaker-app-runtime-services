@@ -32,8 +32,7 @@ import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 public class ProcedureDesignServiceImpl extends AbstractDesignService implements ProcedureDesignService {
 
     private static final StringTemplate PROCEDURE_EXECUTOR_BEAN_ST = new StringTemplate(
-            "${serviceId}WMProcedureExecutor");
-
+        "${serviceId}WMProcedureExecutor");
 
     @Override
     public DesignServiceResponse testRunProcedure(final String serviceId, final RuntimeProcedure procedure) {
@@ -41,7 +40,7 @@ public class ProcedureDesignServiceImpl extends AbstractDesignService implements
         final String procedureExecutorBeanName = PROCEDURE_EXECUTOR_BEAN_ST.substitute(map);
         return executeInTransaction(serviceId, status -> {
             final WMProcedureExecutor wmProcedureExecutor = WMAppContext.getInstance()
-                    .getSpringBean(procedureExecutorBeanName);
+                .getSpringBean(procedureExecutorBeanName);
 
             final Object result = wmProcedureExecutor.executeRuntimeProcedure(procedure);
             final List<ReturnProperty> properties = extractMetaFromResults(Collections.singleton(result));

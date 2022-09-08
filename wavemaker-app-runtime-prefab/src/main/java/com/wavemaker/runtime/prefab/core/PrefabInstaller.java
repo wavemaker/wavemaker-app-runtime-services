@@ -19,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * Integrates {@link Prefab}s with the {@link WebApplicationContext} by registering
  * or unregistring its component classes. Once installed, they can start serving requests.
- * 
+ *
  * @author Dilip Kumar
  */
 public interface PrefabInstaller {
@@ -31,7 +31,7 @@ public interface PrefabInstaller {
     /**
      * Installs the given {@link Prefab} by adding to the context of the
      * prefab servlet.
-     * 
+     *
      * @param prefab {@link Prefab} to be installed
      */
     void installPrefab(Prefab prefab);

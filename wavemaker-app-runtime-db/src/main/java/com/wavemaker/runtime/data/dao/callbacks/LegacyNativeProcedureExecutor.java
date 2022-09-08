@@ -56,15 +56,15 @@ public class LegacyNativeProcedureExecutor {
     }
 
     private static List<Object> executeNativeJDBCCall(
-            Session session, String procedureStr, List<CustomProcedureParam>
-            customParams) {
+        Session session, String procedureStr, List<CustomProcedureParam>
+        customParams) {
         try (Connection conn = ((SessionImpl) session).connection()) {
             List<Integer> cursorPosition = new ArrayList<>();
 
             NativeQuery sqlProcedure = session.createNativeQuery(procedureStr);
             Set<String> namedParams = sqlProcedure.getParameterMetadata().getNamedParameterNames();
             final String jdbcComplianceProcedure = ProceduresUtils.jdbcComplianceProcedure(procedureStr,
-                    namedParams);
+                namedParams);
             LOGGER.info("JDBC converted procedure {}", jdbcComplianceProcedure);
             try (CallableStatement callableStatement = conn.prepareCall(jdbcComplianceProcedure)) {
 
@@ -109,7 +109,7 @@ public class LegacyNativeProcedureExecutor {
 
                 for (Integer cursorIndex : cursorPosition) {
                     outData.put(customParams.get(cursorIndex - 1).getParamName(),
-                            processResultSet(callableStatement.getObject(cursorIndex)));
+                        processResultSet(callableStatement.getObject(cursorIndex)));
                 }
                 responseWrapper.add(outData);
                 return responseWrapper;
@@ -124,7 +124,7 @@ public class LegacyNativeProcedureExecutor {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
             for (CustomProcedureParam customProcedureParam : customProcedureParams) {
                 if (StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).getRight()
-                        .equalsIgnoreCase(CURSOR) || customProcedureParam.getProcedureParamType().isOutParam()) {
+                    .equalsIgnoreCase(CURSOR) || customProcedureParam.getProcedureParamType().isOutParam()) {
                     continue;
                 }
                 Object processedParamValue = getValueObject(customProcedureParam);
@@ -146,7 +146,7 @@ public class LegacyNativeProcedureExecutor {
             throw new WMRuntimeException(ex.getMessage(), ex);
         } catch (ClassNotFoundException ex) {
             throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex,
-                    customProcedureParam.getProcedureParamType());
+                customProcedureParam.getProcedureParamType());
         }
         return paramValue;
     }
@@ -179,7 +179,7 @@ public class LegacyNativeProcedureExecutor {
             typeCode = OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType();
         } else {
             typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class
-                    .getField(typeName.toUpperCase()).get(null);
+                .getField(typeName.toUpperCase()).get(null);
         }
         return typeCode;
     }

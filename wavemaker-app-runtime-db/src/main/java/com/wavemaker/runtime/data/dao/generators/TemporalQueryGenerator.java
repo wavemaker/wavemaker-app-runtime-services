@@ -30,8 +30,8 @@ public class TemporalQueryGenerator<E, I> extends QueryGeneratorDecorator<E, I> 
     private final TableTemporal.TemporalType type;
 
     public TemporalQueryGenerator(
-            final EntityQueryGenerator<E, I> delegate,
-            final TableTemporal.TemporalType type) {
+        final EntityQueryGenerator<E, I> delegate,
+        final TableTemporal.TemporalType type) {
         super(delegate);
         this.type = type;
     }
@@ -39,13 +39,13 @@ public class TemporalQueryGenerator<E, I> extends QueryGeneratorDecorator<E, I> 
     @Override
     public SelectQueryBuilder searchByQuery(final String query) {
         return super.searchByQuery(query)
-                .withPeriodClause(new AsOfClause(type, new Timestamp(System.currentTimeMillis())));
+            .withPeriodClause(new AsOfClause(type, new Timestamp(System.currentTimeMillis())));
     }
 
     @Override
     public SelectQueryBuilder getAggregatedValues(
-            final AggregationInfo aggregationInfo) {
+        final AggregationInfo aggregationInfo) {
         return super.getAggregatedValues(aggregationInfo)
-                .withPeriodClause(new AsOfClause(type, new Timestamp(System.currentTimeMillis())));
+            .withPeriodClause(new AsOfClause(type, new Timestamp(System.currentTimeMillis())));
     }
 }

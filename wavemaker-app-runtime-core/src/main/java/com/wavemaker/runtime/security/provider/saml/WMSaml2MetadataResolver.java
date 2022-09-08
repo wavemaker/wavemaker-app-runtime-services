@@ -58,7 +58,7 @@ public class WMSaml2MetadataResolver implements Saml2MetadataResolver {
 
     public WMSaml2MetadataResolver() {
         this.entityDescriptorMarshaller = (EntityDescriptorMarshaller) XMLObjectProviderRegistrySupport
-                .getMarshallerFactory().getMarshaller(EntityDescriptor.DEFAULT_ELEMENT_NAME);
+            .getMarshallerFactory().getMarshaller(EntityDescriptor.DEFAULT_ELEMENT_NAME);
         Assert.notNull(this.entityDescriptorMarshaller, "entityDescriptorMarshaller cannot be null");
     }
 
@@ -77,9 +77,9 @@ public class WMSaml2MetadataResolver implements Saml2MetadataResolver {
         spSsoDescriptor.setWantAssertionsSigned(true);
         spSsoDescriptor.setAuthnRequestsSigned(true);
         spSsoDescriptor.getKeyDescriptors()
-                .addAll(buildKeys(registration.getSigningX509Credentials(), UsageType.SIGNING));
+            .addAll(buildKeys(registration.getSigningX509Credentials(), UsageType.SIGNING));
         spSsoDescriptor.getKeyDescriptors()
-                .addAll(buildKeys(registration.getDecryptionX509Credentials(), UsageType.ENCRYPTION));
+            .addAll(buildKeys(registration.getDecryptionX509Credentials(), UsageType.ENCRYPTION));
         spSsoDescriptor.getSingleLogoutServices().add(buildSingleLogoutServiceWithPostBinding(registration));
         spSsoDescriptor.getSingleLogoutServices().add(buildSingleLogoutServiceWithRedirectBinding(registration));
         spSsoDescriptor.getAssertionConsumerServices().add(buildAssertionConsumerServiceWithPostBinding(registration));

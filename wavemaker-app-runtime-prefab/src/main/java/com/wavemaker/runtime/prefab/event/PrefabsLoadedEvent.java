@@ -21,7 +21,7 @@ import com.wavemaker.runtime.prefab.core.Prefab;
 /**
  * {@link PrefabsLoadedEvent} is raised when all {@link Prefab}s have been
  * loaded from a source location.
- * 
+ *
  * @author Frankline Francis
  */
 @SuppressWarnings("serial")
@@ -29,7 +29,7 @@ public class PrefabsLoadedEvent extends PrefabEvent {
 
     /**
      * Creates a new {@link PrefabsLoadedEvent} with the  parent {@link ApplicationContext}.
-     * 
+     *
      * @param source parent context
      */
     public PrefabsLoadedEvent(final ApplicationContext source) {

@@ -34,14 +34,15 @@ import com.wavemaker.runtime.data.util.JavaTypeUtils;
  */
 public class CustomQueryAdapter {
 
-    private CustomQueryAdapter(){}
+    private CustomQueryAdapter() {
+    }
 
     private static Pattern QUERY_TYPE_PATTERN = Pattern.compile("^([^\\s]+)");
 
     public static RuntimeQuery adapt(CustomQuery query) {
         final List<QueryParameter> parameters = query.getQueryParams().stream()
-                .map(CustomQueryAdapter::adapt)
-                .collect(Collectors.toList());
+            .map(CustomQueryAdapter::adapt)
+            .collect(Collectors.toList());
 
         return new RuntimeQuery(query.getQueryStr(), query.isNativeSql(), findQueryType(query), parameters);
     }
@@ -49,10 +50,10 @@ public class CustomQueryAdapter {
     public static QueryParameter adapt(CustomQueryParam param) {
         final Optional<JavaType> javaType = JavaTypeUtils.fromClassName(param.getParamType());
         return new QueryParameter(param.getParamName(), javaType.orElseThrow(() ->
-                new IllegalArgumentException(
-                        "Unknown parameter type found:" + param.getParamType() + ", for parameter:" + param
-                                .getParamName())),
-                param.isList(), param.getParamValue());
+            new IllegalArgumentException(
+                "Unknown parameter type found:" + param.getParamType() + ", for parameter:" + param
+                    .getParamName())),
+            param.isList(), param.getParamValue());
     }
 
     private static QueryType findQueryType(CustomQuery query) {

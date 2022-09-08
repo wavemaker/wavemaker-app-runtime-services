@@ -29,11 +29,10 @@ import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 import com.wavemaker.runtime.security.provider.database.users.UserProvider;
 
-
 /**
  * @author Arjun Sahasranam
  *
- *         Runs both native sql and hql queries.
+ * Runs both native sql and hql queries.
  */
 public class DatabaseUserDetailsService implements UserDetailsService {
 
@@ -83,7 +82,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     }
 
     public void setAuthoritiesProvider(
-            final AuthoritiesProvider authoritiesProvider) {
+        final AuthoritiesProvider authoritiesProvider) {
         this.authoritiesProvider = authoritiesProvider;
     }
 }

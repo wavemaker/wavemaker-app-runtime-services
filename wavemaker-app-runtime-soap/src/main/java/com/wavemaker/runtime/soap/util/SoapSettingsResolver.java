@@ -33,7 +33,8 @@ import com.wavemaker.runtime.ws.JAXWSProperties;
  */
 public class SoapSettingsResolver {
 
-    private SoapSettingsResolver(){}
+    private SoapSettingsResolver() {
+    }
 
     @SuppressWarnings("unchecked")
     public static void setBindingProperties(BindingProvider service, SoapServiceSettings bindingProperties) {

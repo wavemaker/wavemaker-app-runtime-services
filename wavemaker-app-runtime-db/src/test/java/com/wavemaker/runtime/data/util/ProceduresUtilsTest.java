@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 import com.wavemaker.runtime.data.model.CustomProcedureParam;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 
-
 /**
  * Created by anitha on 2/11/15.
  */
@@ -34,16 +33,15 @@ import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 @Test
 public class ProceduresUtilsTest {
 
-
     public void hasOutParamTest() {
         ProceduresUtils p = new ProceduresUtils();
         CustomProcedureParam cmp1 = new CustomProcedureParam("example", p, ProcedureParameterType.OUT, "int");
         CustomProcedureParam cmp2 = new CustomProcedureParam("Sample", p, ProcedureParameterType.IN, "int");
         CustomProcedureParam cmp3 = new CustomProcedureParam("test", p, ProcedureParameterType.IN_OUT, "int");
         CustomProcedureParam cmp4 = new CustomProcedureParam("Checking", p, ProcedureParameterType.IN, "int");
-        List<CustomProcedureParam> customProcedureParamList= new ArrayList<>();
-        List<CustomProcedureParam> customProcedureParamList1= new ArrayList<>();
-        List<CustomProcedureParam> customProcedureParamList2= new ArrayList<>();
+        List<CustomProcedureParam> customProcedureParamList = new ArrayList<>();
+        List<CustomProcedureParam> customProcedureParamList1 = new ArrayList<>();
+        List<CustomProcedureParam> customProcedureParamList2 = new ArrayList<>();
         customProcedureParamList.add(cmp1);
         customProcedureParamList.add(cmp2);
         customProcedureParamList1.add(cmp2);
@@ -57,7 +55,7 @@ public class ProceduresUtilsTest {
 
     }
 
-    public void hasOutParamTypeTest(){
+    public void hasOutParamTypeTest() {
         ProceduresUtils p = new ProceduresUtils();
         CustomProcedureParam cmp1 = new CustomProcedureParam("example", p, ProcedureParameterType.OUT, "int");
         Assert.assertTrue(cmp1.getProcedureParamType().isOutParam());
@@ -70,43 +68,43 @@ public class ProceduresUtilsTest {
 
     public void jdbcComplianceProcedure() {
         final String procedure1 = "sp_create_workorder_detail\n" +
-                ":workorder,\n" +
-                ":workorderType,\n" +
-                ":typeid,\n" +
-                ":workorder1,\n";
+            ":workorder,\n" +
+            ":workorderType,\n" +
+            ":typeid,\n" +
+            ":workorder1,\n";
         final String jdbcComplianceProcedure1 = "sp_create_workorder_detail\n" +
-                "?,\n" +
-                "?,\n" +
-                "?,\n" +
-                "?,\n";
+            "?,\n" +
+            "?,\n" +
+            "?,\n" +
+            "?,\n";
 
         final String procedure2 = "sp_create_workorder_detail    :workorder,:workorderType,:typeid,:workorder1";
         final String jdbcComplianceProcedure2 = "sp_create_workorder_detail    ?,?,?,?";
 
         final String procedure3 = "sp_create_workorder_detail :workorder   ,:workorderType,:typeid,   :workorder1";
-        final String jdbcComplianceProcedure3 ="sp_create_workorder_detail ?   ,?,?,   ?";
+        final String jdbcComplianceProcedure3 = "sp_create_workorder_detail ?   ,?,?,   ?";
 
         final String procedure4 = "sp_create_workorder_detail :workorderType,:typeid,   :workorder1,:workorder   ";
-        final String jdbcComplianceProcedure4= "sp_create_workorder_detail ?,?,   ?,?   ";
+        final String jdbcComplianceProcedure4 = "sp_create_workorder_detail ?,?,   ?,?   ";
 
         final String procedure5 = "sp_create_workorder_detail :workorderType,:workorder  ,:typeid,   :workorder1";
-        final String jdbcComplianceProcedure5= "sp_create_workorder_detail ?,?  ,?,   ?";
+        final String jdbcComplianceProcedure5 = "sp_create_workorder_detail ?,?  ,?,   ?";
 
         final String procedure6 = "sp_create_workorder_detail :workorderType,:workorder,:typeid,   :workorder1";
-        final String jdbcComplianceProcedure6= "sp_create_workorder_detail ?,?,?,   ?";
+        final String jdbcComplianceProcedure6 = "sp_create_workorder_detail ?,?,?,   ?";
 
         final String procedure7 = "sp_create_workorder_detail (:workorder)";
-        final String jdbcComplianceProcedure7= "sp_create_workorder_detail (?)";
+        final String jdbcComplianceProcedure7 = "sp_create_workorder_detail (?)";
 
         final String procedure8 = "sp_create_workorder_detail (:workordertype,:workorder   , :workorderNo)";
-        final String jdbcComplianceProcedure8= "sp_create_workorder_detail (:workordertype,?   , :workorderNo)";
+        final String jdbcComplianceProcedure8 = "sp_create_workorder_detail (:workordertype,?   , :workorderNo)";
 
         final String procedure9 = "update Register set name=:workorder where city=:workorderType and age =:typeid";
-        final String jdbcComplianceProcedure9= "update Register set name=? where city=? and age =?";
+        final String jdbcComplianceProcedure9 = "update Register set name=? where city=? and age =?";
 
         final String[] namedParams = {"workorder", "workorderType", "typeid", "workorder1"};
 
-        final Set<String> namedParamSet  = new HashSet<>(Arrays.asList(namedParams));
+        final Set<String> namedParamSet = new HashSet<>(Arrays.asList(namedParams));
 
         Assert.assertEquals(jdbcComplianceProcedure1, ProceduresUtils.jdbcComplianceProcedure(procedure1, namedParamSet));
         Assert.assertEquals(jdbcComplianceProcedure2, ProceduresUtils.jdbcComplianceProcedure(procedure2, namedParamSet));
@@ -117,7 +115,6 @@ public class ProceduresUtilsTest {
         Assert.assertEquals(jdbcComplianceProcedure7, ProceduresUtils.jdbcComplianceProcedure(procedure7, namedParamSet));
         Assert.assertEquals(jdbcComplianceProcedure8, ProceduresUtils.jdbcComplianceProcedure(procedure8, namedParamSet));
         Assert.assertEquals(jdbcComplianceProcedure9, ProceduresUtils.jdbcComplianceProcedure(procedure9, namedParamSet));
-
 
     }
 

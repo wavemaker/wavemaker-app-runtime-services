@@ -54,8 +54,8 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(
-            final ServletRequest req, final ServletResponse res,
-            final FilterChain chain) throws IOException, ServletException {
+        final ServletRequest req, final ServletResponse res,
+        final FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         if (requiresLogout(request, response)) {
@@ -79,6 +79,7 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
      *
      * @param request  the request
      * @param response the response
+     *
      * @return <code>true</code> if logout should occur, <code>false</code> otherwise
      */
     protected boolean requiresLogout(HttpServletRequest request,

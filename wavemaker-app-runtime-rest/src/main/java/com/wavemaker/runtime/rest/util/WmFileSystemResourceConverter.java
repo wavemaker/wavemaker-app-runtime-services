@@ -32,7 +32,6 @@ import com.wavemaker.commons.util.WMIOUtils;
  */
 public class WmFileSystemResourceConverter extends AbstractHttpMessageConverter<WmFileSystemResource> {
 
-
     @Override
     protected boolean supports(Class<?> clazz) {
         return WmFileSystemResource.class == clazz;
@@ -45,7 +44,7 @@ public class WmFileSystemResourceConverter extends AbstractHttpMessageConverter<
 
     @Override
     protected WmFileSystemResource readInternal(
-            Class<? extends WmFileSystemResource> clazz, HttpInputMessage inputMessage) throws IOException {
+        Class<? extends WmFileSystemResource> clazz, HttpInputMessage inputMessage) throws IOException {
         return null;
     }
 
@@ -61,7 +60,7 @@ public class WmFileSystemResourceConverter extends AbstractHttpMessageConverter<
 
     @Override
     protected void writeInternal(WmFileSystemResource wmFileSystemResource, HttpOutputMessage outputMessage)
-            throws IOException {
+        throws IOException {
 
         InputStream in = wmFileSystemResource.getInputStream();
         try {

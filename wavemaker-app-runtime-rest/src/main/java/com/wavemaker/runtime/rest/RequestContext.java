@@ -61,7 +61,7 @@ public class RequestContext {
 
         public Builder addBasicAuth(String username, String password) {
             headers.add("Authorization", "Basic " + new String(Base64.getEncoder()
-                    .encode(new StringBuilder().append(username).append(':').append(password).toString().getBytes())));
+                .encode(new StringBuilder().append(username).append(':').append(password).toString().getBytes())));
             return this;
         }
 
@@ -73,7 +73,6 @@ public class RequestContext {
         public RequestContext build() {
             return new RequestContext(headers, queryParams);
         }
-
 
     }
 }

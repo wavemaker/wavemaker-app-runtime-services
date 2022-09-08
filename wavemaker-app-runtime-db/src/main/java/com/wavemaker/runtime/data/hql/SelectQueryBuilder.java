@@ -48,7 +48,6 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
         return new SelectQueryBuilder(entity);
     }
 
-
     public SelectQueryBuilder withFields(final List<String> fields) {
         this.fields = fields;
         return this;
@@ -71,8 +70,8 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
 
     public SelectQueryBuilder withAggregationInfo(AggregationInfo aggregationInfo) {
         withGroupByFields(aggregationInfo.getGroupByFields())
-                .withAggregations(aggregationInfo.getAggregations())
-                .withFilter(aggregationInfo.getFilter());
+            .withAggregations(aggregationInfo.getAggregations())
+            .withFilter(aggregationInfo.getFilter());
         return this;
     }
 
@@ -84,8 +83,8 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
 
         if (StringUtils.isNotBlank(projections)) {
             builder.append("select ")
-                    .append(projections)
-                    .append(" ");
+                .append(projections)
+                .append(" ");
         }
 
         builder.append(generateFromClause(parameters, false));
@@ -93,8 +92,8 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
 
         if (CollectionUtils.isNotEmpty(groupByFields)) {
             builder.append("group by ")
-                    .append(StringUtils.join(groupByFields, ","))
-                    .append(" ");
+                .append(StringUtils.join(groupByFields, ","))
+                .append(" ");
         }
 
         return new WMQueryInfo(builder.toString(), parameters);
@@ -108,8 +107,8 @@ public class SelectQueryBuilder extends QueryBuilder<SelectQueryBuilder> {
             Map<String, WMQueryParamInfo> parameters = new HashMap<>();
 
             final String countQuery = "select count(*) " +
-                    generateFromClause(parameters, false) +
-                    generateWhereClause(parameters);
+                generateFromClause(parameters, false) +
+                generateWhereClause(parameters);
 
             result = Optional.of(new WMQueryInfo(countQuery, parameters));
 

@@ -22,7 +22,6 @@ import com.wavemaker.runtime.data.model.JavaType;
  */
 public class WMQLSqlServerTypeHelper implements WMQLTypeHelper {
 
-
     @Override
     public JavaType aliasFor(JavaType javaType) {
 

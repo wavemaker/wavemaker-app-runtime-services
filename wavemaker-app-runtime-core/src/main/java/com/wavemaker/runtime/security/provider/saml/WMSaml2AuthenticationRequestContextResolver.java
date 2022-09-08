@@ -37,7 +37,7 @@ public class WMSaml2AuthenticationRequestContextResolver implements Saml2Authent
     private final Converter<HttpServletRequest, RelyingPartyRegistration> relyingPartyRegistrationResolver;
 
     public WMSaml2AuthenticationRequestContextResolver(
-            Converter<HttpServletRequest, RelyingPartyRegistration> relyingPartyRegistrationResolver) {
+        Converter<HttpServletRequest, RelyingPartyRegistration> relyingPartyRegistrationResolver) {
         this.relyingPartyRegistrationResolver = relyingPartyRegistrationResolver;
     }
 
@@ -65,14 +65,14 @@ public class WMSaml2AuthenticationRequestContextResolver implements Saml2Authent
 
             String redirectPage = request.getParameter("redirectPage");
             if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(appUrl) && !StringUtils
-                    .containsAny(appUrl, '#', '?')) {
+                .containsAny(appUrl, '#', '?')) {
                 appUrl = appUrl.concat("#").concat(redirectPage);
             }
 
             return Saml2AuthenticationRequestContext.builder().issuer(relyingParty.getEntityId())
-                    .relyingPartyRegistration(relyingParty)
-                    .assertionConsumerServiceUrl(relyingParty.getAssertionConsumerServiceLocation())
-                    .relayState(appUrl).build();
+                .relyingPartyRegistration(relyingParty)
+                .assertionConsumerServiceUrl(relyingParty.getAssertionConsumerServiceLocation())
+                .relayState(appUrl).build();
 
         } catch (MalformedURLException e) {
             logger.error("Invalid URL {}", requestURL, e);
