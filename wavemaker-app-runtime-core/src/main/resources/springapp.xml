@@ -57,7 +57,10 @@
 
     <bean id="throwableTranslationFilter" class="com.wavemaker.commons.web.filter.ThrowableTranslationFilter"/>
 
-    <bean id="springEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter"/>
+    <bean id="springEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter">
+        <property name="encoding" value="UTF-8"/>
+        <property name="forceEncoding" value="true"/>
+    </bean>
 
     <bean id="cdnUrlReplacementFilter" class="com.wavemaker.runtime.web.filter.CDNUrlReplacementFilter"/>
 
