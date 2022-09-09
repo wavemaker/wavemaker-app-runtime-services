@@ -50,7 +50,7 @@ public class WMSaml2AuthenticationRequestContextResolver implements Saml2Authent
         }
 
         StringBuffer requestURL = request.getRequestURL();
-        logger.debug("Request URL is {}", requestURL.toString());
+        logger.debug("Request URL is {}", requestURL);
 
         try {
             URL incomingRequestUrl = new URL(requestURL.toString());

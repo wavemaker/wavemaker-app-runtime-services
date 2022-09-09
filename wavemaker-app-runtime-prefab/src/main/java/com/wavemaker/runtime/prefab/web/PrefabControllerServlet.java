@@ -159,8 +159,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
         Map<String, HandlerMapping> handlerMappingMap = context.getBeansOfType(HandlerMapping.class);
         for (HandlerMapping hm : handlerMappingMap.values()) {
             if (logger.isTraceEnabled()) {
-                logger.trace(
-                    "Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
+                logger.trace("Testing handler map [{}] in DispatcherServlet with name '{}'", hm, getServletName());
             }
             HandlerExecutionChain handler = hm.getHandler(request);
             if (handler != null) {
@@ -228,7 +227,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
             .getBeansOfType(HandlerAdapter.class);
         for (HandlerAdapter ha : handlerAdapterMap.values()) {
             if (logger.isTraceEnabled()) {
-                logger.trace("Testing handler adapter [" + ha + "]");
+                logger.trace("Testing handler adapter [{}]", ha);
             }
             if (ha.supports(handler)) {
                 return ha;

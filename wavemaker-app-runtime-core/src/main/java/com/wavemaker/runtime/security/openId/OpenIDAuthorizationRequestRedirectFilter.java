@@ -188,7 +188,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
     private void unsuccessfulRedirectForAuthorization(HttpServletRequest request, HttpServletResponse response,
                                                       Exception failed) throws IOException {
         if (logger.isDebugEnabled()) {
-            logger.debug("Authorization Request failed: " + failed.toString(), failed);
+            logger.debug("Authorization Request failed: " + failed, failed);
         }
         response.sendError(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
     }

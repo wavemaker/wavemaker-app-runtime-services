@@ -74,7 +74,7 @@ public class SSLSecureFilter extends GenericFilterBean {
                 String queryStr = request.getQueryString();
                 String uriWithQueryStr = requestUri + ((queryStr != null) ? ("?" + queryStr) : "");
                 URL redirectUrl = new URL("https", request.getServerName(), sslConfig.getSslPort(), uriWithQueryStr);
-                logger.debug("Redirecting current request {} to https request {}", requestUri, redirectUrl.toString());
+                logger.debug("Redirecting current request {} to https request {}", requestUri, redirectUrl);
                 response.sendRedirect(redirectUrl.toExternalForm());
             }
         } else {

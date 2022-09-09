@@ -115,7 +115,7 @@ public class WMSaml2MetadataResolver implements Saml2MetadataResolver {
         try {
             x509Certificate.setValue(new String(Base64.getEncoder().encode(certificate.getEncoded())));
         } catch (CertificateEncodingException ex) {
-            throw new Saml2Exception("Cannot encode certificate " + certificate.toString());
+            throw new Saml2Exception("Cannot encode certificate " + certificate);
         }
         x509Data.getX509Certificates().add(x509Certificate);
         keyInfo.getX509Datas().add(x509Data);

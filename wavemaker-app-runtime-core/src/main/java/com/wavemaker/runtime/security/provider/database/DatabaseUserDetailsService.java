@@ -51,7 +51,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
         UserDetails user = userProvider.loadUser(username);
 
         if (user == null) {
-            logger.debug("Query returned no results for user '" + username + "'");
+            logger.debug("Query returned no results for user '{}'", username);
             throw new UsernameNotFoundException("User " + username + "not found");
         }
 
@@ -60,7 +60,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
         if (enableAuthorities) {
             dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(user.getUsername())));
             if (dbAuthsSet.isEmpty()) {
-                logger.debug("User '" + username + "' has no authorities and will be treated as 'not found'");
+                logger.debug("User '{}' has no authorities and will be treated as 'not found'", username);
                 throw new UsernameNotFoundException("User" + username + "has no GrantedAuthority");
             }
         }
