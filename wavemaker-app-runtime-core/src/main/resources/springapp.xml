@@ -90,8 +90,6 @@
 
     <bean id="appFileSystem" class="com.wavemaker.runtime.app.AppFileSystem"/>
 
-    <bean id="procedureDesignService" class="com.wavemaker.runtime.data.service.ProcedureDesignServiceImpl"/>
-
     <bean id="nonHistoryEntitiesFilter" class="com.wavemaker.runtime.data.util.NegatingTypeFilter">
         <constructor-arg ref="historyEntitiesFilter"/>
     </bean>
