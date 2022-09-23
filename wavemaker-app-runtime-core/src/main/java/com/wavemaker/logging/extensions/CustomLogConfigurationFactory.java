@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.web.listener;
+package com.wavemaker.logging.extensions;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -21,6 +21,8 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.status.StatusLogger;
+
+import com.wavemaker.runtime.web.listener.CustomXmlLogConfiguration;
 
 public class CustomLogConfigurationFactory extends ConfigurationFactory {
 
