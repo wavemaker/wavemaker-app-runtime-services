@@ -14,22 +14,9 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dao.procedure;
 
-import java.util.List;
 import java.util.Map;
-
-import com.wavemaker.runtime.data.model.CustomProcedure;
-import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 
 public interface WMProcedureExecutor {
 
     <T> T executeNamedProcedure(String procedureName, Map<String, Object> params, Class<T> type);
-
-    Object executeRuntimeProcedure(RuntimeProcedure procedure);
-
-    @Deprecated
-    List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params);
-
-    @Deprecated
-    List<Object> executeCustomProcedure(CustomProcedure customProcedure);
-
 }

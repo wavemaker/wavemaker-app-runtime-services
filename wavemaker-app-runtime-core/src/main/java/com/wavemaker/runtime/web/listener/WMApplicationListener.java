@@ -79,8 +79,6 @@ public class WMApplicationListener implements ServletContextListener {
 
     private void registerFilters(ServletContext servletContext, String applicationType) {
         FilterRegistration.Dynamic springEncodingFilter = registerDelegatingFilterProxyFilter(servletContext, "springEncodingFilter");
-        springEncodingFilter.setInitParameter("encoding", "UTF-8");
-        springEncodingFilter.setInitParameter("forceEncoding", "true");
         springEncodingFilter.addMappingForUrlPatterns(null, false, "/*");
 
         FilterRegistration.Dynamic throwableTranslationFilter = registerDelegatingFilterProxyFilter(servletContext, "throwableTranslationFilter");

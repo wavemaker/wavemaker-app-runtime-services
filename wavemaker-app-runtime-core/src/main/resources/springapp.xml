@@ -57,7 +57,10 @@
 
     <bean id="throwableTranslationFilter" class="com.wavemaker.commons.web.filter.ThrowableTranslationFilter"/>
 
-    <bean id="springEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter"/>
+    <bean id="springEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter">
+        <property name="encoding" value="UTF-8"/>
+        <property name="forceEncoding" value="true"/>
+    </bean>
 
     <bean id="cdnUrlReplacementFilter" class="com.wavemaker.runtime.web.filter.CDNUrlReplacementFilter"/>
 
@@ -86,8 +89,6 @@
     <bean id="appRuntimeService" class="com.wavemaker.runtime.service.AppRuntimeServiceImpl"/>
 
     <bean id="appFileSystem" class="com.wavemaker.runtime.app.AppFileSystem"/>
-
-    <bean id="procedureDesignService" class="com.wavemaker.runtime.data.service.ProcedureDesignServiceImpl"/>
 
     <bean id="nonHistoryEntitiesFilter" class="com.wavemaker.runtime.data.util.NegatingTypeFilter">
         <constructor-arg ref="historyEntitiesFilter"/>

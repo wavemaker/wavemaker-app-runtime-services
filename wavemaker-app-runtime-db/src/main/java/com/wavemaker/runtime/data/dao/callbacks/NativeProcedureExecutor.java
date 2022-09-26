@@ -26,12 +26,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Session;
-import org.hibernate.internal.SessionImpl;
+import org.springframework.orm.hibernate5.HibernateOperations;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
@@ -50,20 +48,13 @@ public class NativeProcedureExecutor {
 
     public static final String CONTENT_FIELD = "content";
 
-    public static <T> T execute(
-        Session session, String jdbcQuery, List<ResolvableParam> params, Class<T> type) {
-        Connection connection = null;
-        try {
-            connection = ((SessionImpl) session).connection();
-            final CallableStatement statement = prepareStatement(connection, jdbcQuery, params);
-            final boolean resultSetType = statement.execute();
+    public static <T> T execute(HibernateOperations hibernateOperations, String jdbcQuery, List<ResolvableParam> params, Class<T> type) {
+        return hibernateOperations.execute(session -> session.doReturningWork(connection -> {
+            CallableStatement statement = prepareStatement(connection, jdbcQuery, params);
+            boolean resultSetType = statement.execute();
             Map<String, Object> result = getResultMap(statement, params, resultSetType, 0);
             return convert(result, type);
-        } catch (SQLException e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.while.executing.procedure"), e);
-        } finally {
-            WMIOUtils.closeSilently(connection);
-        }
+        }));
     }
 
     public static CallableStatement prepareStatement(
