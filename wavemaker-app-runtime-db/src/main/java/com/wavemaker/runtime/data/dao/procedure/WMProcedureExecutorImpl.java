@@ -111,4 +111,9 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.named.procedure.execution.failed"), e);
         }
     }
+
+    @Override
+    public List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params) {
+        return NativeProcedureExecutor.convertToOldResponse(executeNamedProcedure(procedureName, params, Map.class));
+    }
 }
