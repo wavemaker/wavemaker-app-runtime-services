@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -44,7 +43,7 @@ import com.wavemaker.runtime.data.util.JavaTypeUtils;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 15/11/16
  */
-public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResultTransformer implements
+public class AliasToMappedClassResultTransformer implements
     WMResultTransformer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AliasToMappedClassResultTransformer.class);
@@ -78,11 +77,6 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         } catch (InstantiationException | IllegalAccessException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.cannot.instantiate.class"), e, resultClass);
         }
-    }
-
-    @Override
-    public boolean isTransformedValueATupleElement(final String[] aliases, final int tupleLength) {
-        return false;
     }
 
     @Override

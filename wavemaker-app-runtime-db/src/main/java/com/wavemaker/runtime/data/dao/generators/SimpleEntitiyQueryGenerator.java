@@ -16,7 +16,7 @@ package com.wavemaker.runtime.data.dao.generators;
 
 import java.util.Map;
 
-import javax.persistence.IdClass;
+import jakarta.persistence.IdClass;
 
 import com.wavemaker.runtime.data.hql.SelectQueryBuilder;
 import com.wavemaker.runtime.data.model.AggregationInfo;

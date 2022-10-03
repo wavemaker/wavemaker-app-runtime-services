@@ -26,18 +26,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.type.BigDecimalType;
-import org.hibernate.type.BigIntegerType;
-import org.hibernate.type.BooleanType;
-import org.hibernate.type.ByteType;
-import org.hibernate.type.CharacterType;
-import org.hibernate.type.DoubleType;
-import org.hibernate.type.FloatType;
-import org.hibernate.type.IntegerType;
-import org.hibernate.type.LongType;
-import org.hibernate.type.ShortType;
-import org.hibernate.type.TrueFalseType;
-import org.hibernate.type.YesNoType;
+import org.hibernate.type.TrueFalseConverter;
+import org.hibernate.type.YesNoConverter;
+import org.hibernate.type.descriptor.java.BigDecimalJavaType;
+import org.hibernate.type.descriptor.java.BigIntegerJavaType;
+import org.hibernate.type.descriptor.java.BooleanJavaType;
+import org.hibernate.type.descriptor.java.ByteJavaType;
+import org.hibernate.type.descriptor.java.CharacterJavaType;
+import org.hibernate.type.descriptor.java.DoubleJavaType;
+import org.hibernate.type.descriptor.java.FloatJavaType;
+import org.hibernate.type.descriptor.java.IntegerJavaType;
+import org.hibernate.type.descriptor.java.LongJavaType;
+import org.hibernate.type.descriptor.java.ShortJavaType;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -59,29 +59,29 @@ import com.wavemaker.runtime.data.converters.TimestampTypeConverter;
 public enum JavaType {
 
     BYTE(byte.class.getName(), Byte.class.getName(),
-        new HibernateBackedJavaTypeConverter(ByteType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(ByteJavaType.INSTANCE)),
     SHORT(short.class.getName(), Short.class.getName(),
-        new HibernateBackedJavaTypeConverter(ShortType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(ShortJavaType.INSTANCE)),
     INTEGER(int.class.getName(), Integer.class.getName(),
-        new HibernateBackedJavaTypeConverter(IntegerType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(IntegerJavaType.INSTANCE)),
     LONG(long.class.getName(), Long.class.getName(),
-        new HibernateBackedJavaTypeConverter(LongType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(LongJavaType.INSTANCE)),
     BIG_INTEGER(BigInteger.class.getName(),
-        new HibernateBackedJavaTypeConverter(BigIntegerType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(BigIntegerJavaType.INSTANCE)),
     FLOAT(float.class.getName(), Float.class.getName(),
-        new HibernateBackedJavaTypeConverter(FloatType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(FloatJavaType.INSTANCE)),
     DOUBLE(double.class.getName(), Double.class.getName(),
-        new HibernateBackedJavaTypeConverter(DoubleType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(DoubleJavaType.INSTANCE)),
     BIG_DECIMAL(BigDecimal.class.getName(),
-        new HibernateBackedJavaTypeConverter(BigDecimalType.INSTANCE.getJavaTypeDescriptor())), // OR NUMBER
+        new HibernateBackedJavaTypeConverter(BigDecimalJavaType.INSTANCE)), // OR NUMBER
     BOOLEAN(boolean.class.getName(), Boolean.class.getName(),
-        new HibernateBackedJavaTypeConverter(BooleanType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(BooleanJavaType.INSTANCE)),
     YES_OR_NO(boolean.class.getName(), Boolean.class.getName(),
-        new HibernateBackedJavaTypeConverter(YesNoType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(YesNoConverter.INSTANCE.getDomainJavaType())),
     TRUE_OR_FALSE(boolean.class.getName(), Boolean.class.getName(),
-        new HibernateBackedJavaTypeConverter(TrueFalseType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(TrueFalseConverter.INSTANCE.getDomainJavaType())),
     CHARACTER(char.class.getName(), Character.class.getName(),
-        new HibernateBackedJavaTypeConverter(CharacterType.INSTANCE.getJavaTypeDescriptor())),
+        new HibernateBackedJavaTypeConverter(CharacterJavaType.INSTANCE)),
     STRING(String.class.getName(), new StringTypeConverter()),
     TEXT(String.class.getName(), new StringTypeConverter()),
     CLOB(String.class.getName(), new StringTypeConverter()),

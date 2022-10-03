@@ -16,7 +16,7 @@ package com.wavemaker.runtime.data.converters;
 
 import java.sql.Date;
 
-import org.hibernate.type.DateType;
+import org.hibernate.type.descriptor.java.DateJavaType;
 
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 
@@ -26,7 +26,7 @@ import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
  */
 public class DateTypeConverter extends HibernateBackedJavaTypeConverter {
     public DateTypeConverter() {
-        super(DateType.INSTANCE.getJavaTypeDescriptor());
+        super(DateJavaType.INSTANCE);
     }
 
     @Override

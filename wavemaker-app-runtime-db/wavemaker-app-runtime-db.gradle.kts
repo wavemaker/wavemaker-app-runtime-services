@@ -23,8 +23,9 @@ dependencies {
     implementation(appDependenciesLibs.hibernate.core)
     implementation(appDependenciesLibs.aspectjrt)
     implementation(appDependenciesLibs.aspectjweaver)
-    implementation(appDependenciesLibs.javax.annotation.api)
     implementation(appDependenciesLibs.jakarta.validationApi)
+    implementation(appDependenciesLibs.jakarta.xml.bindapi)
+    implementation(appDependenciesLibs.javax.annotation.api)
     implementation(appDependenciesLibs.poiOoxml) {
         exclude("com.github.virtuald", "curvesapi")
     }

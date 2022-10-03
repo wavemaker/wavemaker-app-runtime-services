@@ -15,7 +15,6 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.sql.CallableStatement;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -27,7 +26,6 @@ import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.dialect.OracleTypesHelper;
-import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.NativeQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,66 +56,74 @@ public class LegacyNativeProcedureExecutor {
     private static List<Object> executeNativeJDBCCall(
         Session session, String procedureStr, List<CustomProcedureParam>
         customParams) {
-        try (Connection conn = ((SessionImpl) session).connection()) {
-            List<Integer> cursorPosition = new ArrayList<>();
 
-            NativeQuery sqlProcedure = session.createNativeQuery(procedureStr);
-            Set<String> namedParams = sqlProcedure.getParameterMetadata().getNamedParameterNames();
-            final String jdbcComplianceProcedure = ProceduresUtils.jdbcComplianceProcedure(procedureStr,
-                namedParams);
-            LOGGER.info("JDBC converted procedure {}", jdbcComplianceProcedure);
-            try (CallableStatement callableStatement = conn.prepareCall(jdbcComplianceProcedure)) {
+        return session.doReturningWork(connection -> {
+            try {
+                List<Integer> cursorPosition = new ArrayList<>();
 
-                List<Integer> outParams = new ArrayList<>();
-                for (int position = 0; position < customParams.size(); position++) {
-                    CustomProcedureParam procedureParam = customParams.get(position);
-                    if (procedureParam.getProcedureParamType().isOutParam()) {
+                NativeQuery sqlProcedure = session.createNativeQuery(procedureStr);
+                Set<String> namedParams = sqlProcedure.getParameterMetadata().getNamedParameterNames();
+                final String jdbcComplianceProcedure = ProceduresUtils.jdbcComplianceProcedure(procedureStr,
+                    namedParams);
+                LOGGER.info("JDBC converted procedure {}", jdbcComplianceProcedure);
+                try (CallableStatement callableStatement = connection.prepareCall(jdbcComplianceProcedure)) {
 
-                        LOGGER.info("Found out Parameter {}", procedureParam.getParamName());
-                        String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).getRight();
-                        Integer typeCode = getTypeCode(typeName);
-                        LOGGER.info("Found type code to be {}", typeCode);
-                        callableStatement.registerOutParameter(position + 1, typeCode);
+                    List<Integer> outParams = new ArrayList<>();
+                    for (int position = 0; position < customParams.size(); position++) {
+                        CustomProcedureParam procedureParam = customParams.get(position);
+                        if (procedureParam.getProcedureParamType().isOutParam()) {
 
-                        if (typeName.equalsIgnoreCase(CURSOR)) {
-                            cursorPosition.add(position + 1);
+                            LOGGER.info("Found out Parameter {}", procedureParam.getParamName());
+                            String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).getRight();
+                            Integer typeCode = null;
+                            try {
+                                typeCode = getTypeCode(typeName);
+                            } catch (IllegalAccessException | NoSuchFieldException e) {
+                                throw new RuntimeException(e);
+                            }
+                            LOGGER.info("Found type code to be {}", typeCode);
+                            callableStatement.registerOutParameter(position + 1, typeCode);
 
-                        } else {
-                            outParams.add(position + 1);
+                            if (typeName.equalsIgnoreCase(CURSOR)) {
+                                cursorPosition.add(position + 1);
+
+                            } else {
+                                outParams.add(position + 1);
+                            }
+                        }
+                        if (procedureParam.getProcedureParamType().isInParam()) {
+                            callableStatement.setObject(position + 1, procedureParam.getParamValue());
                         }
                     }
-                    if (procedureParam.getProcedureParamType().isInParam()) {
-                        callableStatement.setObject(position + 1, procedureParam.getParamValue());
-                    }
-                }
 
-                LOGGER.info("Executing Procedure {}", procedureStr);
-                boolean resultType = callableStatement.execute();
-                final List<Object> responseWrapper = new ArrayList<>();
-                /* if of type result set */
-                if (resultType) {
-                    return processResultSet(callableStatement.getResultSet());
-                    /* If not cursor and not out params */
-                } else if (outParams.isEmpty() && cursorPosition.isEmpty()) {
+                    LOGGER.info("Executing Procedure {}", procedureStr);
+                    boolean resultType = callableStatement.execute();
+                    final List<Object> responseWrapper = new ArrayList<>();
+                    /* if of type result set */
+                    if (resultType) {
+                        return processResultSet(callableStatement.getResultSet());
+                        /* If not cursor and not out params */
+                    } else if (outParams.isEmpty() && cursorPosition.isEmpty()) {
+                        return responseWrapper;
+                    }
+
+                    final Map<String, Object> outData = new LinkedHashMap<>();
+                    for (Integer outParam : outParams) {
+                        outData.put(customParams.get(outParam - 1).getParamName(), callableStatement.getObject(outParam));
+                    }
+
+                    for (Integer cursorIndex : cursorPosition) {
+                        outData.put(customParams.get(cursorIndex - 1).getParamName(),
+                            processResultSet(callableStatement.getObject(cursorIndex)));
+                    }
+                    responseWrapper.add(outData);
                     return responseWrapper;
                 }
-
-                final Map<String, Object> outData = new LinkedHashMap<>();
-                for (Integer outParam : outParams) {
-                    outData.put(customParams.get(outParam - 1).getParamName(), callableStatement.getObject(outParam));
-                }
-
-                for (Integer cursorIndex : cursorPosition) {
-                    outData.put(customParams.get(cursorIndex - 1).getParamName(),
-                        processResultSet(callableStatement.getObject(cursorIndex)));
-                }
-                responseWrapper.add(outData);
-                return responseWrapper;
+            } catch (Exception e) {
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.execute.procedure"), e);
             }
+        });
 
-        } catch (Exception e) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.execute.procedure"), e);
-        }
     }
 
     private static List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {

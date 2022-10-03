@@ -23,6 +23,7 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -39,7 +40,6 @@ import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
-import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 public class QueryHelper {
@@ -127,10 +127,10 @@ public class QueryHelper {
 
     public static void setResultTransformer(Query query, Class<?> type) {
 //        TODO replace deprecated methods
-        if (query instanceof NativeQuery || (query.getReturnAliases() != null && query
+/*        if (query instanceof NativeQuery || (query.getReturnAliases() != null && query
             .getReturnAliases().length != 0)) {
             query.setResultTransformer(Transformers.aliasToMappedClass(type));
-        }
+        }*/
     }
 
     public static Query createQuery(final Session session, final boolean isNative, final String query) {
@@ -160,7 +160,7 @@ public class QueryHelper {
         final Session session, final boolean isNative, final String strQuery, final WMQueryInfo wmQueryInfo, WMQLTypeHelper wmqlTypeHelper) {
         Query<Integer> query = isNative ? session.createNativeQuery(strQuery) : session.createQuery(strQuery);
         ParametersConfigurator.configure(query, wmQueryInfo.getParameterValueMap(wmqlTypeHelper),
-            new RuntimeParameterTypeResolver(wmQueryInfo.getParameters(), session.getTypeHelper(), wmqlTypeHelper));
+            new RuntimeParameterTypeResolver(wmQueryInfo.getParameters(), ((SessionFactoryImplementor) session.getSessionFactory()).getTypeConfiguration(), wmqlTypeHelper));
         Object result = query.uniqueResult();
         return result == null ? 0 : ((Number) result).longValue();
     }

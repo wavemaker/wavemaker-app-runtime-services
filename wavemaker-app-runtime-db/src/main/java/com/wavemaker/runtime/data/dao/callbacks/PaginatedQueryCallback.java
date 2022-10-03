@@ -17,7 +17,7 @@ package com.wavemaker.runtime.data.dao.callbacks;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;

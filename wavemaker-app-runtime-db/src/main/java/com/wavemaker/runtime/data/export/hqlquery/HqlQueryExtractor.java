@@ -46,6 +46,6 @@ public class HqlQueryExtractor implements QueryExtractor {
 
     @Override
     public Object getCurrentRow() throws Exception {
-        return results.get(0);
+        return results.get();
     }
 }

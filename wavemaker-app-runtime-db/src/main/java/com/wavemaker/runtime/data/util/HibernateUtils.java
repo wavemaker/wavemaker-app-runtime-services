@@ -14,10 +14,11 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.util;
 
+import java.lang.reflect.Type;
 import java.util.Optional;
 
-import org.hibernate.TypeHelper;
-import org.hibernate.type.Type;
+import org.hibernate.type.BasicType;
+import org.hibernate.type.spi.TypeConfiguration;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -25,13 +26,8 @@ import org.hibernate.type.Type;
  */
 public class HibernateUtils {
 
-    public static Optional<Type> findType(TypeHelper typeHelper, String classOrType) {
-        Optional<Type> typeOptional = Optional.ofNullable(typeHelper.basic(classOrType));
-
-        if (!typeOptional.isPresent()) {
-            typeOptional = Optional.ofNullable(typeHelper.heuristicType(classOrType));
-        }
-
-        return typeOptional;
+    public static Optional<Type> findType(TypeConfiguration typeConfiguration, String classOrType) {
+        BasicType<Object> basicType = typeConfiguration.getBasicTypeRegistry().getRegisteredType(classOrType);
+        return Optional.ofNullable(basicType.getExpressibleJavaType().getJavaType());
     }
 }

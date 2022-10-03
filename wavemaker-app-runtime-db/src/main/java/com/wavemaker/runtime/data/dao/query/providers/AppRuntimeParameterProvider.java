@@ -14,13 +14,13 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dao.query.providers;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Session;
-import org.hibernate.TypeHelper;
-import org.hibernate.type.Type;
+import org.hibernate.type.spi.TypeConfiguration;
 
 import com.wavemaker.runtime.commons.variable.VariableType;
 import com.wavemaker.runtime.commons.variable.VariableTypeHelper;
@@ -43,8 +43,8 @@ public class AppRuntimeParameterProvider implements ParametersProvider {
         this.resolver = resolver;
     }
 
-    public AppRuntimeParameterProvider(WMQueryInfo queryInfo, TypeHelper typeHelper, WMQLTypeHelper wmqlTypeHelper) {
-        this(queryInfo.getParameterValueMap(wmqlTypeHelper), new RuntimeParameterTypeResolver(queryInfo.getParameters(), typeHelper, wmqlTypeHelper));
+    public AppRuntimeParameterProvider(WMQueryInfo queryInfo, TypeConfiguration typeConfiguration, WMQLTypeHelper wmqlTypeHelper) {
+        this(queryInfo.getParameterValueMap(wmqlTypeHelper), new RuntimeParameterTypeResolver(queryInfo.getParameters(), typeConfiguration, wmqlTypeHelper));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AppRuntimeParameterProvider implements ParametersProvider {
             if (variableType.isVariable()) {
                 final Optional<Type> type = getType(session, name);
                 if (type.isPresent()) {
-                    value = variableType.getValue(variableName, type.get().getReturnedClass());
+//                    value = variableType.getValue(variableName, type.get().getReturnedClass());
                 } else {
                     value = variableType.getValue(variableName);
                 }

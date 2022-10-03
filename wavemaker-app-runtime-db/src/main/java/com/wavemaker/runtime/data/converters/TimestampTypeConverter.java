@@ -16,7 +16,7 @@ package com.wavemaker.runtime.data.converters;
 
 import java.sql.Timestamp;
 
-import org.hibernate.type.TimestampType;
+import org.hibernate.type.descriptor.java.JdbcTimestampJavaType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -29,7 +29,7 @@ public class TimestampTypeConverter extends HibernateBackedJavaTypeConverter {
     public static final String ORACLE_SQL_TIMESTAMP = "oracle.sql.TIMESTAMP";
 
     public TimestampTypeConverter() {
-        super(TimestampType.INSTANCE.getJavaTypeDescriptor());
+        super(JdbcTimestampJavaType.INSTANCE);
     }
 
     @Override

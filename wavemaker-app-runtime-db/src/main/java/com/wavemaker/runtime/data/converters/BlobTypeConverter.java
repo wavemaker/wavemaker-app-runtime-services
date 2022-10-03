@@ -16,7 +16,7 @@ package com.wavemaker.runtime.data.converters;
 
 import java.sql.Blob;
 
-import org.hibernate.type.BlobType;
+import org.hibernate.type.descriptor.java.BlobJavaType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -24,7 +24,7 @@ import org.hibernate.type.BlobType;
  */
 public class BlobTypeConverter extends HibernateBackedJavaTypeConverter {
     public BlobTypeConverter() {
-        super(BlobType.INSTANCE.getJavaTypeDescriptor());
+        super(BlobJavaType.INSTANCE);
     }
 
     @Override

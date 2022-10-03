@@ -36,9 +36,9 @@ import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -164,7 +164,9 @@ public class WMMultipartUtils {
         } else if (Objects.equals(BLOB, field.getType().getSimpleName())) {
             SessionFactory sessionFactory = WMAppContext.getInstance().getSpringBean(serviceId + "SessionFactory");
             try (Session session = sessionFactory.openSession()) {
-                Blob blob = Hibernate.getLobCreator(session)
+                SessionImplementor sessionFactoryImplementor = (SessionImplementor) session.getSessionFactory();
+                Blob blob = sessionFactoryImplementor.getJdbcServices()
+                    .getLobCreator(sessionFactoryImplementor)
                     .createBlob(new ByteArrayInputStream(byteArray), byteArray.length);
                 method.invoke(instance, blob);
             }

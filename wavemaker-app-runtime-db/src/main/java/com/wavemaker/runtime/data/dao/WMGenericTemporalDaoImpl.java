@@ -23,11 +23,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.query.Query;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -196,7 +197,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
         return getHistoryTemplate().execute(session -> {
             final Query<?> query = session.createQuery(queryInfo.getQuery());
             ParametersConfigurator.configure(query, queryInfo.getParameterValueMap(getWMQLTypeHelper()),
-                new RuntimeParameterTypeResolver(queryInfo.getParameters(), session.getTypeHelper(), getWMQLTypeHelper()));
+                new RuntimeParameterTypeResolver(queryInfo.getParameters(), ((SessionFactoryImplementor) session.getSessionFactory()).getTypeConfiguration(), getWMQLTypeHelper()));
             return query.executeUpdate();
         });
     }

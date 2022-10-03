@@ -16,6 +16,7 @@ package com.wavemaker.runtime.data.util;
 
 import java.util.Optional;
 
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -42,7 +43,7 @@ public class HqlQueryHelper {
         final WMQueryInfo queryInfo = builder.build();
 
         final RuntimeQueryProvider<R> queryProvider = RuntimeQueryProvider.from(queryInfo, returnType);
-        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo, template.getSessionFactory().getTypeHelper(), wmqlTypeHelper);
+        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo, ((SessionFactoryImplementor) template.getSessionFactory()).getTypeConfiguration(), wmqlTypeHelper);
 
         return template
             .execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
@@ -55,7 +56,7 @@ public class HqlQueryHelper {
 
         final RuntimeQueryProvider<R> queryProvider = RuntimeQueryProvider.from(queryInfo, returnType);
 
-        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo, template.getSessionFactory().getTypeHelper(), wmqlTypeHelper);
+        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo, ((SessionFactoryImplementor) template.getSessionFactory()).getTypeConfiguration(), wmqlTypeHelper);
 
         return template.execute(new QueryCallback<>(queryProvider, parametersProvider));
     }

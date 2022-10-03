@@ -17,7 +17,9 @@ package com.wavemaker.runtime.data.expression;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-import org.hibernate.type.*;
+import org.hibernate.type.TrueFalseConverter;
+import org.hibernate.type.YesNoConverter;
+import org.hibernate.type.descriptor.java.*;
 
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
@@ -31,31 +33,31 @@ public enum AttributeType implements TypeConverter {
     BIG_DECIMAL {
         @Override
         public Object toJavaType(final Object value) {
-            return BigDecimalType.INSTANCE.fromString(value.toString());
+            return BigDecimalJavaType.INSTANCE.fromString(value.toString());
         }
     },
     BIG_INTEGER {
         @Override
         public Object toJavaType(final Object value) {
-            return BigIntegerType.INSTANCE.fromString(value.toString());
+            return BigIntegerJavaType.INSTANCE.fromString(value.toString());
         }
     },
     BLOB {
         @Override
         public Object toJavaType(final Object value) {
-            return BlobType.INSTANCE.fromString(value.toString());
+            return BlobJavaType.INSTANCE.fromString(value.toString());
         }
     },
     BOOLEAN {
         @Override
         public Object toJavaType(final Object value) {
-            return BooleanType.INSTANCE.fromString(value.toString());
+            return BooleanJavaType.INSTANCE.fromString(value.toString());
         }
     },
     BYTE {
         @Override
         public Object toJavaType(final Object value) {
-            return ByteType.INSTANCE.fromString(value.toString());
+            return ByteJavaType.INSTANCE.fromString(value.toString());
         }
     },
     CALENDAR {
@@ -73,19 +75,19 @@ public enum AttributeType implements TypeConverter {
     CHARACTER {
         @Override
         public Object toJavaType(final Object value) {
-            return CharacterType.INSTANCE.fromString(value.toString());
+            return CharacterJavaType.INSTANCE.fromString(value.toString());
         }
     },
     CLOB {
         @Override
         public Object toJavaType(final Object value) {
-            return ClobType.INSTANCE.fromString(value.toString());
+            return ClobJavaType.INSTANCE.fromString(value.toString());
         }
     },
     CURRENCY {
         @Override
         public Object toJavaType(final Object value) {
-            return CurrencyType.INSTANCE.fromString(value.toString());
+            return CurrencyJavaType.INSTANCE.fromString(value.toString());
         }
     },
     DATE {
@@ -101,49 +103,49 @@ public enum AttributeType implements TypeConverter {
     DOUBLE {
         @Override
         public Object toJavaType(final Object value) {
-            return DoubleType.INSTANCE.fromString(value.toString());
+            return DoubleJavaType.INSTANCE.fromString(value.toString());
         }
     },
     FLOAT {
         @Override
         public Object toJavaType(final Object value) {
-            return FloatType.INSTANCE.fromString(value.toString());
+            return FloatJavaType.INSTANCE.fromString(value.toString());
         }
     },
     INTEGER {
         @Override
         public Object toJavaType(final Object value) {
-            return IntegerType.INSTANCE.fromString(value.toString());
+            return IntegerJavaType.INSTANCE.fromString(value.toString());
         }
     },
     LONG {
         @Override
         public Object toJavaType(final Object value) {
-            return LongType.INSTANCE.fromString(value.toString());
+            return LongJavaType.INSTANCE.fromString(value.toString());
         }
     },
     LOCALE {
         @Override
         public Object toJavaType(final Object value) {
-            return LocaleType.INSTANCE.fromString(value.toString());
+            return LocaleJavaType.INSTANCE.fromString(value.toString());
         }
     },
     STRING {
         @Override
         public Object toJavaType(final Object value) {
-            return StringType.INSTANCE.fromString(value.toString());
+            return StringJavaType.INSTANCE.fromString(value.toString());
         }
     },
     SHORT {
         @Override
         public Object toJavaType(final Object value) {
-            return ShortType.INSTANCE.fromString(value.toString());
+            return ShortJavaType.INSTANCE.fromString(value.toString());
         }
     },
     TEXT {
         @Override
         public Object toJavaType(final Object value) {
-            return TextType.INSTANCE.fromString(value.toString());
+            return StringJavaType.INSTANCE.fromString(value.toString());
         }
     },
     TIME {
@@ -171,19 +173,19 @@ public enum AttributeType implements TypeConverter {
     TIMEZONE {
         @Override
         public Object toJavaType(final Object value) {
-            return TimeZoneType.INSTANCE.fromString(value.toString());
+            return TimeZoneJavaType.INSTANCE.fromString(value.toString());
         }
     },
     TRUE_FALSE {
         @Override
         public Object toJavaType(final Object value) {
-            return TrueFalseType.INSTANCE.fromString(value.toString());
+            return TrueFalseConverter.INSTANCE;
         }
     },
     YES_NO {
         @Override
         public Object toJavaType(final Object value) {
-            return YesNoType.INSTANCE.fromString(value.toString());
+            return YesNoConverter.INSTANCE;
         }
     };
 

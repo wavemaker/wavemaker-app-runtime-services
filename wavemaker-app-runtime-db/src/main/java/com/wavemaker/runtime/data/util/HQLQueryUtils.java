@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.hibernate.query.Query;
 import org.hibernate.type.AbstractStandardBasicType;
+import org.hibernate.type.Type;
 
 import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
@@ -28,11 +29,14 @@ import com.wavemaker.runtime.data.transform.WMResultTransformer;
 public class HQLQueryUtils {
 
     public static List<ReturnProperty> extractMetaForHql(final Query query) {
-        final org.hibernate.type.Type[] returnTypes = query.getReturnTypes();
-        final String[] returnAliases = query.getReturnAliases();
+/*        final Type[] returnTypes = query.getReturnTypes();
+        final String[] returnAliases = query.getReturnAliases();*/
+
+        final Type[] returnTypes = null;
+        final String[] returnAliases = null;
         List<ReturnProperty> properties = new ArrayList<>(returnTypes.length);
         for (int i = 0; i < returnTypes.length; i++) {
-            final org.hibernate.type.Type type = returnTypes[i];
+            final Type type = returnTypes[i];
 
             ReturnProperty property = new ReturnProperty();
 

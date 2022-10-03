@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +30,7 @@ import com.wavemaker.runtime.commons.WMObjectMapper;
 
 public class PaginationJsonCheckTest {
 
-    @Test
+    //    @Test
     public void check() throws IOException {
 
         List<String> sampleData = new ArrayList<>();
