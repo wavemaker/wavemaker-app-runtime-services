@@ -66,7 +66,7 @@ dependencies {
     //Logging related dependencies
     implementation(appDependenciesLibs.slf4j.api)
     implementation(appDependenciesLibs.log4j.core)
-    loggingCapabilityConfiguration(appDependenciesLibs.log4j.slf4j2.impl)
+    loggingCapabilityConfiguration(appDependenciesLibs.log4j.slf4j.impl)
 
     //runtime dependencies lib
     runtimeLibDependencies(projects.wavemakerAppRuntimeCore)
