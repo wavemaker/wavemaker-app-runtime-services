@@ -43,8 +43,11 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
 
     private CsrfTokenRepository csrfTokenRepository;
 
-    @Value("#{${security.general.cookie.maxAge} * 60}")
+    @Value("#{${security.general.cookie.maxAge:-1} * 60}")
     private int cookieMaxAge;
+
+    @Value("${security.general.cookie.path}")
+    private String cookiePath;
 
     public WMCsrfTokenRepositorySuccessHandler(CsrfTokenRepository csrfTokenRepository) {
         this.csrfTokenRepository = csrfTokenRepository;
@@ -73,11 +76,16 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
         if (csrfTokenOptional.isPresent()) {
             CsrfToken csrfToken = csrfTokenOptional.get();
             Cookie cookie = new Cookie(csrfConfig.getCookieName(), csrfToken.getToken());
+            String path = null;
             String contextPath = request.getContextPath();
-            if (StringUtils.isBlank(contextPath)) {
-                contextPath = "/";
+            if (StringUtils.isNotBlank(this.cookiePath)) {
+                path = this.cookiePath;
+            } else if (StringUtils.isNotBlank(contextPath)) {
+                path = this.cookiePath;
+            } else {
+                path = "/";
             }
-            cookie.setPath(contextPath);
+            cookie.setPath(path);
             cookie.setSecure(request.isSecure());
             cookie.setMaxAge(cookieMaxAge);
             response.addCookie(cookie);
