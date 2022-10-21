@@ -81,7 +81,7 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
             if (StringUtils.isNotBlank(this.cookiePath)) {
                 path = this.cookiePath;
             } else if (StringUtils.isNotBlank(contextPath)) {
-                path = this.cookiePath;
+                path = contextPath;
             } else {
                 path = "/";
             }
