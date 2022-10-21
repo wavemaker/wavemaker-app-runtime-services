@@ -43,7 +43,7 @@ public class WMSaml2WebSsoAuthenticationFilter extends Saml2WebSsoAuthentication
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         Saml2AuthenticationToken saml2AuthenticationToken = saml2AuthenticationTokenConverter.convert(request);
-        if (SAMLConfig.ValidateType.RELAXED == samlConfig.getValidateType()) {
+        if (samlConfig.getValidateType() == SAMLConfig.ValidateType.RELAXED) {
             SAMLHttpServletRequestWrapper requestWrapper = new SAMLHttpServletRequestWrapper(request, saml2AuthenticationToken, SSO);
             return super.attemptAuthentication(requestWrapper, response);
         } else {
