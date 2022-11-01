@@ -17,6 +17,8 @@ package com.wavemaker.runtime.security.session;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -28,6 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.data.constants.DBType;
 import com.wavemaker.runtime.data.datasource.WMDataSource;
 
 public class JdbcSessionScriptInitializer {
@@ -66,6 +69,16 @@ public class JdbcSessionScriptInitializer {
 
     private String extractDbType(String url) {
         String[] connectionUrl = url.split(":");
-        return connectionUrl[1];
+        String jdbcProtocol = connectionUrl[1];
+        DBType[] dbTypes = DBType.values();
+        for (DBType dbType : dbTypes) {
+            List<String> supportedJdbcProtocols = dbType.getSupportedJdbcProtocols();
+            for (String supportedJdbcProtocol : supportedJdbcProtocols) {
+                if (Objects.equals(jdbcProtocol, supportedJdbcProtocol)) {
+                    return dbType.getSpringSessionSchemaType();
+                }
+            }
+        }
+        throw new WMRuntimeException("Failed to retrieve DBType from URL");
     }
 }
