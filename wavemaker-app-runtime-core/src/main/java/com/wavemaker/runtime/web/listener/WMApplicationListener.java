@@ -78,8 +78,6 @@ public class WMApplicationListener implements ServletContextListener {
     }
 
     private void registerFilters(ServletContext servletContext, String applicationType) {
-        FilterRegistration.Dynamic springEncodingFilter = registerDelegatingFilterProxyFilter(servletContext, "springEncodingFilter");
-        springEncodingFilter.addMappingForUrlPatterns(null, false, "/*");
 
         FilterRegistration.Dynamic throwableTranslationFilter = registerDelegatingFilterProxyFilter(servletContext, "throwableTranslationFilter");
         throwableTranslationFilter.addMappingForUrlPatterns(null, false, "/*");
@@ -102,6 +100,9 @@ public class WMApplicationListener implements ServletContextListener {
             FilterRegistration.Dynamic wmCompressionFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompressionFilter");
             wmCompressionFilter.addMappingForUrlPatterns(null, false, "/*");
         }
+
+        FilterRegistration.Dynamic springEncodingFilter = registerDelegatingFilterProxyFilter(servletContext, "springEncodingFilter");
+        springEncodingFilter.addMappingForUrlPatterns(null, false, "/*");
 
         FilterRegistration.Dynamic cacheManagementFilter = registerDelegatingFilterProxyFilter(servletContext, "cacheManagementFilter");
         cacheManagementFilter.addMappingForUrlPatterns(null, false, "/*");
