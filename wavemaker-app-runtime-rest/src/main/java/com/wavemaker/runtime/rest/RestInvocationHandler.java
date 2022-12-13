@@ -131,7 +131,8 @@ public class RestInvocationHandler implements InvocationHandler {
                         return WMObjectMapper.getInstance().readValue(responseDetails.getBody(),
                             WMObjectMapper.getInstance().getTypeFactory()
                                 .constructCollectionType((Class<? extends Collection>) Class.forName(method.getReturnType().getName()),
-                                    Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName())));
+                                    Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName(),
+                                        true, Thread.currentThread().getContextClassLoader())));
                     }
                     return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
                 } else {
