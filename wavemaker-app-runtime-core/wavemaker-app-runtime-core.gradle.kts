@@ -38,6 +38,9 @@ dependencies {
     implementation(appDependenciesLibs.jackson.datatype.hibernate5)
     implementation(appDependenciesLibs.apache.httpclient)
     implementation(appDependenciesLibs.tika.core)
+    compileOnly(appDependenciesLibs.opensaml.saml.impl)
+    compileOnly(appDependenciesLibs.opensaml.core)
+    compileOnly(appDependenciesLibs.opensaml.api)
     implementation(appDependenciesLibs.antisamy) {
         exclude("org.slf4j", "slf4j-simple")
     }
