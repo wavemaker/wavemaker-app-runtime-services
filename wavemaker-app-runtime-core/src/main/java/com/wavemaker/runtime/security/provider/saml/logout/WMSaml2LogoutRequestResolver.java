@@ -23,6 +23,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.security.provider.saml.util.SamlUtils;
 
 public class WMSaml2LogoutRequestResolver implements Saml2LogoutRequestResolver {
@@ -39,6 +40,9 @@ public class WMSaml2LogoutRequestResolver implements Saml2LogoutRequestResolver 
     @Override
     public Saml2LogoutRequest resolve(HttpServletRequest request, Authentication authentication) {
         Saml2LogoutRequest saml2LogoutRequest = openSamlLogoutRequestResolver.resolve(request, authentication);
+        if (saml2LogoutRequest == null) {
+            throw new WMRuntimeException("Error creating saml2 logout request. Please check if the idp metadata contains logoutService definition");
+        }
         RelyingPartyRegistration relyingParty = this.relyingPartyRegistrationResolver.resolve(request, "saml");
         return Saml2LogoutRequest.withRelyingPartyRegistration(relyingParty)
             .relayState(SamlUtils.resolveRelayState(request))
