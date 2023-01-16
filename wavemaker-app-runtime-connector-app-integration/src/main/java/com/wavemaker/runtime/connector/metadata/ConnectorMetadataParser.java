@@ -18,8 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import com.wavemaker.commons.util.WMIOUtils;
 
@@ -39,7 +40,7 @@ public class ConnectorMetadataParser {
     }
 
     public static ConnectorMetadata parser(InputStream is) {
-        Yaml yaml = new Yaml(new Constructor(ConnectorMetadata.class));
+        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
         try {
             return yaml.loadAs(is, ConnectorMetadata.class);
         } catch (RuntimeException e) {
