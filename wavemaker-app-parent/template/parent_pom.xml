@@ -355,7 +355,7 @@
             </dependencies>
         </profile>
         <profile>
-            <id>wavemaker-demo-deployment</id>
+            <id>wmcloud-target-deployment</id>
             <dependencies>
                 <dependency>
                     <groupId>com.wavemaker.studio</groupId>
