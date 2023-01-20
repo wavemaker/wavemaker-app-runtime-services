@@ -20,7 +20,7 @@ import java.net.URL;
 
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import com.wavemaker.commons.util.WMIOUtils;
 
@@ -40,7 +40,7 @@ public class ConnectorMetadataParser {
     }
 
     public static ConnectorMetadata parser(InputStream is) {
-        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
+        Yaml yaml = new Yaml(new Constructor(ConnectorMetadata.class, new LoaderOptions()));
         try {
             return yaml.loadAs(is, ConnectorMetadata.class);
         } catch (RuntimeException e) {
