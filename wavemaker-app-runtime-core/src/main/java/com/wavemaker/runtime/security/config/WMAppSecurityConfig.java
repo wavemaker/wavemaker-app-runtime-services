@@ -34,10 +34,12 @@ public class WMAppSecurityConfig {
 
     private boolean enforceSecurity;
 
+    @Autowired(required = false)
     private LoginConfig loginConfig;
 
     private RolesConfig rolesConfig;
 
+    @Autowired(required = false)
     private RememberMeConfig rememberMeConfig;
 
     @Autowired
@@ -46,8 +48,10 @@ public class WMAppSecurityConfig {
     @Autowired
     private XSSConfig xssConfig;
 
+    @Autowired(required = false)
     private CSRFConfig csrfConfig;
 
+    @Autowired(required = false)
     private TokenAuthConfig tokenAuthConfig;
 
     public boolean isEnforceSecurity() {
