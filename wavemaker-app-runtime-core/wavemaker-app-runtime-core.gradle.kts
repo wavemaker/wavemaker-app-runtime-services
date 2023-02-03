@@ -10,12 +10,12 @@ val runtimeLibDependencies: Configuration by configurations.creating {
 }
 
 dependencies {
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springFramework.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springSecurity.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springData.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springSession.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.log4j.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.jackson.get()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springFramework.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springSecurity.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springData.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springSession.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.log4j.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.jackson.get().toString()))
     implementation(projects.wavemakerCommonsUtil)
     implementation(projects.wavemakerAppRuntimeCommons)
     implementation(projects.wavemakerAppRuntimePrefab)
