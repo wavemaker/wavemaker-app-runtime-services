@@ -52,6 +52,7 @@ dependencies {
     compileOnly(appDependenciesLibs.spring.security.ldap)
     compileOnly(appDependenciesLibs.spring.security.oauth2.client)
     compileOnly(appDependenciesLibs.spring.security.oauth2.jose)
+    compileOnly(appDependenciesLibs.spring.security.oauth2.resource.server)
     compileOnly(appDependenciesLibs.spring.security.saml2.service.provider)
     compileOnly(appDependenciesLibs.spring.session.jdbc)
     compileOnly(appDependenciesLibs.poiOoxml) {
