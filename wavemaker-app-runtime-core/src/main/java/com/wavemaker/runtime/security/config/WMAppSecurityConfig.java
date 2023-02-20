@@ -14,6 +14,8 @@
  ******************************************************************************/
 package com.wavemaker.runtime.security.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.model.security.LoginConfig;
 import com.wavemaker.commons.model.security.RememberMeConfig;
@@ -32,18 +34,24 @@ public class WMAppSecurityConfig {
 
     private boolean enforceSecurity;
 
+    @Autowired(required = false)
     private LoginConfig loginConfig;
 
     private RolesConfig rolesConfig;
 
+    @Autowired(required = false)
     private RememberMeConfig rememberMeConfig;
 
+    @Autowired
     private SSLConfig sslConfig;
 
+    @Autowired
     private XSSConfig xssConfig;
 
+    @Autowired(required = false)
     private CSRFConfig csrfConfig;
 
+    @Autowired(required = false)
     private TokenAuthConfig tokenAuthConfig;
 
     public boolean isEnforceSecurity() {
