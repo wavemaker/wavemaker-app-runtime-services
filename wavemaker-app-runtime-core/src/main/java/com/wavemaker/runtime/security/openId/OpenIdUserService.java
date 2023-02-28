@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -36,6 +37,7 @@ import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 public class OpenIdUserService extends OidcUserService {
 
     @Autowired(required = false)
+    @Qualifier("userAuthoritiesProvider")
     private AuthoritiesProvider authoritiesProvider;
 
     @Override
