@@ -15,6 +15,7 @@
 
 package com.wavemaker.runtime.rest.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
@@ -46,6 +47,7 @@ public class HttpConfiguration {
     private String trustStorePassword;
     private boolean hostNameVerificationEnabled;
 
+    @Autowired
     public HttpConfiguration(Environment environment) {
         useSystemProperties = environment.getProperty("app.rest.useSystemProperties", Boolean.class, false);
         connectionSocketTimeoutInSeconds = environment.getProperty("app.rest.connectionSocketTimeout", Integer.class, 360);

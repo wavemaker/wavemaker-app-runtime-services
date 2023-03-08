@@ -17,17 +17,21 @@ package com.wavemaker.runtime.ssl;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.wavemaker.commons.util.SSLUtils;
+import com.wavemaker.runtime.rest.service.SSLContextProvider;
 
 /**
  * @author Uday Shankar
  */
 public class SSLSocketFactoryFactoryBean implements FactoryBean<SSLSocketFactory> {
 
+    @Autowired
+    private SSLContextProvider sslContextProvider;
+
     @Override
     public SSLSocketFactory getObject() throws Exception {
-        return SSLUtils.getAllTrustedCertificateSSLContext().getSocketFactory();
+        return sslContextProvider.getSslContext().getSocketFactory();
     }
 
     @Override

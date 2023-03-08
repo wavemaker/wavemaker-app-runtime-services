@@ -37,25 +37,29 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.util.PublicSuffixMatcherLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.SSLUtils;
 import com.wavemaker.runtime.rest.TrustStoreConfig;
 
-public class SSLContextBuilder {
+public class SSLContextProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(SSLContextBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(SSLContextProvider.class);
 
     private SSLContext sslContext;
-
+    private HostnameVerifier hostnameVerifier;
     private HttpConfiguration httpConfiguration;
 
-    public SSLContextBuilder(HttpConfiguration httpConfiguration) {
+    @Autowired
+    public SSLContextProvider(HttpConfiguration httpConfiguration) {
         this.httpConfiguration = httpConfiguration;
+        initSslContext();
+        initHostnameVerifier();
     }
 
-    public SSLContext getSslContext() {
+    private void initSslContext() {
         try {
             sslContext = SSLContext.getInstance("TLSv1.2");
             sslContext.init(getKeyManager(), getTrustManager(), new SecureRandom());
@@ -63,15 +67,24 @@ public class SSLContextBuilder {
             logger.warn("Failed in initialize ssl context", e);
             throw new WMRuntimeException(e);
         }
+    }
+
+    private void initHostnameVerifier() {
+        if (httpConfiguration.isHostNameVerificationEnabled()) {
+            logger.info("Initializing default host name verifier");
+            hostnameVerifier = new DefaultHostnameVerifier(PublicSuffixMatcherLoader.getDefault());
+        } else {
+            logger.info("Initializing Noop host name verifier");
+            hostnameVerifier = NoopHostnameVerifier.INSTANCE;
+        }
+    }
+
+    public SSLContext getSslContext() {
         return sslContext;
     }
 
-    public HostnameVerifier getHostNameVerifier() {
-        if (httpConfiguration.isHostNameVerificationEnabled()) {
-            return new DefaultHostnameVerifier(PublicSuffixMatcherLoader.getDefault());
-        } else {
-            return NoopHostnameVerifier.INSTANCE;
-        }
+    public HostnameVerifier getHostnameVerifier() {
+        return hostnameVerifier;
     }
 
     private KeyManager[] getKeyManager() {

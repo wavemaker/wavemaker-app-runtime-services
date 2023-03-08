@@ -38,6 +38,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.InputStreamResource;
@@ -72,6 +73,7 @@ public class RestConnector {
         this(new StandardEnvironment());
     }
 
+    @Autowired
     public RestConnector(Environment environment) {
         httpConfiguration = new HttpConfiguration(environment);
         logger.info("Initialized http configuration {}", httpConfiguration);
@@ -172,10 +174,10 @@ public class RestConnector {
     }
 
     private PoolingHttpClientConnectionManager getConnectionManager() {
-        SSLContextBuilder sslContextBuilder = new SSLContextBuilder(httpConfiguration);
+        SSLContextProvider sslContextProvider = new SSLContextProvider(httpConfiguration);
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
             .register("http", PlainConnectionSocketFactory.getSocketFactory())
-            .register("https", new SSLConnectionSocketFactory(sslContextBuilder.getSslContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, sslContextBuilder.getHostNameVerifier()))
+            .register("https", new SSLConnectionSocketFactory(sslContextProvider.getSslContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, sslContextProvider.getHostnameVerifier()))
             .build();
 
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);

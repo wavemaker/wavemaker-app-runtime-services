@@ -98,6 +98,8 @@ public class RestRuntimeService {
     private Environment environment;
 
     private PathMatcher pathMatcher = new AntPathMatcher();
+
+    @Autowired
     private RestConnector restConnector;
 
     @PostConstruct
@@ -105,7 +107,6 @@ public class RestRuntimeService {
         restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
         restRuntimeServiceCacheHelper.setPropertyPlaceHolderReplacementHelper(propertyPlaceHolderReplacementHelper);
         restRuntimeServiceCacheHelper.setEnvironment(environment);
-        restConnector = new RestConnector(environment);
     }
 
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {

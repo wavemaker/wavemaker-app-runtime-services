@@ -16,17 +16,22 @@ package com.wavemaker.runtime.ssl;
 
 import javax.net.ssl.HostnameVerifier;
 
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.wavemaker.runtime.rest.service.SSLContextProvider;
 
 /**
  * @author Uday Shankar
  */
 public class HostnameVerifierFactoryBean implements FactoryBean<HostnameVerifier> {
 
+    @Autowired
+    private SSLContextProvider sslContextProvider;
+
     @Override
     public HostnameVerifier getObject() throws Exception {
-        return NoopHostnameVerifier.INSTANCE;
+        return sslContextProvider.getHostnameVerifier();
     }
 
     @Override
