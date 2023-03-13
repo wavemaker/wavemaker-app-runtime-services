@@ -34,6 +34,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml4LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml4LogoutResponseResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseResolver;
@@ -42,6 +43,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestResolver;
+import com.wavemaker.runtime.security.provider.saml.util.SamlUtils;
 
 @Configuration
 @Conditional(OpenSamlLatestVersionCondition.class)
@@ -60,9 +62,10 @@ public class OpenSaml4Config {
     private AuthoritiesProvider authoritiesProvider;
 
     @Bean("saml2AuthenticationRequestResolver")
-    public WMSaml2AuthenticationRequestResolver saml2AuthenticationRequestResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
-        return new WMSaml2AuthenticationRequestResolver(relyingPartyRegistrationResolver,
-            new OpenSaml4AuthenticationRequestResolver(relyingPartyRegistrationResolver));
+    public Saml2AuthenticationRequestResolver saml2AuthenticationRequestResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
+        OpenSaml4AuthenticationRequestResolver openSaml4AuthenticationRequestResolver = new OpenSaml4AuthenticationRequestResolver(relyingPartyRegistrationResolver);
+        openSaml4AuthenticationRequestResolver.setRelayStateResolver(SamlUtils::resolveRelayState);
+        return openSaml4AuthenticationRequestResolver;
     }
 
     @Bean("saml2LogoutRequestResolver")
