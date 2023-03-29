@@ -46,6 +46,8 @@ dependencies {
     }
     implementation(libs.freemarker)
     implementation(libs.swagger.annotations)
+    implementation(libs.aspectjrt)
+    implementation(libs.aspectjweaver)
     compileOnly(libs.javax.servlet.api)
     compileOnly(libs.spring.contextSupport)
     compileOnly(libs.spring.security.cas)
@@ -57,8 +59,6 @@ dependencies {
     compileOnly(libs.spring.session.jdbc)
     runtimeOnly(libs.hikariCP)
     runtimeOnly(libs.spring.security.config)
-    runtimeOnly(libs.aspectjrt)
-    runtimeOnly(libs.aspectjweaver)
     testImplementation(libs.test.testng)
     testImplementation(libs.test.junit4)
     testImplementation(libs.test.mockito.all)
