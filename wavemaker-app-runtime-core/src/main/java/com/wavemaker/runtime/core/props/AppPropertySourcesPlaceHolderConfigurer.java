@@ -15,9 +15,16 @@
 
 package com.wavemaker.runtime.core.props;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Properties;
+
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringValueResolver;
 import org.springframework.web.context.ServletContextAware;
 
@@ -31,12 +38,24 @@ public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegister
 
     private ServletContext servletContext;
 
+    private Resource[] locations;
+
     @Override
     protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
                                        final StringValueResolver valueResolver) {
 
         StringValueResolver updatedValueResolver = strVal -> convertPropertyValue(valueResolver.resolveStringValue(strVal));
         super.doProcessProperties(beanFactoryToProcess, updatedValueResolver);
+    }
+
+    @Override
+    protected void loadProperties(Properties props) throws IOException {
+        //Using YamlPropertiesFactoryBean instead of WMYamlPropertiesFactoryBean because @ConfigurationProperties is loading
+        //custom objects if properties are in the form[0],[1] etc
+        YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
+        yamlPropertiesFactoryBean.setResources(getResourcesByFileExtension(locations, ".yml"));
+        props.putAll(yamlPropertiesFactoryBean.getObject());
+        super.loadProperties(props);
     }
 
     @Override
@@ -74,5 +93,17 @@ public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegister
     @Override
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
+    }
+
+    @Override
+    public void setLocations(Resource... locations) {
+        this.locations = locations;
+        super.setLocations(getResourcesByFileExtension(locations, ".properties"));
+    }
+
+    private Resource[] getResourcesByFileExtension(Resource[] locations, String fileExtension) {
+        return Arrays.stream(locations).filter(resource -> {
+            return Objects.requireNonNull(resource.getFilename()).endsWith(fileExtension);
+        }).toArray(Resource[]::new);
     }
 }

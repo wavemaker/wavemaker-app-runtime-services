@@ -7,14 +7,16 @@
     <import resource="classpath:prefab-dispatcher-servlet.xml"/>
     <import resource="classpath:prefab-services.xml"/>
 
+<!--    TODO handle yaml for prefabs-->
     <bean class="com.wavemaker.runtime.core.props.AppPropertySourcesPlaceHolderConfigurer" id="prefabPropertySourcesPlaceHolderConfigurer">
         <property name="propertySourceName" value="prefabPropertiesPropertySource"/>
         <property name="locations">
             <list>
                 <value>classpath:prefab-app.properties</value>
                 <value>classpath:app.properties</value>
-                <value>classpath*:conf/securityService.properties</value>
+                <value>classpath*:conf/securityService.yml</value>
                 <value>classpath*:prefab-conf/*.properties</value>
+                <value>classpath*:prefab-conf/*.yml</value>
             </list>
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>

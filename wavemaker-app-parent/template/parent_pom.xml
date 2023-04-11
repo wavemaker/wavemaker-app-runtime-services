@@ -50,14 +50,14 @@
                 <filtering>true</filtering>
                 <directory>target/generated-resources</directory>
                 <includes>
-                    <include>conf/**.properties</include>
+                    <include>conf/**.yml</include>
                 </includes>
             </resource>
             <resource>
                 <filtering>false</filtering>
                 <directory>target/generated-resources</directory>
                 <excludes>
-                    <exclude>conf/**.properties</exclude>
+                    <exclude>conf/**.yml</exclude>
                 </excludes>
             </resource>
         </resources>
