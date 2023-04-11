@@ -51,6 +51,7 @@
                 <directory>target/generated-resources</directory>
                 <includes>
                     <include>conf/**.properties</include>
+                    <include>conf/**.yaml</include>
                 </includes>
             </resource>
             <resource>
@@ -58,6 +59,7 @@
                 <directory>target/generated-resources</directory>
                 <excludes>
                     <exclude>conf/**.properties</exclude>
+                    <exclude>conf/**.yaml</exclude>
                 </excludes>
             </resource>
         </resources>

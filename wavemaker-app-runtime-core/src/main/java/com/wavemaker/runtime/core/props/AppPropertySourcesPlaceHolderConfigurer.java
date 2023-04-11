@@ -15,13 +15,18 @@
 
 package com.wavemaker.runtime.core.props;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringValueResolver;
 import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.commons.properties.EnvironmentRegisteringPropertySourcesPlaceHolderConfigurer;
+import com.wavemaker.commons.util.DefaultYamlProcessor;
 import com.wavemaker.commons.util.StringUtils;
 import com.wavemaker.commons.util.SystemUtils;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
@@ -31,12 +36,27 @@ public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegister
 
     private ServletContext servletContext;
 
+    private Resource[] yamlLocations;
+
     @Override
     protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
                                        final StringValueResolver valueResolver) {
 
         StringValueResolver updatedValueResolver = strVal -> convertPropertyValue(valueResolver.resolveStringValue(strVal));
         super.doProcessProperties(beanFactoryToProcess, updatedValueResolver);
+    }
+
+    /**
+     * This method loads the properties from the yaml files and also call super to load the properties from a properties file
+     * and adds them to the properties object.
+     */
+
+    @Override
+    protected void loadProperties(Properties props) throws IOException {
+        DefaultYamlProcessor defaultYamlProcessor = new DefaultYamlProcessor();
+        defaultYamlProcessor.setResources(yamlLocations);
+        props.putAll(defaultYamlProcessor.getProperties());
+        super.loadProperties(props);
     }
 
     @Override
@@ -74,5 +94,9 @@ public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegister
     @Override
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
+    }
+
+    public void setYamlLocations(Resource[] yamlLocations) {
+        this.yamlLocations = yamlLocations;
     }
 }

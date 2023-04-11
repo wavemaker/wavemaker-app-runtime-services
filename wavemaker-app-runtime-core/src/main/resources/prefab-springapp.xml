@@ -13,8 +13,13 @@
             <list>
                 <value>classpath:prefab-app.properties</value>
                 <value>classpath:app.properties</value>
-                <value>classpath*:conf/securityService.properties</value>
                 <value>classpath*:prefab-conf/*.properties</value>
+            </list>
+        </property>
+        <property name="yamlLocations">
+            <list>
+                <value>classpath*:conf/securityService.yaml</value>
+                <value>classpath*:prefab-conf/*.yaml</value>
             </list>
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
