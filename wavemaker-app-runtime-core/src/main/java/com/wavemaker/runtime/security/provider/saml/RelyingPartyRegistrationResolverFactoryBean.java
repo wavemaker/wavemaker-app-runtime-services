@@ -32,29 +32,29 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
+import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.model.security.saml.MetadataSource;
 import com.wavemaker.commons.util.WMIOUtils;
 
-@Configuration
-public class WMSAMLSecurityConfig {
+public class RelyingPartyRegistrationResolverFactoryBean implements FactoryBean<RelyingPartyRegistrationResolver> {
 
     @Autowired
     private Environment environment;
-    private static final Logger logger = LoggerFactory.getLogger(WMSAMLSecurityConfig.class);
+    @Value("${security.providers.saml.entityBaseURL:#{null}}")
+    private String applicationUri;
+
     private static final String PROVIDERS_SAML_KEY_STORE_FILE = "security.providers.saml.keyStoreFile";
     private static final String PROVIDERS_SAML_KEY_STORE_PASSWORD = "security.providers.saml.keyStorePassword";
     private static final String PROVIDERS_SAML_KEY_STORE_ALIAS = "security.providers.saml.keyAlias";
@@ -62,8 +62,19 @@ public class WMSAMLSecurityConfig {
     private static final String PROVIDERS_SAML_IDP_METADATA_FILE = "security.providers.saml.idpMetadataFile";
     private static final String PROVIDERS_SAML_IDP_METADATA_URL = "security.providers.saml.idpMetadataUrl";
 
-    @Bean("relyingPartyRegistrations")
-    public RelyingPartyRegistrationRepository relyingPartyRegistrations() {
+    @Override
+    public RelyingPartyRegistrationResolver getObject() throws Exception {
+        WMRelyingPartyRegistrationResolver relyingPartyRegistrationResolver = new WMRelyingPartyRegistrationResolver(relyingPartyRegistrations());
+        relyingPartyRegistrationResolver.setApplicationUri(applicationUri);
+        return relyingPartyRegistrationResolver;
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return WMRelyingPartyRegistrationResolver.class;
+    }
+
+    private RelyingPartyRegistrationRepository relyingPartyRegistrations() {
 
         final String keyStoreFileName = environment.getProperty(PROVIDERS_SAML_KEY_STORE_FILE);
         final String keyStorePassword = environment.getProperty(PROVIDERS_SAML_KEY_STORE_PASSWORD);

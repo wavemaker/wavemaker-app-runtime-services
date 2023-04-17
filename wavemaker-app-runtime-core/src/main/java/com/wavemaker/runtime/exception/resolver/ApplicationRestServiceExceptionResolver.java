@@ -61,8 +61,7 @@ import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.data.exception.BlobContentNotFoundException;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
-import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizer;
-import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizerFactory;
+import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
 /**
  * @author sunilp
@@ -274,11 +273,11 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     private ErrorResponse getErrorResponse(MessageResource messageResource, Object... args) {
         List<String> parameters = new ArrayList<>();
-        XSSEncodeSanitizer encodeSanitizer = XSSEncodeSanitizerFactory.getInstance();
+        XSSSecurityHandler xssSecurityHandler = XSSSecurityHandler.getInstance();
         if (args != null) {
             for (Object arg : args) {
                 if (arg != null) {
-                    parameters.add(encodeSanitizer.sanitizeOutgoingData(arg.toString()));
+                    parameters.add(xssSecurityHandler.sanitizeOutgoingData(arg.toString()));
                     continue;
                 }
                 parameters.add(null);

@@ -61,6 +61,9 @@ public class OAuth2RuntimeServiceManager {
     @Autowired
     private OAuthProvidersManager oAuthProvidersManager;
 
+    @Autowired
+    private RestConnector restConnector;
+
     private static final Logger logger = LoggerFactory.getLogger(OAuth2RuntimeServiceManager.class);
 
     public String getAuthorizationUrl(String providerId, String requestSourceType, String key, HttpServletRequest httpServletRequest) {
@@ -108,7 +111,7 @@ public class OAuth2RuntimeServiceManager {
             .setContentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .setRequestBody(requestBody).build();
 
-        HttpResponseDetails httpResponseDetails = RestConnector.DEFAULT_INSTANCE.invokeRestCall(httpRequestDetails);
+        HttpResponseDetails httpResponseDetails = restConnector.invokeRestCall(httpRequestDetails);
 
         if (httpResponseDetails.getStatusCode() == 200) {
             String response = WMIOUtils.toString(httpResponseDetails.getBody());

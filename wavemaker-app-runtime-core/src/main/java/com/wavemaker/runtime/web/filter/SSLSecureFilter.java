@@ -50,11 +50,9 @@ public class SSLSecureFilter extends GenericFilterBean {
     @Override
     protected void initFilterBean() {
         SSLConfig sslConfig = wmAppSecurityConfig.getSslConfig();
-        if (sslConfig != null) {
-            this.sslConfig = sslConfig;
-            excludedUrlsList = CoreFilterUtil.extractExcludedUrlsList(this.sslConfig.getExcludedUrls());
-            logger.info("SSLConfig set in filter {}", sslConfig);
-        }
+        this.sslConfig = sslConfig;
+        excludedUrlsList = CoreFilterUtil.extractExcludedUrlsList(this.sslConfig.getExcludedUrls());
+        logger.info("SSLConfig set in filter {}", sslConfig);
     }
 
     @Override

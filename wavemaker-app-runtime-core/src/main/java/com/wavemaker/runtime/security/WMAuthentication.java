@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -31,7 +30,7 @@ import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
 /**
  * Created by srujant on 13/8/18.
  */
-public class WMAuthentication extends AbstractAuthenticationToken {
+public class WMAuthentication extends AbstractMutableAuthoritiesAuthenticationToken {
 
     private static String prefix = "ROLE_";
 
@@ -44,7 +43,7 @@ public class WMAuthentication extends AbstractAuthenticationToken {
     private transient Authentication authenticationSource;
 
     public WMAuthentication(Authentication authenticationSource) {
-        super(mapAuthorities(authenticationSource.getAuthorities()));
+        super((Collection<GrantedAuthority>) mapAuthorities(authenticationSource.getAuthorities()));
         this.principal = authenticationSource.getName();
         this.authenticationSource = authenticationSource;
         if (authenticationSource.getPrincipal() instanceof WMUser) {
@@ -97,9 +96,9 @@ public class WMAuthentication extends AbstractAuthenticationToken {
         attributes.put(key, new Attribute(scope, value));
     }
 
-    private static Set<SimpleGrantedAuthority> mapAuthorities(
+    private static Set<? extends GrantedAuthority> mapAuthorities(
         Collection<? extends GrantedAuthority> authorities) {
-        HashSet<SimpleGrantedAuthority> mapped = new HashSet<>(authorities.size());
+        Set<SimpleGrantedAuthority> mapped = new HashSet<>(authorities.size());
         for (GrantedAuthority authority : authorities) {
             mapped.add(mapAuthority(authority.getAuthority()));
         }

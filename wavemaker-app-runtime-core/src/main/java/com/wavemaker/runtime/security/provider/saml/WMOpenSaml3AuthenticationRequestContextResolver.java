@@ -31,12 +31,12 @@ import org.springframework.util.Assert;
 
 import com.wavemaker.commons.WMRuntimeException;
 
-public class WMSaml2AuthenticationRequestContextResolver implements Saml2AuthenticationRequestContextResolver {
+public class WMOpenSaml3AuthenticationRequestContextResolver implements Saml2AuthenticationRequestContextResolver {
 
-    private static final Logger logger = LoggerFactory.getLogger(WMSaml2AuthenticationRequestContextResolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(WMOpenSaml3AuthenticationRequestContextResolver.class);
     private final Converter<HttpServletRequest, RelyingPartyRegistration> relyingPartyRegistrationResolver;
 
-    public WMSaml2AuthenticationRequestContextResolver(
+    public WMOpenSaml3AuthenticationRequestContextResolver(
         Converter<HttpServletRequest, RelyingPartyRegistration> relyingPartyRegistrationResolver) {
         this.relyingPartyRegistrationResolver = relyingPartyRegistrationResolver;
     }

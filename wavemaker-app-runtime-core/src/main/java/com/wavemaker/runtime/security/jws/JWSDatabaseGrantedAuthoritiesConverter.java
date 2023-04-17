@@ -12,34 +12,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.provider.saml;
+
+package com.wavemaker.runtime.security.jws;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.opensaml.saml.saml2.core.Assertion;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 
-/**
- * @author Arjun Sahasranam
- */
-public class SamlDatabaseBasedAuthoritiesExtractor implements Converter<Assertion, Collection<? extends GrantedAuthority>> {
+public class JWSDatabaseGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
-    @Autowired
+    private String userNameClaimName;
+
     private AuthoritiesProvider authoritiesProvider;
 
-    @Override
-    public Collection<GrantedAuthority> convert(Assertion assertion) {
-        String username = assertion.getSubject().getNameID().getValue();
-        Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
-        dbAuthsSet.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(username)));
-        return dbAuthsSet;
+    public JWSDatabaseGrantedAuthoritiesConverter(String userNameClaimName, AuthoritiesProvider authoritiesProvider) {
+        this.userNameClaimName = userNameClaimName;
+        this.authoritiesProvider = authoritiesProvider;
     }
 
+    @Override
+    public Collection<GrantedAuthority> convert(Jwt jwt) {
+        String userName = jwt.getClaimAsString(userNameClaimName);
+        return authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(userName));
+    }
+
+    public void setUserNameClaimName(String userNameClaimName) {
+        this.userNameClaimName = userNameClaimName;
+    }
+
+    public void setAuthoritiesProvider(AuthoritiesProvider authoritiesProvider) {
+        this.authoritiesProvider = authoritiesProvider;
+    }
 }

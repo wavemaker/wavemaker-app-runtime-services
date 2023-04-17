@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -27,18 +30,18 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 public class WMInMemorySessionRepository implements FindByIndexNameSessionRepository<MapSession> {
 
     private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
-    private final Map<String, Session> sessions;
+    private Cache<String, Session> sessions;
     private Integer defaultMaxInactiveInterval;
 
-    public WMInMemorySessionRepository(Map<String, Session> sessions) {
-        if (sessions == null) {
-            throw new IllegalArgumentException("sessions cannot be null");
-        } else {
-            this.sessions = sessions;
-        }
+    @PostConstruct
+    public void init() {
+        this.sessions = CacheBuilder.newBuilder().expireAfterAccess(defaultMaxInactiveInterval, TimeUnit.SECONDS).build();
     }
 
     @Override
@@ -47,7 +50,7 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
             return Collections.emptyMap();
         }
         Map<String, MapSession> sessionMap = new HashMap<>();
-        sessions.values().stream().filter(session -> Objects.equals(getPrincipal(session), value))
+        sessions.asMap().values().stream().filter(session -> Objects.equals(getPrincipal(session), value))
             .forEach(session -> sessionMap.put(session.getId(), (MapSession) session));
         return sessionMap;
     }
@@ -64,14 +67,14 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
     @Override
     public void save(MapSession session) {
         if (!session.getId().equals(session.getOriginalId())) {
-            this.sessions.remove(session.getOriginalId());
+            this.sessions.invalidate(session.getOriginalId());
         }
         this.sessions.put(session.getId(), new MapSession(session));
     }
 
     @Override
     public MapSession findById(String id) {
-        Session saved = this.sessions.get(id);
+        Session saved = this.sessions.getIfPresent(id);
         if (saved == null) {
             return null;
         } else if (saved.isExpired()) {
@@ -84,7 +87,7 @@ public class WMInMemorySessionRepository implements FindByIndexNameSessionReposi
 
     @Override
     public void deleteById(String id) {
-        this.sessions.remove(id);
+        this.sessions.invalidate(id);
     }
 
     public void setDefaultMaxInactiveInterval(int defaultMaxInactiveInterval) {

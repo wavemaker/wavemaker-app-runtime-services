@@ -10,12 +10,12 @@ val runtimeLibDependencies: Configuration by configurations.creating {
 }
 
 dependencies {
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springFramework.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springSecurity.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springData.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.springSession.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.log4j.get()))
-    implementation(enforcedPlatform(appDependenciesLibs.boms.jackson.get()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springFramework.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springSecurity.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springData.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.springSession.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.log4j.get().toString()))
+    implementation(enforcedPlatform(appDependenciesLibs.boms.jackson.get().toString()))
     implementation(projects.wavemakerCommonsUtil)
     implementation(projects.wavemakerAppRuntimeCommons)
     implementation(projects.wavemakerAppRuntimePrefab)
@@ -38,6 +38,9 @@ dependencies {
     implementation(appDependenciesLibs.jackson.datatype.hibernate5)
     implementation(appDependenciesLibs.apache.httpclient)
     implementation(appDependenciesLibs.tika.core)
+    compileOnly(appDependenciesLibs.opensaml.saml.impl)
+    compileOnly(appDependenciesLibs.opensaml.core)
+    compileOnly(appDependenciesLibs.opensaml.api)
     implementation(appDependenciesLibs.antisamy) {
         exclude("org.slf4j", "slf4j-simple")
     }
@@ -49,6 +52,7 @@ dependencies {
     compileOnly(appDependenciesLibs.spring.security.ldap)
     compileOnly(appDependenciesLibs.spring.security.oauth2.client)
     compileOnly(appDependenciesLibs.spring.security.oauth2.jose)
+    compileOnly(appDependenciesLibs.spring.security.oauth2.resource.server)
     compileOnly(appDependenciesLibs.spring.security.saml2.service.provider)
     compileOnly(appDependenciesLibs.spring.session.jdbc)
     compileOnly(appDependenciesLibs.poiOoxml) {
