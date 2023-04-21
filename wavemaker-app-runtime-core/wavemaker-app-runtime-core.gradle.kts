@@ -32,6 +32,7 @@ dependencies {
     implementation(appDependenciesLibs.spring.security.core)
     implementation(appDependenciesLibs.spring.security.web)
     implementation(appDependenciesLibs.spring.session.core)
+    implementation(appDependenciesLibs.spring.boot)
     implementation(appDependenciesLibs.hibernate.validator)
     implementation(appDependenciesLibs.jackson.dataformat.yaml)
     implementation(appDependenciesLibs.jackson.datatype.jsr310)
