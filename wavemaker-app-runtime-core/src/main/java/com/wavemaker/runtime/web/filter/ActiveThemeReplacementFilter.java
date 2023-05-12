@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.PropertiesFileUtils;
 import com.wavemaker.runtime.web.wrapper.ActiveThemeReplacementServletResponseWrapper;
 
@@ -55,6 +56,7 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
             activeTheme = properties.getProperty("activeTheme");
         } else {
             logger.warn("themesConfig.properties file not found in classpath");
+            throw new WMRuntimeException("themesConfig.properties file not found in classpath");
         }
     }
     @Override
