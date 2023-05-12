@@ -41,7 +41,7 @@ import com.wavemaker.runtime.web.wrapper.ActiveThemeReplacementServletResponseWr
 public class ActiveThemeReplacementFilter extends GenericFilterBean {
     private static final String ACTIVE_THEME_PLACEHOLDER = "_activeTheme_";
 
-    private static final Logger activeThemeReplacementFilterLogger = LoggerFactory.getLogger(ActiveThemeReplacementFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ActiveThemeReplacementFilter.class);
 
     private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
     private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
@@ -54,6 +54,7 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
         if (resourceAsStream != null) {
             Properties properties = PropertiesFileUtils.loadProperties(resourceAsStream);
             activeTheme = properties.getProperty("activeTheme");
+            logger.info("Detected active theme as : {}", activeTheme);
         } else {
             logger.warn("themesConfig.properties file not found in classpath");
             throw new WMRuntimeException("themesConfig.properties file not found in classpath");
@@ -63,7 +64,7 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         if (requestMatches(httpServletRequest)) {
-            activeThemeReplacementFilterLogger.debug("Replacing _activeTheme_ placeholder with the value : {}", activeTheme);
+            logger.debug("Replacing _activeTheme_ placeholder with the value : {}", activeTheme);
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
             ActiveThemeReplacementServletResponseWrapper activeThemeReplacementServletResponseWrapper =
                 new ActiveThemeReplacementServletResponseWrapper(httpServletResponse);
