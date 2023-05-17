@@ -18,8 +18,6 @@ package com.wavemaker.runtime.web.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
@@ -34,8 +32,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.PropertiesFileUtils;
 import com.wavemaker.runtime.web.wrapper.ActiveThemeReplacementServletResponseWrapper;
 
 public class ActiveThemeReplacementFilter extends GenericFilterBean {
@@ -49,15 +47,19 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
     private String activeTheme;
 
     @PostConstruct
-    public void init() throws MalformedURLException {
-        InputStream resourceAsStream = getServletContext().getResourceAsStream("themes/themesConfig.properties");
+    public void init() {
+        InputStream resourceAsStream = getServletContext().getResourceAsStream("themes/themes-config.json");
         if (resourceAsStream != null) {
-            Properties properties = PropertiesFileUtils.loadProperties(resourceAsStream);
-            activeTheme = properties.getProperty("activeTheme");
+            try {
+                activeTheme = new ObjectMapper().readTree(resourceAsStream).get("activeTheme").asText();
+            } catch (IOException e) {
+                logger.error("Error while reading themes-config.json file", e);
+                throw new WMRuntimeException(e);
+            }
             logger.info("Detected active theme as : {}", activeTheme);
         } else {
-            logger.warn("themesConfig.properties file not found in classpath");
-            throw new WMRuntimeException("themesConfig.properties file not found in classpath");
+            logger.warn("themes-config.json file not found in classpath");
+            throw new WMRuntimeException("themes-config.json file not found in classpath");
         }
     }
     @Override
