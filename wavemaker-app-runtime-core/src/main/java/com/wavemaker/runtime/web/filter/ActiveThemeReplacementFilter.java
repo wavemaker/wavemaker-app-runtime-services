@@ -16,10 +16,8 @@
 package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -29,11 +27,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.service.AppRuntimeServiceImpl;
 import com.wavemaker.runtime.web.wrapper.ActiveThemeReplacementServletResponseWrapper;
 
 public class ActiveThemeReplacementFilter extends GenericFilterBean {
@@ -43,36 +41,19 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
 
     private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
     private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
+    @Autowired
+    private AppRuntimeServiceImpl appRuntimeService;
 
-    private String activeTheme;
-
-    @PostConstruct
-    public void init() {
-        InputStream resourceAsStream = getServletContext().getResourceAsStream("themes/themes-config.json");
-        if (resourceAsStream != null) {
-            try {
-                activeTheme = new ObjectMapper().readTree(resourceAsStream).get("activeTheme").asText();
-            } catch (IOException e) {
-                logger.error("Error while reading themes-config.json file", e);
-                throw new WMRuntimeException(e);
-            }
-            logger.info("Detected active theme as : {}", activeTheme);
-        } else {
-            logger.warn("themes-config.json file not found in classpath");
-            throw new WMRuntimeException("themes-config.json file not found in classpath");
-        }
-    }
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         if (requestMatches(httpServletRequest)) {
-            logger.debug("Replacing _activeTheme_ placeholder with the value : {}", activeTheme);
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
             ActiveThemeReplacementServletResponseWrapper activeThemeReplacementServletResponseWrapper =
                 new ActiveThemeReplacementServletResponseWrapper(httpServletResponse);
             chain.doFilter(httpServletRequest, activeThemeReplacementServletResponseWrapper);
             String response = new String(activeThemeReplacementServletResponseWrapper.getByteArray());
-            response = response.replace(ACTIVE_THEME_PLACEHOLDER, activeTheme);
+            response = response.replace(ACTIVE_THEME_PLACEHOLDER, appRuntimeService.getActiveTheme());
             httpServletResponse.setContentLengthLong(response.getBytes().length);
             PrintWriter writer = httpServletResponse.getWriter();
             writer.write(response);
