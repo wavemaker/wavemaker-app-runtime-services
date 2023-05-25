@@ -19,6 +19,8 @@
 
     <bean id="wmAppContext" class="com.wavemaker.runtime.commons.WMAppContext"/>
 
+    <bean class="com.wavemaker.runtime.security.base.configuration.BaseSecurityConfiguration" id="baseSecurityConfiguration"/>
+
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
         <property name="favorPathExtension" value="false"/>

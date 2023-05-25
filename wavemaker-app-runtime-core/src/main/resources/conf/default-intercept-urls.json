@@ -1,0 +1,114 @@
+{
+  "enabled": [
+    {
+      "urlPattern": "/index.html",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/j_spring_security_logout",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/services/application/i18n/**",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/services/prefabs/**/servicedefs",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/services/security/**",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/services/servicedefs",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/**",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": "OPTIONS"
+    },
+    {
+      "urlPattern": "/",
+      "permission": "Authenticated",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/**",
+      "permission": "Authenticated",
+      "roles": null,
+      "httpMethod": null
+    }
+  ],
+  "username_password": [
+    {
+      "urlPattern": "/j_spring_security_check",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    }
+  ],
+  "saml": [
+    {
+      "urlPattern": "/services/security/ssologin",
+      "permission": "Authenticated",
+      "roles": null,
+      "httpMethod": null
+    }
+  ],
+  "openid": [
+    {
+      "urlPattern": "/auth/oauth2/",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/oauth2/code",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/services/oauth2/**/callback/",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/services/security/ssologin",
+      "permission": "Authenticated",
+      "roles": null,
+      "httpMethod": null
+    }
+  ],
+  "cas": [
+    {
+      "urlPattern": "/j_spring_cas_security_check",
+      "permission": "PermitAll",
+      "roles": null,
+      "httpMethod": null
+    },
+    {
+      "urlPattern": "/services/security/ssologin",
+      "permission": "Authenticated",
+      "roles": null,
+      "httpMethod": null
+    }
+  ]
+}

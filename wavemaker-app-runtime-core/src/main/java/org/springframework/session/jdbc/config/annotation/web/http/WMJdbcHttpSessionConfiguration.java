@@ -109,6 +109,7 @@ public class WMJdbcHttpSessionConfiguration extends SpringHttpSessionConfigurati
 
     private StringValueResolver embeddedValueResolver;
 
+    //jdbc-xml
     @Bean
     public WMJdbcIndexedSessionRepository sessionRepository() {
         JdbcTemplate jdbcTemplate = createJdbcTemplate(this.dataSource);

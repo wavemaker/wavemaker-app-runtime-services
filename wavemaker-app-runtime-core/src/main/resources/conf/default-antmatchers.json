@@ -1,0 +1,140 @@
+[
+  {
+    "urlPattern": "/app.css",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/app.js",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/app.variables.json",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/login.html",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/favicon.png",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/print.css",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/wmProperties.js",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/ng-bundle/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/rn-bundle/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/config.json",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/ng-bundle/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/types.js",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/pages/Common/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/pages/Login/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/themes/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/resources/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/**/wmapp/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/**/wmmobile/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/app/prefabs/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/services/application/wmProperties.js",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/services/webprocess/**",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/manifest.json",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  },
+  {
+    "urlPattern": "/ngsw.json",
+    "permission": "PermitAll",
+    "roles": null,
+    "httpMethod": null
+  }
+]

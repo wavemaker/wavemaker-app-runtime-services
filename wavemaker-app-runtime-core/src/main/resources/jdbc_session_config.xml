@@ -9,6 +9,7 @@
         <constructor-arg ref="${security.session.jdbc.serviceName}DataSource"/>
     </bean>
 
+<!--need to check in java config-->
     <alias name="${security.session.jdbc.serviceName}DataSource" alias="dataSource"/>
     <bean class="org.springframework.session.jdbc.config.annotation.web.http.WMJdbcHttpSessionConfiguration" id="jdbcHttpSessionConfiguration">
         <property name="maxInactiveIntervalInSeconds" value="#{${security.general.session.timeout} * 60}"/>
