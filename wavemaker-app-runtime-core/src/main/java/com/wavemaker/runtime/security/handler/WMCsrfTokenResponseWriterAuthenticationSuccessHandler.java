@@ -29,10 +29,10 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.model.LoginSuccessResponse;
+import com.wavemaker.app.security.models.CSRFConfig;
 
 import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
 import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;

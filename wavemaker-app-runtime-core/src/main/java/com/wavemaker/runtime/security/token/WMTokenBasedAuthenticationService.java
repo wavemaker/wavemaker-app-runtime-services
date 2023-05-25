@@ -26,7 +26,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
-import com.wavemaker.commons.model.security.TokenAuthConfig;
+import com.wavemaker.app.security.models.TokenAuthConfig;
 import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.token.exception.TokenGenerationException;

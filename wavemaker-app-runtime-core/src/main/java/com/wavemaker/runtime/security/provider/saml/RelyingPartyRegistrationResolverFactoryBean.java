@@ -45,8 +45,8 @@ import org.springframework.security.saml2.provider.service.web.RelyingPartyRegis
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.model.security.saml.MetadataSource;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.app.security.models.saml.MetadataSource;
 
 public class RelyingPartyRegistrationResolverFactoryBean implements FactoryBean<RelyingPartyRegistrationResolver> {
 

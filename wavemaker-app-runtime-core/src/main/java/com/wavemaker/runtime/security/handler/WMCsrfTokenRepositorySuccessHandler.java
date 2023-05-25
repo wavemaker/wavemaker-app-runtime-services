@@ -31,8 +31,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
-import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.runtime.commons.WMAppContext;
+import com.wavemaker.app.security.models.CSRFConfig;
 
 /**
  * Created by srujant on 31/10/18.

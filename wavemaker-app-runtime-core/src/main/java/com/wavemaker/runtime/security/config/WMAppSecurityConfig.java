@@ -15,14 +15,15 @@
 package com.wavemaker.runtime.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
-import com.wavemaker.commons.model.security.CSRFConfig;
-import com.wavemaker.commons.model.security.LoginConfig;
-import com.wavemaker.commons.model.security.RememberMeConfig;
-import com.wavemaker.commons.model.security.RolesConfig;
-import com.wavemaker.commons.model.security.SSLConfig;
-import com.wavemaker.commons.model.security.TokenAuthConfig;
-import com.wavemaker.commons.model.security.XSSConfig;
+import com.wavemaker.app.security.models.CSRFConfig;
+import com.wavemaker.app.security.models.LoginConfig;
+import com.wavemaker.app.security.models.RememberMeConfig;
+import com.wavemaker.app.security.models.RolesConfig;
+import com.wavemaker.app.security.models.SSLConfig;
+import com.wavemaker.app.security.models.TokenAuthConfig;
+import com.wavemaker.app.security.models.XSSConfig;
 
 /**
  * @author Ed Callahan
@@ -32,11 +33,13 @@ import com.wavemaker.commons.model.security.XSSConfig;
  */
 public class WMAppSecurityConfig {
 
+    @Value("${security.enabled}")
     private boolean enforceSecurity;
 
     @Autowired(required = false)
     private LoginConfig loginConfig;
 
+    @Autowired(required = false)
     private RolesConfig rolesConfig;
 
     @Autowired(required = false)

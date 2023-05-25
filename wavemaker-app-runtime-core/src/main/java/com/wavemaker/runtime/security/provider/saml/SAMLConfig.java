@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.security.provider.saml;
 
-import com.wavemaker.commons.model.security.saml.MetadataSource;
+import com.wavemaker.app.security.models.saml.MetadataSource;
 
 /**
  * Created by ArjunSahasranam on 23/11/16.

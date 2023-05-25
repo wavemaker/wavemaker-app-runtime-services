@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.security.model;
 
-import com.wavemaker.commons.model.security.LoginConfig;
+import com.wavemaker.app.security.models.LoginConfig;
 
 /**
  * Created by ArjunSahasranam on 14/1/16.
