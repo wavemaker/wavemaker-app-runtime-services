@@ -242,7 +242,7 @@
                     </execution>
                     <execution>
                         <id>package prefab artifact</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>package-prefab</goal>
                         </goals>
