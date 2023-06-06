@@ -5,7 +5,7 @@
     <import resource="classpath:springapp.xml"/>
     <import resource="classpath:project-rest-service.xml"/>
     <import resource="classpath:prefab-dispatcher-servlet.xml"/>
-    <import resource="classpath:prefab-services.xml"/>
+    <import resource="classpath*:prefab/service_*.spring.xml"/>
 
     <bean class="com.wavemaker.runtime.core.props.AppPropertySourcesPlaceHolderConfigurer" id="prefabPropertySourcesPlaceHolderConfigurer">
         <property name="propertySourceName" value="prefabPropertiesPropertySource"/>
