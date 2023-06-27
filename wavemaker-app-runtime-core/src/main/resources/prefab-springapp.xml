@@ -19,7 +19,6 @@
         <property name="yamlLocations">
             <list>
                 <value>classpath*:conf/securityService.yaml</value>
-                <value>classpath*:prefab-conf/*.yaml</value>
             </list>
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
