@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -58,13 +59,16 @@ public class LdapSecurityProviderConfiguration {
     @Autowired
     private Environment environment;
 
+    @Value("${security.providers.ldap.managerPassword}")
+    private String managerPassword;
+
     @Bean(name = "contextSource")
     public ContextSource contextSource() {
         AbstractContextSource abstractContextSource = new WMSpringSecurityContextSource(environment.getProperty("security.providers.ldap.url"));
         String managerDn = environment.getProperty("security.providers.ldap.managerUsername");
         if (StringUtils.isNotBlank(managerDn)) {
             abstractContextSource.setUserDn(managerDn);
-            abstractContextSource.setPassword(environment.getProperty("security.providers.ldap.managerPassword"));
+            abstractContextSource.setPassword(managerPassword);
         }
         return abstractContextSource;
     }

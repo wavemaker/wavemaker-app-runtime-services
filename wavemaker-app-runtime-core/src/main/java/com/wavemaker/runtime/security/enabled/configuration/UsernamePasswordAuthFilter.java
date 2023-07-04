@@ -25,11 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -49,19 +45,6 @@ public class UsernamePasswordAuthFilter implements WMSecurityConfiguration {
 
     @Value("${security.providers.activeProviders}")
     private String activeProvider;
-
-    @Bean(name = "redirectStrategyBean")
-    public RedirectStrategy redirectStrategyBean() {
-        return new DefaultRedirectStrategy();
-    }
-
-    @Bean(name = "logoutSuccessHandler")
-    public LogoutSuccessHandler logoutSuccessHandler() {
-        SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
-        simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
-        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
-        return simpleUrlLogoutSuccessHandler;
-    }
 
     @Bean(name = "WMSecAuthEntryPoint")
     public AuthenticationEntryPoint WMSecAuthEntryPoint() {

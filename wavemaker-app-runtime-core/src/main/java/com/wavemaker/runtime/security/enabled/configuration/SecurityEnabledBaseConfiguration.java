@@ -26,13 +26,13 @@ import java.util.Objects;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -44,13 +44,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -112,6 +110,7 @@ import com.wavemaker.runtime.security.enabled.configuration.requestmatcher.State
 import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcessingFilter;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMCsrfTokenRepositorySuccessHandler;
 import com.wavemaker.runtime.security.handler.WMCsrfTokenResponseWriterAuthenticationSuccessHandler;
@@ -123,6 +122,7 @@ import com.wavemaker.runtime.webprocess.filter.LoginProcessFilter;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableConfigurationProperties
 @Conditional(SecurityEnabledCondition.class)
 public class SecurityEnabledBaseConfiguration {
     @Autowired
@@ -141,7 +141,7 @@ public class SecurityEnabledBaseConfiguration {
     private Environment environment;
 
     @Bean(name = "defaultWebSecurityExpressionHandler")
-    public SecurityExpressionHandler<FilterInvocation> defaultWebSecurityExpressionHandler() {
+    public DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler() {
         return new DefaultWebSecurityExpressionHandler();
     }
 
@@ -190,12 +190,12 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "csrfAuthenticationStrategy")
-    public SessionAuthenticationStrategy csrfAuthenticationStrategy() {
+    public CsrfAuthenticationStrategy csrfAuthenticationStrategy() {
         return new CsrfAuthenticationStrategy(csrfTokenRepository());
     }
 
     @Bean(name = "compositeSessionAuthenticationStrategy")
-    public SessionAuthenticationStrategy compositeSessionAuthenticationStrategy() {
+    public CompositeSessionAuthenticationStrategy compositeSessionAuthenticationStrategy() {
         ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry);
         concurrentSessionControlAuthenticationStrategy.setMaximumSessions(-1);
         concurrentSessionControlAuthenticationStrategy.setExceptionIfMaximumExceeded(false);
@@ -204,6 +204,7 @@ public class SecurityEnabledBaseConfiguration {
         return new CompositeSessionAuthenticationStrategy(delegateStrategies);
     }
 
+    //TODO return type
     @Bean(name = "wmAppAccessDeniedHandler")
     public AccessDeniedHandler wmAppAccessDeniedHandler() {
         return new WMAppAccessDeniedHandler();
@@ -287,7 +288,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "successHandler")
-    public AuthenticationSuccessHandler successHandler() {
+    public WMApplicationAuthenticationSuccessHandler successHandler() {
         List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
         defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler());
         defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler());
@@ -300,7 +301,7 @@ public class SecurityEnabledBaseConfiguration {
 
     //TODO need to check the generic return type
     @Bean(name = "wmAuthenticationSuccessRedirectionHandler")
-    public WMAuthenticationSuccessRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
+    public WMAuthenticationRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
         return new WMAuthenticationSuccessRedirectionHandler();
     }
 
@@ -335,7 +336,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "failureHandler")
-    public AuthenticationFailureHandler failureHandler() {
+    public WMApplicationAuthenticationFailureHandler failureHandler() {
         return new WMApplicationAuthenticationFailureHandler();
     }
 
@@ -457,7 +458,7 @@ public class SecurityEnabledBaseConfiguration {
         return http.build();
     }
 
-    public void addInterceptUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
+    private void addInterceptUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
         authorizeRequestsCustomizer
             .requestMatchers(AntPathRequestMatcher.antMatcher("/index.html")).permitAll()
             .requestMatchers(AntPathRequestMatcher.antMatcher("/j_spring_security_logout")).permitAll()
@@ -470,7 +471,7 @@ public class SecurityEnabledBaseConfiguration {
             .requestMatchers(AntPathRequestMatcher.antMatcher("/**")).authenticated();
     }
 
-    public void executeUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
+    private void executeUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
         try {
             ClassPathResource classPathResourceForCustomInterceptUrls = new ClassPathResource("intercept-urls.json");
             List<SecurityInterceptUrlEntry> customInterceptUrls = JSONUtils.toObject(classPathResourceForCustomInterceptUrls.getFile(),

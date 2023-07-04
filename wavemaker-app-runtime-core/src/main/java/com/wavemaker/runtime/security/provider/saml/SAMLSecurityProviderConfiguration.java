@@ -17,6 +17,8 @@ package com.wavemaker.runtime.security.provider.saml;
 
 import java.util.Arrays;
 
+import javax.servlet.Filter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -30,6 +32,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.saml2.provider.service.authentication.logout.OpenSamlLogoutRequestValidator;
 import org.springframework.security.saml2.provider.service.authentication.logout.OpenSamlLogoutResponseValidator;
+import org.springframework.security.saml2.provider.service.authentication.logout.Saml2LogoutRequestValidator;
+import org.springframework.security.saml2.provider.service.authentication.logout.Saml2LogoutResponseValidator;
+import org.springframework.security.saml2.provider.service.metadata.Saml2MetadataResolver;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.Saml2AuthenticationTokenConverter;
 import org.springframework.security.saml2.provider.service.web.Saml2MetadataFilter;
@@ -38,9 +43,12 @@ import org.springframework.security.saml2.provider.service.web.authentication.Sa
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseResolver;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
@@ -50,10 +58,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.wavemaker.app.security.models.saml.MetadataSource;
 import com.wavemaker.runtime.security.WMApplicationAuthenticationFailureHandler;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.csrf.WMCsrfLogoutHandler;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
+import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMSamlAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMSamlAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -95,7 +106,7 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "wmAuthenticationSuccessRedirectionHandler")
-    public WMSamlAuthenticationSuccessRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
+    public WMAuthenticationRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
         return new WMSamlAuthenticationSuccessRedirectionHandler();
     }
 
@@ -117,43 +128,43 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "samlAuthenticationSuccessHandler")
-    public WMSamlAuthenticationSuccessHandler samlAuthenticationSuccessHandler() {
+    public WMAuthenticationSuccessHandler samlAuthenticationSuccessHandler() {
         return new WMSamlAuthenticationSuccessHandler();
     }
 
     @Bean(name = "wmSaml2MetadataResolver")
-    public WMSaml2MetadataResolver wmSaml2MetadataResolver() {
+    public Saml2MetadataResolver wmSaml2MetadataResolver() {
         return new WMSaml2MetadataResolver();
     }
 
     @Bean(name = "saml2MetadataFilter")
-    public Saml2MetadataFilter saml2MetadataFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
+    public Filter saml2MetadataFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
         return new Saml2MetadataFilter(relyingPartyRegistrationResolver, wmSaml2MetadataResolver());
     }
 
     @Bean(name = "saml2AuthenticationTokenConverter")
-    public Saml2AuthenticationTokenConverter saml2AuthenticationTokenConverter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
+    public AuthenticationConverter saml2AuthenticationTokenConverter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
         return new Saml2AuthenticationTokenConverter(relyingPartyRegistrationResolver);
     }
 
     @Bean(name = "saml2WebSsoAuthenticationRequestFilter")
-    public Saml2WebSsoAuthenticationRequestFilter saml2WebSsoAuthenticationRequestFilter(
+    public Filter saml2WebSsoAuthenticationRequestFilter(
         Saml2AuthenticationRequestResolver saml2AuthenticationRequestResolver) {
         return new Saml2WebSsoAuthenticationRequestFilter(saml2AuthenticationRequestResolver);
     }
 
     @Bean(name = "wmLoginUrlAuthenticationEntryPoint")
-    public WMSAMLEntryPoint wmLoginUrlAuthenticationEntryPoint() {
+    public AuthenticationEntryPoint wmLoginUrlAuthenticationEntryPoint() {
         return new WMSAMLEntryPoint("/saml2/authenticate/saml");
     }
 
     @Bean(name = "saml2RelyingPartyInitiatedLogoutSuccessHandler")
-    public WMSamlRPInitiatedSuccessHandler saml2RelyingPartyInitiatedLogoutSuccessHandler(Saml2LogoutRequestResolver saml2LogoutRequestResolver) {
+    public LogoutSuccessHandler saml2RelyingPartyInitiatedLogoutSuccessHandler(Saml2LogoutRequestResolver saml2LogoutRequestResolver) {
         return new WMSamlRPInitiatedSuccessHandler(saml2LogoutRequestResolver);
     }
 
     @Bean(name = "samlLogoutFilter")
-    public LogoutFilter samlLogoutFilter(SecurityContextLogoutHandler securityContextLogoutHandler, WMCsrfLogoutHandler wmCsrfLogoutHandler) {
+    public LogoutFilter samlLogoutFilter(LogoutHandler securityContextLogoutHandler, LogoutHandler wmCsrfLogoutHandler) {
         LogoutFilter logoutFilter = new LogoutFilter(saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver),
             securityContextLogoutHandler, wmCsrfLogoutHandler);
         logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
@@ -161,12 +172,12 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "openSamlLogoutResponseValidator")
-    public OpenSamlLogoutResponseValidator openSamlLogoutResponseValidator() {
+    public Saml2LogoutResponseValidator openSamlLogoutResponseValidator() {
         return new OpenSamlLogoutResponseValidator();
     }
 
     @Bean(name = "saml2LogoutResponseFilter")
-    public Saml2LogoutResponseFilter saml2LogoutResponseFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
+    public Filter saml2LogoutResponseFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
         return new Saml2LogoutResponseFilter(relyingPartyRegistrationResolver, openSamlLogoutResponseValidator(), logoutSuccessHandler);
     }
 
@@ -178,15 +189,15 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "openSamlLogoutRequestValidator")
-    public OpenSamlLogoutRequestValidator getOpenSamlLogoutRequestValidator() {
+    public Saml2LogoutRequestValidator getOpenSamlLogoutRequestValidator() {
         return new OpenSamlLogoutRequestValidator();
     }
 
     @Bean(name = "saml2WebSsoAuthenticationFilter")
-    public WMSaml2WebSsoAuthenticationFilter saml2WebSsoAuthenticationFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver,
-                                                                             AuthenticationManager authenticationManager,
-                                                                             WMApplicationAuthenticationSuccessHandler successHandler,
-                                                                             WMApplicationAuthenticationFailureHandler failureHandler) {
+    public Filter saml2WebSsoAuthenticationFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver,
+                                                  AuthenticationManager authenticationManager,
+                                                  WMApplicationAuthenticationSuccessHandler successHandler,
+                                                  WMApplicationAuthenticationFailureHandler failureHandler) {
         WMSaml2WebSsoAuthenticationFilter wmSaml2WebSsoAuthenticationFilter = new WMSaml2WebSsoAuthenticationFilter(
             saml2AuthenticationTokenConverter(relyingPartyRegistrationResolver));
         wmSaml2WebSsoAuthenticationFilter.setAuthenticationManager(authenticationManager);
@@ -196,17 +207,17 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "saml2LogoutRequestFilter")
-    public WMSaml2LogoutRequestFilter saml2LogoutRequestFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver,
-                                                               Saml2LogoutResponseResolver openSamlLogoutResponseResolver,
-                                                               SecurityContextLogoutHandler securityContextLogoutHandler,
-                                                               WMCsrfLogoutHandler wmCsrfLogoutHandler) {
+    public Filter saml2LogoutRequestFilter(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver,
+                                           Saml2LogoutResponseResolver openSamlLogoutResponseResolver,
+                                           SecurityContextLogoutHandler securityContextLogoutHandler,
+                                           WMCsrfLogoutHandler wmCsrfLogoutHandler) {
         return new WMSaml2LogoutRequestFilter(relyingPartyRegistrationResolver, getOpenSamlLogoutRequestValidator(),
             openSamlLogoutResponseResolver, securityContextLogoutHandler, wmCsrfLogoutHandler);
     }
 
     @Bean(name = "authoritiesProvider")
     @Conditional(SAMLRoleProviderCondition.class)
-    public DefaultAuthoritiesProviderImpl authoritiesProvider(Environment environment, ApplicationContext applicationContext) {
+    public AuthoritiesProvider authoritiesProvider(Environment environment, ApplicationContext applicationContext) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         defaultAuthoritiesProvider.setHql(Boolean.parseBoolean(environment.getProperty("security.providers.saml.isHQL")));
         defaultAuthoritiesProvider.setRolesByQuery(true);
@@ -229,8 +240,8 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
         http.addFilterAfter(samlFilter(openSamlLogoutResponseResolver,
             (SecurityContextLogoutHandler) securityEnabledBaseConfiguration.securityContextLogoutHandler(),
             (WMCsrfLogoutHandler) securityEnabledBaseConfiguration.wmCsrfLogoutHandler(), securityEnabledBaseConfiguration.authenticationManager(),
-            (WMApplicationAuthenticationSuccessHandler) securityEnabledBaseConfiguration.successHandler(),
-            (WMApplicationAuthenticationFailureHandler) securityEnabledBaseConfiguration.failureHandler(),
+            securityEnabledBaseConfiguration.successHandler(),
+            securityEnabledBaseConfiguration.failureHandler(),
             relyingPartyRegistrationResolver), RememberMeAuthenticationFilter.class);
     }
 }

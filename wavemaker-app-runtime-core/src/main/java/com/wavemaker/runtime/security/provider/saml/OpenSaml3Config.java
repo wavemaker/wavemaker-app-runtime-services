@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.saml2.provider.service.authentication.DefaultSaml2AuthenticatedPrincipal;
@@ -35,12 +36,14 @@ import org.springframework.security.saml2.provider.service.authentication.OpenSa
 import org.springframework.security.saml2.provider.service.authentication.OpenSamlAuthenticationRequestFactory;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationRequestFactory;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.Saml2AuthenticationRequestContextResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml3LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml3LogoutResponseResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseResolver;
 
 import com.wavemaker.commons.WMRuntimeException;
@@ -72,7 +75,7 @@ public class OpenSaml3Config {
     }
 
     @Bean("saml2LogoutRequestResolver")
-    public WMSaml2LogoutRequestResolver saml2LogoutRequestResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
+    public Saml2LogoutRequestResolver saml2LogoutRequestResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
         return new WMSaml2LogoutRequestResolver(relyingPartyRegistrationResolver,
             new OpenSaml3LogoutRequestResolver(relyingPartyRegistrationResolver));
     }
@@ -83,7 +86,7 @@ public class OpenSaml3Config {
     }
 
     @Bean("samlAuthenticationProvider")
-    public OpenSamlAuthenticationProvider samlAuthenticationProvider() {
+    public AuthenticationProvider samlAuthenticationProvider() {
         OpenSamlAuthenticationProvider openSamlAuthenticationProvider = new OpenSamlAuthenticationProvider();
         if (roleMappingEnabled && StringUtils.isNotBlank(roleProvider)) {
             openSamlAuthenticationProvider.setResponseAuthenticationConverter(customAuthenticationConverter());
@@ -92,12 +95,12 @@ public class OpenSaml3Config {
     }
 
     @Bean
-    public WMOpenSaml3AuthenticationRequestContextResolver wmOpenSaml3AuthenticationRequestContextResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
+    public Saml2AuthenticationRequestContextResolver wmOpenSaml3AuthenticationRequestContextResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
         return new WMOpenSaml3AuthenticationRequestContextResolver((Converter<HttpServletRequest, RelyingPartyRegistration>) relyingPartyRegistrationResolver);
     }
 
     @Bean
-    public OpenSamlAuthenticationRequestFactory openSamlAuthenticationRequestFactory() {
+    public Saml2AuthenticationRequestFactory openSamlAuthenticationRequestFactory() {
         return new OpenSamlAuthenticationRequestFactory();
     }
 
