@@ -17,6 +17,9 @@ package com.wavemaker.app.security.models;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by ArjunSahasranam on 20/6/16.
  */
@@ -24,10 +27,13 @@ public class SSLConfig {
 
     @Min(value = 1)
     @Max(value = 65536)
+    @ProfilizableProperty(value = "${security.general.ssl.port}")
     private int sslPort = 443;
 
+    @ProfilizableProperty(value = "${security.general.ssl.enabled}", isAutoUpdate = true)
     private boolean useSSL;
 
+    @NonProfilizableProperty("${security.general.ssl.excludedUrls:#{null}}")
     private String excludedUrls;
 
     public boolean isUseSSL() {

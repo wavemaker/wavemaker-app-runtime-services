@@ -18,6 +18,7 @@ package com.wavemaker.runtime.security.provider.demo;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,9 @@ import com.wavemaker.runtime.security.provider.demo.model.DemoConfig;
 @EnableConfigurationProperties
 @Conditional({SecurityEnabledCondition.class, DemoConfigurationCondition.class})
 public class DemoSecurityProviderConfiguration {
+
+    @Autowired(required = false)
+    private PersistentTokenBasedRememberMeServices rememberMeServices;
 
     @Bean(name = "demoConfig")
     @ConfigurationProperties(prefix = "security.providers.demo")
@@ -73,8 +77,13 @@ public class DemoSecurityProviderConfiguration {
 
     @Bean(name = "logoutFilter")
     public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler, PersistentTokenBasedRememberMeServices rememberMeServices) {
-        LogoutFilter logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
+                                     LogoutHandler wmCsrfLogoutHandler) {
+        LogoutFilter logoutFilter;
+        if (rememberMeServices != null) {
+            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
+        } else {
+            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
+        }
         logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
         return logoutFilter;
     }

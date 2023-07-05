@@ -16,19 +16,31 @@ package com.wavemaker.app.security.models;
 
 import javax.validation.constraints.NotNull;
 
+import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by kishorer on 6/7/16.
  */
 public class XSSConfig {
 
+    @ProfilizableProperty("${security.general.xss.enabled}")
     private boolean enforceXssSecurity;
+
+    @NonProfilizableProperty("${security.general.xss.policyFile:wm-xss-policies.xml}")
     private String policyFile;
+
     @NotNull
+    @NonProfilizableProperty("${security.general.xss.filterStrategy}")
     private XSSFilterStrategy xssFilterStrategy;
     @NotNull
     private XSSPolicyType policyType;
+
+    @ProfilizableProperty("${security.general.xss.dataBackwardCompatibility}")
     private boolean dataBackwardCompatibility;
+
     @NotNull
+    @ProfilizableProperty("${security.general.xss.sanitizationLayer}")
     private XSSSanitizationLayer xssSanitizationLayer;
 
     public boolean isDataBackwardCompatibility() {

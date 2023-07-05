@@ -20,16 +20,22 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by ArjunSahasranam on 18/1/16.
  */
 public class SessionTimeoutConfig {
     @NotNull
+    @NonProfilizableProperty("${security.general.login.sessionTimeoutType}")
     private LoginType type;
 
+    @NonProfilizableProperty("${security.general.login.sessionTimeoutPageName}")
     private String pageName;
 
     @Min(1)
+    @ProfilizableProperty("${security.general.session.timeout}")
     private int timeoutValue;
 
     public LoginType getType() {

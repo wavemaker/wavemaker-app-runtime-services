@@ -14,16 +14,24 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models;
 
-import java.util.List;
+import java.util.Map;
+
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 /**
  * Created by srujant on 5/7/17.
  */
 public class CorsConfig {
+
+    @ProfilizableProperty("${security.general.cors.enabled}")
     private boolean enabled;
+
+    @ProfilizableProperty("${security.general.cors.maxAge}")
     private long maxAge;
+
+    @ProfilizableProperty("${security.general.cors.allowCredentials}")
     private boolean allowCredentials;
-    private List<CorsPathEntry> pathEntries;
+    private Map<String, CorsPathEntry> pathEntries;
 
     public boolean isEnabled() {
         return enabled;
@@ -33,11 +41,11 @@ public class CorsConfig {
         this.enabled = enabled;
     }
 
-    public List<CorsPathEntry> getPathEntries() {
+    public Map<String, CorsPathEntry> getPathEntries() {
         return pathEntries;
     }
 
-    public void setPathEntries(List<CorsPathEntry> pathEntries) {
+    public void setPathEntries(Map<String, CorsPathEntry> pathEntries) {
         this.pathEntries = pathEntries;
     }
 

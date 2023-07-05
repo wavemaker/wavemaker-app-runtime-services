@@ -19,7 +19,6 @@ import java.util.Objects;
 
 import javax.servlet.Filter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -39,6 +38,7 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.wavemaker.app.security.models.config.opaque.OpaqueTokenProviderConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -47,14 +47,13 @@ import com.wavemaker.runtime.security.provider.database.authorities.DefaultAutho
 @Configuration
 @Conditional({SecurityEnabledCondition.class, OpaqueProviderCondition.class})
 public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfiguration {
-    @Autowired
-    private Environment environment;
 
     @Bean(name = "nimbusOpaqueTokenIntrospector")
     public OpaqueTokenIntrospector nimbusOpaqueTokenIntrospector() {
-        return new NimbusOpaqueTokenIntrospector(Objects.requireNonNull(environment.getProperty("security.providers.opaqueToken.introspectionUrl")),
-            Objects.requireNonNull(environment.getProperty("security.providers.opaqueToken.clientId")),
-            Objects.requireNonNull(environment.getProperty("security.providers.opaqueToken.clientSecret")));
+        OpaqueTokenProviderConfig opaqueTokenProviderConfig = opaqueTokenProviderConfig();
+        return new NimbusOpaqueTokenIntrospector(Objects.requireNonNull(opaqueTokenProviderConfig.getIntrospectionUrl()),
+            Objects.requireNonNull(opaqueTokenProviderConfig.getClientId()),
+            Objects.requireNonNull(opaqueTokenProviderConfig.getClientSecret()));
     }
 
     @Bean(name = "opaqueAuthenticationConverter")
@@ -91,6 +90,11 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     @Bean(name = "opaqueBearerTokenAuthenticationFilter")
     public Filter opaqueBearerTokenAuthenticationFilter() {
         return new BearerTokenAuthenticationFilter(providerManager());
+    }
+
+    @Bean(name = "OpaqueTokenProviderConfig")
+    public OpaqueTokenProviderConfig opaqueTokenProviderConfig() {
+        return new OpaqueTokenProviderConfig();
     }
 
     @Override

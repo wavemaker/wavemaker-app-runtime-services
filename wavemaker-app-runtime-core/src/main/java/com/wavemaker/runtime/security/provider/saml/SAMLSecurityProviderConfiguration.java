@@ -41,19 +41,22 @@ import org.springframework.security.saml2.provider.service.web.authentication.lo
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.wavemaker.app.security.models.saml.MetadataSource;
+import com.wavemaker.app.security.models.config.saml.SAMLConfig;
+import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
 import com.wavemaker.runtime.security.WMApplicationAuthenticationFailureHandler;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.csrf.WMCsrfLogoutHandler;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMSamlAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMSamlAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -85,17 +88,17 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     private Saml2LogoutRequestResolver saml2LogoutRequestResolver;
 
     @Bean(name = "samlConfig")
-    public SAMLConfig samlConfig(Environment environment) {
+    public SAMLConfig samlConfig(SAMLProviderConfig samlProviderConfig) {
         SAMLConfig samlConfig = new SAMLConfig();
-        samlConfig.setValidateType(SAMLConfig.ValidateType.valueOf(environment.getProperty("security.providers.saml.urlValidateType")));
-        samlConfig.setIdpMetadataUrl(environment.getProperty("security.providers.saml.idpMetadataUrl"));
-        samlConfig.setIdpMetadataFileLocation(environment.getProperty("security.providers.saml.idpMetadataFile"));
-        samlConfig.setMetadataSource(MetadataSource.valueOf(environment.getProperty("security.providers.saml.idpMetadataSource")));
+        samlConfig.setValidateType(samlProviderConfig.getUrlValidateType());
+        samlConfig.setIdpMetadataUrl(samlProviderConfig.getIdpMetadataUrl());
+        samlConfig.setIdpMetadataFileLocation(samlProviderConfig.getIdpMetadataFile());
+        samlConfig.setMetadataSource(samlProviderConfig.getIdpMetadataSource());
         return samlConfig;
     }
 
     @Bean(name = "wmAuthenticationSuccessRedirectionHandler")
-    public WMSamlAuthenticationSuccessRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
+    public WMAuthenticationRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
         return new WMSamlAuthenticationSuccessRedirectionHandler();
     }
 
@@ -153,7 +156,7 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "samlLogoutFilter")
-    public LogoutFilter samlLogoutFilter(SecurityContextLogoutHandler securityContextLogoutHandler, WMCsrfLogoutHandler wmCsrfLogoutHandler) {
+    public LogoutFilter samlLogoutFilter(LogoutHandler securityContextLogoutHandler, LogoutHandler wmCsrfLogoutHandler) {
         LogoutFilter logoutFilter = new LogoutFilter(saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver),
             securityContextLogoutHandler, wmCsrfLogoutHandler);
         logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
@@ -217,6 +220,11 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
         defaultAuthoritiesProvider.setTransactionManager(
             (PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
+    }
+
+    @Bean(name = "SamlProviderConfig")
+    public SAMLProviderConfig samlProviderConfig() {
+        return new SAMLProviderConfig();
     }
 
     @Override

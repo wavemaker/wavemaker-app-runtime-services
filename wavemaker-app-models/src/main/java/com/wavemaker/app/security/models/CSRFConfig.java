@@ -16,15 +16,23 @@ package com.wavemaker.app.security.models;
 
 import javax.validation.constraints.NotEmpty;
 
+import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by kishorer on 7/7/16.
  */
 public class CSRFConfig {
 
+    @ProfilizableProperty("${security.general.xsrf.enabled}")
     private boolean enforceCsrfSecurity;
+
     @NotEmpty
+    @NonProfilizableProperty("${security.general.xsrf.headerName}")
     private String headerName;
+
     @NotEmpty
+    @NonProfilizableProperty("${security.general.xsrf.cookieName}")
     private String cookieName;
 
     public boolean isEnforceCsrfSecurity() {

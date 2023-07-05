@@ -14,13 +14,20 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models;
 
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by srujant on 25/4/17.
  */
 public class FrameOptions {
 
+    @ProfilizableProperty("${security.general.frameOptions.allowFromUrl}")
     private String allowFromUrl;
+
+    @ProfilizableProperty("${security.general.frameOptions.enabled}")
     private boolean enabled;
+
+    @ProfilizableProperty("${security.general.frameOptions.mode}")
     private Mode mode;
 
     public Mode getMode() {

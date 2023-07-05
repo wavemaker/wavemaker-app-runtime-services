@@ -20,7 +20,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,6 +32,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.wavemaker.app.security.models.config.database.DatabaseProviderConfig;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -45,13 +45,13 @@ public class DatabaseSecurityProviderConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired
-    private Environment environment;
+    @Autowired(required = false)
+    private PersistentTokenBasedRememberMeServices rememberMeServices;
 
     @Bean(name = "databaseAuthenticationProvider")
     public AuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(databaseUserDetailsService());
+        authenticationProvider.setUserDetailsService(databaseUserDetailsService(databaseProviderConfig()));
         authenticationProvider.setPasswordEncoder(noOpPasswordEncoder());
         return authenticationProvider;
     }
@@ -63,42 +63,52 @@ public class DatabaseSecurityProviderConfiguration {
     }
 
     @Bean(name = "jdbcDaoImpl")
-    public UserDetailsService databaseUserDetailsService() {
+    public UserDetailsService databaseUserDetailsService(DatabaseProviderConfig databaseProviderConfig) {
         DatabaseUserDetailsService databaseUserDetailsService = new DatabaseUserDetailsService();
-        databaseUserDetailsService.setAuthoritiesProvider(defaultAuthoritiesProviderImpl());
-        databaseUserDetailsService.setUserProvider(defaultUserProviderImpl());
+        databaseUserDetailsService.setAuthoritiesProvider(defaultAuthoritiesProviderImpl(databaseProviderConfig));
+        databaseUserDetailsService.setUserProvider(defaultUserProviderImpl(databaseProviderConfig));
         return databaseUserDetailsService;
     }
 
     //TODO once check it
     @Bean(name = "defaultUserProvider")
-    public UserProvider defaultUserProviderImpl() {
+    public UserProvider defaultUserProviderImpl(DatabaseProviderConfig databaseProviderConfig) {
         DefaultUserProviderImpl defaultUserProvider = new DefaultUserProviderImpl();
-        String modelName = environment.getProperty("security.providers.database.modelName");
+        String modelName = databaseProviderConfig.getModelName();
         defaultUserProvider.setHql(true);
-        defaultUserProvider.setUsersByUsernameQuery(environment.getProperty("security.providers.database.usersByUsernameQuery"));
+        defaultUserProvider.setUsersByUsernameQuery(databaseProviderConfig.getUsersByUsernameQuery());
         defaultUserProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultUserProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultUserProvider;
     }
 
     @Bean(name = "defaultAuthoritiesProvider")
-    public AuthoritiesProvider defaultAuthoritiesProviderImpl() {
+    public AuthoritiesProvider defaultAuthoritiesProviderImpl(DatabaseProviderConfig databaseProviderConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        String modelName = environment.getProperty("security.providers.database.modelName");
-        defaultAuthoritiesProvider.setHql(environment.getProperty("security.providers.database.isHQL", Boolean.class));
+        String modelName = databaseProviderConfig.getModelName();
+        defaultAuthoritiesProvider.setHql(databaseProviderConfig.getQueryType().equals("HQL"));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty("security.providers.database.rolesByUsernameQuery"));
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(databaseProviderConfig.getRolesByUsernameQuery());
         defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
     }
 
+    @Bean(name = "databaseProviderConfig")
+    public DatabaseProviderConfig databaseProviderConfig() {
+        return new DatabaseProviderConfig();
+    }
+
     @Bean(name = "logoutFilter")
     public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler, PersistentTokenBasedRememberMeServices rememberMeServices) {
-        LogoutFilter logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
+                                     LogoutHandler wmCsrfLogoutHandler) {
+        LogoutFilter logoutFilter;
+        if (rememberMeServices != null) {
+            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
+        } else {
+            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
+        }
         logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
         return logoutFilter;
     }

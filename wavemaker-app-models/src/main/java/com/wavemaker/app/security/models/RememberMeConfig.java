@@ -16,14 +16,18 @@ package com.wavemaker.app.security.models;
 
 import javax.validation.constraints.Min;
 
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by ArjunSahasranam on 22/1/16.
  */
 public class RememberMeConfig {
 
+    @ProfilizableProperty("${security.general.rememberMe.enabled}")
     private boolean enabled;
 
     @Min(1)
+    @ProfilizableProperty("${security.general.rememberMe.timeOut}")
     private long tokenValiditySeconds;
 
     public boolean isEnabled() {

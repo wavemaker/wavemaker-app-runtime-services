@@ -15,7 +15,6 @@
 
 package com.wavemaker.runtime.security.enabled.configuration;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,11 +25,11 @@ import java.util.Objects;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -84,21 +83,18 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wavemaker.app.security.models.CSRFConfig;
 import com.wavemaker.app.security.models.LoginConfig;
-import com.wavemaker.app.security.models.LoginType;
 import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.Role;
 import com.wavemaker.app.security.models.RoleConfig;
+import com.wavemaker.app.security.models.RoleList;
 import com.wavemaker.app.security.models.RolesConfig;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.SecurityInterceptUrlList;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.app.security.models.TokenAuthConfig;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.security.WMAppAccessDeniedHandler;
 import com.wavemaker.runtime.security.WMApplicationAuthenticationFailureHandler;
@@ -112,6 +108,7 @@ import com.wavemaker.runtime.security.enabled.configuration.requestmatcher.State
 import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcessingFilter;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMCsrfTokenRepositorySuccessHandler;
 import com.wavemaker.runtime.security.handler.WMCsrfTokenResponseWriterAuthenticationSuccessHandler;
@@ -216,11 +213,7 @@ public class SecurityEnabledBaseConfiguration {
 
     @Bean(name = "csrfConfig")
     public CSRFConfig csrfConfig() {
-        CSRFConfig config = new CSRFConfig();
-        config.setEnforceCsrfSecurity(environment.getProperty("security.general.xsrf.enabled", Boolean.class));
-        config.setHeaderName(environment.getProperty("security.general.xsrf.headerName"));
-        config.setCookieName(environment.getProperty("security.general.xsrf.cookieName"));
-        return config;
+        return new CSRFConfig();
     }
 
     @Bean(name = "wmHttpSessionCsrfTokenRepository")
@@ -287,7 +280,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "successHandler")
-    public AuthenticationSuccessHandler successHandler() {
+    public WMApplicationAuthenticationSuccessHandler successHandler() {
         List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
         defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler());
         defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler());
@@ -300,7 +293,7 @@ public class SecurityEnabledBaseConfiguration {
 
     //TODO need to check the generic return type
     @Bean(name = "wmAuthenticationSuccessRedirectionHandler")
-    public WMAuthenticationSuccessRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
+    public WMAuthenticationRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
         return new WMAuthenticationSuccessRedirectionHandler();
     }
 
@@ -341,37 +334,24 @@ public class SecurityEnabledBaseConfiguration {
 
     @Bean(name = "rememberMeConfig")
     public RememberMeConfig rememberMeConfig() {
-        RememberMeConfig rememberMeConfig = new RememberMeConfig();
-        rememberMeConfig.setEnabled(environment.getProperty("security.general.rememberMe.enabled", Boolean.class));
-        rememberMeConfig.setTokenValiditySeconds(environment.getProperty("security.general.rememberMe.timeOut", Long.class));
-        return rememberMeConfig;
+        return new RememberMeConfig();
     }
 
     @Bean(name = "loginConfig")
     public LoginConfig loginConfig() {
         LoginConfig loginConfig = new LoginConfig();
-        loginConfig.setType(environment.getProperty("security.general.login.type", LoginType.class));
-        loginConfig.setPageName(environment.getProperty("security.general.login.pageName"));
         loginConfig.setSessionTimeout(sessionTimeoutConfig());
         return loginConfig;
     }
 
     @Bean(name = "sessionTimeoutConfig")
     public SessionTimeoutConfig sessionTimeoutConfig() {
-        SessionTimeoutConfig sessionTimeoutConfig = new SessionTimeoutConfig();
-        sessionTimeoutConfig.setType(environment.getProperty("security.general.login.sessionTimeoutType", LoginType.class));
-        sessionTimeoutConfig.setPageName(environment.getProperty("security.general.login.sessionTimeoutType"));
-        sessionTimeoutConfig.setTimeoutValue(environment.getProperty("security.general.session.timeout", Integer.class));
-        return sessionTimeoutConfig;
+        return new SessionTimeoutConfig();
     }
 
     @Bean(name = "tokenAuthConfig")
     public TokenAuthConfig tokenAuthConfig() {
-        TokenAuthConfig tokenAuthConfig = new TokenAuthConfig();
-        tokenAuthConfig.setEnabled(environment.getProperty("security.general.tokenService.enabled", Boolean.class));
-        tokenAuthConfig.setParameter(environment.getProperty("security.general.tokenService.parameter"));
-        tokenAuthConfig.setTokenValiditySeconds(environment.getProperty("security.general.tokenService.tokenValiditySeconds", Integer.class));
-        return tokenAuthConfig;
+        return new TokenAuthConfig();
     }
 
     @Bean(name = "loginWebProcessFilter")
@@ -380,12 +360,14 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "rolesConfig")
-    public RolesConfig rolesConfig() throws IOException {
-        TypeFactory typeFactory = TypeFactory.defaultInstance();
-        CollectionType collectionType = typeFactory.constructCollectionType(ArrayList.class, Role.class);
-        ClassPathResource classPathResource = new ClassPathResource("roles.json");
-        List<Role> roles = JSONUtils.toObject(classPathResource.getFile(), collectionType);
-        return createRoleConfig(roles);
+    public RolesConfig rolesConfig() {
+        return createRoleConfig(roleList());
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "security.roles")
+    public RoleList roleList() {
+        return new RoleList();
     }
 
     @Bean(name = "ignoreAntMatchers")
@@ -472,11 +454,8 @@ public class SecurityEnabledBaseConfiguration {
 
     public void executeUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
         try {
-            ClassPathResource classPathResourceForCustomInterceptUrls = new ClassPathResource("intercept-urls.json");
-            List<SecurityInterceptUrlEntry> customInterceptUrls = JSONUtils.toObject(classPathResourceForCustomInterceptUrls.getFile(),
-                SecurityInterceptUrlList.class);
             wmSecurityConfiguration.forEach(securityConfiguration -> securityConfiguration.addInterceptUrls(authorizeRequestsCustomizer));
-            for (SecurityInterceptUrlEntry customInterceptUrl : customInterceptUrls) {
+            for (SecurityInterceptUrlEntry customInterceptUrl : securityInterceptUrlList()) {
                 if (!customInterceptUrl.getUrlPattern().equals("/**")) {
                     setAntMatchers(authorizeRequestsCustomizer, customInterceptUrl);
                 }
@@ -486,6 +465,15 @@ public class SecurityEnabledBaseConfiguration {
         } catch (Exception e) {
             throw new WMRuntimeException(e);
         }
+    }
+
+    /**
+     * prefix should be always lowercase,if it is in camelcase @ConfigurationProperties is unable to read the properties
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "security.intercepturls")
+    public SecurityInterceptUrlList securityInterceptUrlList() {
+        return new SecurityInterceptUrlList();
     }
 
     private RolesConfig createRoleConfig(List<Role> roles) {

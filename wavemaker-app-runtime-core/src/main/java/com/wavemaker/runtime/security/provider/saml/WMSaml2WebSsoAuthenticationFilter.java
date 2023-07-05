@@ -25,6 +25,8 @@ import org.springframework.security.saml2.provider.service.web.Saml2Authenticati
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2WebSsoAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 
+import com.wavemaker.app.security.models.config.saml.SAMLConfig;
+
 import static com.wavemaker.runtime.security.provider.saml.SAMLHttpServletRequestWrapper.EndpointType.SSO;
 
 public class WMSaml2WebSsoAuthenticationFilter extends Saml2WebSsoAuthenticationFilter {

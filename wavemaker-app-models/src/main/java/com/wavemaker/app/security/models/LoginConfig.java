@@ -20,14 +20,28 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by ArjunSahasranam on 13/1/16.
  */
 public class LoginConfig {
     @NotNull
+    @NonProfilizableProperty("${security.general.login.type}")
     private LoginType type;
+
+    @NonProfilizableProperty("${security.general.login.pageName}")
     private String pageName;
+
+    @ProfilizableProperty(value = "${security.general.cookie.maxAge}", isAutoUpdate = true)
     private int cookieMaxAge;
+
+    @ProfilizableProperty("${security.general.cookie.path}")
+    private String cookiePath;
+
+    @ProfilizableProperty("${security.general.cookie.base64Encode}")
+    private boolean cookieBase64Encode;
     @NotNull
     @Valid
     private SessionTimeoutConfig sessionTimeout;
@@ -66,6 +80,22 @@ public class LoginConfig {
 
     public void setCookieMaxAge(int cookieMaxAge) {
         this.cookieMaxAge = cookieMaxAge;
+    }
+
+    public String getCookiePath() {
+        return cookiePath;
+    }
+
+    public void setCookiePath(String cookiePath) {
+        this.cookiePath = cookiePath;
+    }
+
+    public boolean isCookieBase64Encode() {
+        return cookieBase64Encode;
+    }
+
+    public void setCookieBase64Encode(boolean cookieBase64Encode) {
+        this.cookieBase64Encode = cookieBase64Encode;
     }
 
     public SessionConcurrencyConfig getSessionConcurrencyConfig() {

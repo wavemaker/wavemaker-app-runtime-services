@@ -86,7 +86,9 @@ public class UsernamePasswordAuthFilter implements WMSecurityConfiguration {
         if (activeProvider.equals("AD") || activeProvider.equals("CUSTOM")) {
             return usernamePasswordAuthenticationFilter;
         }
-        usernamePasswordAuthenticationFilter.setRememberMeServices(rememberMeConfiguration.rememberMeServices());
+        if (rememberMeConfiguration != null) {
+            usernamePasswordAuthenticationFilter.setRememberMeServices(rememberMeConfiguration.rememberMeServices());
+        }
         return usernamePasswordAuthenticationFilter;
     }
 

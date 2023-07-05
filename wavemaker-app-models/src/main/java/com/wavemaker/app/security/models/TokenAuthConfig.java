@@ -14,12 +14,20 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models;
 
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
+
 /**
  * Created by arjuns on 21/2/17.
  */
 public class TokenAuthConfig {
+
+    @ProfilizableProperty(value = "${security.general.tokenService.enabled}", isAutoUpdate = true)
     private boolean enabled;
+
+    @ProfilizableProperty(value = "${security.general.tokenService.parameter}", isAutoUpdate = true)
     private String parameter;
+
+    @ProfilizableProperty(value = "${security.general.tokenService.tokenValiditySeconds}", isAutoUpdate = true)
     private int tokenValiditySeconds;
 
     public boolean isEnabled() {
