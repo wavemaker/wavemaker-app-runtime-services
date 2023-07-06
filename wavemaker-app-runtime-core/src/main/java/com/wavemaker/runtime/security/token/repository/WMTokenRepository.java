@@ -22,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.wavemaker.commons.model.security.TokenAuthConfig;
 import com.wavemaker.runtime.security.WMUser;
+import com.wavemaker.app.security.models.TokenAuthConfig;
 
 /**
  * Created by prakashb on 2/1/19.

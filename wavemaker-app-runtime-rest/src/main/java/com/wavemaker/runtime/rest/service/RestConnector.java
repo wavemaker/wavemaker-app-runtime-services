@@ -134,7 +134,7 @@ public class RestConnector {
         wmRestTemplate.setErrorHandler(getExceptionHandler());
 
         HttpEntity requestEntity;
-        com.wavemaker.commons.web.http.HttpMethod wmHttpMethod = com.wavemaker.commons.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
+        com.wavemaker.app.web.http.HttpMethod wmHttpMethod = com.wavemaker.app.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
         if (wmHttpMethod.isRequestBodySupported() && httpRequestDetails.getBody() != null) {
             requestEntity = new HttpEntity(new InputStreamResource(httpRequestDetails.getBody()), httpHeaders);
         } else {

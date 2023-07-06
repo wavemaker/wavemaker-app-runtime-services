@@ -18,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
-import com.wavemaker.commons.model.security.XSSConfig;
-import com.wavemaker.commons.model.security.XSSFilterStrategy;
-import com.wavemaker.commons.model.security.XSSSanitizationLayer;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
+import com.wavemaker.app.security.models.XSSConfig;
+import com.wavemaker.app.security.models.XSSFilterStrategy;
+import com.wavemaker.app.security.models.XSSSanitizationLayer;
 import com.wavemaker.runtime.security.xss.sanitizer.DefaultXSSSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizerFactory;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSSanitizer;

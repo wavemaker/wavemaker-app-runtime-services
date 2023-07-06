@@ -1,0 +1,208 @@
+/*******************************************************************************
+ * Copyright (C) 2022-2023 WaveMaker, Inc. All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of WaveMaker, Inc.
+ * You shall not disclose such Confidential Information and shall use it only in accordance with the
+ * terms of the source code license agreement you entered into with WaveMaker, Inc.
+ ******************************************************************************/
+package com.wavemaker.app.security.models.config.database;
+
+import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+
+/**
+ * @author Frankie Fu
+ */
+public class DatabaseProviderConfig extends AbstractProviderConfig {
+
+    public static final String DATABASE = "DATABASE";
+
+    @NonProfilizableProperty(value = "${security.providers.database.modelName}")
+    private String modelName;
+
+    private String entityName;
+
+    private String tableName;
+
+    private String unamePropertyName;
+
+    private String unameColumnName;
+
+    private String uidPropertyName;
+
+    private String uidColumnName;
+
+    private String pwPropertyName;
+
+    private String pwColumnName;
+
+    private String rolePropertyName;
+
+    private String roleColumnName;
+
+    private boolean useRolesQuery;
+
+    @NonProfilizableProperty(value = "${security.providers.database.rolesByUsernameQuery:null}")
+    private String rolesByUsernameQuery;
+
+    private String tenantIdField;
+
+    private int defTenantId;
+
+    private String tenantIdPropertyName;
+
+    @NonProfilizableProperty(value = "${security.providers.database.queryType:HQL}")
+    private String queryType;
+
+    @NonProfilizableProperty("${security.providers.database.usersByUsernameQuery}")
+    private String usersByUsernameQuery;
+
+    @Override
+    public String getType() {
+        return DATABASE;
+    }
+
+    public String getModelName() {
+        return this.modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public String getEntityName() {
+        return this.entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
+    }
+
+    public String getTableName() {
+        return this.tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getUnamePropertyName() {
+        return this.unamePropertyName;
+    }
+
+    public void setUnamePropertyName(String unamePropertyName) {
+        this.unamePropertyName = unamePropertyName;
+    }
+
+    public String getUnameColumnName() {
+        return this.unameColumnName;
+    }
+
+    public void setUnameColumnName(String unameColumnName) {
+        this.unameColumnName = unameColumnName;
+    }
+
+    public String getUidPropertyName() {
+        return this.uidPropertyName;
+    }
+
+    public void setUidPropertyName(String uidPropertyName) {
+        this.uidPropertyName = uidPropertyName;
+    }
+
+    public String getUidColumnName() {
+        return this.uidColumnName;
+    }
+
+    public void setUidColumnName(String uidColumnName) {
+        this.uidColumnName = uidColumnName;
+    }
+
+    public String getPwPropertyName() {
+        return this.pwPropertyName;
+    }
+
+    public void setPwPropertyName(String pwPropertyName) {
+        this.pwPropertyName = pwPropertyName;
+    }
+
+    public String getPwColumnName() {
+        return this.pwColumnName;
+    }
+
+    public void setPwColumnName(String pwColumnName) {
+        this.pwColumnName = pwColumnName;
+    }
+
+    public String getRolePropertyName() {
+        return this.rolePropertyName;
+    }
+
+    public void setRolePropertyName(String rolePropertName) {
+        this.rolePropertyName = rolePropertName;
+    }
+
+    public String getRoleColumnName() {
+        return this.roleColumnName;
+    }
+
+    public void setRoleColumnName(String roleColumnName) {
+        this.roleColumnName = roleColumnName;
+    }
+
+    public boolean isUseRolesQuery() {
+        return this.useRolesQuery;
+    }
+
+    public void setUseRolesQuery(boolean useRolesQuery) {
+        this.useRolesQuery = useRolesQuery;
+    }
+
+    public String getRolesByUsernameQuery() {
+        return this.rolesByUsernameQuery;
+    }
+
+    public void setRolesByUsernameQuery(String rolesByUsernameQuery) {
+        this.rolesByUsernameQuery = rolesByUsernameQuery;
+    }
+
+    public String getTenantIdField() {
+        return this.tenantIdField;
+    }
+
+    public void setTenantIdField(String val) {
+        this.tenantIdField = val;
+    }
+
+    public int getDefTenantId() {
+        return this.defTenantId;
+    }
+
+    public void setDefTenantId(int val) {
+        this.defTenantId = val;
+    }
+
+    public void setTenantIdPropertyName(String tenantIdPropertyName) {
+        this.tenantIdPropertyName = tenantIdPropertyName;
+    }
+
+    public String getTenantIdPropertyName() {
+        return tenantIdPropertyName;
+    }
+
+    public String getQueryType() {
+        return queryType;
+    }
+
+    public void setQueryType(final String queryType) {
+        this.queryType = queryType;
+    }
+
+    public String getUsersByUsernameQuery() {
+        return usersByUsernameQuery;
+    }
+
+    public void setUsersByUsernameQuery(String usersByUsernameQuery) {
+        this.usersByUsernameQuery = usersByUsernameQuery;
+    }
+}

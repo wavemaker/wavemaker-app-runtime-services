@@ -26,8 +26,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.model.security.XSSSanitizationLayer;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.app.security.models.XSSSanitizationLayer;
 
 public class XSSEncodeSanitizerTest {
 

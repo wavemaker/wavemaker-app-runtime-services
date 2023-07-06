@@ -41,8 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.app.security.models.TrustStoreConfig.TrustStoreConfigType;
 import com.wavemaker.commons.util.SSLUtils;
-import com.wavemaker.runtime.rest.TrustStoreConfig;
 
 public class SSLContextProvider {
 
@@ -103,14 +103,14 @@ public class SSLContextProvider {
     }
 
     private TrustManager[] getTrustManager() {
-        TrustStoreConfig trustStoreConfig = httpConfiguration.getTrustStoreConfig();
+        TrustStoreConfigType trustStoreConfigType = httpConfiguration.getTrustStoreConfigType();
         X509TrustManager x509TrustManager;
-        logger.info("Using trust manager with {} Config", trustStoreConfig);
-        if (trustStoreConfig.equals(TrustStoreConfig.APPLICATION_ONLY)) {
+        logger.info("Using trust manager with {} Config", trustStoreConfigType);
+        if (trustStoreConfigType.equals(TrustStoreConfigType.APPLICATION_ONLY)) {
             x509TrustManager = getApplicationTrustManager();
-        } else if (trustStoreConfig.equals(TrustStoreConfig.SYSTEM_ONLY)) {
+        } else if (trustStoreConfigType.equals(TrustStoreConfigType.SYSTEM_ONLY)) {
             x509TrustManager = getSystemTrustManager();
-        } else if (trustStoreConfig.equals(TrustStoreConfig.APPLICATION_AND_SYSTEM)) {
+        } else if (trustStoreConfigType.equals(TrustStoreConfigType.APPLICATION_AND_SYSTEM)) {
             X509TrustManager applicationTrustManager = getApplicationTrustManager();
             X509TrustManager systemTrustManager = getSystemTrustManager();
             x509TrustManager = new CompoundTrustManager(List.of(applicationTrustManager, systemTrustManager));

@@ -42,11 +42,12 @@ import org.springframework.security.saml2.provider.service.web.authentication.lo
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
+import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestResolver;
 import com.wavemaker.runtime.security.provider.saml.util.SamlUtils;
 
 @Configuration
-@Conditional(OpenSamlLatestVersionCondition.class)
+@Conditional({SecurityEnabledCondition.class, OpenSamlLatestVersionCondition.class, SAMLProviderCondition.class})
 public class OpenSaml4Config {
 
     @Value("${security.providers.saml.roleMappingEnabled:false}")
@@ -60,6 +61,11 @@ public class OpenSaml4Config {
 
     @Autowired(required = false)
     private AuthoritiesProvider authoritiesProvider;
+
+    @Bean(name = "relyingPartyRegistrationResolver")
+    public RelyingPartyRegistrationResolverFactoryBean relyingPartyRegistrationResolver() {
+        return new RelyingPartyRegistrationResolverFactoryBean();
+    }
 
     @Bean("saml2AuthenticationRequestResolver")
     public Saml2AuthenticationRequestResolver saml2AuthenticationRequestResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {

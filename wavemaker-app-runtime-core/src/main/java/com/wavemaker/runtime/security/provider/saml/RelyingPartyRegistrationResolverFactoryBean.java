@@ -43,10 +43,11 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 
+import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.model.security.saml.MetadataSource;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.app.security.models.saml.MetadataSource;
 
 public class RelyingPartyRegistrationResolverFactoryBean implements FactoryBean<RelyingPartyRegistrationResolver> {
 
@@ -54,6 +55,8 @@ public class RelyingPartyRegistrationResolverFactoryBean implements FactoryBean<
     private Environment environment;
     @Value("${security.providers.saml.entityBaseURL:#{null}}")
     private String applicationUri;
+    @Autowired
+    private SAMLProviderConfig samlProviderConfig;
 
     private static final String PROVIDERS_SAML_KEY_STORE_FILE = "security.providers.saml.keyStoreFile";
     private static final String PROVIDERS_SAML_KEY_STORE_PASSWORD = "security.providers.saml.keyStorePassword";

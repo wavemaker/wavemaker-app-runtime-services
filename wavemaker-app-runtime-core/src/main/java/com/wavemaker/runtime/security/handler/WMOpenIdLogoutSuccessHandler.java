@@ -35,7 +35,7 @@ import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
-import com.wavemaker.runtime.security.openId.OpenIdProviderRuntimeConfig;
+import com.wavemaker.runtime.security.provider.openId.OpenIdProviderRuntimeConfig;
 
 public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
