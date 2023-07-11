@@ -10,7 +10,6 @@ package com.wavemaker.app.security.models.config.rolemapping;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 /**
  * Created by jvenugopal on 12-05-2016.
@@ -19,7 +18,6 @@ import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 public class RoleAttributeNameMappingConfig implements RoleMappingConfig {
 
     @NotBlank
-    @ProfilizableProperty("${security.providers.opaqueToken.roleAttributeName}")
     private String roleAttributeName;
 
     public String getRoleAttributeName() {

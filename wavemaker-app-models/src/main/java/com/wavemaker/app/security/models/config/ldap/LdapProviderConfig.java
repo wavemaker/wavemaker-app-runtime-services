@@ -30,7 +30,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     private String testDn;
     private String testPassword;
 
-    @ProfilizableProperty("${security.providers.ldap.rootDn}")
+    @NonProfilizableProperty("${security.providers.ldap.rootDn}")
     private String rootDn;
 
     @ProfilizableProperty("${security.providers.ldap.userSearchPattern}")

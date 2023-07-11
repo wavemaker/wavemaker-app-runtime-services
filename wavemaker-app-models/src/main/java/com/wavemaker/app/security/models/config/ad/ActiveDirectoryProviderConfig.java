@@ -27,10 +27,10 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.ad.userSearchPattern}")
     private String userSearchPattern;
 
-    @ProfilizableProperty("${security.providers.ad.testUsername}")
+    @NonProfilizableProperty("${security.providers.ad.testUsername}")
     private String testUsername;
 
-    @ProfilizableProperty("${security.providers.ad.testPassword}")
+    @NonProfilizableProperty("${security.providers.ad.testPassword}")
     private String testPassword;
 
     @ProfilizableProperty(value = "${security.providers.ad.groupSearchDisabled}", isAutoUpdate = true)
@@ -42,7 +42,7 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.ad.groupRoleAttribute}")
     private String groupRoleAttribute;
 
-    @ProfilizableProperty("${security.providers.ad.modelName}")
+    @NonProfilizableProperty("${security.providers.ad.modelName}")
     private String roleModel;
 
     private String roleEntity;

@@ -9,6 +9,7 @@ package com.wavemaker.app.security.models.config.cas;
 
 import java.util.List;
 
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
@@ -19,19 +20,29 @@ public class CASProviderConfig extends AbstractProviderConfig {
 
     public static final String CAS = "CAS";
 
+    @ProfilizableProperty("${security.providers.cas.serverUrl}")
     private String serverUrl;
 
+    @ProfilizableProperty("${security.providers.cas.loginUrl}")
     private String loginUrl;
 
+    @ProfilizableProperty("${security.providers.cas.validationUrl}")
     private String validationUrl;
 
+    @ProfilizableProperty("${security.providers.cas.logoutUrl}")
     private String logoutUrl;
 
+    @ProfilizableProperty("${security.providers.cas.serviceParameter}")
     private String serviceParameter;
 
+    @ProfilizableProperty("${security.providers.cas.artifactParameter}")
     private String artifactParameter;
 
+    @ProfilizableProperty(value = "${security.providers.cas.roleMappingEnabled}", isAutoUpdate = true)
     private boolean roleMappingEnabled;
+
+    @ProfilizableProperty(value = "${security.providers.cas.roleProvider}", isAutoUpdate = true)
+    private String roleProvider;
 
     private RoleMappingConfig roleMappingConfig;
 
@@ -96,6 +107,14 @@ public class CASProviderConfig extends AbstractProviderConfig {
 
     public void setRoleMappingEnabled(boolean roleMappingEnabled) {
         this.roleMappingEnabled = roleMappingEnabled;
+    }
+
+    public String getRoleProvider() {
+        return roleProvider;
+    }
+
+    public void setRoleProvider(String roleProvider) {
+        this.roleProvider = roleProvider;
     }
 
     public RoleMappingConfig getRoleMappingConfig() {
