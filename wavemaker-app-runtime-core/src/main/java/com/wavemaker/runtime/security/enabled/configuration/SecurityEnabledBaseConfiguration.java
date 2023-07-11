@@ -364,8 +364,17 @@ public class SecurityEnabledBaseConfiguration {
         return createRoleConfig(roleList());
     }
 
+    /**
+     * prefix should be always lowercase,if it is in camelcase @ConfigurationProperties is unable to read the properties
+     */
     @Bean
-    @ConfigurationProperties(prefix = "security.roles")
+    @ConfigurationProperties(prefix = "security.intercepturls")
+    public SecurityInterceptUrlList securityInterceptUrlList() {
+        return new SecurityInterceptUrlList();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "security.approles")
     public RoleList roleList() {
         return new RoleList();
     }
@@ -465,15 +474,6 @@ public class SecurityEnabledBaseConfiguration {
         } catch (Exception e) {
             throw new WMRuntimeException(e);
         }
-    }
-
-    /**
-     * prefix should be always lowercase,if it is in camelcase @ConfigurationProperties is unable to read the properties
-     */
-    @Bean
-    @ConfigurationProperties(prefix = "security.intercepturls")
-    public SecurityInterceptUrlList securityInterceptUrlList() {
-        return new SecurityInterceptUrlList();
     }
 
     private RolesConfig createRoleConfig(List<Role> roles) {
