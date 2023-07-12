@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -34,6 +35,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
@@ -151,26 +153,26 @@ public class RestConnector {
         synchronized (RestConnector.class) {
             if (defaultHttpClient == null) {
                 HttpClientBuilder httpClientBuilder = HttpClients.custom()
-                    .setDefaultCredentialsProvider(getCredentialProvider())
-                    .setConnectionManager(getConnectionManager());
+                        .setConnectionManager(getConnectionManager());
                 if (httpConfiguration.isUseSystemProperties()) {
                     httpClientBuilder = httpClientBuilder.useSystemProperties();
                 }
+                configureAppProxy(httpClientBuilder);
                 defaultHttpClient = httpClientBuilder.build();
             }
         }
-
         return defaultHttpClient;
     }
 
-    private CredentialsProvider getCredentialProvider() {
-        CredentialsProvider credentialsProvider = null;
+    private void configureAppProxy(HttpClientBuilder httpClientBuilder) {
         if (httpConfiguration.isAppProxyEnabled()) {
-            credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(new AuthScope(httpConfiguration.getAppProxyHost(), httpConfiguration.getAppProxyPort()),
-                new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
+            HttpHost proxyHost = new HttpHost(httpConfiguration.getAppProxyHost(), httpConfiguration.getAppProxyPort());
+            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(new AuthScope(proxyHost),
+                    new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
+            httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(proxyHost));
         }
-        return credentialsProvider;
     }
 
     private PoolingHttpClientConnectionManager getConnectionManager() {
