@@ -21,10 +21,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.i18n.LocaleData;
@@ -49,7 +53,6 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         "type",
         "homePage",
         "platformType",
-        "activeTheme",
         "displayName",
         "dateFormat",
         "timeFormat",
@@ -62,6 +65,27 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
 
     @Autowired
     private SecurityService securityService;
+
+    private String activeTheme;
+
+    private static final Logger logger = LoggerFactory.getLogger(AppRuntimeServiceImpl.class);
+
+    @PostConstruct
+    public void init() {
+        InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("themes-config.json");
+        if (resourceAsStream != null) {
+            try {
+                activeTheme = new ObjectMapper().readTree(resourceAsStream).get("activeTheme").asText();
+            } catch (IOException e) {
+                logger.error("Error while reading themes-config.json file", e);
+                throw new WMRuntimeException(e);
+            }
+            logger.info("Detected active theme as : {}", activeTheme);
+        } else {
+            logger.warn("themes-config.json file not found in classpath");
+            throw new WMRuntimeException("themes-config.json file not found in classpath");
+        }
+    }
 
     @Override
     public Map<String, Object> getApplicationProperties() {
@@ -81,10 +105,15 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 appProperties
                     .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
                 appProperties.put("isTestRuntime", RuntimeEnvironment.isTestRunEnvironment());
+                appProperties.put("activeTheme", getActiveTheme());
                 this.applicationProperties = appProperties;
             }
         }
         return new HashMap<>(applicationProperties);
+    }
+
+    public String getActiveTheme() {
+        return activeTheme;
     }
 
     @Override
