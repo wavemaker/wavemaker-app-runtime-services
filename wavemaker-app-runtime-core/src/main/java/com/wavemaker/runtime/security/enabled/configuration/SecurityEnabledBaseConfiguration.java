@@ -21,11 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.Filter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +50,6 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -71,6 +73,7 @@ import org.springframework.security.web.csrf.CsrfLogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -84,6 +87,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
 import com.wavemaker.app.security.models.CSRFConfig;
+import com.wavemaker.app.security.models.CustomFilter;
 import com.wavemaker.app.security.models.LoginConfig;
 import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.Role;
@@ -94,6 +98,7 @@ import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.SecurityInterceptUrlList;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.app.security.models.TokenAuthConfig;
+import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.security.WMAppAccessDeniedHandler;
@@ -136,6 +141,8 @@ public class SecurityEnabledBaseConfiguration {
 
     @Autowired
     private Environment environment;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Bean(name = "defaultWebSecurityExpressionHandler")
     public SecurityExpressionHandler<FilterInvocation> defaultWebSecurityExpressionHandler() {
@@ -390,6 +397,41 @@ public class SecurityEnabledBaseConfiguration {
         });
     }
 
+    public void addCustomFilters(HttpSecurity http) {
+        List<CustomFilter> customFilters = customFilterList();
+        customFilters.forEach(customFilter -> {
+
+            String ref = customFilter.getRef();
+            if (StringUtils.isBlank(ref)) {
+                throw new IllegalStateException("ref cannot be empty");
+            }
+            Object bean = applicationContext.getBean(ref);
+
+            AtomicInteger count = new AtomicInteger();
+            NamedSecurityFilter before = getNamedSecurityFilter(customFilter.getBefore(), count);
+            NamedSecurityFilter position = getNamedSecurityFilter(customFilter.getPosition(), count);
+            NamedSecurityFilter after = getNamedSecurityFilter(customFilter.getAfter(), count);
+            if (count.get() != 1) {
+                throw new IllegalStateException("Expected one and only one of before/after/position parameter to be set to the custom filter");
+            }
+            if (before != null) {
+                http.addFilterBefore((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getBefore()));
+            }
+            if (after != null) {
+                http.addFilterAfter((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getAfter()));
+            }
+            if (position != null) {
+                http.addFilterAt((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getPosition()));
+            }
+        });
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "security.general.customfilters")
+    public List<CustomFilter> customFilterList() {
+        return new ArrayList<>();
+    }
+
     @Bean
     public SecurityFilterChain filterChainWithSessions(HttpSecurity http, Filter logoutFilter) throws Exception {
         http
@@ -413,13 +455,14 @@ public class SecurityEnabledBaseConfiguration {
             .authenticationManager(authenticationManager());
         http.authorizeRequests(this::executeUrls)
             .logout().disable()
-            .addFilterAt(sessionRepositoryFilter(), ChannelProcessingFilter.class)
+            .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
             .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
             .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterAt(logoutFilter, LogoutFilter.class)
             .addFilterAfter(loginWebProcessFilter(), SecurityContextPersistenceFilter.class);
         wmSecurityConfiguration.forEach(securityConfiguration ->
             securityConfiguration.addFilters(http));
+        addCustomFilters(http);
         return http.build();
     }
 
@@ -445,6 +488,7 @@ public class SecurityEnabledBaseConfiguration {
             .logout().disable()
             .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
         wmSecurityConfiguration.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
+        addCustomFilters(http);
         return http.build();
     }
 
@@ -533,5 +577,13 @@ public class SecurityEnabledBaseConfiguration {
                 authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).permitAll();
                 break;
         }
+    }
+
+    private NamedSecurityFilter getNamedSecurityFilter(String str, AtomicInteger count) {
+        if (!StringUtils.isBlank(str)) {
+            count.incrementAndGet();
+            return NamedSecurityFilter.getValue(str);
+        }
+        return null;
     }
 }

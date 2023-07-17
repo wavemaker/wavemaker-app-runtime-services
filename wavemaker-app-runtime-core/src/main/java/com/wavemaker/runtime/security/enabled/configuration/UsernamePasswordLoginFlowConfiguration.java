@@ -39,11 +39,12 @@ import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
 import com.wavemaker.runtime.security.rememberme.config.RememberMeConfiguration;
 
 @Configuration
-@Conditional({SecurityEnabledCondition.class, UsernamePasswordAuthFilterCondition.class})
-public class UsernamePasswordAuthFilter implements WMSecurityConfiguration {
+@Conditional({SecurityEnabledCondition.class, UsernamePasswordLoginFlowCondition.class})
+public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfiguration {
 
     @Autowired
     private SecurityEnabledBaseConfiguration securityEnabledBaseConfiguration;
+
     @Autowired(required = false)
     private RememberMeConfiguration rememberMeConfiguration;
 

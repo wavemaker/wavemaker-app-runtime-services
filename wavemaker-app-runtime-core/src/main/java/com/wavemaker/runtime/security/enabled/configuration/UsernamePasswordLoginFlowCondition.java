@@ -25,15 +25,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class UsernamePasswordAuthFilterCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(UsernamePasswordAuthFilterCondition.class);
+public class UsernamePasswordLoginFlowCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(UsernamePasswordLoginFlowCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
         String activeProvider = environment.getProperty("security.providers.activeProviders");
         if (Stream.of("DEMO", "DATABASE", "LDAP", "AD", "CUSTOM").anyMatch(s -> Objects.requireNonNull(activeProvider).contains(s))) {
-            logger.info("Initializing UsernamePasswordAuthFilter beans for {} active provider", activeProvider);
+            logger.info("Initializing UsernamePasswordAuthFlowConfiguration beans for {} active provider", activeProvider);
             return true;
         }
         return false;
