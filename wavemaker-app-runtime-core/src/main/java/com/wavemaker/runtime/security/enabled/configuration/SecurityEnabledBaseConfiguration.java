@@ -92,13 +92,10 @@ import com.wavemaker.app.security.models.LoginConfig;
 import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.Role;
 import com.wavemaker.app.security.models.RoleConfig;
-import com.wavemaker.app.security.models.RoleList;
 import com.wavemaker.app.security.models.RolesConfig;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
-import com.wavemaker.app.security.models.SecurityInterceptUrlList;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.app.security.models.TokenAuthConfig;
-import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.security.WMAppAccessDeniedHandler;
@@ -109,6 +106,7 @@ import com.wavemaker.runtime.security.csrf.WMCsrfFilter;
 import com.wavemaker.runtime.security.csrf.WMCsrfLogoutHandler;
 import com.wavemaker.runtime.security.csrf.WMCsrfTokenRepository;
 import com.wavemaker.runtime.security.csrf.WMHttpSessionCsrfTokenRepository;
+import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
 import com.wavemaker.runtime.security.enabled.configuration.requestmatcher.StatelessRequestMatcher;
 import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcessingFilter;
@@ -356,6 +354,11 @@ public class SecurityEnabledBaseConfiguration {
         return new SessionTimeoutConfig();
     }
 
+    @Bean(name = "loginConfigBeanPostProcessor")
+    public LoginConfigBeanPostProcessor loginConfigBeanPostProcessor() {
+        return new LoginConfigBeanPostProcessor();
+    }
+
     @Bean(name = "tokenAuthConfig")
     public TokenAuthConfig tokenAuthConfig() {
         return new TokenAuthConfig();
@@ -376,14 +379,14 @@ public class SecurityEnabledBaseConfiguration {
      */
     @Bean
     @ConfigurationProperties(prefix = "security.intercepturls")
-    public SecurityInterceptUrlList securityInterceptUrlList() {
-        return new SecurityInterceptUrlList();
+    public List<SecurityInterceptUrlEntry> securityInterceptUrlList() {
+        return new ArrayList<>();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "security.approles")
-    public RoleList roleList() {
-        return new RoleList();
+    public List<Role> roleList() {
+        return new ArrayList<>();
     }
 
     @Bean(name = "ignoreAntMatchers")
@@ -580,7 +583,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     private NamedSecurityFilter getNamedSecurityFilter(String str, AtomicInteger count) {
-        if (!StringUtils.isBlank(str)) {
+        if (StringUtils.isNotBlank(str)) {
             count.incrementAndGet();
             return NamedSecurityFilter.getValue(str);
         }

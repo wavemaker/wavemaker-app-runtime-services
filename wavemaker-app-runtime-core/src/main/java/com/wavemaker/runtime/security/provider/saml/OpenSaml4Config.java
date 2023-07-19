@@ -47,7 +47,7 @@ import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestR
 import com.wavemaker.runtime.security.provider.saml.util.SamlUtils;
 
 @Configuration
-@Conditional({SecurityEnabledCondition.class, OpenSamlLatestVersionCondition.class, SAMLProviderCondition.class})
+@Conditional({SecurityEnabledCondition.class, SAMLProviderCondition.class, OpenSamlLatestVersionCondition.class})
 public class OpenSaml4Config {
 
     @Value("${security.providers.saml.roleMappingEnabled:false}")
