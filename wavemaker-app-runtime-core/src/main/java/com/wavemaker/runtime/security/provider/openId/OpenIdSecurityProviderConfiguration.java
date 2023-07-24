@@ -224,7 +224,6 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
             applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.modelName") + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager)
             applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.modelName") + "TransactionManager"));
-        defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setHql(Boolean.TRUE.equals(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.isHQL", Boolean.class)));
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.rolesByUsernameQuery"));
         return defaultAuthoritiesProvider;

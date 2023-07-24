@@ -188,7 +188,6 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     public DefaultAuthoritiesProviderImpl authoritiesProvider() {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         defaultAuthoritiesProvider.setHql(Boolean.parseBoolean(environment.getProperty("security.providers.cas.isHql")));
-        defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty("security.providers.cas.rolesByUsernameQuery"));
         String modelName = environment.getProperty("security.providers.cas.modelName");

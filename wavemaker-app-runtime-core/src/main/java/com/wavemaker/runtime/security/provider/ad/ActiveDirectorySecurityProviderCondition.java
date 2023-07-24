@@ -22,8 +22,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class ActiveDirectoryProviderCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(ActiveDirectoryProviderCondition.class);
+public class ActiveDirectorySecurityProviderCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(ActiveDirectorySecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {

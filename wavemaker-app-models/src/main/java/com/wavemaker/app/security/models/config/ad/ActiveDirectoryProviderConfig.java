@@ -42,7 +42,7 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.ad.groupRoleAttribute}")
     private String groupRoleAttribute;
 
-    @NonProfilizableProperty("${security.providers.ad.modelName}")
+    @NonProfilizableProperty("${security.providers.ad.database.modelName}")
     private String roleModel;
 
     private String roleEntity;
@@ -55,10 +55,10 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
 
     private boolean useRolesQuery;
 
-    @NonProfilizableProperty("${security.providers.ad.rolesByUsernameQuery}")
+    @NonProfilizableProperty("${security.providers.ad.database.rolesByUsernameQuery}")
     private String roleQuery;
 
-    @NonProfilizableProperty("${security.providers.ad.queryType}")
+    @NonProfilizableProperty("${security.providers.ad.database.queryType}")
     private String queryType;
 
     @Override

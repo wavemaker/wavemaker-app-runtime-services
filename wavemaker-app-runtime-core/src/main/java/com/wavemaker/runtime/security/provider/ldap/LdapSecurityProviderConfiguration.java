@@ -74,7 +74,6 @@ public class LdapSecurityProviderConfiguration {
     public AuthoritiesProvider defaultAuthoritiesProvider(ApplicationContext applicationContext, LdapProviderConfig ldapProviderConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         defaultAuthoritiesProvider.setHql(ldapProviderConfig.getQueryType().equals("HQL"));
-        defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(ldapProviderConfig.getRoleQuery());
         String modelName = ldapProviderConfig.getRoleModel();

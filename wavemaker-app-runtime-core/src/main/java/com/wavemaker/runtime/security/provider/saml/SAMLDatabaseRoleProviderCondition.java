@@ -13,9 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.ad;
-
-import java.util.Objects;
+package com.wavemaker.runtime.security.provider.saml;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +22,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class ActiveDirectoryDatabaseAuthorityProviderCondition implements Condition {
-
-    private static final Logger logger = LoggerFactory.getLogger(ActiveDirectoryDatabaseAuthorityProviderCondition.class);
+public class SAMLDatabaseRoleProviderCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(SAMLDatabaseRoleProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String roleProvider = environment.getProperty("security.providers.ad.roleProvider", String.class);
-        if (Objects.equals("Database", roleProvider)) {
-            logger.info("Initializing Database RoleMapping beans for AD provider");
+        String roleProvider = environment.getProperty("security.providers.saml.roleProvider");
+        if (roleProvider != null && roleProvider.equals("Database")) {
+            logger.info("Initializing Database roleMapping bean for SAML provider");
             return true;
         }
         return false;

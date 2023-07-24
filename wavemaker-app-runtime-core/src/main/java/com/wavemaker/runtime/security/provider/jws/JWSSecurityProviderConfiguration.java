@@ -105,7 +105,6 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
     private DefaultAuthoritiesProviderImpl jwsAuthoritiesProvider(JWSProviderConfiguration jwsProviderConfiguration) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         defaultAuthoritiesProvider.setHql(jwsProviderConfiguration.getIsHQL());
-        defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(jwsProviderConfiguration.getRolesByUsernameQuery());
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext

@@ -15,6 +15,9 @@
 
 package com.wavemaker.runtime.security.provider.ad;
 
+import java.util.Objects;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -31,43 +34,26 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.ad.ActiveDirectoryProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
+import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 
 @Configuration
-@Conditional({SecurityEnabledCondition.class, ActiveDirectoryProviderCondition.class})
+@Conditional({SecurityEnabledCondition.class, ActiveDirectorySecurityProviderCondition.class})
 public class ActiveDirectorySecurityProviderConfiguration {
 
     @Bean(name = "adAuthProvider")
-    public AuthenticationProvider adAuthProvider(ApplicationContext applicationContext, ActiveDirectoryProviderConfig activeDirectoryProviderConfig) {
+    public AuthenticationProvider adAuthProvider(ActiveDirectoryAuthoritiesPopulator activeDirectoryAuthoritiesPopulator,
+                                                 ActiveDirectoryProviderConfig activeDirectoryProviderConfig) {
         ActiveDirectoryAuthenticationProvider activeDirectoryAuthenticationProvider = new ActiveDirectoryAuthenticationProvider(
             activeDirectoryProviderConfig.getDomain(), activeDirectoryProviderConfig.getUrl(), activeDirectoryProviderConfig.getRootDn());
         activeDirectoryAuthenticationProvider.setUserSearchPattern(activeDirectoryProviderConfig.getUserSearchPattern());
         activeDirectoryAuthenticationProvider.setAuthoritiesMapper(simpleAuthorityMapper());
         activeDirectoryAuthenticationProvider.setUserDetailsContextMapper(userDetailsContextMapper());
-        boolean groupSearchDisabled = activeDirectoryProviderConfig.isGroupSearchDisabled();
-        String roleProvider = activeDirectoryProviderConfig.getRoleProvider();
-        if (!groupSearchDisabled) {
-            if (roleProvider != null && roleProvider.equals("Database")) {
-                activeDirectoryAuthenticationProvider.setAuthoritiesPopulator(activeDirectoryDatabaseAuthoritiesPopulator(applicationContext,
-                    activeDirectoryProviderConfig));
-            } else {
-                activeDirectoryAuthenticationProvider.setAuthoritiesPopulator(adAuthoritiesPopulator(activeDirectoryProviderConfig));
-            }
-        } else {
-            activeDirectoryAuthenticationProvider.setAuthoritiesPopulator(adAuthoritiesPopulator(activeDirectoryProviderConfig));
-        }
+        activeDirectoryAuthenticationProvider.setAuthoritiesPopulator(activeDirectoryAuthoritiesPopulator);
         return activeDirectoryAuthenticationProvider;
-    }
-
-    @Bean(name = "adAuthoritiesPopulator")
-    @Conditional(ActiveDirectoryDatabaseAuthorityProviderCondition.class)
-    public ActiveDirectoryAuthoritiesPopulator activeDirectoryDatabaseAuthoritiesPopulator(ApplicationContext applicationContext,
-                                                                                           ActiveDirectoryProviderConfig activeDirectoryProviderConfig) {
-        ActiveDirectoryDatabaseAuthoritiesPopulator activeDirectoryDatabaseAuthoritiesPopulator = new ActiveDirectoryDatabaseAuthoritiesPopulator();
-        activeDirectoryDatabaseAuthoritiesPopulator.setAuthoritiesProvider(defaultAuthoritiesProviderImpl(applicationContext, activeDirectoryProviderConfig));
-        return activeDirectoryDatabaseAuthoritiesPopulator;
     }
 
     @Bean(name = "authoritiesMapper")
@@ -85,24 +71,46 @@ public class ActiveDirectorySecurityProviderConfiguration {
     }
 
     @Bean(name = "adAuthoritiesPopulator")
+    @Conditional(NoAuthoritiesPopulatorCondition.class)
+    public ActiveDirectoryAuthoritiesPopulator noAuthoritiesPopulator() {
+        return new NoAuthoritiesPopulator();
+    }
+
+    @Bean(name = "adAuthoritiesPopulator")
+    @Conditional(DefaultActiveDirectoryAuthoritiesPopulatorCondition.class)
     public ActiveDirectoryAuthoritiesPopulator adAuthoritiesPopulator(ActiveDirectoryProviderConfig activeDirectoryProviderConfig) {
         DefaultActiveDirectoryAuthoritiesPopulator defaultActiveDirectoryAuthoritiesPopulator = new DefaultActiveDirectoryAuthoritiesPopulator();
         defaultActiveDirectoryAuthoritiesPopulator.setGroupRoleAttribute(activeDirectoryProviderConfig.getGroupRoleAttribute());
         return defaultActiveDirectoryAuthoritiesPopulator;
     }
 
+    @Bean(name = "adAuthoritiesPopulator")
+    @Conditional(DatabaseActiveDirectoryAuthoritiesPopulatorCondition.class)
+    public ActiveDirectoryAuthoritiesPopulator activeDirectoryDatabaseAuthoritiesPopulator(ApplicationContext applicationContext,
+                                                                                           RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig) {
+        ActiveDirectoryDatabaseAuthoritiesPopulator activeDirectoryDatabaseAuthoritiesPopulator = new ActiveDirectoryDatabaseAuthoritiesPopulator();
+        activeDirectoryDatabaseAuthoritiesPopulator.setAuthoritiesProvider(defaultAuthoritiesProviderImpl(applicationContext, runtimeDatabaseRoleMappingConfig));
+        return activeDirectoryDatabaseAuthoritiesPopulator;
+    }
+
     @Bean(name = "defaultAuthoritiesProvider")
-    @Conditional(ActiveDirectoryDatabaseAuthorityProviderCondition.class)
+    @Conditional(DatabaseActiveDirectoryAuthoritiesPopulatorCondition.class)
     public AuthoritiesProvider defaultAuthoritiesProviderImpl(ApplicationContext applicationContext,
-                                                              ActiveDirectoryProviderConfig activeDirectoryProviderConfig) {
+                                                              RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(activeDirectoryProviderConfig.getQueryType().equals("HQL"));
-        defaultAuthoritiesProvider.setRolesByQuery(true);
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(activeDirectoryProviderConfig.getRoleQuery());
-        String roleModel = activeDirectoryProviderConfig.getRoleModel();
+        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String roleModel = runtimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(roleModel + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(roleModel + "TransactionManager"));
         return defaultAuthoritiesProvider;
+    }
+
+    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Conditional(DatabaseActiveDirectoryAuthoritiesPopulatorCondition.class)
+    @ConfigurationProperties("security.providers.ad.database")
+    public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
+        return new RuntimeDatabaseRoleMappingConfig();
     }
 
     @Bean(name = "activeDirectoryProviderConfig")

@@ -208,11 +208,10 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "authoritiesProvider")
-    @Conditional(SAMLRoleProviderCondition.class)
+    @Conditional(SAMLDatabaseRoleProviderCondition.class)
     public DefaultAuthoritiesProviderImpl authoritiesProvider(Environment environment, ApplicationContext applicationContext) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         defaultAuthoritiesProvider.setHql(Boolean.parseBoolean(environment.getProperty("security.providers.saml.isHQL")));
-        defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty("security.providers.saml.rolesByUsernameQuery"));
         String modelName = environment.getProperty("security.providers.saml.modelName");

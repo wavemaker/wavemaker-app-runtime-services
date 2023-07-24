@@ -15,6 +15,8 @@
 
 package com.wavemaker.runtime.security.provider.database;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +35,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.database.DatabaseProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -86,10 +89,9 @@ public class DatabaseSecurityProviderConfiguration {
     public AuthoritiesProvider defaultAuthoritiesProviderImpl(DatabaseProviderConfig databaseProviderConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         String modelName = databaseProviderConfig.getModelName();
-        defaultAuthoritiesProvider.setHql(databaseProviderConfig.getQueryType().equals("HQL"));
+        defaultAuthoritiesProvider.setHql(Objects.equals(databaseProviderConfig.getQueryType(), RoleQueryType.HQL.name()));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(databaseProviderConfig.getRolesByUsernameQuery());
-        defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;

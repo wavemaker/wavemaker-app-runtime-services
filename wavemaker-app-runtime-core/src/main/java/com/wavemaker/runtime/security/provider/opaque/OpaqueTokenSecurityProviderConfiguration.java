@@ -73,7 +73,6 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     public AuthoritiesProvider opaqueAuthoritiesProvider(Environment environment, ApplicationContext applicationContext) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         defaultAuthoritiesProvider.setHql(Boolean.parseBoolean(environment.getProperty("security.providers.opaqueToken.isHQL")));
-        defaultAuthoritiesProvider.setRolesByQuery(true);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty("security.providers.opaqueToken.rolesByUsernameQuery"));
         String modelName = environment.getProperty("security.providers.opaqueToken.modelName");
