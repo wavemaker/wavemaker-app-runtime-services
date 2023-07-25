@@ -23,6 +23,7 @@ import javax.servlet.Filter;
 
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -45,12 +46,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.cas.WMCasHttpsURLConnectionFactory;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMCasAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
+import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, CASSecurityProviderCondition.class})
@@ -100,15 +103,16 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         CasAuthenticationProvider casAuthenticationProvider = new CasAuthenticationProvider();
         casAuthenticationProvider.setServiceProperties(casServiceProperties(casProviderConfig));
         casAuthenticationProvider.setKey("casAuthProviderKey");
-        casAuthenticationProvider.setTicketValidator(cas20ServiceTicketValidator(appSSLSocketFactory, appHostnameVerifier));
+        casAuthenticationProvider.setTicketValidator(cas20ServiceTicketValidator(appSSLSocketFactory, appHostnameVerifier, casProviderConfig));
         casAuthenticationProvider.setAuthenticationUserDetailsService(wmCasUserDetailsByNameServiceWrapper(casProviderConfig));
         return casAuthenticationProvider;
     }
 
     @Bean(name = "cas20ServiceTicketValidator")
-    public Cas20ServiceTicketValidator cas20ServiceTicketValidator(SSLSocketFactory appSSLSocketFactory, HostnameVerifier appHostnameVerifier) {
+    public Cas20ServiceTicketValidator cas20ServiceTicketValidator(SSLSocketFactory appSSLSocketFactory, HostnameVerifier appHostnameVerifier,
+                                                                   CASProviderConfig casProviderConfig) {
         Cas20ServiceTicketValidator cas20ServiceTicketValidator = new Cas20ServiceTicketValidator(Objects.requireNonNull(
-            environment.getProperty("security.providers.cas.serverUrl")));
+            casProviderConfig.getServerUrl()));
         cas20ServiceTicketValidator.setURLConnectionFactory(casUrlConnectionFactory(appSSLSocketFactory, appHostnameVerifier));
         return cas20ServiceTicketValidator;
     }
@@ -155,7 +159,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     public WMCASAuthenticationEntryPoint WMSecAuthEntryPoint(CASProviderConfig casProviderConfig) {
         WMCASAuthenticationEntryPoint authenticationEntryPoint = new WMCASAuthenticationEntryPoint();
         authenticationEntryPoint.setServiceProperties(casServiceProperties(casProviderConfig));
-        authenticationEntryPoint.setLoginUrl(casProviderConfig().getLoginUrl());
+        authenticationEntryPoint.setLoginUrl(casProviderConfig.getLoginUrl());
         return authenticationEntryPoint;
     }
 
@@ -184,16 +188,24 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean
-    @Conditional(CASRoleProviderCondition.class)
+    @Conditional(CASDatabaseRoleProviderCondition.class)
     public DefaultAuthoritiesProviderImpl authoritiesProvider() {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(Boolean.parseBoolean(environment.getProperty("security.providers.cas.isHql")));
+        RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig = runtimeDatabaseRoleMappingConfig();
+        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty("security.providers.cas.rolesByUsernameQuery"));
-        String modelName = environment.getProperty("security.providers.cas.modelName");
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
+    }
+
+    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Conditional(CASDatabaseRoleProviderCondition.class)
+    @ConfigurationProperties("security.providers.cas.database")
+    public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
+        return new RuntimeDatabaseRoleMappingConfig();
     }
 
     @Bean(name = "casUserDetailsService")

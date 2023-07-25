@@ -15,6 +15,8 @@
 
 package com.wavemaker.runtime.security.provider.jws;
 
+import java.util.Objects;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,7 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.app.security.models.jws.JWSConfiguration;
 import com.wavemaker.app.security.models.jws.JWSProviderConfiguration;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
@@ -104,7 +107,7 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
 
     private DefaultAuthoritiesProviderImpl jwsAuthoritiesProvider(JWSProviderConfiguration jwsProviderConfiguration) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(jwsProviderConfiguration.getIsHQL());
+        defaultAuthoritiesProvider.setHql(Objects.equals(jwsProviderConfiguration.getQueryType(), RoleQueryType.HQL));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(jwsProviderConfiguration.getRolesByUsernameQuery());
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext

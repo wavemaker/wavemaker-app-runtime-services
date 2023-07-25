@@ -41,7 +41,7 @@ import com.wavemaker.runtime.security.provider.demo.model.DemoConfig;
 
 @Configuration
 @EnableConfigurationProperties
-@Conditional({SecurityEnabledCondition.class, DemoConfigurationCondition.class})
+@Conditional({SecurityEnabledCondition.class, DemoSecurityProviderCondition.class})
 public class DemoSecurityProviderConfiguration {
 
     @Autowired(required = false)

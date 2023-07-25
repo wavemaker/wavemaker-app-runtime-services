@@ -31,7 +31,7 @@ import com.wavemaker.runtime.security.WMCustomAuthenticationProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 
 @Configuration
-@Conditional({SecurityEnabledCondition.class, CustomSecurityCondition.class})
+@Conditional({SecurityEnabledCondition.class, CustomSecurityProviderCondition.class})
 public class CustomSecurityProviderConfiguration {
 
     @Value("${security.providers.custom.class}")

@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -47,12 +48,14 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.ldap.LdapProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
+import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 
 @Configuration
-@Conditional({SecurityEnabledCondition.class, LdapProviderCondition.class})
+@Conditional({SecurityEnabledCondition.class, LdapSecurityProviderCondition.class})
 public class LdapSecurityProviderConfiguration {
 
     @Autowired(required = false)
@@ -71,15 +74,23 @@ public class LdapSecurityProviderConfiguration {
 
     @Bean(name = "defaultAuthoritiesProvider")
     @Conditional(LdapDatabaseAuthoritiesProviderCondition.class)
-    public AuthoritiesProvider defaultAuthoritiesProvider(ApplicationContext applicationContext, LdapProviderConfig ldapProviderConfig) {
+    public AuthoritiesProvider defaultAuthoritiesProvider(ApplicationContext applicationContext) {
+        RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig = runtimeDatabaseRoleMappingConfig();
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(ldapProviderConfig.getQueryType().equals("HQL"));
+        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(ldapProviderConfig.getRoleQuery());
-        String modelName = ldapProviderConfig.getRoleModel();
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
+    }
+
+    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Conditional(LdapDatabaseAuthoritiesProviderCondition.class)
+    @ConfigurationProperties("security.providers.ldap.database")
+    public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
+        return new RuntimeDatabaseRoleMappingConfig();
     }
 
     @Bean(name = "ldapAuthoritiesPopulator")
@@ -132,7 +143,7 @@ public class LdapSecurityProviderConfiguration {
                 return ldapAuthenticationProvider;
             } else if (roleProvider.equals("Database")) {
                 ldapAuthenticationProvider = new LdapAuthenticationProvider(bindAuthenticator(ldapProviderConfig), ldapDatabaseAuthoritiesPopulator(
-                    defaultAuthoritiesProvider(applicationContext,ldapProviderConfig)));
+                    defaultAuthoritiesProvider(applicationContext)));
                 ldapAuthenticationProvider.setAuthoritiesMapper(authoritiesMapper());
                 return ldapAuthenticationProvider;
             }
@@ -160,7 +171,7 @@ public class LdapSecurityProviderConfiguration {
                 return new LdapUserDetailsService(userSearch(ldapProviderConfig), ldapAuthoritiesPopulator(ldapProviderConfig));
             } else if (roleProvider.equals("Database")) {
                 return new LdapUserDetailsService(userSearch(ldapProviderConfig), ldapDatabaseAuthoritiesPopulator(
-                    defaultAuthoritiesProvider(applicationContext, ldapProviderConfig)));
+                    defaultAuthoritiesProvider(applicationContext)));
             }
         }
         return new LdapUserDetailsService(userSearch(ldapProviderConfig), ldapNullAuthoritiesPopulator());

@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.opaque;
+package com.wavemaker.runtime.security.provider.ldap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +22,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class OpaqueProviderCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(OpaqueProviderCondition.class);
+public class LdapSecurityProviderCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(LdapSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String activeProvider = environment.getProperty("security.providers.activeProviders");
-        if (activeProvider != null && activeProvider.contains("OPAQUE")) {
-            logger.info("Initializing OPAQUE beans as OPAQUE is selected as active security provider");
+        String provider = environment.getProperty("security.providers.activeProviders");
+        if (provider != null && provider.contains("LDAP")) {
+            logger.info("Initializing LDAP beans as LDAP is selected as active security provider");
             return true;
         }
         return false;

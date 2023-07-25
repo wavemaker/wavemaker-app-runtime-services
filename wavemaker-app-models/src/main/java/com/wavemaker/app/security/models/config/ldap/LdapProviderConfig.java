@@ -48,7 +48,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.ldap.groupSearchFilter}")
     private String groupSearchFilter;
 
-    @NonProfilizableProperty("${security.providers.ldap.modelName:null}")
+    @NonProfilizableProperty("${security.providers.ldap.database.modelName:null}")
     private String roleModel;
     private String roleEntity;
     private String roleTable;
@@ -57,13 +57,13 @@ public class LdapProviderConfig extends AbstractProviderConfig {
 
     private boolean useRolesQuery;
 
-    @NonProfilizableProperty("${security.providers.ldap.rolesByUsernameQuery:null}")
+    @NonProfilizableProperty("${security.providers.ldap.database.rolesByUsernameQuery:null}")
     private String roleQuery;
 
     @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}", isAutoUpdate = true)
     private String roleProvider;
 
-    @NonProfilizableProperty("${security.providers.ldap.queryType:HQL}")
+    @NonProfilizableProperty("${security.providers.ldap.database.queryType:HQL}")
     private String queryType;
 
     @Override

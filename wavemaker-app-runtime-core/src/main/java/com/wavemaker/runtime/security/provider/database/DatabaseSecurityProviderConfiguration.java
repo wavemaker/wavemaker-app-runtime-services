@@ -43,7 +43,7 @@ import com.wavemaker.runtime.security.provider.database.users.DefaultUserProvide
 import com.wavemaker.runtime.security.provider.database.users.UserProvider;
 
 @Configuration
-@Conditional({SecurityEnabledCondition.class, DatabaseProviderCondition.class})
+@Conditional({SecurityEnabledCondition.class, DatabaseSecurityProviderCondition.class})
 public class DatabaseSecurityProviderConfiguration {
     @Autowired
     private ApplicationContext applicationContext;

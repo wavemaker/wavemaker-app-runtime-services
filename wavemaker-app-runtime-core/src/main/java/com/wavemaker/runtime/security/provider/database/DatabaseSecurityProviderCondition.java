@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.ldap;
+package com.wavemaker.runtime.security.provider.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +22,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class LdapProviderCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(LdapProviderCondition.class);
+public class DatabaseSecurityProviderCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String provider = environment.getProperty("security.providers.activeProviders");
-        if (provider != null && provider.contains("LDAP")) {
-            logger.info("Initializing LDAP beans as LDAP is selected as active security provider");
+        String activeProvider = environment.getProperty("security.providers.activeProviders");
+        if (activeProvider != null && activeProvider.contains("DATABASE")) {
+            logger.info("Initializing DATABASE beans as DATABASE is selected as active security provider");
             return true;
         }
         return false;

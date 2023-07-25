@@ -15,6 +15,8 @@
 
 package com.wavemaker.app.security.models.jws;
 
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
+
 public class JWSProviderConfiguration {
     private boolean enabled;
     private String issuerUrl;
@@ -22,25 +24,9 @@ public class JWSProviderConfiguration {
     private String roleAttributeName;
     private boolean roleMappingEnabled;
     private String roleProvider;
-    private boolean isHQL;
+    private RoleQueryType queryType;
     private String modelName;
     private String rolesByUsernameQuery;
-
-    public boolean getIsHQL() {
-        return isHQL;
-    }
-
-    public void setIsHQL(boolean isHQL) {
-        this.isHQL = isHQL;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
 
     public boolean isEnabled() {
         return enabled;
@@ -88,6 +74,22 @@ public class JWSProviderConfiguration {
 
     public void setRoleProvider(String roleProvider) {
         this.roleProvider = roleProvider;
+    }
+
+    public RoleQueryType getQueryType() {
+        return queryType;
+    }
+
+    public void setQueryType(RoleQueryType queryType) {
+        this.queryType = queryType;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
     public String getRolesByUsernameQuery() {

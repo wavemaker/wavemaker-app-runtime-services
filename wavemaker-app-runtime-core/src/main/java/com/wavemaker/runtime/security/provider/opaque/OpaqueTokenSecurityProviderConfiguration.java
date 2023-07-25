@@ -19,11 +19,11 @@ import java.util.Objects;
 
 import javax.servlet.Filter;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -39,13 +39,15 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.opaque.OpaqueTokenProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
+import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 
 @Configuration
-@Conditional({SecurityEnabledCondition.class, OpaqueProviderCondition.class})
+@Conditional({SecurityEnabledCondition.class, OpaqueTokenSecurityProviderCondition.class})
 public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfiguration {
 
     @Bean(name = "nimbusOpaqueTokenIntrospector")
@@ -69,16 +71,24 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     }
 
     @Bean(name = "opaqueAuthoritiesProvider")
-    @Conditional(OpaqueRoleProviderCondition.class)
-    public AuthoritiesProvider opaqueAuthoritiesProvider(Environment environment, ApplicationContext applicationContext) {
+    @Conditional(OpaqueDatabaseRoleProviderCondition.class)
+    public AuthoritiesProvider opaqueAuthoritiesProvider(ApplicationContext applicationContext,
+                                                         RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(Boolean.parseBoolean(environment.getProperty("security.providers.opaqueToken.isHQL")));
+        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty("security.providers.opaqueToken.rolesByUsernameQuery"));
-        String modelName = environment.getProperty("security.providers.opaqueToken.modelName");
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
+    }
+
+    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Conditional(OpaqueDatabaseRoleProviderCondition.class)
+    @ConfigurationProperties("security.providers.opaqueToken.database")
+    public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
+        return new RuntimeDatabaseRoleMappingConfig();
     }
 
     @Bean(name = "providerManager")

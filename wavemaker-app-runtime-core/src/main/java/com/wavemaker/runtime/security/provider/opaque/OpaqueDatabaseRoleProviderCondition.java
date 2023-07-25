@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.cas;
+package com.wavemaker.runtime.security.provider.opaque;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +22,16 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class CASRoleProviderCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(CASRoleProviderCondition.class);
+public class OpaqueDatabaseRoleProviderCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(OpaqueDatabaseRoleProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String roleProvider = environment.getProperty("security.providers.cas.roleProvider");
-        if (roleProvider != null && roleProvider.equals("Database")) {
-            logger.info("Initializing Database RoleMapping bean for CAS provider");
+        boolean roleEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.opaqueToken.roleMappingEnabled", Boolean.class));
+        String roleProvider = environment.getProperty("security.providers.opaqueToken.roleProvider");
+        if (roleEnabled && roleProvider != null && roleProvider.equals("Database")) {
+            logger.info("Initializing Database roleMapping bean for OPAQUE provider");
             return true;
         }
         return false;

@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.database;
+package com.wavemaker.runtime.security.provider.opaque;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +22,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class DatabaseProviderCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseProviderCondition.class);
+public class OpaqueTokenSecurityProviderCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(OpaqueTokenSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
         String activeProvider = environment.getProperty("security.providers.activeProviders");
-        if (activeProvider != null && activeProvider.contains("DATABASE")) {
-            logger.info("Initializing DATABASE beans as DATABASE is selected as active security provider");
+        if (activeProvider != null && activeProvider.contains("OPAQUE")) {
+            logger.info("Initializing OPAQUE beans as OPAQUE is selected as active security provider");
             return true;
         }
         return false;

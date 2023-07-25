@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.saml;
+package com.wavemaker.runtime.security.provider.custom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +22,16 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class SAMLProviderCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(SAMLProviderCondition.class);
+public class CustomSecurityProviderCondition implements Condition {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String roleProvider = environment.getProperty("security.providers.activeProviders");
-        if (roleProvider != null && roleProvider.contains("SAML")) {
-            logger.info("Initializing SAML beans as SAML is selected as active security provider");
+        String activeProvider = environment.getProperty("security.providers.activeProviders");
+        if (activeProvider != null && activeProvider.contains("CUSTOM")) {
+            logger.info("Initializing CUSTOM beans as CUSTOM is selected as active security provider");
             return true;
         }
         return false;
