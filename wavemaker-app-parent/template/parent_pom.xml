@@ -214,7 +214,7 @@
                 <executions>
                     <execution>
                         <id>generate app sources</id>
-                        <phase>prepare-package</phase>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
