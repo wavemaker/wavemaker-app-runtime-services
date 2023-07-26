@@ -1,16 +1,9 @@
 /*******************************************************************************
- * Copyright (C) 2022-2023 WaveMaker, Inc.
+ * Copyright (C) 2022-2023 WaveMaker, Inc. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This software is the confidential and proprietary information of WaveMaker, Inc.
+ * You shall not disclose such Confidential Information and shall use it only in accordance with the
+ * terms of the source code license agreement you entered into with WaveMaker, Inc.
  ******************************************************************************/
 package com.wavemaker.app.security.models;
 
@@ -24,6 +17,25 @@ public class SecurityInterceptUrlEntry {
     private HttpMethod httpMethod;
 
     public SecurityInterceptUrlEntry() {
+    }
+
+    public SecurityInterceptUrlEntry(String urlPattern, Permission permission) {
+        this(urlPattern, permission, null);
+    }
+
+    public SecurityInterceptUrlEntry(String urlPattern, HttpMethod httpMethod, Permission permission) {
+        this(urlPattern, httpMethod, permission, null);
+    }
+
+    public SecurityInterceptUrlEntry(String urlPattern, Permission permission, String[] roles) {
+        this(urlPattern, null, permission, roles);
+    }
+
+    public SecurityInterceptUrlEntry(String urlPattern, HttpMethod httpMethod, Permission permission, String[] roles) {
+        this.urlPattern = urlPattern;
+        this.httpMethod = httpMethod;
+        this.permission = permission;
+        this.roles = roles;
     }
 
     public String getUrlPattern() {

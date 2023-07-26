@@ -15,6 +15,8 @@
 
 package com.wavemaker.runtime.security.enabled.configuration;
 
+import java.util.List;
+
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -31,8 +32,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.wavemaker.app.security.models.Permission;
+import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.WMAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
@@ -94,8 +96,8 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     }
 
     @Override
-    public void addInterceptUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
-        authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher("/j_spring_security_check")).permitAll();
+    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
+        return List.of(new SecurityInterceptUrlEntry("/j_spring_security_check", Permission.PermitAll));
     }
 
     @Override

@@ -43,7 +43,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.FilterInvocation;
@@ -89,6 +89,7 @@ import org.springframework.session.web.http.SessionRepositoryFilter;
 import com.wavemaker.app.security.models.CSRFConfig;
 import com.wavemaker.app.security.models.CustomFilter;
 import com.wavemaker.app.security.models.LoginConfig;
+import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.Role;
 import com.wavemaker.app.security.models.RoleConfig;
@@ -106,6 +107,8 @@ import com.wavemaker.runtime.security.csrf.WMCsrfFilter;
 import com.wavemaker.runtime.security.csrf.WMCsrfLogoutHandler;
 import com.wavemaker.runtime.security.csrf.WMCsrfTokenRepository;
 import com.wavemaker.runtime.security.csrf.WMHttpSessionCsrfTokenRepository;
+import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlComparator;
+import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlStringComparator;
 import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
 import com.wavemaker.runtime.security.enabled.configuration.requestmatcher.StatelessRequestMatcher;
 import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
@@ -129,7 +132,7 @@ public class SecurityEnabledBaseConfiguration {
     private List<AuthenticationProvider> authenticationProvidersList;
 
     @Autowired
-    private List<WMSecurityConfiguration> wmSecurityConfiguration;
+    private List<WMSecurityConfiguration> wmSecurityConfigurationList;
 
     @Autowired
     private FindByIndexNameSessionRepository<? extends Session> sessionRepository;
@@ -455,15 +458,15 @@ public class SecurityEnabledBaseConfiguration {
             .and()
             .securityContext().securityContextRepository(securityContextRepository())
             .and()
-            .authenticationManager(authenticationManager());
-        http.authorizeRequests(this::executeUrls)
+            .authenticationManager(authenticationManager())
+            .authorizeHttpRequests(this::authorizeHttpRequests)
             .logout().disable()
             .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
             .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
             .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterAt(logoutFilter, LogoutFilter.class)
             .addFilterAfter(loginWebProcessFilter(), SecurityContextPersistenceFilter.class);
-        wmSecurityConfiguration.forEach(securityConfiguration ->
+        wmSecurityConfigurationList.forEach(securityConfiguration ->
             securityConfiguration.addFilters(http));
         addCustomFilters(http);
         return http.build();
@@ -486,41 +489,43 @@ public class SecurityEnabledBaseConfiguration {
             .and()
             .securityContext().securityContextRepository(noSessionsSecurityContextRepository())
             .and()
-            .authenticationManager(authenticationManager());
-        http.authorizeRequests(this::executeUrls)
+            .authenticationManager(authenticationManager())
+            .authorizeHttpRequests(this::authorizeHttpRequests)
             .logout().disable()
             .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
-        wmSecurityConfiguration.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
+        wmSecurityConfigurationList.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
         addCustomFilters(http);
         return http.build();
     }
 
-    public void addInterceptUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
-        authorizeRequestsCustomizer
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/index.html")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/j_spring_security_logout")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/services/application/i18n/**")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/services/prefabs/**/servicedefs")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/services/security/**")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/services/servicedefs")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.OPTIONS, "/**")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/")).authenticated()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/**")).authenticated();
+    private void authorizeHttpRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry) {
+        List<SecurityInterceptUrlEntry> securityInterceptUrlEntryList = new ArrayList<>();
+        for (WMSecurityConfiguration wmSecurityConfiguration : wmSecurityConfigurationList) {
+            securityInterceptUrlEntryList.addAll(wmSecurityConfiguration.getSecurityInterceptUrls());
+        }
+        for (SecurityInterceptUrlEntry securityInterceptUrlEntry : securityInterceptUrlList()) {
+            if (!securityInterceptUrlEntry.getUrlPattern().equals("/**")) {
+                securityInterceptUrlEntryList.add(securityInterceptUrlEntry);
+            }
+        }
+        securityInterceptUrlEntryList.addAll(getDefaultSecurityInterceptUrlEntryList());
+        securityInterceptUrlEntryList.sort(new InterceptUrlComparator());
+        securityInterceptUrlEntryList.sort(new InterceptUrlStringComparator());
+        for (SecurityInterceptUrlEntry securityInterceptUrlEntry : securityInterceptUrlEntryList) {
+            setAntMatchers(registry, securityInterceptUrlEntry);
+        }
     }
 
-    public void executeUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
-        try {
-            wmSecurityConfiguration.forEach(securityConfiguration -> securityConfiguration.addInterceptUrls(authorizeRequestsCustomizer));
-            for (SecurityInterceptUrlEntry customInterceptUrl : securityInterceptUrlList()) {
-                if (!customInterceptUrl.getUrlPattern().equals("/**")) {
-                    setAntMatchers(authorizeRequestsCustomizer, customInterceptUrl);
-                }
-            }
-            addInterceptUrls(authorizeRequestsCustomizer);
-            authorizeRequestsCustomizer.expressionHandler(defaultWebSecurityExpressionHandler());
-        } catch (Exception e) {
-            throw new WMRuntimeException(e);
-        }
+    private List<SecurityInterceptUrlEntry> getDefaultSecurityInterceptUrlEntryList() {
+        return List.of(new SecurityInterceptUrlEntry("/index.html", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/j_spring_security_logout", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/application/i18n/**", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/prefabs/**/servicedefs", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/security/**", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/servicedefs", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/**", com.wavemaker.app.web.http.HttpMethod.OPTIONS, Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/", Permission.Authenticated),
+            new SecurityInterceptUrlEntry("/**", Permission.Authenticated));
     }
 
     private RolesConfig createRoleConfig(List<Role> roles) {
@@ -538,46 +543,47 @@ public class SecurityEnabledBaseConfiguration {
         return ignoreSecurityAntMatchersFileContent.split("\n");
     }
 
-    private void setAntMatchers(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer,
+    private void setAntMatchers(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizeRequestsCustomizer,
                                 SecurityInterceptUrlEntry securityInterceptUrlEntry) {
         if (securityInterceptUrlEntry.getHttpMethod() != null) {
             selectAntMatcherWithHttpMethod(authorizeRequestsCustomizer, securityInterceptUrlEntry);
+        } else {
+            selectAntMatcherWithNoHttpMethod(authorizeRequestsCustomizer, securityInterceptUrlEntry);
         }
-        selectAntMatcherWithNoHttpMethod(authorizeRequestsCustomizer, securityInterceptUrlEntry);
     }
 
-    private void selectAntMatcherWithHttpMethod(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer,
+    private void selectAntMatcherWithHttpMethod(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry,
                                                 SecurityInterceptUrlEntry securityInterceptUrlEntry) {
         switch (securityInterceptUrlEntry.getPermission()) {
             case Authenticated:
-                authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher(
+                registry.requestMatchers(AntPathRequestMatcher.antMatcher(
                     Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).authenticated();
                 break;
             case Role:
-                authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher(
+                registry.requestMatchers(AntPathRequestMatcher.antMatcher(
                     Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).hasAnyRole(securityInterceptUrlEntry.getRoles());
                 break;
             default:
-                authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher(
+                registry.requestMatchers(AntPathRequestMatcher.antMatcher(
                     Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).permitAll();
                 break;
         }
     }
 
-    private void selectAntMatcherWithNoHttpMethod(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer,
+    private void selectAntMatcherWithNoHttpMethod(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry,
                                                   SecurityInterceptUrlEntry securityInterceptUrlEntry) {
         switch (securityInterceptUrlEntry.getPermission()) {
             case Authenticated:
-                authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).authenticated();
+                registry.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).authenticated();
                 break;
             case Role:
-                authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).hasAnyRole(securityInterceptUrlEntry.getRoles());
+                registry.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).hasAnyRole(securityInterceptUrlEntry.getRoles());
                 break;
             default:
-                authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).permitAll();
+                registry.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).permitAll();
                 break;
         }
     }

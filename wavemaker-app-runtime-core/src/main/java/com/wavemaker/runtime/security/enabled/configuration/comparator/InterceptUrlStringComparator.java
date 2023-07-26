@@ -13,17 +13,18 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.config;
-
-import java.util.List;
-
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+package com.wavemaker.runtime.security.enabled.configuration.comparator;
 
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
+import com.wavemaker.commons.comparator.UrlStringComparator;
 
-public interface WMSecurityConfiguration {
-
-    List<SecurityInterceptUrlEntry> getSecurityInterceptUrls();
-
-    void addFilters(HttpSecurity http);
+public class InterceptUrlStringComparator extends UrlStringComparator<Object> {
+    @Override
+    public String getUrlPattern(final Object o) {
+        if (o instanceof SecurityInterceptUrlEntry) {
+            SecurityInterceptUrlEntry url = (SecurityInterceptUrlEntry) o;
+            return url.getUrlPattern();
+        }
+        return null;
+    }
 }

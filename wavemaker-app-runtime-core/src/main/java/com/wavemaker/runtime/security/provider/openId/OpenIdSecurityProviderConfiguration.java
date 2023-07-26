@@ -32,7 +32,6 @@ import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.endpoint.AbstractOAuth2AuthorizationGrantRequest;
@@ -55,9 +54,10 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.wavemaker.app.security.models.Permission;
+import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.commons.auth.openId.OpenIdProviderInfo;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
@@ -83,12 +83,11 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     private String openidActiveRoleProvider;
 
     @Override
-    public void addInterceptUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
-        authorizeRequestsCustomizer
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/oauth2/")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/oauth2/code")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/services/oauth2/**/callback/")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/services/security/ssologin")).authenticated();
+    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
+        return List.of(new SecurityInterceptUrlEntry("/auth/oauth2", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/ouath2/code", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/oauth2/**/callback/", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/security/ssologin", Permission.Authenticated));
     }
 
     @Override

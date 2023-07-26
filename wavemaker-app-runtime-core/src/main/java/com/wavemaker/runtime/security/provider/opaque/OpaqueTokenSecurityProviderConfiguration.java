@@ -15,6 +15,8 @@
 
 package com.wavemaker.runtime.security.provider.opaque;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import javax.servlet.Filter;
@@ -29,7 +31,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenAuthenticationConverter;
@@ -38,6 +39,7 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.opaque.OpaqueTokenProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
@@ -107,8 +109,8 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     }
 
     @Override
-    public void addInterceptUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
-        //No InterceptorUrls here
+    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
+        return Collections.emptyList();
     }
 
     @Override

@@ -15,6 +15,7 @@
 
 package com.wavemaker.runtime.security.provider.cas;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.net.ssl.HostnameVerifier;
@@ -36,15 +37,15 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.wavemaker.app.security.models.Permission;
+import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.cas.WMCasHttpsURLConnectionFactory;
@@ -69,9 +70,9 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     private ApplicationContext applicationContext;
 
     @Override
-    public void addInterceptUrls(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequestsCustomizer) {
-        authorizeRequestsCustomizer.requestMatchers(AntPathRequestMatcher.antMatcher("/j_spring_cas_security_check")).permitAll()
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/services/security/ssologin")).authenticated();
+    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
+        return List.of(new SecurityInterceptUrlEntry("/j_spring_cas_security_check", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/security/ssologin", Permission.Authenticated));
     }
 
     @Override
