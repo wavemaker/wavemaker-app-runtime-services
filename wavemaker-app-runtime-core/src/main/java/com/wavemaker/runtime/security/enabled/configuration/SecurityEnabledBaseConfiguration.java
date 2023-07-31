@@ -43,7 +43,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.FilterInvocation;
@@ -459,7 +459,7 @@ public class SecurityEnabledBaseConfiguration {
             .securityContext().securityContextRepository(securityContextRepository())
             .and()
             .authenticationManager(authenticationManager())
-            .authorizeHttpRequests(this::authorizeHttpRequests)
+            .authorizeRequests(this::authorizeHttpRequests)
             .logout().disable()
             .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
             .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
@@ -490,7 +490,7 @@ public class SecurityEnabledBaseConfiguration {
             .securityContext().securityContextRepository(noSessionsSecurityContextRepository())
             .and()
             .authenticationManager(authenticationManager())
-            .authorizeHttpRequests(this::authorizeHttpRequests)
+            .authorizeRequests(this::authorizeHttpRequests)
             .logout().disable()
             .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
         wmSecurityConfigurationList.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
@@ -498,7 +498,7 @@ public class SecurityEnabledBaseConfiguration {
         return http.build();
     }
 
-    private void authorizeHttpRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry) {
+    private void authorizeHttpRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry) {
         List<SecurityInterceptUrlEntry> securityInterceptUrlEntryList = new ArrayList<>();
         for (WMSecurityConfiguration wmSecurityConfiguration : wmSecurityConfigurationList) {
             securityInterceptUrlEntryList.addAll(wmSecurityConfiguration.getSecurityInterceptUrls());
@@ -543,16 +543,16 @@ public class SecurityEnabledBaseConfiguration {
         return ignoreSecurityAntMatchersFileContent.split("\n");
     }
 
-    private void setAntMatchers(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizeRequestsCustomizer,
+    private void setAntMatchers(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry,
                                 SecurityInterceptUrlEntry securityInterceptUrlEntry) {
         if (securityInterceptUrlEntry.getHttpMethod() != null) {
-            selectAntMatcherWithHttpMethod(authorizeRequestsCustomizer, securityInterceptUrlEntry);
+            selectAntMatcherWithHttpMethod(registry, securityInterceptUrlEntry);
         } else {
-            selectAntMatcherWithNoHttpMethod(authorizeRequestsCustomizer, securityInterceptUrlEntry);
+            selectAntMatcherWithNoHttpMethod(registry, securityInterceptUrlEntry);
         }
     }
 
-    private void selectAntMatcherWithHttpMethod(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry,
+    private void selectAntMatcherWithHttpMethod(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry,
                                                 SecurityInterceptUrlEntry securityInterceptUrlEntry) {
         switch (securityInterceptUrlEntry.getPermission()) {
             case Authenticated:
@@ -573,7 +573,7 @@ public class SecurityEnabledBaseConfiguration {
         }
     }
 
-    private void selectAntMatcherWithNoHttpMethod(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry,
+    private void selectAntMatcherWithNoHttpMethod(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry,
                                                   SecurityInterceptUrlEntry securityInterceptUrlEntry) {
         switch (securityInterceptUrlEntry.getPermission()) {
             case Authenticated:

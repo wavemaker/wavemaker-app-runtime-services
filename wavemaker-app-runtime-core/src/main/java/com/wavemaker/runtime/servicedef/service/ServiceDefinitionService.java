@@ -165,35 +165,33 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             SecurityFilterChain defaultSecurityFilterChainWithSessions = WMAppContext.getInstance().getSpringBean("filterChainWithSessions");
             Optional<Filter> filterSecurityInterceptorOptional = defaultSecurityFilterChainWithSessions.getFilters().stream()
                 .filter(FilterSecurityInterceptor.class::isInstance).findFirst();
-            if (filterSecurityInterceptorOptional.isPresent()) {
-                FilterSecurityInterceptor filterSecurityInterceptor = (FilterSecurityInterceptor) filterSecurityInterceptorOptional.get();
-                FilterInvocationSecurityMetadataSource securityMetadataSource = filterSecurityInterceptor.getSecurityMetadataSource();
-                for (ServiceDefinition serviceDefinition : serviceDefinitions.values()) {
-                    String path = serviceDefinition.getWmServiceOperationInfo().getRelativePath();
-                    String method = serviceDefinition.getWmServiceOperationInfo().getHttpMethod();
-                    method = StringUtils.upperCase(method);
-                    Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null, method));
-                    List<ConfigAttribute> configAttributeList;
-                    if (attributes instanceof List) {
-                        configAttributeList = (List) attributes;
-                    } else {
-                        configAttributeList = new ArrayList<>(attributes);
-                    }
-                    if (configAttributeList.size() == 1) {
-                        ConfigAttribute configAttribute = configAttributeList.get(0);
-                        if (configAttribute != null) {
-                            String attribute = configAttribute.toString().trim();
-                            if (attribute.startsWith("hasAnyRole(")) {
-                                String rolesString = attribute.substring("hasAnyRole(".length(), attribute.length() - 1);
-                                String[] roles = rolesString.split(",");
-                                for (String role : roles) {
-                                    role = role.trim();
-                                    role = role.substring(1, role.length() - 1);
-                                    authExpressionVsServiceDefinitions.put(EncodeUtils.decode(role), serviceDefinition);
-                                }
-                            } else {
-                                authExpressionVsServiceDefinitions.put(attribute, serviceDefinition);
+            FilterSecurityInterceptor filterSecurityInterceptor = (FilterSecurityInterceptor) filterSecurityInterceptorOptional.get();
+            FilterInvocationSecurityMetadataSource securityMetadataSource = filterSecurityInterceptor.getSecurityMetadataSource();
+            for (ServiceDefinition serviceDefinition : serviceDefinitions.values()) {
+                String path = serviceDefinition.getWmServiceOperationInfo().getRelativePath();
+                String method = serviceDefinition.getWmServiceOperationInfo().getHttpMethod();
+                method = StringUtils.upperCase(method);
+                Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null, method));
+                List<ConfigAttribute> configAttributeList;
+                if (attributes instanceof List) {
+                    configAttributeList = (List) attributes;
+                } else {
+                    configAttributeList = new ArrayList<>(attributes);
+                }
+                if (configAttributeList.size() == 1) {
+                    ConfigAttribute configAttribute = configAttributeList.get(0);
+                    if (configAttribute != null) {
+                        String attribute = configAttribute.toString().trim();
+                        if (attribute.startsWith("hasAnyRole(")) {
+                            String rolesString = attribute.substring("hasAnyRole(".length(), attribute.length() - 1);
+                            String[] roles = rolesString.split(",");
+                            for (String role : roles) {
+                                role = role.trim();
+                                role = role.substring(1, role.length() - 1);
+                                authExpressionVsServiceDefinitions.put(EncodeUtils.decode(role), serviceDefinition);
                             }
+                        } else {
+                            authExpressionVsServiceDefinitions.put(attribute, serviceDefinition);
                         }
                     }
                 }
