@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.handler;
+package com.wavemaker.runtime.security.provider.openid.handler;
 
 import java.io.IOException;
 
@@ -24,9 +24,10 @@ import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuth
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
-import com.wavemaker.commons.auth.openId.OpenIdConstants;
+import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 
 /**
  * Created by srujant on 13/11/18.

@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.List;
 
-import com.wavemaker.commons.auth.openId.OpenIdProviderInfo;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
 
 /**
  * Created by srujant on 30/7/18.

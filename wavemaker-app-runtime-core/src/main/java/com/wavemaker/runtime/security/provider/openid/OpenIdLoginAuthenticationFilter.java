@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import java.io.IOException;
 
@@ -41,8 +41,6 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResp
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import com.wavemaker.commons.auth.openId.OpenIdConstants;
 
 /**
  * This class get's the id_token from the Identity provider using the code sent by the authorization server and returns

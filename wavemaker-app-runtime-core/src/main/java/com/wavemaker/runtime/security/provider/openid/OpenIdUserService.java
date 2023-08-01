@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.HashSet;
 import java.util.List;

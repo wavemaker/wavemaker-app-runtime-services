@@ -21,7 +21,6 @@ import javax.validation.Valid;
 
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
-import com.wavemaker.commons.auth.openId.OpenIdProviderInfo;
 
 /**
  * Created by srujant on 30/7/18.

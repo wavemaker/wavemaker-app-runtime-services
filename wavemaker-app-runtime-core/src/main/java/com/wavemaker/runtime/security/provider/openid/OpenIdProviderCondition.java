@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,21 +22,17 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class OpenIdDatabaseRoleMappingCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(OpenIdDatabaseRoleMappingCondition.class);
+public class OpenIdProviderCondition implements Condition {
+    private static final Logger logger = LoggerFactory.getLogger(OpenIdProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String openidActiveRoleProvider = environment.getProperty("security.providers.openId.activeProviders");
-        boolean isRoleMappingEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.openId." + openidActiveRoleProvider
-            + ".roleMappingEnabled", Boolean.class));
-        String roleProvider = environment.getProperty("security.providers.openId." + openidActiveRoleProvider + ".roleProvider");
-        if (isRoleMappingEnabled && roleProvider != null && roleProvider.equals("Database")) {
-            logger.info("Initializing Database roleMapping bean for OPENID provider");
+        String provider = environment.getProperty("security.providers.activeProviders");
+        if (provider != null && provider.contains("OPENID")) {
+            logger.info("Initializing OPENID beans as OPENID is selected as active security provider");
             return true;
         }
         return false;
     }
 }
-

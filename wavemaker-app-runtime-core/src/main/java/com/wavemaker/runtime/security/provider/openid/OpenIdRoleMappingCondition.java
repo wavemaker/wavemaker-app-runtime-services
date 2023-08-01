@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -48,11 +48,10 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
-import com.wavemaker.runtime.security.cas.WMCasHttpsURLConnectionFactory;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
-import com.wavemaker.runtime.security.handler.WMCasAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.provider.cas.handler.WMCasAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 
@@ -137,7 +136,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "WMWebAuthenticationDetailsSource")
-    public ServiceAuthenticationDetailsSource WMWebAuthenticationDetailsSource(CASProviderConfig casProviderConfig) {
+    public ServiceAuthenticationDetailsSource wmWebAuthenticationDetailsSource(CASProviderConfig casProviderConfig) {
         return new ServiceAuthenticationDetailsSource(casServiceProperties(casProviderConfig));
 
     }
@@ -150,14 +149,14 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         casAuthenticationFilter.setAuthenticationSuccessHandler(securityEnabledBaseConfiguration.successHandler());
         casAuthenticationFilter.setAuthenticationFailureHandler(securityEnabledBaseConfiguration.failureHandler());
         casAuthenticationFilter.setAuthenticationManager(securityEnabledBaseConfiguration.authenticationManager());
-        casAuthenticationFilter.setAuthenticationDetailsSource(WMWebAuthenticationDetailsSource(casProviderConfig));
+        casAuthenticationFilter.setAuthenticationDetailsSource(wmWebAuthenticationDetailsSource(casProviderConfig));
         casAuthenticationFilter.setServiceProperties(casServiceProperties(casProviderConfig));
         casAuthenticationFilter.setSessionAuthenticationStrategy(securityEnabledBaseConfiguration.compositeSessionAuthenticationStrategy());
         return casAuthenticationFilter;
     }
 
     @Bean(name = "WMSecAuthEntryPoint")
-    public WMCASAuthenticationEntryPoint WMSecAuthEntryPoint(CASProviderConfig casProviderConfig) {
+    public WMCASAuthenticationEntryPoint wmSecAuthEntryPoint(CASProviderConfig casProviderConfig) {
         WMCASAuthenticationEntryPoint authenticationEntryPoint = new WMCASAuthenticationEntryPoint();
         authenticationEntryPoint.setServiceProperties(casServiceProperties(casProviderConfig));
         authenticationEntryPoint.setLoginUrl(casProviderConfig.getLoginUrl());
@@ -193,7 +192,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     public DefaultAuthoritiesProviderImpl authoritiesProvider() {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig = runtimeDatabaseRoleMappingConfig();
-        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
+        defaultAuthoritiesProvider.setHql(runtimeDatabaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
         String modelName = runtimeDatabaseRoleMappingConfig.getModelName();

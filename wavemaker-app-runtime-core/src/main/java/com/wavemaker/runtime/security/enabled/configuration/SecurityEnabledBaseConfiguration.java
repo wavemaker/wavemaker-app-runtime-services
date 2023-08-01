@@ -116,8 +116,8 @@ import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcess
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
-import com.wavemaker.runtime.security.handler.WMCsrfTokenRepositorySuccessHandler;
-import com.wavemaker.runtime.security.handler.WMCsrfTokenResponseWriterAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenRepositorySuccessHandler;
+import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenResponseWriterAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMSecurityContextRepositorySuccessHandler;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 import com.wavemaker.runtime.security.token.repository.WMTokenRepository;

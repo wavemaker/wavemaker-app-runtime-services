@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.handler;
+package com.wavemaker.runtime.security.provider.openid.handler;
 
 import java.io.IOException;
 import java.util.Map;
@@ -30,12 +30,12 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.util.CollectionUtils;
 
-import com.wavemaker.commons.auth.openId.OpenIdConstants;
+import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
-import com.wavemaker.runtime.security.provider.openId.OpenIdProviderRuntimeConfig;
+import com.wavemaker.runtime.security.provider.openid.OpenIdProviderRuntimeConfig;
 
 public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 

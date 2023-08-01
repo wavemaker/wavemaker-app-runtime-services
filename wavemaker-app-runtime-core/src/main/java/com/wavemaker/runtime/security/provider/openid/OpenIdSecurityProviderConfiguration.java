@@ -13,11 +13,12 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.Filter;
 
@@ -58,14 +59,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
-import com.wavemaker.commons.auth.openId.OpenIdProviderInfo;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.handler.WMOpenIdAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.handler.WMOpenIdLogoutSuccessHandler;
+import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdLogoutSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 
 @Configuration
@@ -80,7 +81,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     private SecurityEnabledBaseConfiguration securityEnabledBaseConfiguration;
 
     @Value("${security.providers.openId.activeProviders}")
-    private String openidActiveRoleProvider;
+    private String openIdActiveProvider;
 
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
@@ -100,7 +101,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Bean(name = "openIdEntryPoint")
     public AuthenticationEntryPoint openIdAuthenticationEntryPoint() {
         OpenIdAuthenticationEntryPoint openIdAuthenticationEntryPoint = new OpenIdAuthenticationEntryPoint();
-        openIdAuthenticationEntryPoint.setProviderId(environment.getProperty("security.providers.openId.activeProviders"));
+        openIdAuthenticationEntryPoint.setProviderId(openIdActiveProvider);
         return openIdAuthenticationEntryPoint;
     }
 
@@ -145,25 +146,23 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
 
     @Bean(name = "inMemoryRegistrationRepository")
     public ClientRegistrationRepository inMemoryRegistrationRepository() {
-        InMemoryRegistrationRepository inMemoryRegistrationRepository = new InMemoryRegistrationRepository();
-        return inMemoryRegistrationRepository;
+        return new InMemoryRegistrationRepository();
     }
 
     @Bean(name = "openIdProviderInfo")
     public OpenIdProviderInfo openIdProviderInfo() {
         OpenIdProviderInfo openIdProviderInfo = new OpenIdProviderInfo();
-        String openIdProvider = environment.getProperty("security.providers.openId.activeProviders");
-        openIdProviderInfo.setProviderId(openIdProvider);
-        openIdProviderInfo.setClientId(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".clientId"));
-        openIdProviderInfo.setClientSecret(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".clientSecret"));
-        openIdProviderInfo.setAuthorizationUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".authorizationUrl"));
-        openIdProviderInfo.setJwkSetUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".jwkSetUrl"));
-        openIdProviderInfo.setLogoutUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".logoutUrl"));
-        openIdProviderInfo.setTokenUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".tokenUrl"));
-        openIdProviderInfo.setUserInfoUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".userInfoUrl"));
+        openIdProviderInfo.setProviderId(openIdActiveProvider);
+        openIdProviderInfo.setClientId(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".clientId"));
+        openIdProviderInfo.setClientSecret(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".clientSecret"));
+        openIdProviderInfo.setAuthorizationUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".authorizationUrl"));
+        openIdProviderInfo.setJwkSetUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".jwkSetUrl"));
+        openIdProviderInfo.setLogoutUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".logoutUrl"));
+        openIdProviderInfo.setTokenUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".tokenUrl"));
+        openIdProviderInfo.setUserInfoUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".userInfoUrl"));
         openIdProviderInfo.setRedirectUrlTemplate("{baseUrl}/oauth2/code/{registrationId}");
-        openIdProviderInfo.setUserNameAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".userNameAttributeName"));
-        String scopes = environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdProvider + ".scopes");
+        openIdProviderInfo.setUserNameAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".userNameAttributeName"));
+        String scopes = environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".scopes");
         List<String> scopesList = new ArrayList<>();
         if (scopes != null) {
             Collections.addAll(scopesList, scopes.split(","));
@@ -210,7 +209,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Conditional(OpenIdRoleMappingCondition.class)
     public AuthoritiesProvider userAuthoritiesProvider() {
         IdentityProviderUserAuthoritiesProvider identityProviderUserAuthoritiesProvider = new IdentityProviderUserAuthoritiesProvider();
-        identityProviderUserAuthoritiesProvider.setRoleAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".roleAttributeName"));
+        identityProviderUserAuthoritiesProvider.setRoleAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".roleAttributeName"));
         return identityProviderUserAuthoritiesProvider;
     }
 
@@ -220,11 +219,11 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
 
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations)
-            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.modelName") + "Template"));
+            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.modelName") + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager)
-            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.modelName") + "TransactionManager"));
-        defaultAuthoritiesProvider.setHql(Boolean.TRUE.equals(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.isHQL", Boolean.class)));
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openidActiveRoleProvider + ".database.rolesByUsernameQuery"));
+            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.modelName") + "TransactionManager"));
+        defaultAuthoritiesProvider.setHql(Objects.equals(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.queryType"), "HQL"));
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.rolesByUsernameQuery"));
         return defaultAuthoritiesProvider;
     }
 

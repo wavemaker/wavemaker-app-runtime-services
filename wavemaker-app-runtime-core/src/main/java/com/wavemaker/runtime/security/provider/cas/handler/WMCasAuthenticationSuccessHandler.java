@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.handler;
+package com.wavemaker.runtime.security.provider.cas.handler;
 
 import java.util.Map;
 
@@ -25,6 +25,7 @@ import org.springframework.security.cas.authentication.CasAuthenticationToken;
 
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 
 public class WMCasAuthenticationSuccessHandler implements WMAuthenticationSuccessHandler {
 

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import com.wavemaker.commons.auth.openId.OpenIdProviderInfo;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
 
 /**
  * Created by srujant on 30/7/18.

@@ -12,31 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.provider.openId;
 
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+package com.wavemaker.app.security.models.config.openid.validator;
 
-import com.wavemaker.runtime.security.core.AuthenticationContext;
+import java.util.List;
 
-/**
- * Created by srujant on 8/8/18.
- */
-public class OpenIdAuthenticationContext implements AuthenticationContext {
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-    private OidcUser oidcUser;
-    private String username;
-
-    public OpenIdAuthenticationContext(String username, OidcUser oidcUser) {
-        this.oidcUser = oidcUser;
-        this.username = username;
-    }
-
-    public OidcUser getOidcUser() {
-        return oidcUser;
+public class ScopesValidator implements ConstraintValidator<ValidateScopes, List<String>> {
+    @Override
+    public void initialize(ValidateScopes validateScopes) {
     }
 
     @Override
-    public String getUsername() {
-        return username;
+    public boolean isValid(List<String> scopes, ConstraintValidatorContext constraintValidatorContext) {
+        for (String scope : scopes) {
+            if (scope != null && scope.contains(" ")) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.provider.openId;
+package com.wavemaker.runtime.security.provider.openid;
 
 import java.io.IOException;
 
@@ -24,7 +24,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 
-import com.wavemaker.commons.auth.openId.OpenIdConstants;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
 

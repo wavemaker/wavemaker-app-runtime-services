@@ -61,8 +61,8 @@ import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseC
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
-import com.wavemaker.runtime.security.handler.WMSamlAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.handler.WMSamlAuthenticationSuccessRedirectionHandler;
+import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestFilter;

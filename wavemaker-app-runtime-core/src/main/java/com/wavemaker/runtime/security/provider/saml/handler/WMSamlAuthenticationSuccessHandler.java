@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.handler;
+package com.wavemaker.runtime.security.provider.saml.handler;
 
 import java.io.IOException;
 
@@ -21,18 +21,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
+import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.provider.saml.SAMLConstants;
 
 /**
- * Created by srujant on 23/11/18.
+ * Created by srujant on 21/11/18.
  */
-public class WMSamlAuthenticationSuccessRedirectionHandler extends SavedRequestAwareAuthenticationSuccessHandler implements WMAuthenticationRedirectionHandler {
-
+public class WMSamlAuthenticationSuccessHandler implements WMAuthenticationSuccessHandler {
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, WMAuthentication wmAuthentication) throws IOException, ServletException {
-        Authentication authentication = wmAuthentication.getAuthenticationSource();
-        super.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
+        Authentication samlAuthenticationToken = authentication.getAuthenticationSource();
+        Object samlCredential = samlAuthenticationToken.getCredentials();
+        authentication.addAttribute(SAMLConstants.SAML_CREDENTIALS, samlCredential, Attribute.AttributeScope.SERVER_ONLY);
     }
 }
