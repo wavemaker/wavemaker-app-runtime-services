@@ -96,10 +96,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof AuthenticationException) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return handleUnAuthorizedException(ex, response);
-        }
-
-        //Hibernate jdbc exceptions
-        else if (ex instanceof org.hibernate.exception.ConstraintViolationException) {
+        } else if (ex instanceof org.hibernate.exception.ConstraintViolationException) {//Hibernate jdbc exceptions
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((RuntimeException) ex);
         } else if (ex instanceof DataIntegrityViolationException) {
@@ -117,10 +114,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof HibernateQueryException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleHibernateQueryException((HibernateQueryException) ex);
-        }
-
-        //WM Runtime Exceptions
-        else if (ex instanceof EntityNotFoundException || ex instanceof BlobContentNotFoundException) {
+        } else if (ex instanceof EntityNotFoundException || ex instanceof BlobContentNotFoundException) {//WM Runtime Exceptions
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return handleWMExceptions((WMRuntimeException) ex, MessageResource.ENTITY_NOT_FOUND);
         } else if (ex instanceof InvalidInputException) {
@@ -135,9 +129,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof WMException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleWMExceptions((WMException) ex, null, null);
-        }
-        // Any other exception
-        else {
+        } else {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleException(ex, response);
         }
