@@ -48,7 +48,7 @@ public class SAMLProviderConfig extends AbstractProviderConfig {
     @Deprecated
     private String entityBaseURL;
 
-    @ProfilizableProperty(value = "${security.providers.saml.roleMappingEnabled}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.saml.roleMappingEnabled}")
     private boolean roleMappingEnabled;
 
     @ProfilizableProperty("${security.providers.saml.maxAuthenticationAge}")

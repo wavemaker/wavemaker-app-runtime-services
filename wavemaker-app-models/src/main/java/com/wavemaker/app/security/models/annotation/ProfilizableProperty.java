@@ -32,5 +32,5 @@ public @interface ProfilizableProperty {
     @AliasFor(annotation = Value.class)
     String value();
 
-    boolean isAutoUpdate() default false;
+    boolean autoUpdate() default false;
 }

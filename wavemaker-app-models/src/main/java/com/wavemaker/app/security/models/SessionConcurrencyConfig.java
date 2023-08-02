@@ -19,7 +19,7 @@ import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 public class SessionConcurrencyConfig {
 
-    @ProfilizableProperty("${security.general.login.maxSessionsAllowed:-1}")
+    @ProfilizableProperty(value = "${security.general.login.maxSessionsAllowed:-1}", autoUpdate = true)
     private int maxSessionsAllowed = -1;
 
     public int getMaxSessionsAllowed() {

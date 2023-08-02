@@ -34,7 +34,7 @@ public class LoginConfig {
     @NonProfilizableProperty("${security.general.login.pageName}")
     private String pageName;
 
-    @ProfilizableProperty(value = "${security.general.cookie.maxAge}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.cookie.maxAge}", autoUpdate = true)
     private int cookieMaxAge;
 
     @ProfilizableProperty("${security.general.cookie.path}")

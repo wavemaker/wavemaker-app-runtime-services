@@ -21,13 +21,13 @@ import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
  */
 public class TokenAuthConfig {
 
-    @ProfilizableProperty(value = "${security.general.tokenService.enabled}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.tokenService.enabled}", autoUpdate = true)
     private boolean enabled;
 
-    @ProfilizableProperty(value = "${security.general.tokenService.parameter}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.tokenService.parameter}", autoUpdate = true)
     private String parameter;
 
-    @ProfilizableProperty(value = "${security.general.tokenService.tokenValiditySeconds}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.tokenService.tokenValiditySeconds}", autoUpdate = true)
     private int tokenValiditySeconds;
 
     public boolean isEnabled() {

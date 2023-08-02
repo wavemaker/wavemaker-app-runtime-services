@@ -40,10 +40,10 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @NonProfilizableProperty("${security.providers.ad.testPassword}")
     private String testPassword;
 
-    @ProfilizableProperty(value = "${security.providers.ad.groupSearchDisabled}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ad.groupSearchDisabled}", autoUpdate = true)
     private boolean groupSearchDisabled;
 
-    @ProfilizableProperty(value = "${security.providers.ad.roleProvider}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ad.roleProvider}", autoUpdate = true)
     private String roleProvider;
 
     @ProfilizableProperty("${security.providers.ad.groupRoleAttribute}")

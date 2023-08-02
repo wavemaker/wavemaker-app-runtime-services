@@ -43,7 +43,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.ldap.userSearchPattern}")
     private String userDnPattern;
 
-    @ProfilizableProperty(value = "${security.providers.ldap.groupSearchDisabled}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ldap.groupSearchDisabled}", autoUpdate = true)
     private boolean groupSearchDisabled;
 
     @ProfilizableProperty("${security.providers.ldap.groupSearchBase}")
@@ -67,7 +67,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     @NonProfilizableProperty("${security.providers.ldap.database.rolesByUsernameQuery:null}")
     private String roleQuery;
 
-    @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}", autoUpdate = true)
     private String roleProvider;
 
     @NonProfilizableProperty("${security.providers.ldap.database.queryType:HQL}")

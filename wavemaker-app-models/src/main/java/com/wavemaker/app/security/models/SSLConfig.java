@@ -30,7 +30,7 @@ public class SSLConfig {
     @ProfilizableProperty(value = "${security.general.ssl.port}")
     private int sslPort = 443;
 
-    @ProfilizableProperty(value = "${security.general.ssl.enabled}", isAutoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.ssl.enabled}", autoUpdate = true)
     private boolean useSSL;
 
     @NonProfilizableProperty("${security.general.ssl.excludedUrls:#{null}}")

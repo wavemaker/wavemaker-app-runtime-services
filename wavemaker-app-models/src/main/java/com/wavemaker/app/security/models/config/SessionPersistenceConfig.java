@@ -20,12 +20,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 public class SessionPersistenceConfig {
 
     @NotNull
-    @ProfilizableProperty("${security.session.persistence.type}")
     private SessionPersistenceType enabledType;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -24,19 +24,19 @@ public class RedisPersistenceConfig implements PersistenceConfig {
     public static final String REDIS = "REDIS";
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.redis.host}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.redis.host}")
     public String hostName;
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.redis.port}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.redis.port}")
     public String port;
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.redis.database}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.redis.database}")
     public String database;
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.redis.password}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.redis.password}")
     public String password;
 
     public String getHostName() {

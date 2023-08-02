@@ -25,23 +25,23 @@ public class MongoPersistenceConfig implements PersistenceConfig {
     public static final String MONGODB = "MONGODB";
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.mongodb.host}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.mongodb.host}")
     private String host;
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.mongodb.port}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.mongodb.port}")
     private String port;
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.mongodb.dbname}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.mongodb.dbname}")
     private String dbname;
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.mongodb.username}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.mongodb.username}")
     private String username;
 
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.mongodb.password}", isAutoUpdate = true)
+    @ProfilizableProperty("${security.session.mongodb.password}")
     private String password;
 
     public String getHost() {
