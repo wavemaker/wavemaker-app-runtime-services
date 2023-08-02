@@ -26,10 +26,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
-import com.wavemaker.commons.model.security.TokenAuthConfig;
+import com.wavemaker.app.security.models.TokenAuthConfig;
 import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.token.exception.TokenGenerationException;
+import com.wavemaker.runtime.security.token.repository.TokenRepository;
 import com.wavemaker.runtime.security.token.repository.WMTokenRepository;
 import com.wavemaker.runtime.util.MessageDigestUtil;
 
@@ -54,7 +55,7 @@ public class WMTokenBasedAuthenticationService {
     private TokenAuthConfig tokenAuthConfig;
 
     @Autowired
-    private WMTokenRepository tokenRepository;
+    private TokenRepository tokenRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WMTokenBasedAuthenticationService.class);
 

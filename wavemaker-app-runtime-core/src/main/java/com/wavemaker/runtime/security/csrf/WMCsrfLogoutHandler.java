@@ -22,9 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.AbstractLogoutHandler;
+import com.wavemaker.app.security.models.CSRFConfig;
 
 /**
  * Created by kishorer on 13/7/16.

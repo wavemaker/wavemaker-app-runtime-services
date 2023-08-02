@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
@@ -28,9 +29,13 @@ import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
  * Created by ArjunSahasranam on 15/3/16.
  */
 public class LdapDatabaseAuthoritiesPopulator implements
-    org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator {
+    LdapAuthoritiesPopulator {
 
     private AuthoritiesProvider authoritiesProvider;
+
+    public LdapDatabaseAuthoritiesPopulator(AuthoritiesProvider authoritiesProvider) {
+        this.authoritiesProvider = authoritiesProvider;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(

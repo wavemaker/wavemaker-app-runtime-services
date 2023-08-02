@@ -27,7 +27,7 @@ import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.util.Assert;
 
-import com.wavemaker.commons.model.security.CSRFConfig;
+import com.wavemaker.app.security.models.CSRFConfig;
 
 /**
  * Created by srujant on 22/10/18.

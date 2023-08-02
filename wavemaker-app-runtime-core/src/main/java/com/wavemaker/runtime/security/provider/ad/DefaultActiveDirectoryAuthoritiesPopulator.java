@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.DirContextOperations;
@@ -37,9 +36,6 @@ public class DefaultActiveDirectoryAuthoritiesPopulator implements ActiveDirecto
 
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData, String username) {
-        if (StringUtils.isBlank(groupRoleAttribute)) {
-            return AuthorityUtils.NO_AUTHORITIES;
-        }
         String[] groups = userData.getStringAttributes(groupRoleAttribute);
 
         if (groups == null) {

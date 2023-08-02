@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.wavemakerCommonsUtil)
     implementation(projects.wavemakerAppRuntimeCommons)
     implementation(projects.wavemakerToolsApidocsCore)
+    implementation(projects.wavemakerAppModels)
     implementation(appDependenciesLibs.commons.collections4)
     implementation(appDependenciesLibs.commons.io)
     implementation(appDependenciesLibs.commons.lang3)

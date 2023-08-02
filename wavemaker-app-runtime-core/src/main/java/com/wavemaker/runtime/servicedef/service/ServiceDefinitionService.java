@@ -22,8 +22,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.Filter;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -38,6 +41,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.stereotype.Service;
@@ -120,7 +124,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     public Map<String, ServiceDefinition> listServiceDefs() {
         if (securityService.isSecurityEnabled() && securityService.isAuthenticated()) {
             Map<String, ServiceDefinition> serviceDefinitionsMap = new HashMap<>(baseServiceDefinitions);
-            putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), serviceDefinitionsMap, false);
+            putElements(authExpressionVsServiceDefinitions.get("authenticated"), serviceDefinitionsMap, false);
             String[] userRoles = securityService.getUserRoles();
             for (String role : userRoles) {
                 putElements(authExpressionVsServiceDefinitions.get("ROLE_" + role), serviceDefinitionsMap, false);
@@ -148,10 +152,9 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
         this.authExpressionVsServiceDefinitions = constructAuthVsServiceDefinitions(serviceDefinitionsCache);
         this.baseServiceDefinitions = new HashMap<>();
         putElements(authExpressionVsServiceDefinitions.get("permitAll"), baseServiceDefinitions, false);
-        putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
+        putElements(authExpressionVsServiceDefinitions.get("authenticated"), baseServiceDefinitions, true);
         Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
-        authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s ->
-            putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
+        authExpressions.stream().filter(s -> s.startsWith("ROLE_")).forEach(s -> putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true));
         securityDefinitions = oAuthProvidersManager.getOAuth2ProviderWithImplicitFlow();
     }
 
@@ -159,14 +162,16 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     private MultiValuedMap<String, ServiceDefinition> constructAuthVsServiceDefinitions(Map<String, ServiceDefinition> serviceDefinitions) {
         MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions = new ArrayListValuedHashMap<>();
         if (securityService.isSecurityEnabled()) {
-            FilterSecurityInterceptor filterSecurityInterceptor = WMAppContext.getInstance().getSpringBean(FilterSecurityInterceptor.class);
+            SecurityFilterChain defaultSecurityFilterChainWithSessions = WMAppContext.getInstance().getSpringBean("filterChainWithSessions");
+            Optional<Filter> filterSecurityInterceptorOptional = defaultSecurityFilterChainWithSessions.getFilters().stream()
+                .filter(FilterSecurityInterceptor.class::isInstance).findFirst();
+            FilterSecurityInterceptor filterSecurityInterceptor = (FilterSecurityInterceptor) filterSecurityInterceptorOptional.get();
             FilterInvocationSecurityMetadataSource securityMetadataSource = filterSecurityInterceptor.getSecurityMetadataSource();
             for (ServiceDefinition serviceDefinition : serviceDefinitions.values()) {
                 String path = serviceDefinition.getWmServiceOperationInfo().getRelativePath();
                 String method = serviceDefinition.getWmServiceOperationInfo().getHttpMethod();
                 method = StringUtils.upperCase(method);
-                Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null,
-                    method));
+                Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null, method));
                 List<ConfigAttribute> configAttributeList;
                 if (attributes instanceof List) {
                     configAttributeList = (List) attributes;
@@ -232,8 +237,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private Map<String, ServiceDefinition> getServiceDefinition(Resource resource, PropertyResolver propertyResolver) {
         try {
-            Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream(),
-                propertyResolver);
+            Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream(), propertyResolver);
             return serviceDefinitionHelper.build(reader);
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
@@ -279,13 +283,6 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private ServiceDefinition buildValueLessServiceDef(ServiceDefinition serviceDefinition) {
-        return ServiceDefinition.getNewInstance()
-            .addId(serviceDefinition.getId())
-            .addController(serviceDefinition.getController())
-            .addType(serviceDefinition.getType())
-            .addCrudOperationId(serviceDefinition.getCrudOperationId())
-            .addOperationType(serviceDefinition.getOperationType())
-            .addService(serviceDefinition.getService())
-            .addWmServiceOperationInfo(null);
+        return ServiceDefinition.getNewInstance().addId(serviceDefinition.getId()).addController(serviceDefinition.getController()).addType(serviceDefinition.getType()).addCrudOperationId(serviceDefinition.getCrudOperationId()).addOperationType(serviceDefinition.getOperationType()).addService(serviceDefinition.getService()).addWmServiceOperationInfo(null);
     }
 }

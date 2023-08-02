@@ -21,18 +21,18 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.wavemaker.runtime.security.WMUser;
 
 /**
  * Created by ArjunSahasranam on 5/16/16.
  */
-public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDetailsService<Authentication> {
+public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
 
     private UserDetailsService userDetailsService;
 
@@ -43,13 +43,13 @@ public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDet
     private String roleAttributeName;
 
     @Override
-    public UserDetails loadUserDetails(Authentication authentication) {
+    public UserDetails loadUserDetails(CasAssertionAuthenticationToken authentication) throws UsernameNotFoundException {
         if (StringUtils.isNotBlank(roleAttributeName)) {
             CasAssertionAuthenticationToken casAssertionAuthenticationToken = null;
-            if (authentication instanceof CasAssertionAuthenticationToken) {
-                casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) authentication;
-            }
+            if (authentication != null) {
+                casAssertionAuthenticationToken = authentication;
 
+            }
             String roles = null;
             if (casAssertionAuthenticationToken != null) {
                 Map attributes = casAssertionAuthenticationToken.getAssertion().getPrincipal().getAttributes();
@@ -86,5 +86,4 @@ public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDet
     public void setRoleAttributeName(final String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
     }
-
 }
