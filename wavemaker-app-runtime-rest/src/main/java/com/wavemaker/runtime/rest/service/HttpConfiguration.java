@@ -18,8 +18,8 @@ package com.wavemaker.runtime.rest.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
+import com.wavemaker.app.security.models.TrustStoreConfig.TrustStoreConfigType;
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
-import com.wavemaker.runtime.rest.TrustStoreConfig;
 
 /**
  * @author Uday Shankar
@@ -41,7 +41,7 @@ public class HttpConfiguration {
     private String keyStoreFile;
     private String keyStoreFileType;
     private String keyStorePassword;
-    private TrustStoreConfig trustStoreConfig;
+    private TrustStoreConfigType trustStoreConfigType;
     private String trustStoreFile;
     private String trustStoreFileType;
     private String trustStorePassword;
@@ -65,7 +65,7 @@ public class HttpConfiguration {
         keyStoreFile = environment.getProperty("security.general.mtls.keystore.file", "");
         keyStoreFileType = environment.getProperty("security.general.mtls.keystore.fileType", "");
         keyStorePassword = environment.getProperty("security.general.mtls.keystore.password", "");
-        trustStoreConfig = environment.getProperty("security.general.truststore.config", TrustStoreConfig.class, TrustStoreConfig.SYSTEM_ONLY);
+        trustStoreConfigType = environment.getProperty("security.general.truststore.config", TrustStoreConfigType.class, TrustStoreConfigType.SYSTEM_ONLY);
         trustStoreFile = environment.getProperty("security.general.truststore.file", "");
         trustStoreFileType = environment.getProperty("security.general.truststore.fileType", "");
         trustStorePassword = environment.getProperty("security.general.truststore.password", "");
@@ -144,8 +144,8 @@ public class HttpConfiguration {
         return trustStorePassword;
     }
 
-    public TrustStoreConfig getTrustStoreConfig() {
-        return trustStoreConfig;
+    public TrustStoreConfigType getTrustStoreConfigType() {
+        return trustStoreConfigType;
     }
 
     public boolean isHostNameVerificationEnabled() {
@@ -168,7 +168,7 @@ public class HttpConfiguration {
             ", mtlsEnabled=" + mtlsEnabled +
             ", keyStoreFile='" + keyStoreFile + '\'' +
             ", keyStoreFileType='" + keyStoreFileType + '\'' +
-            ", trustStoreConfig=" + trustStoreConfig +
+            ", trustStoreConfigType=" + trustStoreConfigType +
             ", trustStoreFile='" + trustStoreFile + '\'' +
             ", trustStoreFileType='" + trustStoreFileType + '\'' +
             ", hostNameVerificationEnabled=" + hostNameVerificationEnabled +

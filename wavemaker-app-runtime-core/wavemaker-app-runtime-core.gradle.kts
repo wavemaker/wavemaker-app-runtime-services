@@ -24,11 +24,14 @@ dependencies {
     implementation(projects.wavemakerAppRuntimeDb)
     implementation(projects.wavemakerAppRuntimeConnectorAppIntegration)
     implementation(projects.wavemakerToolsApidocsCore)
+    implementation(projects.wavemakerAppModels)
     implementation(appDependenciesLibs.commons.collections4)
     implementation(appDependenciesLibs.commons.text)
     implementation(appDependenciesLibs.guava)
+    implementation(appDependenciesLibs.spring.boot)
     implementation(appDependenciesLibs.spring.webmvc)
     implementation(appDependenciesLibs.spring.data.jpa)
+    implementation(appDependenciesLibs.spring.security.config)
     implementation(appDependenciesLibs.spring.security.core)
     implementation(appDependenciesLibs.spring.security.web)
     implementation(appDependenciesLibs.spring.session.core)
@@ -55,6 +58,9 @@ dependencies {
     compileOnly(appDependenciesLibs.spring.security.oauth2.resource.server)
     compileOnly(appDependenciesLibs.spring.security.saml2.service.provider)
     compileOnly(appDependenciesLibs.spring.session.jdbc)
+    compileOnly(appDependenciesLibs.mongodb.driver.sync)
+    compileOnly(appDependenciesLibs.spring.session.data.mongodb)
+    compileOnly(appDependenciesLibs.spring.session.data.redis)
     compileOnly(appDependenciesLibs.poiOoxml) {
         because("Needed this for cleaning up memory references in Cleanupistener. " +
                 "TODO need to remove this dependency")
@@ -63,7 +69,6 @@ dependencies {
         because("Used for getting roles for logged in user. Used in conjuction with database service in the project." +
                 "TODO need to remove this dependency.")
     }
-    runtimeOnly(appDependenciesLibs.spring.security.config)
     runtimeOnly(appDependenciesLibs.commons.fileupload)
     testImplementation(appDependenciesLibs.test.junit4)
 
@@ -91,6 +96,7 @@ tasks {
         // Added these below task dependencies as the processResources depends on those too be finished first
         // TODO need to remove the generation of app-runtime-dependencies.txt file, need to solve the use case in a better way
         dependsOn(":wavemaker-commons-util:jar")
+        dependsOn(":wavemaker-app-models:jar")
         dependsOn(":wavemaker-app-runtime-commons:jar")
         dependsOn(":wavemaker-app-runtime-prefab:jar")
         dependsOn(":wavemaker-app-runtime-db:jar")

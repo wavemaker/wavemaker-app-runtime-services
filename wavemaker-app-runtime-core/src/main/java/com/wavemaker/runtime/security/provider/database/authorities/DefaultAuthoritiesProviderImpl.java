@@ -38,7 +38,6 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     private String authoritiesByUsernameQuery = "SELECT userid, role FROM User WHERE username = ?";
     private String rolePrefix = "ROLE_";
-    private boolean rolesByQuery;
     private static final String LOGGED_IN_USERNAME = ":LOGGED_IN_USERNAME";
 
     @PostConstruct
@@ -73,19 +72,6 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
         this.rolePrefix = rolePrefix;
     }
 
-    public boolean isRolesByQuery() {
-        return rolesByQuery;
-    }
-
-    public void setRolesByQuery(final boolean rolesByQuery) {
-        this.rolesByQuery = rolesByQuery;
-    }
-
-    public List<GrantedAuthority> loadUserAuthorities(final String username) {
-        return getTransactionTemplate()
-            .execute(status -> getHibernateTemplate().execute(session -> getGrantedAuthorities(session, username)));
-    }
-
     private List<GrantedAuthority> getGrantedAuthorities(final Session session, final String username) {
         String authoritiesByUsernameQuery = getAuthoritiesByUsernameQuery();
         if (!isHql()) {
@@ -111,7 +97,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         if (!content.isEmpty()) {
             for (Object o : content) {
-                Object role = null;
+                Object role;
                 if (o instanceof Object[]) {
                     Object[] result = (Object[]) o;
                     if (result.length == 1) {

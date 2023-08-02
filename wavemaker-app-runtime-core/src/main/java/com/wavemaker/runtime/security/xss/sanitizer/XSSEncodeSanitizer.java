@@ -19,7 +19,7 @@ import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.EntityArrays;
 import org.apache.commons.text.translate.LookupTranslator;
 
-import com.wavemaker.commons.model.security.XSSSanitizationLayer;
+import com.wavemaker.app.security.models.XSSSanitizationLayer;
 
 /**
  * Created by kishorer on 6/7/16.

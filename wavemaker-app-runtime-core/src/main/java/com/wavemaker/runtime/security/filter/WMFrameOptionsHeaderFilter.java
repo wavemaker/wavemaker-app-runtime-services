@@ -36,8 +36,8 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.model.security.FrameOptions;
 import com.wavemaker.commons.util.HttpRequestUtils;
+import com.wavemaker.app.security.models.FrameOptions;
 
 /**
  * Filter implementation to add header X-Frame-Options.

@@ -44,7 +44,7 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
     private RequestMatcher logoutRequestMatcher;
 
     @Autowired
-    private LogoutFilter logoutFilter;
+    private LogoutFilter samlLogoutFilter;
 
     private static final Logger logger = LoggerFactory.getLogger(SAMLDelegatingLogoutFilter.class);
 
@@ -66,8 +66,8 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
                 response.getWriter().write(JSONUtils.toJSON(new StringWrapper(request.getRequestURI())));
                 response.getWriter().flush();
             } else {
-                logger.info("Delegating to {}", logoutFilter.getClass().getSimpleName());
-                logoutFilter.doFilter(request, response, chain);
+                logger.info("Delegating to {}", samlLogoutFilter.getClass().getSimpleName());
+                samlLogoutFilter.doFilter(request, response, chain);
             }
         } else {
             chain.doFilter(request, response);

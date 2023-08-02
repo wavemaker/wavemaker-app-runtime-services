@@ -19,6 +19,8 @@
 
     <bean id="wmAppContext" class="com.wavemaker.runtime.commons.WMAppContext"/>
 
+    <bean class="com.wavemaker.runtime.security.config.SecurityConfiguration" id="securityConfiguration"/>
+
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
         <property name="favorPathExtension" value="false"/>
@@ -63,6 +65,8 @@
     </bean>
 
     <bean id="cdnUrlReplacementFilter" class="com.wavemaker.runtime.web.filter.CDNUrlReplacementFilter"/>
+
+    <bean id="activeThemeReplacementFilter" class="com.wavemaker.runtime.web.filter.ActiveThemeReplacementFilter"/>
 
     <bean id="formContentFilter" class="org.springframework.web.filter.FormContentFilter"/>
 

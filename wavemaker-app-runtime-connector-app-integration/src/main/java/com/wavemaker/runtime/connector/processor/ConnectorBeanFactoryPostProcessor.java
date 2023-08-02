@@ -73,12 +73,10 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
         ClassLoader appClassLoader = servletContext.getClassLoader();
         if (appClassLoader == Thread.currentThread().getContextClassLoader()) {
             for (String beanName : beanDefinitionNames) {
-                Class<?> aClass = null;
+                Class<?> aClass;
                 String beanClassName = getBeanClassName(beanName, beanFactory);
-                if (beanClassName == null && execludeWhiteListBean(beanName)) {
+                if (beanClassName == null || execludeWhiteListBean(beanName)) {
                     continue;
-                } else if (beanClassName == null) {
-                    throw new RuntimeException("Unable to derive bean class name from bean definition for bean name" + beanName);
                 }
                 try {
                     aClass = appClassLoader.loadClass(beanClassName);

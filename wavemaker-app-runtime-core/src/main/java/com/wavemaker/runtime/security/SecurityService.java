@@ -33,15 +33,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.wavemaker.commons.model.security.CSRFConfig;
-import com.wavemaker.commons.model.security.LoginConfig;
-import com.wavemaker.commons.model.security.RoleConfig;
-import com.wavemaker.commons.model.security.RolesConfig;
 import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
+import com.wavemaker.app.security.models.CSRFConfig;
+import com.wavemaker.app.security.models.LoginConfig;
+import com.wavemaker.app.security.models.RoleConfig;
+import com.wavemaker.app.security.models.RolesConfig;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 

@@ -30,8 +30,6 @@ public class WMHqlAntlrErrorListner extends BaseErrorListener {
         throws ParseCancellationException {
         String inputQuery = ((TokenStream) recognizer.getInputStream()).getTokenSource().getInputStream().toString();
 
-        throw new HqlGrammarException(
-            MessageResource.create("Syntax error in '{0}' at {1}."), inputQuery, charPositionInLine, msg
-        );
+        throw new HqlGrammarException(MessageResource.create("com.wavemaker.runtime.data$SyntaxErrorInQuery"), inputQuery, charPositionInLine, msg);
     }
 }

@@ -26,7 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import com.wavemaker.commons.auth.oauth2.OAuth2Helper;
-import com.wavemaker.commons.auth.openId.OpenIdConstants;
+import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.WMAuthentication;
 

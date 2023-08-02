@@ -25,10 +25,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.wavemaker.app.security.models.CorsConfig;
+import com.wavemaker.app.security.models.CorsPathEntry;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.model.security.CorsConfig;
-import com.wavemaker.commons.model.security.PathEntry;
 
 /**
  * Registers all {@link CorsConfig} beans configured in the app using
@@ -61,12 +61,9 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
     }
 
     private void initializeCorsConfiguration(CorsConfig corsConfig) {
-
-        List<PathEntry> pathEntriesList = corsConfig.getPathEntries();
         Long maxAge = corsConfig.getMaxAge();
         boolean allowCredentials = corsConfig.isAllowCredentials();
-
-        for (PathEntry pathEntry : pathEntriesList) {
+        for (CorsPathEntry pathEntry : corsConfig.getPathEntries().values()) {
             String path = pathEntry.getPath();
             if (StringUtils.isBlank(path)) {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.path.cannot.be.empty"), pathEntry.getName());
@@ -77,16 +74,16 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
         }
     }
 
-    private CorsConfiguration buildCorsConfigurationObject(PathEntry pathEntry, Long maxAge, boolean allowCredentials) {
+    private CorsConfiguration buildCorsConfigurationObject(CorsPathEntry corsPathEntry, Long maxAge, boolean allowCredentials) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         if (maxAge == null) {
             maxAge = DEFAULT_MAX_AGE;
         }
 
-        String allowedOrigins = pathEntry.getAllowedOrigins();
+        String allowedOrigins = corsPathEntry.getAllowedOrigins();
         if (StringUtils.isBlank(allowedOrigins)) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.allowedOrigins.cannot.be.empty"), pathEntry.getName());
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.allowedOrigins.cannot.be.empty"), corsPathEntry.getName());
         }
         corsConfiguration.setMaxAge(maxAge);
         corsConfiguration.setAllowedOrigins(toList(allowedOrigins));
