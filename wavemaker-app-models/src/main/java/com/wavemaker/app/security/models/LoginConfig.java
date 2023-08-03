@@ -34,13 +34,13 @@ public class LoginConfig {
     @NonProfilizableProperty("${security.general.login.pageName}")
     private String pageName;
 
-    @ProfilizableProperty(value = "${security.general.cookie.maxAge}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.cookie.maxAge:-1}", autoUpdate = true)
     private int cookieMaxAge;
 
     @ProfilizableProperty("${security.general.cookie.path}")
     private String cookiePath;
 
-    @ProfilizableProperty("${security.general.cookie.base64Encode}")
+    @ProfilizableProperty("${security.general.cookie.base64Encode:true}")
     private boolean cookieBase64Encode;
     @NotNull
     @Valid

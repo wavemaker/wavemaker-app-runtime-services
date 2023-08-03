@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.Filter;
@@ -161,7 +162,27 @@ public class SecurityEnabledBaseConfiguration {
 
     @Bean(name = "defaultCookieSerializer")
     public CookieSerializer defaultCookieSerializer() {
-        return new DefaultCookieSerializer();
+        LoginConfig loginConfig = loginConfig();
+        int cookieMaxAge = loginConfig.getCookieMaxAge();
+        String cookiePath = loginConfig.getCookiePath();
+        boolean base64Encode = loginConfig.isCookieBase64Encode();
+        String jvmRoute = environment.getProperty("security.general.cookie.jvmRoute");
+        String sameSite = environment.getProperty("security.general.cookie.sameSite");
+        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
+        if (StringUtils.isNotBlank(cookiePath)) {
+            defaultCookieSerializer.setCookiePath(cookiePath);
+        }
+        if (StringUtils.isNotBlank(jvmRoute)) {
+            defaultCookieSerializer.setJvmRoute(jvmRoute);
+        }
+        if (StringUtils.isNotBlank(sameSite)) {
+            defaultCookieSerializer.setSameSite(sameSite);
+        } else {
+            defaultCookieSerializer.setSameSite(null);
+        }
+        defaultCookieSerializer.setCookieMaxAge((int) TimeUnit.MINUTES.toSeconds(cookieMaxAge));
+        defaultCookieSerializer.setUseBase64Encoding(base64Encode);
+        return defaultCookieSerializer;
     }
 
     @Bean(name = "httpSessionIdResolver")
