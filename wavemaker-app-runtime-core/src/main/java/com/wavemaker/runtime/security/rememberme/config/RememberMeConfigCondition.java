@@ -15,6 +15,9 @@
 
 package com.wavemaker.runtime.security.rememberme.config;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
@@ -30,7 +33,8 @@ public class RememberMeConfigCondition implements Condition {
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
         boolean isRememberMeEnabled = environment.getProperty("security.general.rememberMe.enabled", Boolean.class);
-        if (isRememberMeEnabled) {
+        String activeProvider = environment.getProperty("security.providers.activeProviders");
+        if (isRememberMeEnabled && Stream.of("DEMO", "DATABASE", "LDAP").anyMatch(s -> Objects.requireNonNull(activeProvider).contains(s))) {
             logger.info("Initializing RememberMeConfiguration beans as rememberMe is enabled");
             return true;
         }
