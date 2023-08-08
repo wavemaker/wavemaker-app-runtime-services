@@ -15,14 +15,14 @@
  */
 package com.wavemaker.runtime.connector.metadata;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
+import com.wavemaker.commons.util.WMIOUtils;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import com.wavemaker.commons.util.WMIOUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -40,7 +40,7 @@ public class ConnectorMetadataParser {
     }
 
     public static ConnectorMetadata parser(InputStream is) {
-        Yaml yaml = new Yaml(new Constructor(ConnectorMetadata.class));
+        Yaml yaml = new Yaml(new Constructor(ConnectorMetadata.class, new LoaderOptions()));
         try {
             return yaml.loadAs(is, ConnectorMetadata.class);
         } catch (RuntimeException e) {
