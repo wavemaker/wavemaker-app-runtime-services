@@ -19,17 +19,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import com.wavemaker.runtime.security.constants.SecurityConstants;
 
 public class MongoDbSessionConfigCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(MongoDbSessionConfigCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Environment environment = context.getEnvironment();
-        String sessionPersistenceType = environment.getProperty("security.session.persistence.type");
-        if (sessionPersistenceType != null && sessionPersistenceType.equals("mongodb")) {
+        String sessionPersistenceType = context.getEnvironment().getProperty("security.session.persistence.type");
+        if (SecurityConstants.MONGODB.equals(sessionPersistenceType)) {
             logger.info("Initializing MongoDbSessionConfiguration beans for mongodb session persistence");
             return true;
         }

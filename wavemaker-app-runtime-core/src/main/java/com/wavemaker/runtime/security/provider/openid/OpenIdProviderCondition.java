@@ -15,21 +15,25 @@
 
 package com.wavemaker.runtime.security.provider.openid;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
+
+import static com.wavemaker.runtime.security.constants.SecurityConstants.OPENID_PROVIDER;
 
 public class OpenIdProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(OpenIdProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Environment environment = context.getEnvironment();
-        String provider = environment.getProperty("security.providers.activeProviders");
-        if (provider != null && provider.contains("OPENID")) {
+        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
+        if (activeProviders.contains(OPENID_PROVIDER)) {
             logger.info("Initializing OPENID beans as OPENID is selected as active security provider");
             return true;
         }

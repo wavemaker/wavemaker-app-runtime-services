@@ -20,7 +20,6 @@ import java.util.List;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +27,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
@@ -38,7 +38,6 @@ import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.WMAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
-import com.wavemaker.runtime.security.rememberme.config.RememberMeConfiguration;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, UsernamePasswordLoginFlowCondition.class})
@@ -48,10 +47,7 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     private SecurityEnabledBaseConfiguration securityEnabledBaseConfiguration;
 
     @Autowired(required = false)
-    private RememberMeConfiguration rememberMeConfiguration;
-
-    @Value("${security.providers.activeProviders}")
-    private String activeProvider;
+    private RememberMeServices rememberMeServices;
 
     @Bean(name = "redirectStrategyBean")
     public RedirectStrategy redirectStrategyBean() {
@@ -86,11 +82,8 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
         usernamePasswordAuthenticationFilter.setUsernameParameter("j_username");
         usernamePasswordAuthenticationFilter.setPasswordParameter("j_password");
         usernamePasswordAuthenticationFilter.setSessionAuthenticationStrategy(securityEnabledBaseConfiguration.compositeSessionAuthenticationStrategy());
-        if (activeProvider.equals("AD") || activeProvider.equals("CUSTOM")) {
-            return usernamePasswordAuthenticationFilter;
-        }
-        if (rememberMeConfiguration != null) {
-            usernamePasswordAuthenticationFilter.setRememberMeServices(rememberMeConfiguration.rememberMeServices());
+        if (rememberMeServices != null) {
+            usernamePasswordAuthenticationFilter.setRememberMeServices(rememberMeServices);
         }
         return usernamePasswordAuthenticationFilter;
     }

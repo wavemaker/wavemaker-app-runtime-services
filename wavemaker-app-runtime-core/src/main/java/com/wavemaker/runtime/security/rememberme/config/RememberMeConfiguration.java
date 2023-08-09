@@ -25,17 +25,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 
+import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
@@ -52,14 +53,12 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
-    private Environment environment;
-
     @Bean(name = "rememberMeServices")
-    public PersistentTokenBasedRememberMeServices rememberMeServices() {
-        PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices = new PersistentTokenBasedRememberMeServices("WM_APP_KEY", userDetailsService, rememberMeRepository());
+    public RememberMeServices rememberMeServices() {
+        PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices =
+            new PersistentTokenBasedRememberMeServices("WM_APP_KEY", userDetailsService, rememberMeRepository());
         persistentTokenBasedRememberMeServices.setParameter("j_rememberme");
-        persistentTokenBasedRememberMeServices.setTokenValiditySeconds(environment.getProperty("security.general.rememberMe.timeOut", Integer.class));
+        persistentTokenBasedRememberMeServices.setTokenValiditySeconds((int) rememberMeConfig().getTokenValiditySeconds());
         return persistentTokenBasedRememberMeServices;
     }
 
@@ -94,6 +93,11 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
         return Collections.emptyList();
+    }
+
+    @Bean(name = "rememberMeConfig")
+    public RememberMeConfig rememberMeConfig() {
+        return new RememberMeConfig();
     }
 
     @Override

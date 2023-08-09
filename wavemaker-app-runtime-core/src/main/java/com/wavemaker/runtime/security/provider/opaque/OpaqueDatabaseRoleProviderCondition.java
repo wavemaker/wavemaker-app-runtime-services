@@ -22,6 +22,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.constants.SecurityConstants;
+
 public class OpaqueDatabaseRoleProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(OpaqueDatabaseRoleProviderCondition.class);
 
@@ -30,7 +32,7 @@ public class OpaqueDatabaseRoleProviderCondition implements Condition {
         Environment environment = context.getEnvironment();
         boolean roleEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.opaqueToken.roleMappingEnabled", Boolean.class));
         String roleProvider = environment.getProperty("security.providers.opaqueToken.roleProvider");
-        if (roleEnabled && roleProvider != null && roleProvider.equals("Database")) {
+        if (roleEnabled && SecurityConstants.DATABASE_ROLE_PROVIDER.equals(roleProvider)) {
             logger.info("Initializing Database roleMapping bean for OPAQUE provider");
             return true;
         }

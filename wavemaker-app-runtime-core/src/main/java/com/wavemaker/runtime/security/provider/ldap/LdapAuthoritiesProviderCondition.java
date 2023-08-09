@@ -15,14 +15,14 @@
 
 package com.wavemaker.runtime.security.provider.ldap;
 
-import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import com.wavemaker.runtime.security.constants.SecurityConstants;
 
 public class LdapAuthoritiesProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(LdapAuthoritiesProviderCondition.class);
@@ -34,7 +34,7 @@ public class LdapAuthoritiesProviderCondition implements Condition {
             return false;
         }
         String roleProvider = environment.getProperty("security.providers.ldap.roleProvider", String.class);
-        if (Objects.equals("LDAP", roleProvider)) {
+        if (SecurityConstants.LDAP_PROVIDER.equals(roleProvider)) {
             logger.info("Initializing LDAP RoleMapping Beans for LDAP provider");
             return true;
         }

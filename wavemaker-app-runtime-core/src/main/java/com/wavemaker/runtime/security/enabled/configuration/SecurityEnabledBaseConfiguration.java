@@ -108,6 +108,8 @@ import com.wavemaker.runtime.security.csrf.WMCsrfFilter;
 import com.wavemaker.runtime.security.csrf.WMCsrfLogoutHandler;
 import com.wavemaker.runtime.security.csrf.WMCsrfTokenRepository;
 import com.wavemaker.runtime.security.csrf.WMHttpSessionCsrfTokenRepository;
+import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenRepositorySuccessHandler;
+import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenResponseWriterAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlComparator;
 import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlStringComparator;
 import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
@@ -117,8 +119,6 @@ import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcess
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
-import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenRepositorySuccessHandler;
-import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenResponseWriterAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMSecurityContextRepositorySuccessHandler;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 import com.wavemaker.runtime.security.token.repository.WMTokenRepository;
@@ -376,11 +376,6 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "sessionTimeoutConfig")
     public SessionTimeoutConfig sessionTimeoutConfig() {
         return new SessionTimeoutConfig();
-    }
-
-    @Bean(name = "loginConfigBeanPostProcessor")
-    public LoginConfigBeanPostProcessor loginConfigBeanPostProcessor() {
-        return new LoginConfigBeanPostProcessor();
     }
 
     @Bean(name = "tokenAuthConfig")

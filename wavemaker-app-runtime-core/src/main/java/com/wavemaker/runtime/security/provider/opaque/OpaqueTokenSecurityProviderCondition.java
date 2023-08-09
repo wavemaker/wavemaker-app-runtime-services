@@ -15,21 +15,25 @@
 
 package com.wavemaker.runtime.security.provider.opaque;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
+
+import static com.wavemaker.runtime.security.constants.SecurityConstants.OPAQUE_PROVIDER;
 
 public class OpaqueTokenSecurityProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(OpaqueTokenSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Environment environment = context.getEnvironment();
-        String activeProvider = environment.getProperty("security.providers.activeProviders");
-        if (activeProvider != null && activeProvider.contains("OPAQUE")) {
+        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
+        if (activeProviders.contains(OPAQUE_PROVIDER)) {
             logger.info("Initializing OPAQUE beans as OPAQUE is selected as active security provider");
             return true;
         }

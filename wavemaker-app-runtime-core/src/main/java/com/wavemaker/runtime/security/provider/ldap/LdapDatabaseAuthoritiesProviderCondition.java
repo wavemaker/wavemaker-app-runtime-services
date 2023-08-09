@@ -22,6 +22,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.constants.SecurityConstants;
+
 public class LdapDatabaseAuthoritiesProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(LdapDatabaseAuthoritiesProviderCondition.class);
 
@@ -32,7 +34,7 @@ public class LdapDatabaseAuthoritiesProviderCondition implements Condition {
             return false;
         }
         String roleProvider = environment.getProperty("security.providers.ldap.roleProvider", String.class);
-        if (roleProvider != null && roleProvider.equals("Database")) {
+        if (SecurityConstants.DATABASE_ROLE_PROVIDER.equals(roleProvider)) {
             logger.info("Initializing Database RoleMapping beans for LDAP active security provider");
             return true;
         }

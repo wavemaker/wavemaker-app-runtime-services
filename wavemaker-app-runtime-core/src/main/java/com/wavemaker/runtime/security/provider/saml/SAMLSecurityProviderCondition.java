@@ -15,21 +15,24 @@
 
 package com.wavemaker.runtime.security.provider.saml;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 public class SAMLSecurityProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(SAMLSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Environment environment = context.getEnvironment();
-        String roleProvider = environment.getProperty("security.providers.activeProviders");
-        if (roleProvider != null && roleProvider.contains("SAML")) {
+        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
+        if (activeProviders.contains(SecurityConstants.SAML_PROVIDER)) {
             logger.info("Initializing SAML beans as SAML is selected as active security provider");
             return true;
         }

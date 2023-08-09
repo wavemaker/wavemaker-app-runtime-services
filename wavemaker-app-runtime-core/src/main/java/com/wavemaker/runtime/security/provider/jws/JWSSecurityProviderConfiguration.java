@@ -49,6 +49,8 @@ import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 
+import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_ROLE_PROVIDER;
+
 @Configuration
 @Conditional({SecurityEnabledCondition.class, JWSProviderCondition.class})
 public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration, BeanFactoryAware {
@@ -61,7 +63,7 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
         DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
         jwsConfiguration().getJws().forEach((providerId, jwsProviderConfiguration) -> {
             if (jwsProviderConfiguration.isEnabled() && jwsProviderConfiguration.isRoleMappingEnabled() && jwsProviderConfiguration
-                .getRoleProvider().equals("Database")) {
+                .getRoleProvider().equals(DATABASE_ROLE_PROVIDER)) {
                 DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = jwsAuthoritiesProvider(jwsProviderConfiguration);
                 defaultListableBeanFactory.registerSingleton(providerId + "JWSAuthoritiesProvider", defaultAuthoritiesProvider);
 

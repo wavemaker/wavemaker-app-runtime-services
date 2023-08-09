@@ -22,6 +22,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.constants.SecurityConstants;
+
 public class OpenIdRoleMappingCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(OpenIdRoleMappingCondition.class);
 
@@ -31,7 +33,7 @@ public class OpenIdRoleMappingCondition implements Condition {
         String OPENID_ACTIVE_ROLE_PROVIDER = environment.getProperty("security.providers.openId.activeProviders");
         Boolean isRoleMappingEnabled = environment.getProperty("security.providers.openId." + OPENID_ACTIVE_ROLE_PROVIDER + ".roleMappingEnabled", Boolean.class);
         String roleAttributeName = environment.getProperty("security.providers.openId." + OPENID_ACTIVE_ROLE_PROVIDER + ".roleProvider");
-        if (isRoleMappingEnabled && roleAttributeName != null && roleAttributeName.equals("OPENID")) {
+        if (isRoleMappingEnabled && SecurityConstants.OPENID_PROVIDER.equals(roleAttributeName)) {
             logger.info("Initializing OPENID RoleMapping bean for OPENID provider");
             return true;
         }

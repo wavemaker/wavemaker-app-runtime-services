@@ -70,8 +70,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
 
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
-        return List.of(new SecurityInterceptUrlEntry("/j_spring_cas_security_check", Permission.PermitAll),
-            new SecurityInterceptUrlEntry("/services/security/ssologin", Permission.Authenticated));
+        return List.of(new SecurityInterceptUrlEntry("/j_spring_cas_security_check", Permission.PermitAll));
     }
 
     @Override

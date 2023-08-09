@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.provider.saml;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,7 +50,6 @@ import org.springframework.security.web.authentication.rememberme.RememberMeAuth
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.app.security.models.config.saml.SAMLConfig;
@@ -61,10 +61,10 @@ import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseC
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
-import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
+import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestFilter;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSamlRPInitiatedSuccessHandler;
 
@@ -91,6 +91,20 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     @Autowired
     @Qualifier("saml2LogoutRequestResolver")
     private Saml2LogoutRequestResolver saml2LogoutRequestResolver;
+
+    @Override
+    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void addFilters(HttpSecurity http) {
+        http.addFilterAfter(samlFilter(openSamlLogoutResponseResolver,
+            (SecurityContextLogoutHandler) securityEnabledBaseConfiguration.securityContextLogoutHandler(),
+            (WMCsrfLogoutHandler) securityEnabledBaseConfiguration.wmCsrfLogoutHandler(), securityEnabledBaseConfiguration.authenticationManager(),
+            securityEnabledBaseConfiguration.successHandler(), (WMApplicationAuthenticationFailureHandler) securityEnabledBaseConfiguration.failureHandler(),
+            relyingPartyRegistrationResolver), RememberMeAuthenticationFilter.class);
+    }
 
     @Bean(name = "samlConfig")
     public SAMLConfig samlConfig(SAMLProviderConfig samlProviderConfig) {
@@ -236,19 +250,5 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     @Bean(name = "SamlProviderConfig")
     public SAMLProviderConfig samlProviderConfig() {
         return new SAMLProviderConfig();
-    }
-
-    @Override
-    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
-        return List.of(new SecurityInterceptUrlEntry("/services/security/ssologin", Permission.Authenticated));
-    }
-
-    @Override
-    public void addFilters(HttpSecurity http) {
-        http.addFilterAfter(samlFilter(openSamlLogoutResponseResolver,
-            (SecurityContextLogoutHandler) securityEnabledBaseConfiguration.securityContextLogoutHandler(),
-            (WMCsrfLogoutHandler) securityEnabledBaseConfiguration.wmCsrfLogoutHandler(), securityEnabledBaseConfiguration.authenticationManager(),
-            securityEnabledBaseConfiguration.successHandler(), (WMApplicationAuthenticationFailureHandler) securityEnabledBaseConfiguration.failureHandler(),
-            relyingPartyRegistrationResolver), RememberMeAuthenticationFilter.class);
     }
 }

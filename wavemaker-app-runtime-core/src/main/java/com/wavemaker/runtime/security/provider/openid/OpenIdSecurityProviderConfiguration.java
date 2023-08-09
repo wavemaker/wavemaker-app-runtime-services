@@ -87,8 +87,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
         return List.of(new SecurityInterceptUrlEntry("/auth/oauth2", Permission.PermitAll),
             new SecurityInterceptUrlEntry("/ouath2/code", Permission.PermitAll),
-            new SecurityInterceptUrlEntry("/services/oauth2/**/callback/", Permission.PermitAll),
-            new SecurityInterceptUrlEntry("/services/security/ssologin", Permission.Authenticated));
+            new SecurityInterceptUrlEntry("/services/oauth2/**/callback/", Permission.PermitAll));
     }
 
     @Override

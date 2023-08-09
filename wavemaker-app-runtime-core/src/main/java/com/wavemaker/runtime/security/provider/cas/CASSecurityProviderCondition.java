@@ -15,6 +15,8 @@
 
 package com.wavemaker.runtime.security.provider.cas;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
@@ -22,14 +24,18 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
+
+import static com.wavemaker.runtime.security.constants.SecurityConstants.CAS_PROVIDER;
+
 public class CASSecurityProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(CASSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String activeProvider = environment.getProperty("security.providers.activeProviders");
-        if (activeProvider != null && activeProvider.contains("CAS")) {
+        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(environment);
+        if (activeProviders.contains(CAS_PROVIDER)) {
             logger.info("Initializing CAS beans as CAS is selected as active security provider");
             return true;
         }

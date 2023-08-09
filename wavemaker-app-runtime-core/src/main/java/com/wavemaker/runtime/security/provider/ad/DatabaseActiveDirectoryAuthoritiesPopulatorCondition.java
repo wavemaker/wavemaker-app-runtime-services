@@ -15,14 +15,14 @@
 
 package com.wavemaker.runtime.security.provider.ad;
 
-import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import com.wavemaker.runtime.security.constants.SecurityConstants;
 
 public class DatabaseActiveDirectoryAuthoritiesPopulatorCondition implements Condition {
 
@@ -33,7 +33,7 @@ public class DatabaseActiveDirectoryAuthoritiesPopulatorCondition implements Con
         Environment environment = context.getEnvironment();
         String roleProvider = environment.getProperty("security.providers.ad.roleProvider", String.class);
         boolean groupSearchDisabled = Boolean.parseBoolean(environment.getProperty("security.providers.ad.groupSearchDisabled", String.class));
-        if (!groupSearchDisabled && Objects.equals("Database", roleProvider)) {
+        if (!groupSearchDisabled && SecurityConstants.DATABASE_ROLE_PROVIDER.equals(roleProvider)) {
             logger.info("Initializing Database RoleMapping beans for AD provider");
             return true;
         }

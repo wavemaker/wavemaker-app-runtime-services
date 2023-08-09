@@ -19,17 +19,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import com.wavemaker.runtime.security.constants.SecurityConstants;
 
 public class SAMLDatabaseRoleProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(SAMLDatabaseRoleProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Environment environment = context.getEnvironment();
-        String roleProvider = environment.getProperty("security.providers.saml.roleProvider");
-        if (roleProvider != null && roleProvider.equals("Database")) {
+        String roleProvider = context.getEnvironment().getProperty("security.providers.saml.roleProvider");
+        if (SecurityConstants.DATABASE_ROLE_PROVIDER.equals(roleProvider)) {
             logger.info("Initializing Database roleMapping bean for SAML provider");
             return true;
         }
