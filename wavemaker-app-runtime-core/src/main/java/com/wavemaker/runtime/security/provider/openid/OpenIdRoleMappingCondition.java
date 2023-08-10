@@ -30,10 +30,11 @@ public class OpenIdRoleMappingCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        String OPENID_ACTIVE_ROLE_PROVIDER = environment.getProperty("security.providers.openId.activeProviders");
-        Boolean isRoleMappingEnabled = environment.getProperty("security.providers.openId." + OPENID_ACTIVE_ROLE_PROVIDER + ".roleMappingEnabled", Boolean.class);
-        String roleAttributeName = environment.getProperty("security.providers.openId." + OPENID_ACTIVE_ROLE_PROVIDER + ".roleProvider");
-        if (isRoleMappingEnabled && SecurityConstants.OPENID_PROVIDER.equals(roleAttributeName)) {
+        String openidActiveRoleProvider = environment.getProperty("security.providers.openId.activeProviders");
+        boolean roleMappingEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.openId." + openidActiveRoleProvider +
+            ".roleMappingEnabled", Boolean.class));
+        String roleAttributeName = environment.getProperty("security.providers.openId." + openidActiveRoleProvider + ".roleProvider");
+        if (roleMappingEnabled && SecurityConstants.OPENID_PROVIDER.equals(roleAttributeName)) {
             logger.info("Initializing OPENID RoleMapping bean for OPENID provider");
             return true;
         }
