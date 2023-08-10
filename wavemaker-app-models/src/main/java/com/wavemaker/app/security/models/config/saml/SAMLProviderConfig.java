@@ -45,6 +45,9 @@ public class SAMLProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.saml.keyAlias}")
     private String keyAlias;
     private String subjectName; //create
+    /**
+     * @deprecated
+     */
     @Deprecated
     private String entityBaseURL;
 

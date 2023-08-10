@@ -63,7 +63,7 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     }
 
     @Bean(name = "WMSecAuthEntryPoint")
-    public AuthenticationEntryPoint WMSecAuthEntryPoint() {
+    public AuthenticationEntryPoint wmSecAuthEntryPoint() {
         return new WMAuthenticationEntryPoint("/index.html");
     }
 

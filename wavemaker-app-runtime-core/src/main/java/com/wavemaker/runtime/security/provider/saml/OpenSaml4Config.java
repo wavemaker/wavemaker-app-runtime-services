@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.saml2.provider.service.authentication.DefaultSaml2AuthenticatedPrincipal;
@@ -37,6 +38,7 @@ import org.springframework.security.saml2.provider.service.web.authentication.Op
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml4LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml4LogoutResponseResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseResolver;
 
 import com.wavemaker.commons.WMRuntimeException;
@@ -75,7 +77,7 @@ public class OpenSaml4Config {
     }
 
     @Bean("saml2LogoutRequestResolver")
-    public WMSaml2LogoutRequestResolver saml2LogoutRequestResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
+    public Saml2LogoutRequestResolver saml2LogoutRequestResolver(RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
         return new WMSaml2LogoutRequestResolver(relyingPartyRegistrationResolver,
             new OpenSaml4LogoutRequestResolver(relyingPartyRegistrationResolver));
     }
@@ -86,7 +88,7 @@ public class OpenSaml4Config {
     }
 
     @Bean("samlAuthenticationProvider")
-    public OpenSaml4AuthenticationProvider samlAuthenticationProvider() {
+    public AuthenticationProvider samlAuthenticationProvider() {
         OpenSaml4AuthenticationProvider openSaml4AuthenticationProvider = new OpenSaml4AuthenticationProvider();
         openSaml4AuthenticationProvider.setResponseAuthenticationConverter(customAuthenticationConverter());
         return openSaml4AuthenticationProvider;

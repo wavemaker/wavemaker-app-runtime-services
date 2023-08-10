@@ -121,6 +121,7 @@ import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMSecurityContextRepositorySuccessHandler;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
+import com.wavemaker.runtime.security.token.repository.TokenRepository;
 import com.wavemaker.runtime.security.token.repository.WMTokenRepository;
 import com.wavemaker.runtime.webprocess.filter.LoginProcessFilter;
 
@@ -211,7 +212,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "sessionFixationProtectionStrategy")
-    public SessionFixationProtectionStrategy sessionFixationProtectionStrategy() {
+    public SessionAuthenticationStrategy sessionFixationProtectionStrategy() {
         return new SessionFixationProtectionStrategy();
     }
 
@@ -297,9 +298,8 @@ public class SecurityEnabledBaseConfiguration {
         return new WMTokenBasedPreAuthenticatedProcessingFilter(authenticationManager(), wmTokenBasedAuthenticationService());
     }
 
-    //TODO Change the return type to generic to override beans from xml
     @Bean(name = "tokenRepository")
-    public WMTokenRepository tokenRepository() {
+    public TokenRepository tokenRepository() {
         return new WMTokenRepository();
     }
 
@@ -309,7 +309,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "successHandler")
-    public WMApplicationAuthenticationSuccessHandler successHandler() {
+    public AuthenticationSuccessHandler successHandler() {
         List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
         defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler());
         defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler());
@@ -320,7 +320,6 @@ public class SecurityEnabledBaseConfiguration {
         return wmApplicationAuthenticationSuccessHandler;
     }
 
-    //TODO need to check the generic return type
     @Bean(name = "wmAuthenticationSuccessRedirectionHandler")
     public WMAuthenticationRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
         return new WMAuthenticationSuccessRedirectionHandler();
@@ -479,7 +478,6 @@ public class SecurityEnabledBaseConfiguration {
             .logout().disable()
             .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
             .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
-            .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterAt(logoutFilter, LogoutFilter.class)
             .addFilterAfter(loginWebProcessFilter(), SecurityContextPersistenceFilter.class);
         wmSecurityConfigurationList.forEach(securityConfiguration ->
@@ -519,11 +517,7 @@ public class SecurityEnabledBaseConfiguration {
         for (WMSecurityConfiguration wmSecurityConfiguration : wmSecurityConfigurationList) {
             securityInterceptUrlEntryList.addAll(wmSecurityConfiguration.getSecurityInterceptUrls());
         }
-        for (SecurityInterceptUrlEntry securityInterceptUrlEntry : securityInterceptUrlList()) {
-            if (!securityInterceptUrlEntry.getUrlPattern().equals("/**")) {
-                securityInterceptUrlEntryList.add(securityInterceptUrlEntry);
-            }
-        }
+        securityInterceptUrlEntryList.addAll(securityInterceptUrlList());
         securityInterceptUrlEntryList.addAll(getDefaultSecurityInterceptUrlEntryList());
         securityInterceptUrlEntryList.sort(new InterceptUrlComparator());
         securityInterceptUrlEntryList.sort(new InterceptUrlStringComparator());
