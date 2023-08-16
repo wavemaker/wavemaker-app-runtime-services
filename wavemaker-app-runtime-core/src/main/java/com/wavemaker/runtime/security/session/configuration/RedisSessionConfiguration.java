@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
@@ -55,7 +56,7 @@ public class RedisSessionConfiguration {
     }
 
     @Bean(name = "sessionRegistry")
-    public SpringSessionBackedSessionRegistry<? extends Session> sessionRegistry(
+    public SessionRegistry sessionRegistry(
         FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
         return new SpringSessionBackedSessionRegistry<>(sessionRepository);
     }

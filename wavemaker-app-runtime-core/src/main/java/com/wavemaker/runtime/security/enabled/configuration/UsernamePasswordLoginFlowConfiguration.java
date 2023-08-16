@@ -20,17 +20,23 @@ import java.util.List;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.wavemaker.app.security.models.Permission;
@@ -44,7 +50,23 @@ import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
 public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfiguration {
 
     @Autowired
-    private SecurityEnabledBaseConfiguration securityEnabledBaseConfiguration;
+    @Lazy
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    @Qualifier("successHandler")
+    @Lazy
+    private AuthenticationSuccessHandler successHandler;
+
+    @Autowired
+    @Qualifier("failureHandler")
+    @Lazy
+    private AuthenticationFailureHandler failureHandler;
+
+    @Autowired
+    @Qualifier("compositeSessionAuthenticationStrategy")
+    @Lazy
+    private SessionAuthenticationStrategy compositeSessionAuthenticationStrategy;
 
     @Autowired(required = false)
     private RememberMeServices rememberMeServices;
@@ -69,19 +91,19 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
 
     @Bean(name = "WMBasicAuthenticationFilter")
     public Filter wmBasicAuthenticationFilter() {
-        return new WMBasicAuthenticationFilter(securityEnabledBaseConfiguration.authenticationManager());
+        return new WMBasicAuthenticationFilter(authenticationManager);
     }
 
     @Bean(name = "WMSecAuthFilter")
     public Filter wmSecAuthFilter() {
         UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter = new UsernamePasswordAuthenticationFilter();
-        usernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(securityEnabledBaseConfiguration.successHandler());
-        usernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(securityEnabledBaseConfiguration.failureHandler());
-        usernamePasswordAuthenticationFilter.setAuthenticationManager(securityEnabledBaseConfiguration.authenticationManager());
+        usernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
+        usernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);
+        usernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager);
         usernamePasswordAuthenticationFilter.setFilterProcessesUrl("/j_spring_security_check");
         usernamePasswordAuthenticationFilter.setUsernameParameter("j_username");
         usernamePasswordAuthenticationFilter.setPasswordParameter("j_password");
-        usernamePasswordAuthenticationFilter.setSessionAuthenticationStrategy(securityEnabledBaseConfiguration.compositeSessionAuthenticationStrategy());
+        usernamePasswordAuthenticationFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy);
         if (rememberMeServices != null) {
             usernamePasswordAuthenticationFilter.setRememberMeServices(rememberMeServices);
         }

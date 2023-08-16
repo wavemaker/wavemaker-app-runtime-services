@@ -29,9 +29,9 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
-import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 import com.mongodb.MongoCredential;
@@ -114,7 +114,7 @@ public class MongoDbSessionConfiguration {
     }
 
     @Bean(name = "sessionRegistry")
-    public SpringSessionBackedSessionRegistry<MongoSession> sessionRegistry() {
+    public SessionRegistry sessionRegistry() {
         return new SpringSessionBackedSessionRegistry<>(sessionRepository());
     }
 }

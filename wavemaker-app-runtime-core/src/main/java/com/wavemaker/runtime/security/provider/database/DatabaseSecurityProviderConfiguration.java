@@ -59,7 +59,6 @@ public class DatabaseSecurityProviderConfiguration {
         return authenticationProvider;
     }
 
-    //TODO NoOpPasswordEncoder is deprecated
     @Bean(name = "passwordEncoder")
     public PasswordEncoder noOpPasswordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -73,7 +72,6 @@ public class DatabaseSecurityProviderConfiguration {
         return databaseUserDetailsService;
     }
 
-    //TODO once check it
     @Bean(name = "defaultUserProvider")
     public UserProvider defaultUserProviderImpl(DatabaseProviderConfig databaseProviderConfig) {
         DefaultUserProviderImpl defaultUserProvider = new DefaultUserProviderImpl();

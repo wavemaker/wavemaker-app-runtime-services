@@ -27,14 +27,17 @@ import org.jasig.cas.client.ssl.HttpURLConnectionFactory;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
@@ -46,10 +49,13 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.Permission;
@@ -58,7 +64,6 @@ import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
-import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.cas.handler.WMCasAuthenticationSuccessHandler;
@@ -73,10 +78,26 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     private Environment environment;
 
     @Autowired
-    private SecurityEnabledBaseConfiguration securityEnabledBaseConfiguration;
+    private ApplicationContext applicationContext;
 
     @Autowired
-    private ApplicationContext applicationContext;
+    @Qualifier("successHandler")
+    @Lazy
+    private AuthenticationSuccessHandler successHandler;
+
+    @Autowired
+    @Qualifier("failureHandler")
+    @Lazy
+    private AuthenticationFailureHandler failureHandler;
+
+    @Autowired
+    @Lazy
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    @Qualifier("compositeSessionAuthenticationStrategy")
+    @Lazy
+    private SessionAuthenticationStrategy compositeSessionAuthenticationStrategy;
 
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
@@ -154,12 +175,12 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         CASProviderConfig casProviderConfig = casProviderConfig();
         CasAuthenticationFilter casAuthenticationFilter = new CasAuthenticationFilter();
         casAuthenticationFilter.setFilterProcessesUrl("/j_spring_cas_security_check");
-        casAuthenticationFilter.setAuthenticationSuccessHandler(securityEnabledBaseConfiguration.successHandler());
-        casAuthenticationFilter.setAuthenticationFailureHandler(securityEnabledBaseConfiguration.failureHandler());
-        casAuthenticationFilter.setAuthenticationManager(securityEnabledBaseConfiguration.authenticationManager());
+        casAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
+        casAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);
+        casAuthenticationFilter.setAuthenticationManager(authenticationManager);
         casAuthenticationFilter.setAuthenticationDetailsSource(wmWebAuthenticationDetailsSource(casProviderConfig));
         casAuthenticationFilter.setServiceProperties(casServiceProperties(casProviderConfig));
-        casAuthenticationFilter.setSessionAuthenticationStrategy(securityEnabledBaseConfiguration.compositeSessionAuthenticationStrategy());
+        casAuthenticationFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy);
         return casAuthenticationFilter;
     }
 

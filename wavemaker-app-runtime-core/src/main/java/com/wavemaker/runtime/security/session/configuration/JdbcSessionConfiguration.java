@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,9 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
+import org.springframework.session.config.SessionRepositoryCustomizer;
+import org.springframework.session.jdbc.WMJdbcIndexedSessionRepository;
+import org.springframework.session.jdbc.config.annotation.SpringSessionDataSource;
 import org.springframework.session.jdbc.config.annotation.web.http.WMJdbcHttpSessionConfiguration;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -52,18 +56,23 @@ public class JdbcSessionConfiguration {
     }
 
     @Bean
-    public FindByIndexNameSessionRepository<? extends Session> sessionRepository() {
+    public FindByIndexNameSessionRepository<? extends Session> sessionRepository(@SpringSessionDataSource ObjectProvider<DataSource> springSessionDataSource,
+                                                                                 ObjectProvider<DataSource> jdbcSessionPersistenceDataSource,
+                                                                                 ObjectProvider<SessionRepositoryCustomizer<WMJdbcIndexedSessionRepository>> sessionRepositoryCustomizers) {
         int maxInactiveIntervalInMinutes = environment.getProperty("security.general.session.timeout", Integer.class, 30);
         int maxInactiveIntervalInSeconds = (int) TimeUnit.SECONDS.convert(maxInactiveIntervalInMinutes, TimeUnit.MINUTES);
         WMJdbcHttpSessionConfiguration wmJdbcHttpSessionConfiguration = new WMJdbcHttpSessionConfiguration();
         wmJdbcHttpSessionConfiguration.setMaxInactiveIntervalInSeconds(maxInactiveIntervalInSeconds);
         wmJdbcHttpSessionConfiguration.setTransactionManager(jdbcSessionRepositoryTransactionManager());
+        wmJdbcHttpSessionConfiguration.setSessionRepositoryCustomizer(sessionRepositoryCustomizers);
+        wmJdbcHttpSessionConfiguration.setDataSource(springSessionDataSource, jdbcSessionPersistenceDataSource);
+        wmJdbcHttpSessionConfiguration.setBeanClassLoader(this.applicationContext.getClassLoader());
         return wmJdbcHttpSessionConfiguration.sessionRepository();
     }
 
     @Bean(name = "sessionRegistry")
-    public SessionRegistry sessionRegistry() {
-        return new SpringSessionBackedSessionRegistry<>(sessionRepository());
+    public SessionRegistry sessionRegistry(FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
+        return new SpringSessionBackedSessionRegistry<>(sessionRepository);
     }
 
     @Bean(name = "jdbcSessionScriptInitializer")
@@ -71,7 +80,7 @@ public class JdbcSessionConfiguration {
         return new JdbcSessionScriptInitializer();
     }
 
-    @Bean(name = "dataSource")
+    @Bean(name = "jdbcSessionPersistenceDataSource")
     public DataSource dataSource() {
         return (DataSource) applicationContext.getBean(
             environment.getProperty("security.session.jdbc.serviceName") + "DataSource");

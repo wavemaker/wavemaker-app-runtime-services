@@ -22,9 +22,12 @@ import java.util.List;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,7 +42,6 @@ import org.springframework.security.web.authentication.rememberme.RememberMeAuth
 import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.rememberme.WMRememberMeAuthenticationFilter;
@@ -47,11 +49,23 @@ import com.wavemaker.runtime.security.rememberme.WMRememberMeAuthenticationFilte
 @Configuration
 @Conditional({SecurityEnabledCondition.class, RememberMeConfigCondition.class})
 public class RememberMeConfiguration implements WMSecurityConfiguration {
+    @Autowired
+    @Lazy
+    private UserDetailsService userDetailsService;
 
     @Autowired
-    private SecurityEnabledBaseConfiguration securityEnabledBaseConfiguration;
+    @Lazy
+    private AuthenticationManager authenticationManager;
+
     @Autowired
-    private UserDetailsService userDetailsService;
+    @Qualifier("wmSecurityContextRepositorySuccessHandler")
+    @Lazy
+    private AuthenticationSuccessHandler wmSecurityContextRepositorySuccessHandler;
+
+    @Autowired
+    @Qualifier("wmCsrfTokenRepositorySuccessHandler")
+    @Lazy
+    private AuthenticationSuccessHandler wmCsrfTokenRepositorySuccessHandler;
 
     @Bean(name = "rememberMeServices")
     public RememberMeServices rememberMeServices() {
@@ -65,7 +79,7 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     @Bean(name = "rememberMeAuthFilter")
     public Filter rememberMeAuthFilter() {
         WMRememberMeAuthenticationFilter wmRememberMeAuthenticationFilter = new WMRememberMeAuthenticationFilter(
-            securityEnabledBaseConfiguration.authenticationManager(), rememberMeServices());
+            authenticationManager, rememberMeServices());
         wmRememberMeAuthenticationFilter.setAuthenticationSuccessHandler(rememberMeAuthenticationSuccessHandler());
         return wmRememberMeAuthenticationFilter;
     }
@@ -84,8 +98,8 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     public AuthenticationSuccessHandler rememberMeAuthenticationSuccessHandler() {
         WMApplicationAuthenticationSuccessHandler wmApplicationAuthenticationSuccessHandler = new WMApplicationAuthenticationSuccessHandler();
         List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
-        defaultSuccessHandlerList.add(securityEnabledBaseConfiguration.wmSecurityContextRepositorySuccessHandler());
-        defaultSuccessHandlerList.add(securityEnabledBaseConfiguration.wmCsrfTokenRepositorySuccessHandler());
+        defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler);
+        defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler);
         wmApplicationAuthenticationSuccessHandler.setDefaultSuccessHandlerList(defaultSuccessHandlerList);
         return wmApplicationAuthenticationSuccessHandler;
     }

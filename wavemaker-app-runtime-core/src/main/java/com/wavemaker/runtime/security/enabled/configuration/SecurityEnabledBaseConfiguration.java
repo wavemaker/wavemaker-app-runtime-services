@@ -33,6 +33,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -46,6 +47,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.RedirectStrategy;
@@ -80,7 +82,6 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
-import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -96,6 +97,7 @@ import com.wavemaker.app.security.models.Role;
 import com.wavemaker.app.security.models.RoleConfig;
 import com.wavemaker.app.security.models.RolesConfig;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
+import com.wavemaker.app.security.models.SessionConcurrencyConfig;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.app.security.models.TokenAuthConfig;
 import com.wavemaker.commons.WMRuntimeException;
@@ -131,16 +133,20 @@ import com.wavemaker.runtime.webprocess.filter.LoginProcessFilter;
 @Conditional(SecurityEnabledCondition.class)
 public class SecurityEnabledBaseConfiguration {
     @Autowired
+    @Lazy
     private List<AuthenticationProvider> authenticationProvidersList;
 
     @Autowired
+    @Lazy
     private List<WMSecurityConfiguration> wmSecurityConfigurationList;
 
     @Autowired
+    @Lazy
     private FindByIndexNameSessionRepository<? extends Session> sessionRepository;
 
     @Autowired
-    private SpringSessionBackedSessionRegistry<? extends Session> sessionRegistry;
+    @Lazy
+    private SessionRegistry sessionRegistry;
 
     @Autowired
     private Environment environment;
@@ -224,7 +230,7 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "compositeSessionAuthenticationStrategy")
     public SessionAuthenticationStrategy compositeSessionAuthenticationStrategy() {
         ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry);
-        concurrentSessionControlAuthenticationStrategy.setMaximumSessions(-1);
+        concurrentSessionControlAuthenticationStrategy.setMaximumSessions(loginConfig().getSessionConcurrencyConfig().getMaxSessionsAllowed());
         concurrentSessionControlAuthenticationStrategy.setExceptionIfMaximumExceeded(false);
         RegisterSessionAuthenticationStrategy registerSessionAuthenticationStrategy = new RegisterSessionAuthenticationStrategy(sessionRegistry);
         List<SessionAuthenticationStrategy> delegateStrategies = new ArrayList<>(Arrays.asList(concurrentSessionControlAuthenticationStrategy, registerSessionAuthenticationStrategy, sessionFixationProtectionStrategy(), csrfAuthenticationStrategy()));
@@ -369,12 +375,18 @@ public class SecurityEnabledBaseConfiguration {
     public LoginConfig loginConfig() {
         LoginConfig loginConfig = new LoginConfig();
         loginConfig.setSessionTimeout(sessionTimeoutConfig());
+        loginConfig.setSessionConcurrencyConfig(sessionConcurrencyConfig());
         return loginConfig;
     }
 
     @Bean(name = "sessionTimeoutConfig")
     public SessionTimeoutConfig sessionTimeoutConfig() {
         return new SessionTimeoutConfig();
+    }
+
+    @Bean(name = "sessionConcurrencyConfig")
+    public SessionConcurrencyConfig sessionConcurrencyConfig() {
+        return new SessionConcurrencyConfig();
     }
 
     @Bean(name = "tokenAuthConfig")

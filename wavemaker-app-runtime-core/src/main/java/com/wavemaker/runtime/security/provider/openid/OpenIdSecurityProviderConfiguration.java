@@ -23,11 +23,13 @@ import java.util.Objects;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,9 +54,11 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.Permission;
@@ -62,12 +66,11 @@ import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
-import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledBaseConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdLogoutSuccessHandler;
-import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, OpenIdProviderCondition.class})
@@ -77,8 +80,19 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Autowired
     private Environment environment;
 
-    @Autowired(required = false)
-    private SecurityEnabledBaseConfiguration securityEnabledBaseConfiguration;
+    @Autowired
+    @Qualifier("successHandler")
+    @Lazy
+    private AuthenticationSuccessHandler successHandler;
+
+    @Autowired
+    @Lazy
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    @Qualifier("compositeSessionAuthenticationStrategy")
+    @Lazy
+    private SessionAuthenticationStrategy compositeSessionAuthenticationStrategy;
 
     @Value("${security.providers.openId.activeProviders}")
     private String openIdActiveProvider;
@@ -93,7 +107,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Override
     public void addFilters(HttpSecurity http) {
         http.addFilterBefore(openIDAuthorizationRequestRedirectFilter(), OAuth2LoginAuthenticationFilter.class);
-        http.addFilterAt(openIdLoginAuthenticationFilter(securityEnabledBaseConfiguration.authenticationManager()),
+        http.addFilterAt(openIdLoginAuthenticationFilter(),
             OAuth2LoginAuthenticationFilter.class);
     }
 
@@ -105,14 +119,14 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Bean(name = "oauth2LoginAuthenticationFilter")
-    public Filter openIdLoginAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public Filter openIdLoginAuthenticationFilter() {
         OpenIdLoginAuthenticationFilter authenticationFilter = new OpenIdLoginAuthenticationFilter(inMemoryRegistrationRepository(),
             inMemoryOAuth2AuthorizedClientService(), "/oauth2/code/*");
         authenticationFilter.setAuthorizationRequestRepository(
             (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository());
         authenticationFilter.setAuthenticationManager(authenticationManager);
-        authenticationFilter.setAuthenticationSuccessHandler(securityEnabledBaseConfiguration.successHandler());
-        authenticationFilter.setSessionAuthenticationStrategy(securityEnabledBaseConfiguration.compositeSessionAuthenticationStrategy());
+        authenticationFilter.setAuthenticationSuccessHandler(successHandler);
+        authenticationFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy);
         return authenticationFilter;
     }
 

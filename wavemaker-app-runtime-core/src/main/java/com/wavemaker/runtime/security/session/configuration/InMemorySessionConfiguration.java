@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.session.MapSession;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -41,7 +41,7 @@ public class InMemorySessionConfiguration {
     }
 
     @Bean(name = "sessionRegistry")
-    public SpringSessionBackedSessionRegistry<MapSession> sessionRegistry() {
+    public SessionRegistry sessionRegistry() {
         return new SpringSessionBackedSessionRegistry<>(sessionRepository());
     }
 }

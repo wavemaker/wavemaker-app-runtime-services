@@ -25,8 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -37,11 +36,13 @@ import com.wavemaker.runtime.security.WMAuthentication;
 /**
  * Created by srujant on 31/10/18.
  */
-public class WMApplicationAuthenticationSuccessHandler implements AuthenticationSuccessHandler, BeanPostProcessor {
+public class WMApplicationAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(WMApplicationAuthenticationSuccessHandler.class);
     private List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
+    @Autowired(required = false)
     private List<WMAuthenticationSuccessHandler> customSuccessHandlerList = new ArrayList<>();
+    @Autowired
     private WMAuthenticationRedirectionHandler authenticationSuccessRedirectionHandler;
 
     @Override
@@ -59,17 +60,6 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
             }
             throw new WMRuntimeException(e);
         }
-    }
-
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof WMAuthenticationSuccessHandler) {
-            customSuccessHandlerList.add((WMAuthenticationSuccessHandler) bean);
-        }
-        if (bean instanceof WMAuthenticationRedirectionHandler) {
-            authenticationSuccessRedirectionHandler = (WMAuthenticationRedirectionHandler) bean;
-        }
-        return bean;
     }
 
     private void invokeCustomWMAuthenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
@@ -103,10 +93,5 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
 
     public void setAuthenticationSuccessRedirectionHandler(WMAuthenticationRedirectionHandler authenticationSuccessRedirectionHandler) {
         this.authenticationSuccessRedirectionHandler = authenticationSuccessRedirectionHandler;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
     }
 }
