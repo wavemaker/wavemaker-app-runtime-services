@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -78,9 +79,9 @@ public class ActiveDirectorySecurityProviderConfiguration {
 
     @Bean(name = "adAuthoritiesPopulator")
     @Conditional(DefaultActiveDirectoryAuthoritiesPopulatorCondition.class)
-    public ActiveDirectoryAuthoritiesPopulator adAuthoritiesPopulator(ActiveDirectoryProviderConfig activeDirectoryProviderConfig) {
+    public ActiveDirectoryAuthoritiesPopulator adAuthoritiesPopulator(Environment environment) {
         DefaultActiveDirectoryAuthoritiesPopulator defaultActiveDirectoryAuthoritiesPopulator = new DefaultActiveDirectoryAuthoritiesPopulator();
-        defaultActiveDirectoryAuthoritiesPopulator.setGroupRoleAttribute(activeDirectoryProviderConfig.getGroupRoleAttribute());
+        defaultActiveDirectoryAuthoritiesPopulator.setGroupRoleAttribute(environment.getProperty("security.providers.ad.groupRoleAttribute"));
         return defaultActiveDirectoryAuthoritiesPopulator;
     }
 

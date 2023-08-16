@@ -26,6 +26,7 @@ import com.wavemaker.app.security.models.config.jws.JWSProviderConfig;
 import com.wavemaker.app.security.models.config.ldap.LdapProviderConfig;
 import com.wavemaker.app.security.models.config.opaque.OpaqueTokenProviderConfig;
 import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
 
 /**
@@ -49,4 +50,8 @@ public interface SecurityProviderConfig {
     String getType();
 
     boolean isEnabled();
+
+    default RoleMappingConfig getRoleMappingConfig() {
+        return null;
+    }
 }

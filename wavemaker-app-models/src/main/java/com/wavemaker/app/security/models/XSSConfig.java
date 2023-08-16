@@ -27,7 +27,7 @@ public class XSSConfig {
     @ProfilizableProperty("${security.general.xss.enabled}")
     private boolean enforceXssSecurity;
 
-    @NonProfilizableProperty("${security.general.xss.policyFile:wm-xss-policies.xml}")
+    @NonProfilizableProperty("${security.general.xss.policyFile}")
     private String policyFile;
 
     @NotNull

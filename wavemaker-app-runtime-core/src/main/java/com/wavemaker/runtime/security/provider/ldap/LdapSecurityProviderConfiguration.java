@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.AbstractContextSource;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
@@ -61,6 +62,9 @@ public class LdapSecurityProviderConfiguration {
     @Autowired(required = false)
     private PersistentTokenBasedRememberMeServices rememberMeServices;
 
+    @Autowired
+    private Environment environment;
+
     @Bean(name = "contextSource")
     public ContextSource contextSource(LdapProviderConfig ldapProviderConfig) {
         AbstractContextSource abstractContextSource = new WMSpringSecurityContextSource(ldapProviderConfig.getUrl());
@@ -77,7 +81,7 @@ public class LdapSecurityProviderConfiguration {
     public AuthoritiesProvider defaultAuthoritiesProvider(ApplicationContext applicationContext) {
         RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig = runtimeDatabaseRoleMappingConfig();
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
+        defaultAuthoritiesProvider.setHql(runtimeDatabaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
         String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
@@ -108,10 +112,10 @@ public class LdapSecurityProviderConfiguration {
     @Bean(name = "ldapAuthoritiesPopulator")
     @Conditional(LdapAuthoritiesProviderCondition.class)
     public LdapAuthoritiesPopulator ldapAuthoritiesPopulator(LdapProviderConfig ldapProviderConfig) {
-        DefaultLdapAuthoritiesPopulator ldapAuthoritiesPopulator =
-            new DefaultLdapAuthoritiesPopulator(contextSource(ldapProviderConfig), ldapProviderConfig.getGroupSearchBase());
-        ldapAuthoritiesPopulator.setGroupSearchFilter(ldapProviderConfig.getGroupSearchFilter());
-        ldapAuthoritiesPopulator.setGroupRoleAttribute(ldapProviderConfig.getGroupRoleAttribute());
+        DefaultLdapAuthoritiesPopulator ldapAuthoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource(ldapProviderConfig),
+            ldapProviderConfig.getGroupSearchBase());
+        ldapAuthoritiesPopulator.setGroupSearchFilter(environment.getProperty("security.providers.ldap.groupSearchFilter"));
+        ldapAuthoritiesPopulator.setGroupRoleAttribute(environment.getProperty("security.providers.ldap.groupRoleAttribute"));
         return ldapAuthoritiesPopulator;
     }
 
@@ -132,23 +136,9 @@ public class LdapSecurityProviderConfiguration {
     }
 
     @Bean(name = "ldapAuthenticationProvider")
-    public AuthenticationProvider ldapAuthenticationProvider(ApplicationContext applicationContext, LdapProviderConfig ldapProviderConfig) {
-        LdapAuthenticationProvider ldapAuthenticationProvider;
-        boolean groupSearchDisabled = ldapProviderConfig.isGroupSearchDisabled();
-        String roleProvider = ldapProviderConfig.getRoleProvider();
-        if (!groupSearchDisabled && roleProvider != null) {
-            if (roleProvider.equals("LDAP")) {
-                ldapAuthenticationProvider = new LdapAuthenticationProvider(bindAuthenticator(ldapProviderConfig), ldapAuthoritiesPopulator(ldapProviderConfig));
-                ldapAuthenticationProvider.setAuthoritiesMapper(authoritiesMapper());
-                return ldapAuthenticationProvider;
-            } else if (roleProvider.equals("Database")) {
-                ldapAuthenticationProvider = new LdapAuthenticationProvider(bindAuthenticator(ldapProviderConfig), ldapDatabaseAuthoritiesPopulator(
-                    defaultAuthoritiesProvider(applicationContext)));
-                ldapAuthenticationProvider.setAuthoritiesMapper(authoritiesMapper());
-                return ldapAuthenticationProvider;
-            }
-        }
-        ldapAuthenticationProvider = new LdapAuthenticationProvider(bindAuthenticator(ldapProviderConfig), ldapNullAuthoritiesPopulator());
+    public AuthenticationProvider ldapAuthenticationProvider(LdapAuthoritiesPopulator ldapAuthoritiesPopulator, LdapProviderConfig ldapProviderConfig) {
+        LdapAuthenticationProvider ldapAuthenticationProvider = new LdapAuthenticationProvider(bindAuthenticator(ldapProviderConfig),
+            ldapAuthoritiesPopulator);
         ldapAuthenticationProvider.setAuthoritiesMapper(authoritiesMapper());
         return ldapAuthenticationProvider;
     }
@@ -163,18 +153,8 @@ public class LdapSecurityProviderConfiguration {
     }
 
     @Bean(name = "ldapUserDetailsService")
-    public UserDetailsService ldapUserDetailsService(ApplicationContext applicationContext, LdapProviderConfig ldapProviderConfig) {
-        boolean groupSearchDisabled = ldapProviderConfig.isGroupSearchDisabled();
-        String roleProvider = ldapProviderConfig.getRoleProvider();
-        if (!groupSearchDisabled && roleProvider != null) {
-            if (roleProvider.equals("LDAP")) {
-                return new LdapUserDetailsService(userSearch(ldapProviderConfig), ldapAuthoritiesPopulator(ldapProviderConfig));
-            } else if (roleProvider.equals("Database")) {
-                return new LdapUserDetailsService(userSearch(ldapProviderConfig), ldapDatabaseAuthoritiesPopulator(
-                    defaultAuthoritiesProvider(applicationContext)));
-            }
-        }
-        return new LdapUserDetailsService(userSearch(ldapProviderConfig), ldapNullAuthoritiesPopulator());
+    public UserDetailsService ldapUserDetailsService(LdapAuthoritiesPopulator ldapAuthoritiesPopulator, LdapProviderConfig ldapProviderConfig) {
+        return new LdapUserDetailsService(userSearch(ldapProviderConfig), ldapAuthoritiesPopulator);
     }
 
     @Bean(name = "LdapProviderConfig")

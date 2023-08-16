@@ -17,6 +17,7 @@ package com.wavemaker.app.security.models.config.ad;
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
 public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
 
@@ -40,33 +41,13 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @NonProfilizableProperty("${security.providers.ad.testPassword}")
     private String testPassword;
 
-    @ProfilizableProperty(value = "${security.providers.ad.groupSearchDisabled}", autoUpdate = true)
-    private boolean groupSearchDisabled;
+    @ProfilizableProperty(value = "${security.providers.ad.roleMappingEnabled}", autoUpdate = true)
+    private boolean roleMappingEnabled;
 
     @ProfilizableProperty(value = "${security.providers.ad.roleProvider}", autoUpdate = true)
     private String roleProvider;
 
-    @ProfilizableProperty("${security.providers.ad.groupRoleAttribute}")
-    private String groupRoleAttribute;
-
-    @NonProfilizableProperty("${security.providers.ad.database.modelName}")
-    private String roleModel;
-
-    private String roleEntity;
-
-    private String roleTable;
-
-    private String roleUsername;
-
-    private String roleProperty;
-
-    private boolean useRolesQuery;
-
-    @NonProfilizableProperty("${security.providers.ad.database.rolesByUsernameQuery}")
-    private String roleQuery;
-
-    @NonProfilizableProperty("${security.providers.ad.database.queryType}")
-    private String queryType;
+    private RoleMappingConfig roleMappingConfig;
 
     @Override
     public String getType() {
@@ -121,54 +102,6 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
         this.testPassword = testPassword;
     }
 
-    public String getRoleModel() {
-        return roleModel;
-    }
-
-    public void setRoleModel(String roleModel) {
-        this.roleModel = roleModel;
-    }
-
-    public String getRoleEntity() {
-        return roleEntity;
-    }
-
-    public void setRoleEntity(String roleEntity) {
-        this.roleEntity = roleEntity;
-    }
-
-    public String getRoleTable() {
-        return roleTable;
-    }
-
-    public void setRoleTable(String roleTable) {
-        this.roleTable = roleTable;
-    }
-
-    public String getRoleUsername() {
-        return roleUsername;
-    }
-
-    public void setRoleUsername(String roleUsername) {
-        this.roleUsername = roleUsername;
-    }
-
-    public String getRoleProperty() {
-        return roleProperty;
-    }
-
-    public void setRoleProperty(String roleProperty) {
-        this.roleProperty = roleProperty;
-    }
-
-    public String getRoleQuery() {
-        return roleQuery;
-    }
-
-    public void setRoleQuery(String roleQuery) {
-        this.roleQuery = roleQuery;
-    }
-
     public String getRoleProvider() {
         return roleProvider;
     }
@@ -177,35 +110,20 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
         this.roleProvider = roleProvider;
     }
 
-    public boolean isGroupSearchDisabled() {
-        return groupSearchDisabled;
+    public boolean isRoleMappingEnabled() {
+        return roleMappingEnabled;
     }
 
-    public void setGroupSearchDisabled(boolean groupSearchDisabled) {
-        this.groupSearchDisabled = groupSearchDisabled;
+    public void setRoleMappingEnabled(boolean roleMappingEnabled) {
+        this.roleMappingEnabled = roleMappingEnabled;
     }
 
-    public String getGroupRoleAttribute() {
-        return groupRoleAttribute;
+    @Override
+    public RoleMappingConfig getRoleMappingConfig() {
+        return roleMappingConfig;
     }
 
-    public void setGroupRoleAttribute(String groupRoleAttribute) {
-        this.groupRoleAttribute = groupRoleAttribute;
-    }
-
-    public boolean isUseRolesQuery() {
-        return useRolesQuery;
-    }
-
-    public void setUseRolesQuery(boolean useRolesQuery) {
-        this.useRolesQuery = useRolesQuery;
-    }
-
-    public String getQueryType() {
-        return queryType;
-    }
-
-    public void setQueryType(final String queryType) {
-        this.queryType = queryType;
+    public void setRoleMappingConfig(RoleMappingConfig roleMappingConfig) {
+        this.roleMappingConfig = roleMappingConfig;
     }
 }

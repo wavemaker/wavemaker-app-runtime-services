@@ -39,6 +39,10 @@ public class RoleMappingConfigDeSerializer extends JsonDeserializer {
             return objectMapper.readValue(node.toString(), SAMLRoleMappingConfig.class);
         } else if (node.has("modelName")) {
             return objectMapper.readValue(node.toString(), DatabaseRoleMappingConfig.class);
+        } else if (node.has("groupSearchFilter")) {
+            return objectMapper.readValue(node.toString(), LdapRoleMappingConfig.class);
+        } else if (node.has("groupRoleAttribute")) {
+            return objectMapper.readValue(node.toString(), ActiveDirectoryRoleMappingConfig.class);
         }
         throw new WMRuntimeException(MessageResource.create("com.wavemaker.studio.failed.to.deserialize"), node.toString());
     }

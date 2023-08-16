@@ -13,17 +13,20 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.provider.ldap;
+package com.wavemaker.app.security.models.config.rolemapping;
 
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public class LdapNullAuthProviderCondition implements Condition {
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Environment environment = context.getEnvironment();
-        return !environment.getProperty("security.providers.ldap.roleMappingEnabled", Boolean.class, false);
+@JsonDeserialize(as = ActiveDirectoryRoleMappingConfig.class)
+public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
+    private String groupRoleAttribute;
+
+    public String getGroupRoleAttribute() {
+        return groupRoleAttribute;
     }
+
+    public void setGroupRoleAttribute(String groupRoleAttribute) {
+        this.groupRoleAttribute = groupRoleAttribute;
+    }
+
 }

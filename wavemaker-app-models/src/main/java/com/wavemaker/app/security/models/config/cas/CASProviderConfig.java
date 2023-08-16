@@ -124,6 +124,7 @@ public class CASProviderConfig extends AbstractProviderConfig {
         this.roleProvider = roleProvider;
     }
 
+    @Override
     public RoleMappingConfig getRoleMappingConfig() {
         return roleMappingConfig;
     }

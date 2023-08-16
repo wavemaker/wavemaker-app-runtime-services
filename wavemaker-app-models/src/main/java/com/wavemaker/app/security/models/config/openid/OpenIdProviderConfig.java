@@ -58,6 +58,7 @@ public class OpenIdProviderConfig extends AbstractProviderConfig {
         this.roleMappingEnabled = roleMappingEnabled;
     }
 
+    @Override
     public RoleMappingConfig getRoleMappingConfig() {
         return roleMappingConfig;
     }

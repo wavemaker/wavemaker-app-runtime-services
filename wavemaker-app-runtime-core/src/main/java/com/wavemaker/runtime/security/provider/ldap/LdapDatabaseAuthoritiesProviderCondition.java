@@ -30,7 +30,7 @@ public class LdapDatabaseAuthoritiesProviderCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        if (Boolean.TRUE.equals(environment.getProperty("security.providers.ldap.groupSearchDisabled", Boolean.class, true))) {
+        if (Boolean.FALSE.equals(environment.getProperty("security.providers.ldap.roleMappingEnabled", Boolean.class, false))) {
             return false;
         }
         String roleProvider = environment.getProperty("security.providers.ldap.roleProvider", String.class);
