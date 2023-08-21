@@ -135,18 +135,16 @@ public class RestRuntimeService {
     }
 
     public HttpResponseDetails executeRestCall(String serviceId, String path, String method, HttpRequestData httpRequestData, RequestContext requestContext) {
+        if (requestContext != null && !requestContext.getHeaders().isEmpty()) {
+            HttpHeaders httpHeaders = httpRequestData.getHttpHeaders();
+            httpHeaders.addAll(requestContext.getHeaders());
+            httpRequestData.setHttpHeaders(httpHeaders);
+        }
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, method, httpRequestData);
-        if (requestContext != null) {
-            HttpHeaders httpHeaders = httpRequestDetails.getHeaders();
-            if (!requestContext.getHeaders().isEmpty()) {
-                httpHeaders.putAll(requestContext.getHeaders());
-                httpRequestDetails.setHeaders(httpHeaders);
-            }
-            if (!requestContext.getQueryParams().isEmpty()) {
-                StringBuilder endpointAddress = new StringBuilder(httpRequestDetails.getEndpointAddress());
-                updateUrlWithQueryParameters(endpointAddress, new HashMap<>(httpRequestData.getQueryParametersMap()));
-                httpRequestDetails.setEndpointAddress(endpointAddress.toString());
-            }
+        if (requestContext != null && !requestContext.getQueryParams().isEmpty()) {
+            StringBuilder endpointAddress = new StringBuilder(httpRequestDetails.getEndpointAddress());
+            updateUrlWithQueryParameters(endpointAddress, new HashMap<>(requestContext.getQueryParams()));
+            httpRequestDetails.setEndpointAddress(endpointAddress.toString());
         }
         return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, null, "");
     }
@@ -324,7 +322,7 @@ public class RestRuntimeService {
     }
 
     private void updateUrlWithQueryParameters(StringBuilder endpointAddressSb, Map<String, Object> queryParameters) {
-        boolean first = true;
+        boolean first = endpointAddressSb.indexOf("?") == -1;
         for (Map.Entry<String, Object> queryParam : queryParameters.entrySet()) {
             String[] strings = WMUtils.getStringList(queryParam.getValue());
             for (String str : strings) {
