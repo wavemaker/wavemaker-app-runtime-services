@@ -54,6 +54,7 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -522,6 +523,11 @@ public class SecurityEnabledBaseConfiguration {
         wmSecurityConfigurationList.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
         addCustomFilters(http);
         return http.build();
+    }
+
+    @Bean(name = "filterSecurityInterceptor")
+    public FilterSecurityInterceptor filterSecurityInterceptor(SecurityFilterChain filterChainWithSessions) {
+        return (FilterSecurityInterceptor) filterChainWithSessions.getFilters().stream().filter(FilterSecurityInterceptor.class::isInstance).findFirst().orElseThrow();
     }
 
     private void authorizeHttpRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry) {

@@ -22,11 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.Filter;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -41,7 +38,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.stereotype.Service;
@@ -162,10 +158,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     private MultiValuedMap<String, ServiceDefinition> constructAuthVsServiceDefinitions(Map<String, ServiceDefinition> serviceDefinitions) {
         MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions = new ArrayListValuedHashMap<>();
         if (securityService.isSecurityEnabled()) {
-            SecurityFilterChain defaultSecurityFilterChainWithSessions = WMAppContext.getInstance().getSpringBean("filterChainWithSessions");
-            Optional<Filter> filterSecurityInterceptorOptional = defaultSecurityFilterChainWithSessions.getFilters().stream()
-                .filter(FilterSecurityInterceptor.class::isInstance).findFirst();
-            FilterSecurityInterceptor filterSecurityInterceptor = (FilterSecurityInterceptor) filterSecurityInterceptorOptional.get();
+            FilterSecurityInterceptor filterSecurityInterceptor = WMAppContext.getInstance().getSpringBean(FilterSecurityInterceptor.class);
             FilterInvocationSecurityMetadataSource securityMetadataSource = filterSecurityInterceptor.getSecurityMetadataSource();
             for (ServiceDefinition serviceDefinition : serviceDefinitions.values()) {
                 String path = serviceDefinition.getWmServiceOperationInfo().getRelativePath();
