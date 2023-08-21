@@ -19,6 +19,7 @@ import javax.validation.constraints.NotEmpty;
 
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.PersistenceConfig;
+import com.wavemaker.commons.util.SystemUtils;
 
 public class MongoPersistenceConfig implements PersistenceConfig {
 
@@ -81,7 +82,7 @@ public class MongoPersistenceConfig implements PersistenceConfig {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = SystemUtils.encryptIfNotEncrypted(password);
     }
 
     @Override
