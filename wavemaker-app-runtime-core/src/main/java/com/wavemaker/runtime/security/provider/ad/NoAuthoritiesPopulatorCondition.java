@@ -28,9 +28,9 @@ public class NoAuthoritiesPopulatorCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        boolean groupSearchDisabled = Boolean.parseBoolean(environment.getProperty("security.providers.ad.groupSearchDisabled", String.class));
-        if (groupSearchDisabled) {
-            logger.info("Initializing NoAuthoritiesPopulator bean as there is no role chosen for AD provider");
+        boolean roleMappingEnabled = Boolean.parseBoolean(environment.getProperty("security.providers.ad.roleMappingEnabled", String.class));
+        if (!roleMappingEnabled) {
+            logger.info("Initializing NoAuthoritiesPopulator bean as role mapping is not enabled for AD");
             return true;
         }
         return false;

@@ -31,9 +31,9 @@ public class DatabaseActiveDirectoryAuthoritiesPopulatorCondition implements Con
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
+        boolean roleMappingEnabled = Boolean.parseBoolean(environment.getProperty("security.providers.ad.roleMappingEnabled", String.class));
         String roleProvider = environment.getProperty("security.providers.ad.roleProvider", String.class);
-        boolean groupSearchDisabled = Boolean.parseBoolean(environment.getProperty("security.providers.ad.groupSearchDisabled", String.class));
-        if (!groupSearchDisabled && SecurityConstants.DATABASE_ROLE_PROVIDER.equals(roleProvider)) {
+        if (roleMappingEnabled && SecurityConstants.DATABASE_ROLE_PROVIDER.equals(roleProvider)) {
             logger.info("Initializing Database RoleMapping beans for AD provider");
             return true;
         }

@@ -30,12 +30,10 @@ public class LdapAuthoritiesProviderCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        if (Boolean.FALSE.equals(environment.getProperty("security.providers.ldap.roleMappingEnabled", Boolean.class, false))) {
-            return false;
-        }
+        boolean roleMappingEnabled = Boolean.parseBoolean(environment.getProperty("security.providers.ldap.roleMappingEnabled", String.class));
         String roleProvider = environment.getProperty("security.providers.ldap.roleProvider", String.class);
-        if (SecurityConstants.LDAP_PROVIDER.equals(roleProvider)) {
-            logger.info("Initializing LDAP RoleMapping Beans for LDAP provider");
+        if (roleMappingEnabled && SecurityConstants.LDAP_ROLE_PROVIDER.equals(roleProvider)) {
+            logger.info("Initializing LDAP RoleMapping beans for LDAP provider");
             return true;
         }
         return false;

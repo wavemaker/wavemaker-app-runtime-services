@@ -15,15 +15,25 @@
 
 package com.wavemaker.runtime.security.provider.ldap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 public class LdapNullAuthProviderCondition implements Condition {
+
+    private static final Logger logger = LoggerFactory.getLogger(LdapNullAuthProviderCondition.class);
+
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        return !environment.getProperty("security.providers.ldap.roleMappingEnabled", Boolean.class, false);
+        boolean roleMappingEnabled = Boolean.parseBoolean(environment.getProperty("security.providers.ldap.roleMappingEnabled", String.class));
+        if (!roleMappingEnabled) {
+            logger.info("Initializing NullLdapAuthoritiesPopulator bean as role mapping is not enabled for LDAP");
+            return true;
+        }
+        return false;
     }
 }

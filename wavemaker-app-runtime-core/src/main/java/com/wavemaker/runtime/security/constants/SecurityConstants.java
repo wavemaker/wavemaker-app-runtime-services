@@ -40,4 +40,6 @@ public class SecurityConstants {
 
     //role Providers
     public static final String DATABASE_ROLE_PROVIDER = "Database";
+    public static final String ACTIVE_DIRECTORY_ROLE_PROVIDER = "Active Directory";
+    public static final String LDAP_ROLE_PROVIDER = "LDAP";
 }
