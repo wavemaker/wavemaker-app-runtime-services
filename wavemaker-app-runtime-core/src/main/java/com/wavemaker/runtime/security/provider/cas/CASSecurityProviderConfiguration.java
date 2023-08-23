@@ -205,7 +205,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         if (isRoleMappingEnabled) {
             if (roleProvider != null && roleProvider.equals("CAS")) {
                 casUserDetailsByNameServiceWrapper = new CASUserDetailsByNameServiceWrapper(casUserDetailsService());
-                casUserDetailsByNameServiceWrapper.setRoleAttributeName(environment.getProperty("security.providers.cas.roleAttribute"));
+                casUserDetailsByNameServiceWrapper.setRoleAttributeName(environment.getProperty("security.providers.cas.roleAttributeName"));
                 return casUserDetailsByNameServiceWrapper;
             } else if (roleProvider != null && roleProvider.equals("Database")) {
                 CASDatabaseUserDetailsService casDatabaseUserDetailsService = new CASDatabaseUserDetailsService();
