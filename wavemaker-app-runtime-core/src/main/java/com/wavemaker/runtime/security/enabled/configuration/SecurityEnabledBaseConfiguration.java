@@ -431,35 +431,6 @@ public class SecurityEnabledBaseConfiguration {
         });
     }
 
-    public void addCustomFilters(HttpSecurity http) {
-        List<CustomFilter> customFilters = customFilterList();
-        customFilters.forEach(customFilter -> {
-
-            String ref = customFilter.getRef();
-            if (StringUtils.isBlank(ref)) {
-                throw new IllegalStateException("ref cannot be empty");
-            }
-            Object bean = applicationContext.getBean(ref);
-
-            AtomicInteger count = new AtomicInteger();
-            NamedSecurityFilter before = getNamedSecurityFilter(customFilter.getBefore(), count);
-            NamedSecurityFilter position = getNamedSecurityFilter(customFilter.getPosition(), count);
-            NamedSecurityFilter after = getNamedSecurityFilter(customFilter.getAfter(), count);
-            if (count.get() != 1) {
-                throw new IllegalStateException("Expected one and only one of before/after/position parameter to be set to the custom filter");
-            }
-            if (before != null) {
-                http.addFilterBefore((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getBefore()));
-            }
-            if (after != null) {
-                http.addFilterAfter((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getAfter()));
-            }
-            if (position != null) {
-                http.addFilterAt((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getPosition()));
-            }
-        });
-    }
-
     @Bean
     @ConfigurationProperties(prefix = "security.general.customfilters")
     public List<CustomFilter> customFilterList() {
@@ -593,11 +564,14 @@ public class SecurityEnabledBaseConfiguration {
                     Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).hasAnyRole(securityInterceptUrlEntry.getRoles());
                 break;
-            default:
+            case PermitAll:
                 registry.requestMatchers(AntPathRequestMatcher.antMatcher(
                     Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).permitAll();
                 break;
+            default:
+                throw new IllegalStateException("Expected any one of permissions for intercept url : " +
+                    securityInterceptUrlEntry.getUrlPattern() + " as Authenticated/PermitAll/Role");
         }
     }
 
@@ -610,10 +584,42 @@ public class SecurityEnabledBaseConfiguration {
             case Role:
                 registry.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).hasAnyRole(securityInterceptUrlEntry.getRoles());
                 break;
-            default:
+            case PermitAll:
                 registry.requestMatchers(AntPathRequestMatcher.antMatcher(securityInterceptUrlEntry.getUrlPattern())).permitAll();
                 break;
+            default:
+                throw new IllegalStateException("Expected any one of permissions for intercept url : " +
+                    securityInterceptUrlEntry.getUrlPattern() + " as Authenticated/PermitAll/Role");
         }
+    }
+
+    private void addCustomFilters(HttpSecurity http) {
+        List<CustomFilter> customFilters = customFilterList();
+        customFilters.forEach(customFilter -> {
+
+            String ref = customFilter.getRef();
+            if (StringUtils.isBlank(ref)) {
+                throw new IllegalStateException("ref cannot be empty");
+            }
+            Object bean = applicationContext.getBean(ref);
+
+            AtomicInteger count = new AtomicInteger();
+            NamedSecurityFilter before = getNamedSecurityFilter(customFilter.getBefore(), count);
+            NamedSecurityFilter position = getNamedSecurityFilter(customFilter.getPosition(), count);
+            NamedSecurityFilter after = getNamedSecurityFilter(customFilter.getAfter(), count);
+            if (count.get() != 1) {
+                throw new IllegalStateException("Expected one and only one of before/after/position parameter to be set to the custom filter");
+            }
+            if (before != null) {
+                http.addFilterBefore((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getBefore()));
+            }
+            if (after != null) {
+                http.addFilterAfter((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getAfter()));
+            }
+            if (position != null) {
+                http.addFilterAt((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getPosition()));
+            }
+        });
     }
 
     private NamedSecurityFilter getNamedSecurityFilter(String str, AtomicInteger count) {
