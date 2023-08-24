@@ -20,70 +20,64 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.wavemaker.runtime.security.WMUser;
+import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 
 /**
  * Created by ArjunSahasranam on 5/16/16.
  */
 public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
 
-    private UserDetailsService userDetailsService;
-
-    public CASUserDetailsByNameServiceWrapper(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
+    @Value("${security.providers.cas.roleAttributeName:#{null}}")
     private String roleAttributeName;
 
+    @Autowired(required = false)
+    private AuthoritiesProvider authoritiesProvider;
+
+    private CASProviderConfig casProviderConfig;
+
+    public CASUserDetailsByNameServiceWrapper(CASProviderConfig casProviderConfig) {
+        this.casProviderConfig = casProviderConfig;
+    }
+
     @Override
-    public UserDetails loadUserDetails(CasAssertionAuthenticationToken authentication) throws UsernameNotFoundException {
-        if (StringUtils.isNotBlank(roleAttributeName)) {
-            CasAssertionAuthenticationToken casAssertionAuthenticationToken = null;
-            if (authentication != null) {
-                casAssertionAuthenticationToken = authentication;
+    public UserDetails loadUserDetails(CasAssertionAuthenticationToken casAssertionAuthenticationToken) throws UsernameNotFoundException {
+        List<GrantedAuthority> grantedAuthorities = resolveGrantedAuthorities(casAssertionAuthenticationToken);
+        return new User(casAssertionAuthenticationToken.getAssertion().getPrincipal().getName(), "NO_PASSWORD", true, true, true, true,
+            grantedAuthorities);
+    }
 
-            }
-            String roles = null;
-            if (casAssertionAuthenticationToken != null) {
+    private List<GrantedAuthority> resolveGrantedAuthorities(CasAssertionAuthenticationToken casAssertionAuthenticationToken) {
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        boolean roleMappingEnabled = casProviderConfig.isRoleMappingEnabled();
+        String roleProvider = casProviderConfig.getRoleProvider();
+        if (roleMappingEnabled && StringUtils.isNotBlank(roleProvider)) {
+            if (authoritiesProvider != null) {
+                grantedAuthorities.addAll(authoritiesProvider.loadAuthorities(new DefaultAuthenticationContext(casAssertionAuthenticationToken.getName())));
+            } else if (StringUtils.isNotBlank(roleAttributeName)) {
                 Map attributes = casAssertionAuthenticationToken.getAssertion().getPrincipal().getAttributes();
-                roles = (String) attributes.get(getRoleAttributeName());
+                String roles = (String) attributes.get(roleAttributeName);
+                StringTokenizer roleTokenizer = new StringTokenizer(roles, ",");
+                List<String> rolesList = new ArrayList<>();
+                while (roleTokenizer.hasMoreTokens()) {
+                    String role = roleTokenizer.nextToken();
+                    rolesList.add(role);
+                }
+                String[] rolesArray = new String[rolesList.size()];
+                grantedAuthorities.addAll(AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)));
             }
-
-            StringTokenizer roleTokenizer = new StringTokenizer(roles, ",");
-            List<String> rolesList = new ArrayList<>();
-            while (roleTokenizer.hasMoreTokens()) {
-                String role = roleTokenizer.nextToken();
-                rolesList.add(role);
-            }
-
-            String[] rolesArray = new String[rolesList.size()];
-
-            WMUser userDetails = (WMUser) userDetailsService.loadUserByUsername(authentication.getName());
-
-            String username = userDetails.getUsername();
-            String userId = userDetails.getUserId();
-            String password = userDetails.getPassword();
-            long loginTime = System.currentTimeMillis();
-            return new WMUser(userId, username, password, username, 0, true, true, true, true,
-                AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)),
-                loginTime);
-        } else {
-            return userDetailsService.loadUserByUsername(authentication.getName());
         }
-    }
-
-    public String getRoleAttributeName() {
-        return roleAttributeName;
-    }
-
-    public void setRoleAttributeName(final String roleAttributeName) {
-        this.roleAttributeName = roleAttributeName;
+        return grantedAuthorities;
     }
 }

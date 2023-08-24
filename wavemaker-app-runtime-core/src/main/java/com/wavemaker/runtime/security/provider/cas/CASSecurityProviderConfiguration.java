@@ -46,7 +46,6 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -199,21 +198,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
 
     @Bean(name = " wmCasUserDetailsByNameServiceWrapper")
     public AuthenticationUserDetailsService<CasAssertionAuthenticationToken> wmCasUserDetailsByNameServiceWrapper(CASProviderConfig casProviderConfig) {
-        CASUserDetailsByNameServiceWrapper casUserDetailsByNameServiceWrapper = null;
-        boolean isRoleMappingEnabled = casProviderConfig.isRoleMappingEnabled();
-        String roleProvider = casProviderConfig.getRoleProvider();
-        if (isRoleMappingEnabled) {
-            if (roleProvider != null && roleProvider.equals("CAS")) {
-                casUserDetailsByNameServiceWrapper = new CASUserDetailsByNameServiceWrapper(casUserDetailsService());
-                casUserDetailsByNameServiceWrapper.setRoleAttributeName(environment.getProperty("security.providers.cas.roleAttributeName"));
-                return casUserDetailsByNameServiceWrapper;
-            } else if (roleProvider != null && roleProvider.equals("Database")) {
-                CASDatabaseUserDetailsService casDatabaseUserDetailsService = new CASDatabaseUserDetailsService();
-                casDatabaseUserDetailsService.setAuthoritiesProvider(authoritiesProvider());
-                return new CASUserDetailsByNameServiceWrapper(casDatabaseUserDetailsService);
-            }
-        }
-        return new CASUserDetailsByNameServiceWrapper(new CASUserDetailsService());
+        return new CASUserDetailsByNameServiceWrapper(casProviderConfig);
     }
 
     @Bean(name = "casAuthoritiesProvider")
@@ -235,11 +220,6 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @ConfigurationProperties("security.providers.cas.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
         return new RuntimeDatabaseRoleMappingConfig();
-    }
-
-    @Bean(name = "casUserDetailsService")
-    public UserDetailsService casUserDetailsService() {
-        return new CASDatabaseUserDetailsService();
     }
 
     @Bean(name = "logoutFilter")
