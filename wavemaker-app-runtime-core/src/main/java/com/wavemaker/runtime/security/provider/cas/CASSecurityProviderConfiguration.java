@@ -63,6 +63,7 @@ import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.core.NullAuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.cas.handler.WMCasAuthenticationSuccessHandler;
@@ -133,7 +134,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         casAuthenticationProvider.setServiceProperties(casServiceProperties(casProviderConfig));
         casAuthenticationProvider.setKey("casAuthProviderKey");
         casAuthenticationProvider.setTicketValidator(cas20ServiceTicketValidator(appSSLSocketFactory, appHostnameVerifier, casProviderConfig));
-        casAuthenticationProvider.setAuthenticationUserDetailsService(wmCasUserDetailsByNameServiceWrapper(casProviderConfig));
+        casAuthenticationProvider.setAuthenticationUserDetailsService(wmCasUserDetailsByNameServiceWrapper());
         return casAuthenticationProvider;
     }
 
@@ -197,13 +198,13 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = " wmCasUserDetailsByNameServiceWrapper")
-    public AuthenticationUserDetailsService<CasAssertionAuthenticationToken> wmCasUserDetailsByNameServiceWrapper(CASProviderConfig casProviderConfig) {
-        return new CASUserDetailsByNameServiceWrapper(casProviderConfig);
+    public AuthenticationUserDetailsService<CasAssertionAuthenticationToken> wmCasUserDetailsByNameServiceWrapper() {
+        return new CASUserDetailsByNameServiceWrapper();
     }
 
     @Bean(name = "casAuthoritiesProvider")
-    @Conditional(CASDatabaseRoleProviderCondition.class)
-    public AuthoritiesProvider authoritiesProvider() {
+    @Conditional(CASDatabaseAuthoritiesProviderCondition.class)
+    public AuthoritiesProvider casDatabaseAuthoritiesProvider() {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
         RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig = runtimeDatabaseRoleMappingConfig();
         defaultAuthoritiesProvider.setHql(runtimeDatabaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
@@ -215,8 +216,22 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         return defaultAuthoritiesProvider;
     }
 
+    @Bean(name = "casAuthoritiesProvider")
+    @Conditional(CASAuthoritiesProviderCondition.class)
+    public AuthoritiesProvider casAuthoritiesProvider() {
+        CASAuthoritiesProvider casAuthoritiesProvider = new CASAuthoritiesProvider();
+        casAuthoritiesProvider.setRoleAttributeName(environment.getProperty("security.providers.cas.roleAttributeName"));
+        return casAuthoritiesProvider;
+    }
+
+    @Bean(name = "casAuthoritiesProvider")
+    @Conditional(CASNullAuthoritiesProviderCondition.class)
+    public AuthoritiesProvider casNullAuthoritiesProvider() {
+        return new NullAuthoritiesProvider();
+    }
+
     @Bean(name = "runtimeDatabaseRoleMappingConfig")
-    @Conditional(CASDatabaseRoleProviderCondition.class)
+    @Conditional(CASDatabaseAuthoritiesProviderCondition.class)
     @ConfigurationProperties("security.providers.cas.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
         return new RuntimeDatabaseRoleMappingConfig();

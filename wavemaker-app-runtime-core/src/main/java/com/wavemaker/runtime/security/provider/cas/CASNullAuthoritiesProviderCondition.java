@@ -22,18 +22,16 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import com.wavemaker.runtime.security.constants.SecurityConstants;
+public class CASNullAuthoritiesProviderCondition implements Condition {
 
-public class CASDatabaseRoleProviderCondition implements Condition {
-    private static final Logger logger = LoggerFactory.getLogger(CASDatabaseRoleProviderCondition.class);
+    private static final Logger logger = LoggerFactory.getLogger(CASNullAuthoritiesProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
         boolean roleMappingEnabled = Boolean.parseBoolean(environment.getProperty("security.providers.cas.roleMappingEnabled", String.class));
-        String roleProvider = environment.getProperty("security.providers.cas.roleProvider", String.class);
-        if (roleMappingEnabled && SecurityConstants.DATABASE_ROLE_PROVIDER.equals(roleProvider)) {
-            logger.info("Initializing Database RoleMapping beans for CAS provider");
+        if (!roleMappingEnabled) {
+            logger.info("Initializing NullAuthoritiesProvider bean as role mapping is not enabled for CAS");
             return true;
         }
         return false;
