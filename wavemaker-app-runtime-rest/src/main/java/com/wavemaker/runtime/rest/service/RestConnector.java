@@ -15,10 +15,18 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.ByteArrayInputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -28,6 +36,8 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -153,7 +163,7 @@ public class RestConnector {
         synchronized (RestConnector.class) {
             if (defaultHttpClient == null) {
                 HttpClientBuilder httpClientBuilder = HttpClients.custom()
-                        .setConnectionManager(getConnectionManager());
+                    .setConnectionManager(getConnectionManager());
                 if (httpConfiguration.isUseSystemProperties()) {
                     httpClientBuilder = httpClientBuilder.useSystemProperties();
                 }
@@ -169,9 +179,13 @@ public class RestConnector {
             HttpHost proxyHost = new HttpHost(httpConfiguration.getAppProxyHost(), httpConfiguration.getAppProxyPort());
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(proxyHost),
-                    new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
+                new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
             httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-            httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(proxyHost));
+            logger.info("creating RoutePlanner with proxy url {}", proxyHost);
+            HttpRoutePlanner httpRoutePlanner = createCustomRoutePlanner(proxyHost,
+                parseCommaSeparatedUrlsToList(httpConfiguration.getAppProxyIncludeUrls()),
+                parseCommaSeparatedUrlsToList(httpConfiguration.getAppProxyExcludeUrls()));
+            httpClientBuilder.setRoutePlanner(httpRoutePlanner);
         }
     }
 
@@ -197,6 +211,85 @@ public class RestConnector {
         byte[] bytes = (responseEntity.getBody() != null) ? responseEntity.getBody() : new byte[0];
         httpResponseDetails.setBody(new ByteArrayInputStream(bytes));
         return httpResponseDetails;
+    }
+
+    private HttpRoutePlanner createCustomRoutePlanner(HttpHost proxyHost, List<String> includedUrls, List<String> excludedUrls) {
+        DefaultProxyRoutePlanner defaultRoutePlanner = new DefaultProxyRoutePlanner(proxyHost);
+
+        return (target, request, context) -> {
+            boolean explicitlyIncluded = includedUrls.stream().anyMatch(url -> matches(target, url));
+
+            boolean useProxy = true;
+            if (explicitlyIncluded) {
+                logger.debug("Url {} is explicitly included for proxying", target);
+            } else if (includedUrls.isEmpty()) {
+                boolean explicitlyExcluded = excludedUrls.stream().anyMatch(url -> matches(target, url));
+                if (explicitlyExcluded) {
+                    useProxy = false;
+                    logger.debug("Url {} is explicitly excluded from proxying", target);
+                }
+            } else {
+                useProxy = false;
+            }
+            if (useProxy) {
+                logger.debug("Using proxy {} for target {}", proxyHost, target);
+                return defaultRoutePlanner.determineRoute(target, request, context);
+            } else {
+                return new HttpRoute(target);
+            }
+        };
+    }
+
+    private boolean matches(HttpHost target, String url) {
+        String urlHostName = extractHostName(url);
+        int urlPort = extractPort(url);
+        String urlScheme = extractScheme(url);
+        return Objects.equals(target.getHostName(), urlHostName) && (urlPort == -1 || urlPort == target.getPort()) &&
+            (urlScheme == null || StringUtils.equalsIgnoreCase(urlScheme, target.getSchemeName()));
+    }
+
+    private List<String> parseCommaSeparatedUrlsToList(String commaSeparatedUrls) {
+        return commaSeparatedUrls.trim().isEmpty() ? Collections.emptyList() : Arrays.stream(commaSeparatedUrls.split(","))
+            .map(String::trim).filter(url -> !url.isEmpty()).collect(Collectors.toList());
+    }
+
+    private String extractHostName(String url) {
+        int start = url.indexOf("://");
+        if (start != -1) {
+            start += 3;
+        } else {
+            start = 0;
+        }
+        int pathStart = url.indexOf('/', start);
+        int portStart = url.indexOf(':', start);
+        int end = (pathStart != -1 && (portStart == -1 || portStart > pathStart)) ? pathStart : portStart;
+        if (end == -1) {
+            end = url.length();
+        }
+        return url.substring(start, end);
+    }
+
+    private String extractScheme(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            return url.getProtocol();
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
+
+    private int extractPort(String url) {
+        int portStart = url.lastIndexOf(':');
+        int pathStart = url.indexOf('/', portStart);
+        if (portStart != -1 && (pathStart == -1 || portStart < pathStart)) {
+            String portString = url.substring(portStart + 1, pathStart != -1 ? pathStart : url.length());
+            try {
+                return Integer.parseInt(portString);
+            } catch (NumberFormatException e) {
+                return -1;
+            }
+        }
+        return -1;
     }
 
     static class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {

@@ -37,6 +37,8 @@ public class HttpConfiguration {
     private int appProxyPort;
     private String appProxyUsername;
     private String appProxyPassword;
+    private String appProxyIncludeUrls;
+    private String appProxyExcludeUrls;
     private boolean mtlsEnabled;
     private String keyStoreFile;
     private String keyStoreFileType;
@@ -61,6 +63,8 @@ public class HttpConfiguration {
         appProxyPort = environment.getProperty(AppPropertiesConstants.APP_PROXY_PORT, Integer.class, -1);
         appProxyUsername = environment.getProperty(AppPropertiesConstants.APP_PROXY_USERNAME, "");
         appProxyPassword = environment.getProperty(AppPropertiesConstants.APP_PROXY_PASSWORD, "");
+        appProxyIncludeUrls = environment.getProperty(AppPropertiesConstants.APP_PROXY_INCLUDE_URLS, "");
+        appProxyExcludeUrls = environment.getProperty(AppPropertiesConstants.APP_PROXY_EXCLUDE_URLS, "");
         mtlsEnabled = environment.getProperty("security.general.mtls.enabled", Boolean.class, false);
         keyStoreFile = environment.getProperty("security.general.mtls.keystore.file", "");
         keyStoreFileType = environment.getProperty("security.general.mtls.keystore.fileType", "");
@@ -116,6 +120,14 @@ public class HttpConfiguration {
         return this.appProxyPassword;
     }
 
+    public String getAppProxyIncludeUrls() {
+        return appProxyIncludeUrls;
+    }
+
+    public String getAppProxyExcludeUrls() {
+        return appProxyExcludeUrls;
+    }
+
     public boolean isMtlsEnabled() {
         return mtlsEnabled;
     }
@@ -165,6 +177,8 @@ public class HttpConfiguration {
             ", appProxyHost='" + appProxyHost + '\'' +
             ", appProxyPort=" + appProxyPort +
             ", appProxyUsername='" + appProxyUsername + '\'' +
+            ", appProxyIncludeUrls='" + appProxyIncludeUrls + '\'' +
+            ", appProxyExcludeUrls='" + appProxyExcludeUrls + '\'' +
             ", mtlsEnabled=" + mtlsEnabled +
             ", keyStoreFile='" + keyStoreFile + '\'' +
             ", keyStoreFileType='" + keyStoreFileType + '\'' +
