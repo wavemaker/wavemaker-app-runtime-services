@@ -28,7 +28,7 @@ public class SecurityConstants {
     public static final String OPENID_PROVIDER = "OPENID";
     public static final String CAS_PROVIDER = "CAS";
     public static final String SAML_PROVIDER = "SAML";
-    public static final String OPAQUE_PROVIDER = "OPAQUE";
+    public static final String OPAQUE_PROVIDER = "OPAQUE_TOKEN";
     public static final String JWS_PROVIDER = "JWS";
     public static final String CUSTOM_PROVIDER = "CUSTOM";
 
