@@ -75,18 +75,18 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     @Bean(name = "opaqueAuthoritiesProvider")
     @Conditional(OpaqueDatabaseRoleProviderCondition.class)
     public AuthoritiesProvider opaqueAuthoritiesProvider(ApplicationContext applicationContext,
-                                                         RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig) {
+                                                         RuntimeDatabaseRoleMappingConfig opaqueRuntimeDatabaseRoleMappingConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
+        defaultAuthoritiesProvider.setHql(Objects.equals(opaqueRuntimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
-        String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(opaqueRuntimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String modelName = opaqueRuntimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
     }
 
-    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Bean(name = "opaqueRuntimeDatabaseRoleMappingConfig")
     @Conditional(OpaqueDatabaseRoleProviderCondition.class)
     @ConfigurationProperties("security.providers.opaqueToken.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {

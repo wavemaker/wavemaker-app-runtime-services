@@ -78,19 +78,18 @@ public class LdapSecurityProviderConfiguration {
 
     @Bean(name = "defaultAuthoritiesProvider")
     @Conditional(LdapDatabaseAuthoritiesProviderCondition.class)
-    public AuthoritiesProvider defaultAuthoritiesProvider(ApplicationContext applicationContext) {
-        RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig = runtimeDatabaseRoleMappingConfig();
+    public AuthoritiesProvider defaultAuthoritiesProvider(ApplicationContext applicationContext, RuntimeDatabaseRoleMappingConfig ldapRuntimeDatabaseRoleMappingConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(runtimeDatabaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
+        defaultAuthoritiesProvider.setHql(ldapRuntimeDatabaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
-        String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(ldapRuntimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String modelName = ldapRuntimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
     }
 
-    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Bean(name = "ldapRuntimeDatabaseRoleMappingConfig")
     @Conditional(LdapDatabaseAuthoritiesProviderCondition.class)
     @ConfigurationProperties("security.providers.ldap.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {

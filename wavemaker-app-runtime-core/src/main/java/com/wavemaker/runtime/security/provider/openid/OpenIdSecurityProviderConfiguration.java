@@ -218,7 +218,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return new OpenIdUserService();
     }
 
-    @Bean("userAuthoritiesProvider")
+    @Bean("openIdAuthoritiesProvider")
     @Conditional(OpenIdRoleMappingCondition.class)
     public AuthoritiesProvider userAuthoritiesProvider() {
         IdentityProviderUserAuthoritiesProvider identityProviderUserAuthoritiesProvider = new IdentityProviderUserAuthoritiesProvider();
@@ -226,7 +226,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return identityProviderUserAuthoritiesProvider;
     }
 
-    @Bean("userAuthoritiesProvider")
+    @Bean("openIdAuthoritiesProvider")
     @Conditional(OpenIdDatabaseRoleMappingCondition.class)
     public AuthoritiesProvider databaseUserAuthoritiesProvider(ApplicationContext applicationContext) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();

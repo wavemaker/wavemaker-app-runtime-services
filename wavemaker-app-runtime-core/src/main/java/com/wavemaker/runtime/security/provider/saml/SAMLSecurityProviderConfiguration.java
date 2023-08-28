@@ -238,28 +238,28 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
             openSamlLogoutResponseResolver, securityContextLogoutHandler, wmCsrfLogoutHandler);
     }
 
-    @Bean(name = "authoritiesProvider")
+    @Bean(name = "samlAuthoritiesProvider")
     @Conditional(SAMLDatabaseRoleProviderCondition.class)
-    public AuthoritiesProvider authoritiesProvider(RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig, ApplicationContext applicationContext) {
+    public AuthoritiesProvider authoritiesProvider(RuntimeDatabaseRoleMappingConfig samlRuntimeDatabaseRoleMappingConfig, ApplicationContext applicationContext) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(Objects.equals(runtimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
+        defaultAuthoritiesProvider.setHql(Objects.equals(samlRuntimeDatabaseRoleMappingConfig.getQueryType(), RoleQueryType.HQL));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
-        String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(samlRuntimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String modelName = samlRuntimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager(
             (PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
     }
 
-    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Bean(name = "samlRuntimeDatabaseRoleMappingConfig")
     @Conditional(SAMLDatabaseRoleProviderCondition.class)
     @ConfigurationProperties("security.providers.saml.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
         return new RuntimeDatabaseRoleMappingConfig();
     }
 
-    @Bean(name = "SamlProviderConfig")
+    @Bean(name = "samlProviderConfig")
     public SAMLProviderConfig samlProviderConfig() {
         return new SAMLProviderConfig();
     }

@@ -37,7 +37,7 @@ import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 public class OpenIdUserService extends OidcUserService {
 
     @Autowired(required = false)
-    @Qualifier("userAuthoritiesProvider")
+    @Qualifier("openIdAuthoritiesProvider")
     private AuthoritiesProvider authoritiesProvider;
 
     @Override

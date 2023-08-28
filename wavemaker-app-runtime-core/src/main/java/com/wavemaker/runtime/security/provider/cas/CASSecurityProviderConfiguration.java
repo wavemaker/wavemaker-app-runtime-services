@@ -204,13 +204,12 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
 
     @Bean(name = "casAuthoritiesProvider")
     @Conditional(CASDatabaseAuthoritiesProviderCondition.class)
-    public AuthoritiesProvider casDatabaseAuthoritiesProvider() {
+    public AuthoritiesProvider casDatabaseAuthoritiesProvider(RuntimeDatabaseRoleMappingConfig casRuntimeDatabaseRoleMappingConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig = runtimeDatabaseRoleMappingConfig();
-        defaultAuthoritiesProvider.setHql(runtimeDatabaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
+        defaultAuthoritiesProvider.setHql(casRuntimeDatabaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(runtimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
-        String modelName = runtimeDatabaseRoleMappingConfig.getModelName();
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(casRuntimeDatabaseRoleMappingConfig.getRolesByUsernameQuery());
+        String modelName = casRuntimeDatabaseRoleMappingConfig.getModelName();
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         return defaultAuthoritiesProvider;
@@ -230,7 +229,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         return new NullAuthoritiesProvider();
     }
 
-    @Bean(name = "runtimeDatabaseRoleMappingConfig")
+    @Bean(name = "casRuntimeDatabaseRoleMappingConfig")
     @Conditional(CASDatabaseAuthoritiesProviderCondition.class)
     @ConfigurationProperties("security.providers.cas.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
