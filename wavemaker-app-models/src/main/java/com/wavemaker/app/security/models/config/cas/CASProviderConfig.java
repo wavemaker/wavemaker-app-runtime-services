@@ -48,9 +48,6 @@ public class CASProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty(value = "${security.providers.cas.roleMappingEnabled}", autoUpdate = true)
     private boolean roleMappingEnabled;
 
-    @ProfilizableProperty(value = "${security.providers.cas.roleProvider}", autoUpdate = true)
-    private String roleProvider;
-
     private RoleMappingConfig roleMappingConfig;
 
     private List<String> attributes;
@@ -114,14 +111,6 @@ public class CASProviderConfig extends AbstractProviderConfig {
 
     public void setRoleMappingEnabled(boolean roleMappingEnabled) {
         this.roleMappingEnabled = roleMappingEnabled;
-    }
-
-    public String getRoleProvider() {
-        return roleProvider;
-    }
-
-    public void setRoleProvider(String roleProvider) {
-        this.roleProvider = roleProvider;
     }
 
     @Override
