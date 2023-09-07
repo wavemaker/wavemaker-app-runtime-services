@@ -20,10 +20,16 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
+
 public class SecurityEnabledCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        return environment.getProperty("security.enabled", Boolean.class, false);
+        boolean securityEnabled = Boolean.parseBoolean(environment.getProperty("security.enabled"));
+        if (securityEnabled) {
+            SecurityPropertyUtils.validateActiveProviders(environment);
+        }
+        return securityEnabled;
     }
 }
