@@ -19,6 +19,8 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class StatelessRequestMatcher implements RequestMatcher {
@@ -32,8 +34,13 @@ public class StatelessRequestMatcher implements RequestMatcher {
     @Override
     public boolean matches(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
-        return (authHeader != null && (authHeader.startsWith("Basic") || authHeader.startsWith("Bearer"))) ||
-            !Objects.equals(null, request.getParameter(tokenParameter)) || !Objects.equals(null, request.getHeader(tokenParameter));
+        if ((authHeader != null && (authHeader.startsWith("Basic") || authHeader.startsWith("Bearer"))) ||
+            StringUtils.isNotBlank(request.getHeader(tokenParameter))) {
+            return true;
+        } else if (!Objects.equals(request.getContentType(), MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+            return StringUtils.isNotBlank(request.getParameter(tokenParameter));
+        }
+        return false;
     }
 }
 
