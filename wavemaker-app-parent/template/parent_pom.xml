@@ -51,6 +51,7 @@
                 <directory>target/generated-resources</directory>
                 <includes>
                     <include>conf/**.properties</include>
+                    <include>conf/**.yaml</include>
                 </includes>
             </resource>
             <resource>
@@ -58,6 +59,7 @@
                 <directory>target/generated-resources</directory>
                 <excludes>
                     <exclude>conf/**.properties</exclude>
+                    <exclude>conf/**.yaml</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -170,18 +172,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Copy resources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <ant antfile="${basedir}/build.xml" target="generate-resources"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>UI Build</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -224,6 +214,13 @@
                         <phase>initialize</phase>
                         <goals>
                             <goal>pre-compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>generate app resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate-resources</goal>
                         </goals>
                     </execution>
                 </executions>
