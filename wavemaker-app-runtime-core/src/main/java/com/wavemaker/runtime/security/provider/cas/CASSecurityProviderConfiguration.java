@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
@@ -193,6 +194,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "casAuthenticationSuccessHandler")
+    @Order(0)
     public WMAuthenticationSuccessHandler casAuthenticationSuccessHandler() {
         return new WMCasAuthenticationSuccessHandler();
     }

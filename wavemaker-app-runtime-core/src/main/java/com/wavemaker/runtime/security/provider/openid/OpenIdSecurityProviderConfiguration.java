@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -194,6 +195,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Bean(name = "openIdAuthenticationSuccessHandler")
+    @Order(0)
     public WMAuthenticationSuccessHandler wmOpenIdAuthenticationSuccessHandler() {
         return new WMOpenIdAuthenticationSuccessHandler();
     }
