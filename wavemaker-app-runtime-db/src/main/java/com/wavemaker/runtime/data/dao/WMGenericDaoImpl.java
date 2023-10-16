@@ -14,8 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dao;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -37,6 +35,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
@@ -45,6 +44,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.commons.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.commons.file.model.DownloadResponse;
 import com.wavemaker.runtime.commons.file.model.Downloadable;
+import com.wavemaker.runtime.commons.file.model.ExportedFileContentWrapper;
 import com.wavemaker.runtime.data.dao.generators.EntityQueryGenerator;
 import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
@@ -236,10 +236,10 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        export(new DataExportOptions(exportType, pageable.getPageSize(), query), pageable, outputStream);
-        return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(),
-            entityClass.getSimpleName() + exportType.getExtension());
+        String fileId = exportedFileManager.registerFile(entityClass.getSimpleName() + exportType.getExtension(), outputStream ->
+            export(new DataExportOptions(exportType, pageable.getPageSize(), query), pageable, outputStream));
+        ExportedFileContentWrapper fileContents = exportedFileManager.getFileContent(fileId);
+        return new DownloadResponse(fileContents.getInputStream(), MediaType.APPLICATION_OCTET_STREAM_VALUE, fileContents.getFileName());
     }
 
     @Override

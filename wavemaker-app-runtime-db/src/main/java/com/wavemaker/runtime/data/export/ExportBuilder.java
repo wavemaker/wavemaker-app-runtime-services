@@ -57,15 +57,20 @@ public class ExportBuilder {
     }
 
     public void build(OutputStream outputStream) {
+        SXSSFWorkbook workbook = null;
         try {
-            try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
-                cellStyles = new ExportCellStyles(workbook);
-                SXSSFSheet spreadSheet = workbook.createSheet("Data");
-                fillSheet(spreadSheet);
-                exportWorkbook(workbook, options.getExportType(), outputStream);
-            }
+            workbook = new SXSSFWorkbook();
+            cellStyles = new ExportCellStyles(workbook);
+            SXSSFSheet spreadSheet = workbook.createSheet("Data");
+            fillSheet(spreadSheet);
+            exportWorkbook(workbook, options.getExportType(), outputStream);
         } catch (Exception e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.export.building.error"), e);
+        } finally {
+            if (workbook != null) {
+                workbook.dispose();
+            }
+            WMIOUtils.closeSilently(workbook);
         }
     }
 
