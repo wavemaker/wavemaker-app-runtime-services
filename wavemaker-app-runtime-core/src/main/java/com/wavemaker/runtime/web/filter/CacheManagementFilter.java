@@ -59,7 +59,7 @@ public class CacheManagementFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         if (matches(httpServletRequest, cacheRequestMatcher) && !matches(httpServletRequest, cacheExclusionRequestMatcher)) {
-            httpServletResponse.addHeader("Cache-Control", "public, max-age=1296000");
+            httpServletResponse.addHeader("Cache-Control", "public, max-age=31536000");
             chain.doFilter(request, new SkipEtagHttpServletResponseWrapper(httpServletResponse));
         } else if (matches(httpServletRequest, etagRequestMatcher)) {
             etagFilter.doFilter(request, response, chain);
