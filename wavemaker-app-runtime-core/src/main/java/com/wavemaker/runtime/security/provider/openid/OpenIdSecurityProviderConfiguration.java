@@ -210,9 +210,11 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
                                                                                   nimbusAuthorizationCodeTokenResponseClient,
                                                                               OAuth2UserService<? extends OAuth2UserRequest, ? extends OAuth2User>
                                                                                   openIdUserService) {
-        return new OidcAuthorizationCodeAuthenticationProvider(
+        OidcAuthorizationCodeAuthenticationProvider oidcAuthorizationCodeAuthenticationProvider = new OidcAuthorizationCodeAuthenticationProvider(
             (OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>) nimbusAuthorizationCodeTokenResponseClient,
             (OAuth2UserService<OidcUserRequest, OidcUser>) openIdUserService);
+        oidcAuthorizationCodeAuthenticationProvider.setJwtDecoderFactory(new OpenIdTokenDecoderFactory());
+        return oidcAuthorizationCodeAuthenticationProvider;
     }
 
     @Bean(name = "openIdUserService")
