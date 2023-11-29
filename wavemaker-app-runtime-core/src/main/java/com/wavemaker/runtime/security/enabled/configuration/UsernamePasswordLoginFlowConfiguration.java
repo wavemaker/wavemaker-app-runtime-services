@@ -44,6 +44,7 @@ import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.WMAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
+import com.wavemaker.runtime.security.model.FilterInfo;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, UsernamePasswordLoginFlowCondition.class})
@@ -77,10 +78,10 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     }
 
     @Bean(name = "logoutSuccessHandler")
-    public LogoutSuccessHandler logoutSuccessHandler() {
+    public LogoutSuccessHandler logoutSuccessHandler(RedirectStrategy redirectStrategyBean) {
         SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
         simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
-        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
+        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean);
         return simpleUrlLogoutSuccessHandler;
     }
 
@@ -117,7 +118,11 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
 
     @Override
     public void addFilters(HttpSecurity http) {
-        http.addFilterAt(wmBasicAuthenticationFilter(), BasicAuthenticationFilter.class);
-        http.addFilterAt(wmSecAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
+    @Override
+    public List<FilterInfo> getFilters() {
+        return List.of(new FilterInfo(BasicAuthenticationFilter.class, "WMBasicAuthenticationFilter", "at"),
+            new FilterInfo(UsernamePasswordAuthenticationFilter.class, "WMSecAuthFilter", "at"));
     }
 }

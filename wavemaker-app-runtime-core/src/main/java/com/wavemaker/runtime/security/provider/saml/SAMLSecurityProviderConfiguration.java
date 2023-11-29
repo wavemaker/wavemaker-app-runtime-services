@@ -69,6 +69,7 @@ import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessHandler;
@@ -126,7 +127,11 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
 
     @Override
     public void addFilters(HttpSecurity http) {
-        http.addFilterAfter(samlFilter(), RememberMeAuthenticationFilter.class);
+    }
+
+    @Override
+    public List<FilterInfo> getFilters() {
+        return List.of(new FilterInfo(RememberMeAuthenticationFilter.class, "samlFilter", "after"));
     }
 
     @Bean(name = "samlConfig")
@@ -145,15 +150,16 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "samlFilter")
-    public FilterChainProxy samlFilter() {
+    public FilterChainProxy samlFilter(Filter saml2MetadataFilter, Filter saml2WebSsoAuthenticationFilter, Filter saml2WebSsoAuthenticationRequestFilter,
+                                       Filter saml2LogoutResponseFilter, Filter saml2LogoutRequestFilter) {
         DefaultSecurityFilterChain metaDataFilter = new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml2/service-provider-metadata/**"),
-            saml2MetadataFilter());
+            saml2MetadataFilter);
         DefaultSecurityFilterChain webSsoAuthenticationFilter = new DefaultSecurityFilterChain(new AntPathRequestMatcher("/login/saml2/sso/**"),
-            saml2WebSsoAuthenticationFilter());
+            saml2WebSsoAuthenticationFilter);
         DefaultSecurityFilterChain webSsoAuthenticationRequestFilter = new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml2/authenticate/**"),
-            saml2WebSsoAuthenticationRequestFilter());
+            saml2WebSsoAuthenticationRequestFilter);
         DefaultSecurityFilterChain logoutRequestFilter = new DefaultSecurityFilterChain(new AntPathRequestMatcher("/logout/saml2/slo"),
-            saml2LogoutRequestFilter(), saml2LogoutResponseFilter());
+            saml2LogoutRequestFilter, saml2LogoutResponseFilter);
         return new FilterChainProxy(Arrays.asList(webSsoAuthenticationFilter,
             metaDataFilter, webSsoAuthenticationRequestFilter, logoutRequestFilter));
     }
@@ -170,8 +176,8 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "saml2MetadataFilter")
-    public Filter saml2MetadataFilter() {
-        return new Saml2MetadataFilter(relyingPartyRegistrationResolver, wmSaml2MetadataResolver());
+    public Filter saml2MetadataFilter(Saml2MetadataResolver wmSaml2MetadataResolver) {
+        return new Saml2MetadataFilter(relyingPartyRegistrationResolver, wmSaml2MetadataResolver);
     }
 
     @Bean(name = "saml2AuthenticationTokenConverter")
@@ -195,8 +201,9 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "samlLogoutFilter")
-    public LogoutFilter samlLogoutFilter(@Autowired Saml2LogoutRequestResolver saml2LogoutRequestResolver) {
-        LogoutFilter logoutFilter = new LogoutFilter(saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver),
+    public LogoutFilter samlLogoutFilter(Saml2LogoutRequestResolver saml2LogoutRequestResolver,
+                                         LogoutSuccessHandler saml2RelyingPartyInitiatedLogoutSuccessHandler) {
+        LogoutFilter logoutFilter = new LogoutFilter(saml2RelyingPartyInitiatedLogoutSuccessHandler,
             securityContextLogoutHandler, wmCsrfLogoutHandler);
         logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
         return logoutFilter;
@@ -208,8 +215,8 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "saml2LogoutResponseFilter")
-    public Filter saml2LogoutResponseFilter() {
-        return new Saml2LogoutResponseFilter(relyingPartyRegistrationResolver, openSamlLogoutResponseValidator(), logoutSuccessHandler);
+    public Filter saml2LogoutResponseFilter(Saml2LogoutResponseValidator openSamlLogoutResponseValidator) {
+        return new Saml2LogoutResponseFilter(relyingPartyRegistrationResolver, openSamlLogoutResponseValidator, logoutSuccessHandler);
     }
 
     @Bean(name = "logoutFilter")
@@ -225,9 +232,9 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "saml2WebSsoAuthenticationFilter")
-    public Filter saml2WebSsoAuthenticationFilter() {
+    public Filter saml2WebSsoAuthenticationFilter(AuthenticationConverter saml2AuthenticationTokenConverter) {
         WMSaml2WebSsoAuthenticationFilter wmSaml2WebSsoAuthenticationFilter = new WMSaml2WebSsoAuthenticationFilter(
-            saml2AuthenticationTokenConverter());
+            saml2AuthenticationTokenConverter);
         wmSaml2WebSsoAuthenticationFilter.setAuthenticationManager(authenticationManager);
         wmSaml2WebSsoAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
         wmSaml2WebSsoAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);
@@ -235,8 +242,8 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "saml2LogoutRequestFilter")
-    public Filter saml2LogoutRequestFilter() {
-        return new WMSaml2LogoutRequestFilter(relyingPartyRegistrationResolver, getOpenSamlLogoutRequestValidator(),
+    public Filter saml2LogoutRequestFilter(Saml2LogoutRequestValidator openSamlLogoutRequestValidator) {
+        return new WMSaml2LogoutRequestFilter(relyingPartyRegistrationResolver, openSamlLogoutRequestValidator,
             openSamlLogoutResponseResolver, securityContextLogoutHandler, wmCsrfLogoutHandler);
     }
 

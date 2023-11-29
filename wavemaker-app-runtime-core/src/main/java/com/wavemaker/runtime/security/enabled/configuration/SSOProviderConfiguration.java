@@ -31,6 +31,7 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
+import com.wavemaker.runtime.security.model.FilterInfo;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, SSOProviderCondition.class})
@@ -58,5 +59,10 @@ public class SSOProviderConfiguration implements WMSecurityConfiguration {
     @Override
     public void addFilters(HttpSecurity http) {
         //no common Filters
+    }
+
+    @Override
+    public List<FilterInfo> getFilters() {
+        return List.of();
     }
 }

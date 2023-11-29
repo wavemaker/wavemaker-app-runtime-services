@@ -20,10 +20,13 @@ import java.util.List;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
+import com.wavemaker.runtime.security.model.FilterInfo;
 
 public interface WMSecurityConfiguration {
 
     List<SecurityInterceptUrlEntry> getSecurityInterceptUrls();
 
     void addFilters(HttpSecurity http);
+
+    List<FilterInfo> getFilters();
 }

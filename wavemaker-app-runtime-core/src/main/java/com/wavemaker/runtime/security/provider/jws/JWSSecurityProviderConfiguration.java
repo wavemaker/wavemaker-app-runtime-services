@@ -47,6 +47,7 @@ import com.wavemaker.app.security.models.jws.JWSConfiguration;
 import com.wavemaker.app.security.models.jws.JWSProviderConfiguration;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 
 import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_ROLE_PROVIDER;
@@ -107,6 +108,11 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
     @Override
     public void addFilters(HttpSecurity http) {
         http.addFilterAfter(jwsBearerTokenAuthenticationFilter(), BasicAuthenticationFilter.class);
+    }
+
+    @Override
+    public List<FilterInfo> getFilters() {
+        return null;
     }
 
     private DefaultAuthoritiesProviderImpl jwsAuthoritiesProvider(JWSProviderConfiguration jwsProviderConfiguration) {

@@ -123,6 +123,7 @@ import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccess
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMSecurityContextRepositorySuccessHandler;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 import com.wavemaker.runtime.security.token.repository.TokenRepository;
 import com.wavemaker.runtime.security.token.repository.WMTokenRepository;
@@ -169,8 +170,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "defaultCookieSerializer")
-    public CookieSerializer defaultCookieSerializer() {
-        LoginConfig loginConfig = loginConfig();
+    public CookieSerializer defaultCookieSerializer(LoginConfig loginConfig) {
         int cookieMaxAge = loginConfig.getCookieMaxAge();
         String cookiePath = loginConfig.getCookiePath();
         boolean base64Encode = loginConfig.isCookieBase64Encode();
@@ -194,22 +194,22 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "httpSessionIdResolver")
-    public HttpSessionIdResolver httpSessionIdResolver() {
+    public HttpSessionIdResolver httpSessionIdResolver(CookieSerializer defaultCookieSerializer) {
         CookieHttpSessionIdResolver cookieHttpSessionIdResolver = new CookieHttpSessionIdResolver();
-        cookieHttpSessionIdResolver.setCookieSerializer(defaultCookieSerializer());
+        cookieHttpSessionIdResolver.setCookieSerializer(defaultCookieSerializer);
         return cookieHttpSessionIdResolver;
     }
 
     @Bean(name = "sessionRepositoryFilter")
-    public Filter sessionRepositoryFilter() {
+    public Filter sessionRepositoryFilter(HttpSessionIdResolver httpSessionIdResolver) {
         SessionRepositoryFilter<? extends Session> sessionRepositoryFilter = new SessionRepositoryFilter<>(sessionRepository);
-        sessionRepositoryFilter.setHttpSessionIdResolver(httpSessionIdResolver());
+        sessionRepositoryFilter.setHttpSessionIdResolver(httpSessionIdResolver);
         return sessionRepositoryFilter;
     }
 
     @Bean(name = "wmcsrfFilter")
-    public Filter wmCsrfFilter() {
-        return new WMCsrfFilter(csrfTokenRepository(), csrfSecurityRequestMatcher());
+    public Filter wmCsrfFilter(CsrfTokenRepository csrfTokenRepository, RequestMatcher csrfSecurityRequestMatcher) {
+        return new WMCsrfFilter(csrfTokenRepository, csrfSecurityRequestMatcher);
     }
 
     //TODO Change the return type to generic to override beans from xml
@@ -224,17 +224,19 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "csrfAuthenticationStrategy")
-    public SessionAuthenticationStrategy csrfAuthenticationStrategy() {
-        return new CsrfAuthenticationStrategy(csrfTokenRepository());
+    public SessionAuthenticationStrategy csrfAuthenticationStrategy(CsrfTokenRepository csrfTokenRepository) {
+        return new CsrfAuthenticationStrategy(csrfTokenRepository);
     }
 
     @Bean(name = "compositeSessionAuthenticationStrategy")
-    public SessionAuthenticationStrategy compositeSessionAuthenticationStrategy() {
+    public SessionAuthenticationStrategy compositeSessionAuthenticationStrategy(SessionAuthenticationStrategy sessionFixationProtectionStrategy,
+                                                                                SessionAuthenticationStrategy csrfAuthenticationStrategy,
+                                                                                LoginConfig loginConfig) {
         ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry);
-        concurrentSessionControlAuthenticationStrategy.setMaximumSessions(loginConfig().getSessionConcurrencyConfig().getMaxSessionsAllowed());
+        concurrentSessionControlAuthenticationStrategy.setMaximumSessions(loginConfig.getSessionConcurrencyConfig().getMaxSessionsAllowed());
         concurrentSessionControlAuthenticationStrategy.setExceptionIfMaximumExceeded(false);
         RegisterSessionAuthenticationStrategy registerSessionAuthenticationStrategy = new RegisterSessionAuthenticationStrategy(sessionRegistry);
-        List<SessionAuthenticationStrategy> delegateStrategies = new ArrayList<>(Arrays.asList(concurrentSessionControlAuthenticationStrategy, registerSessionAuthenticationStrategy, sessionFixationProtectionStrategy(), csrfAuthenticationStrategy()));
+        List<SessionAuthenticationStrategy> delegateStrategies = new ArrayList<>(Arrays.asList(concurrentSessionControlAuthenticationStrategy, registerSessionAuthenticationStrategy, sessionFixationProtectionStrategy, csrfAuthenticationStrategy));
         return new CompositeSessionAuthenticationStrategy(delegateStrategies);
     }
 
@@ -244,8 +246,8 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "csrfTokenRepository")
-    public CsrfTokenRepository csrfTokenRepository() {
-        return new WMCsrfTokenRepository(wmHttpSessionCsrfTokenRepository());
+    public CsrfTokenRepository csrfTokenRepository(CsrfTokenRepository wmHttpSessionCsrfTokenRepository) {
+        return new WMCsrfTokenRepository(wmHttpSessionCsrfTokenRepository);
     }
 
     @Bean(name = "csrfConfig")
@@ -254,34 +256,34 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "wmHttpSessionCsrfTokenRepository")
-    public CsrfTokenRepository wmHttpSessionCsrfTokenRepository() {
+    public CsrfTokenRepository wmHttpSessionCsrfTokenRepository(CSRFConfig csrfConfig) {
         WMHttpSessionCsrfTokenRepository wmHttpSessionCsrfTokenRepository = new WMHttpSessionCsrfTokenRepository();
-        wmHttpSessionCsrfTokenRepository.setCsrfConfig(csrfConfig());
+        wmHttpSessionCsrfTokenRepository.setCsrfConfig(csrfConfig);
         return wmHttpSessionCsrfTokenRepository;
     }
 
     @Bean(name = "csrfSecurityRequestMatcher")
-    public RequestMatcher csrfSecurityRequestMatcher() {
+    public RequestMatcher csrfSecurityRequestMatcher(CSRFConfig csrfConfig) {
         CsrfSecurityRequestMatcher requestMatcher = new CsrfSecurityRequestMatcher();
-        requestMatcher.setCsrfConfig(csrfConfig());
+        requestMatcher.setCsrfConfig(csrfConfig);
         return requestMatcher;
     }
 
     @Bean(name = "wmCsrfLogoutHandler")
-    public LogoutHandler wmCsrfLogoutHandler() {
-        return new WMCsrfLogoutHandler(csrfLogoutHandler());
+    public LogoutHandler wmCsrfLogoutHandler(LogoutHandler csrfLogoutHandler) {
+        return new WMCsrfLogoutHandler(csrfLogoutHandler);
     }
 
     @Bean(name = "csrfLogoutHandler")
-    public LogoutHandler csrfLogoutHandler() {
-        return new CsrfLogoutHandler(csrfTokenRepository());
+    public LogoutHandler csrfLogoutHandler(CsrfTokenRepository csrfTokenRepository) {
+        return new CsrfLogoutHandler(csrfTokenRepository);
     }
 
     @Bean(name = "logoutSuccessHandler")
-    public LogoutSuccessHandler logoutSuccessHandler() {
+    public LogoutSuccessHandler logoutSuccessHandler(RedirectStrategy redirectStrategyBean) {
         SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
         simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
-        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
+        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean);
         return simpleUrlLogoutSuccessHandler;
     }
 
@@ -301,8 +303,9 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "wmTokenBasedPreAuthenticatedProcessingFilter")
-    public Filter wmTokenBasedPreAuthenticatedProcessingFilter() {
-        return new WMTokenBasedPreAuthenticatedProcessingFilter(authenticationManager(), wmTokenBasedAuthenticationService());
+    public Filter wmTokenBasedPreAuthenticatedProcessingFilter
+        (AuthenticationManager authenticationManager, WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService) {
+        return new WMTokenBasedPreAuthenticatedProcessingFilter(authenticationManager, wmTokenBasedAuthenticationService);
     }
 
     @Bean(name = "tokenRepository")
@@ -316,14 +319,17 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "successHandler")
-    public AuthenticationSuccessHandler successHandler() {
+    public AuthenticationSuccessHandler successHandler(AuthenticationSuccessHandler wmCsrfTokenRepositorySuccessHandler,
+                                                       AuthenticationSuccessHandler wmCsrfTokenResponseWriterAuthenticationSuccessHandler,
+                                                       WMAuthenticationRedirectionHandler wmAuthenticationSuccessRedirectionHandler,
+                                                       AuthenticationSuccessHandler wmSecurityContextRepositorySuccessHandler) {
         List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
-        defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler());
-        defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler());
-        defaultSuccessHandlerList.add(wmCsrfTokenResponseWriterAuthenticationSuccessHandler());
+        defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler);
+        defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler);
+        defaultSuccessHandlerList.add(wmCsrfTokenResponseWriterAuthenticationSuccessHandler);
         WMApplicationAuthenticationSuccessHandler wmApplicationAuthenticationSuccessHandler = new WMApplicationAuthenticationSuccessHandler();
         wmApplicationAuthenticationSuccessHandler.setDefaultSuccessHandlerList(defaultSuccessHandlerList);
-        wmApplicationAuthenticationSuccessHandler.setAuthenticationSuccessRedirectionHandler(wmAuthenticationSuccessRedirectionHandler());
+        wmApplicationAuthenticationSuccessHandler.setAuthenticationSuccessRedirectionHandler(wmAuthenticationSuccessRedirectionHandler);
         return wmApplicationAuthenticationSuccessHandler;
     }
 
@@ -333,13 +339,13 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "wmCsrfTokenRepositorySuccessHandler")
-    public AuthenticationSuccessHandler wmCsrfTokenRepositorySuccessHandler() {
-        return new WMCsrfTokenRepositorySuccessHandler(csrfTokenRepository());
+    public AuthenticationSuccessHandler wmCsrfTokenRepositorySuccessHandler(CsrfTokenRepository csrfTokenRepository) {
+        return new WMCsrfTokenRepositorySuccessHandler(csrfTokenRepository);
     }
 
     @Bean(name = "wmCsrfTokenResponseWriterAuthenticationSuccessHandler")
-    public AuthenticationSuccessHandler wmCsrfTokenResponseWriterAuthenticationSuccessHandler() {
-        return new WMCsrfTokenResponseWriterAuthenticationSuccessHandler(csrfTokenRepository());
+    public AuthenticationSuccessHandler wmCsrfTokenResponseWriterAuthenticationSuccessHandler(CsrfTokenRepository csrfTokenRepository) {
+        return new WMCsrfTokenResponseWriterAuthenticationSuccessHandler(csrfTokenRepository);
     }
 
     @Bean(name = "securityContextRepository")
@@ -358,8 +364,8 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "wmSecurityContextRepositorySuccessHandler")
-    public AuthenticationSuccessHandler wmSecurityContextRepositorySuccessHandler() {
-        return new WMSecurityContextRepositorySuccessHandler(securityContextRepository());
+    public AuthenticationSuccessHandler wmSecurityContextRepositorySuccessHandler(SecurityContextRepository securityContextRepository) {
+        return new WMSecurityContextRepositorySuccessHandler(securityContextRepository);
     }
 
     @Bean(name = "failureHandler")
@@ -373,10 +379,10 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean(name = "loginConfig")
-    public LoginConfig loginConfig() {
+    public LoginConfig loginConfig(SessionTimeoutConfig sessionTimeoutConfig, SessionConcurrencyConfig sessionConcurrencyConfig) {
         LoginConfig loginConfig = new LoginConfig();
-        loginConfig.setSessionTimeout(sessionTimeoutConfig());
-        loginConfig.setSessionConcurrencyConfig(sessionConcurrencyConfig());
+        loginConfig.setSessionTimeout(sessionTimeoutConfig);
+        loginConfig.setSessionConcurrencyConfig(sessionConcurrencyConfig);
         return loginConfig;
     }
 
@@ -438,7 +444,12 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChainWithSessions(HttpSecurity http, Filter logoutFilter) throws Exception {
+    public SecurityFilterChain filterChainWithSessions(HttpSecurity http, Filter logoutFilter, AuthenticationManager authenticationManager,
+                                                       Filter sessionRepositoryFilter, Filter wmcsrfFilter,
+                                                       WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint,
+                                                       RequestCache nullRequestCache,
+                                                       SecurityContextRepository securityContextRepository,
+                                                       Filter loginWebProcessFilter) throws Exception {
         http
             .csrf().disable()
             .headers().disable()
@@ -451,27 +462,30 @@ public class SecurityEnabledBaseConfiguration {
             .sessionCreationPolicy(SessionCreationPolicy.NEVER)
             .and()
             .requestCache(requestCustomizer ->
-                requestCustomizer.requestCache(nullRequestCache()))
+                requestCustomizer.requestCache(nullRequestCache))
             .exceptionHandling()
-            .authenticationEntryPoint(appAuthenticationEntryPoint())
+            .authenticationEntryPoint(appAuthenticationEntryPoint)
             .and()
-            .securityContext().securityContextRepository(securityContextRepository())
+            .securityContext().securityContextRepository(securityContextRepository)
             .and()
-            .authenticationManager(authenticationManager())
+            .authenticationManager(authenticationManager)
             .authorizeRequests(this::authorizeHttpRequests)
             .logout().disable()
-            .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
-            .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
+            .addFilterAt(sessionRepositoryFilter, DisableEncodeUrlFilter.class)
+            .addFilterAt(wmcsrfFilter, CsrfFilter.class)
             .addFilterAt(logoutFilter, LogoutFilter.class)
-            .addFilterAfter(loginWebProcessFilter(), SecurityContextPersistenceFilter.class);
-        wmSecurityConfigurationList.forEach(securityConfiguration ->
-            securityConfiguration.addFilters(http));
+            .addFilterAfter(loginWebProcessFilter, SecurityContextPersistenceFilter.class);
+        addFilters(http);
         addCustomFilters(http);
         return http.build();
     }
 
     @Bean
-    public SecurityFilterChain filterChainWithoutSessions(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChainWithoutSessions(HttpSecurity http, Filter wmTokenBasedPreAuthenticatedProcessingFilter,
+                                                          AuthenticationManager authenticationManager,
+                                                          WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint,
+                                                          RequestCache nullRequestCache,
+                                                          SecurityContextRepository noSessionsSecurityContextRepository) throws Exception {
         http
             .csrf().disable()
             .headers().disable()
@@ -480,18 +494,18 @@ public class SecurityEnabledBaseConfiguration {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .requestCache()
-            .requestCache(nullRequestCache())
+            .requestCache(nullRequestCache)
             .and()
             .exceptionHandling()
-            .authenticationEntryPoint(appAuthenticationEntryPoint())
+            .authenticationEntryPoint(appAuthenticationEntryPoint)
             .and()
-            .securityContext().securityContextRepository(noSessionsSecurityContextRepository())
+            .securityContext().securityContextRepository(noSessionsSecurityContextRepository)
             .and()
-            .authenticationManager(authenticationManager())
+            .authenticationManager(authenticationManager)
             .authorizeRequests(this::authorizeHttpRequests)
             .logout().disable()
-            .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
-        wmSecurityConfigurationList.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
+            .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter, AbstractPreAuthenticatedProcessingFilter.class);
+        addFilters(http);
         addCustomFilters(http);
         return http.build();
     }
@@ -499,6 +513,33 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "filterSecurityInterceptor")
     public FilterSecurityInterceptor filterSecurityInterceptor(SecurityFilterChain filterChainWithSessions) {
         return (FilterSecurityInterceptor) filterChainWithSessions.getFilters().stream().filter(FilterSecurityInterceptor.class::isInstance).findFirst().orElseThrow();
+    }
+
+    private void addFilters(HttpSecurity http) {
+        List<FilterInfo> filterChainFilters = new ArrayList<>();
+        for (WMSecurityConfiguration wmSecurityConfiguration : wmSecurityConfigurationList) {
+            filterChainFilters.addAll(wmSecurityConfiguration.getFilters());
+        }
+        for (FilterInfo filterInfo : filterChainFilters) {
+            addFiltersToFilterChain(http, filterInfo);
+        }
+    }
+
+    private void addFiltersToFilterChain(HttpSecurity http, FilterInfo filterInfo) {
+        switch (filterInfo.getPosition()) {
+            case "at":
+                http.addFilterAt((Filter) applicationContext.getBean(filterInfo.getFilter()), filterInfo.getFilterClass());
+                break;
+            case "before":
+                http.addFilterBefore((Filter) applicationContext.getBean(filterInfo.getFilter()), filterInfo.getFilterClass());
+                break;
+            case "after":
+                http.addFilterAfter((Filter) applicationContext.getBean(filterInfo.getFilter()), filterInfo.getFilterClass());
+                break;
+            default:
+                throw new WMRuntimeException("Filter position can only be any one of these 'at/before/after', but position given as : " +
+                    filterInfo.getPosition());
+        }
     }
 
     private void authorizeHttpRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry) {
@@ -597,11 +638,11 @@ public class SecurityEnabledBaseConfiguration {
         List<CustomFilter> customFilters = customFilterList();
         customFilters.forEach(customFilter -> {
 
+            FilterInfo customFilterInfo = null;
             String ref = customFilter.getRef();
             if (StringUtils.isBlank(ref)) {
                 throw new IllegalStateException("ref cannot be empty");
             }
-            Object bean = applicationContext.getBean(ref);
 
             AtomicInteger count = new AtomicInteger();
             NamedSecurityFilter before = getNamedSecurityFilter(customFilter.getBefore(), count);
@@ -611,14 +652,18 @@ public class SecurityEnabledBaseConfiguration {
                 throw new IllegalStateException("Expected one and only one of before/after/position parameter to be set to the custom filter");
             }
             if (before != null) {
-                http.addFilterBefore((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getBefore()));
+                customFilterInfo = new FilterInfo((Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getBefore()),
+                    ref, "before");
             }
             if (after != null) {
-                http.addFilterAfter((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getAfter()));
+                customFilterInfo = new FilterInfo((Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getAfter()),
+                    ref, "after");
             }
             if (position != null) {
-                http.addFilterAt((Filter) bean, (Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getPosition()));
+                customFilterInfo = new FilterInfo((Class<? extends Filter>) NamedSecurityFilter.getClass(customFilter.getPosition()),
+                    ref, "at");
             }
+            addFiltersToFilterChain(http, customFilterInfo);
         });
     }
 
