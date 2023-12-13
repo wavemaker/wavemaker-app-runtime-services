@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -48,6 +49,9 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
 
     @Value("${security.general.cookie.path}")
     private String cookiePath;
+
+    @Value("${security.general.cookie.sameSite}")
+    private String cookieSameSite;
 
     public WMCsrfTokenRepositorySuccessHandler(CsrfTokenRepository csrfTokenRepository) {
         this.csrfTokenRepository = csrfTokenRepository;
@@ -75,8 +79,8 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
         logger.info("Adding CsrfCookie");
         if (csrfTokenOptional.isPresent()) {
             CsrfToken csrfToken = csrfTokenOptional.get();
-            Cookie cookie = new Cookie(csrfConfig.getCookieName(), csrfToken.getToken());
-            String path = null;
+            ResponseCookie.ResponseCookieBuilder wmXsrfCookieBuilder = ResponseCookie.from(csrfConfig.getCookieName(), csrfToken.getToken());
+            String path;
             String contextPath = request.getContextPath();
             if (StringUtils.isNotBlank(this.cookiePath)) {
                 path = this.cookiePath;
@@ -85,10 +89,14 @@ public class WMCsrfTokenRepositorySuccessHandler implements AuthenticationSucces
             } else {
                 path = "/";
             }
-            cookie.setPath(path);
-            cookie.setSecure(request.isSecure());
-            cookie.setMaxAge(cookieMaxAge);
-            response.addCookie(cookie);
+            wmXsrfCookieBuilder
+                .path(path)
+                .secure(request.isSecure())
+                .maxAge(cookieMaxAge);
+            if (StringUtils.isNotBlank(cookieSameSite)) {
+                wmXsrfCookieBuilder.sameSite(cookieSameSite);
+            }
+            response.addHeader(HttpHeaders.SET_COOKIE, wmXsrfCookieBuilder.build().toString());
         }
     }
 
