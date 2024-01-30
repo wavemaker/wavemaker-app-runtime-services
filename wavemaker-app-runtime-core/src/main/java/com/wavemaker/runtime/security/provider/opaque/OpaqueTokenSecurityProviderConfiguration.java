@@ -30,7 +30,6 @@ import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenAuthenticationConverter;
@@ -45,6 +44,7 @@ import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 
@@ -53,11 +53,10 @@ import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingC
 public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfiguration {
 
     @Bean(name = "nimbusOpaqueTokenIntrospector")
-    public OpaqueTokenIntrospector nimbusOpaqueTokenIntrospector() {
-        OpaqueTokenProviderConfig opaqueTokenProviderConfig = opaqueTokenProviderConfig();
-        return new NimbusOpaqueTokenIntrospector(Objects.requireNonNull(opaqueTokenProviderConfig.getIntrospectionUrl()),
-            Objects.requireNonNull(opaqueTokenProviderConfig.getClientId()),
-            Objects.requireNonNull(opaqueTokenProviderConfig.getClientSecret()));
+    public OpaqueTokenIntrospector nimbusOpaqueTokenIntrospector(OpaqueTokenProviderConfig OpaqueTokenProviderConfig) {
+        return new NimbusOpaqueTokenIntrospector(Objects.requireNonNull(OpaqueTokenProviderConfig.getIntrospectionUrl()),
+            Objects.requireNonNull(OpaqueTokenProviderConfig.getClientId()),
+            Objects.requireNonNull(OpaqueTokenProviderConfig.getClientSecret()));
     }
 
     @Bean(name = "opaqueAuthenticationConverter")
@@ -66,9 +65,10 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     }
 
     @Bean(name = "opaqueTokenAuthenticationProvider")
-    public AuthenticationProvider opaqueTokenAuthenticationProvider() {
-        OpaqueTokenAuthenticationProvider opaqueTokenAuthenticationProvider = new OpaqueTokenAuthenticationProvider(nimbusOpaqueTokenIntrospector());
-        opaqueTokenAuthenticationProvider.setAuthenticationConverter(opaqueAuthenticationConverter());
+    public AuthenticationProvider opaqueTokenAuthenticationProvider(OpaqueTokenIntrospector nimbusOpaqueTokenIntrospector,
+                                                                    OpaqueTokenAuthenticationConverter opaqueAuthenticationConverter) {
+        OpaqueTokenAuthenticationProvider opaqueTokenAuthenticationProvider = new OpaqueTokenAuthenticationProvider(nimbusOpaqueTokenIntrospector);
+        opaqueTokenAuthenticationProvider.setAuthenticationConverter(opaqueAuthenticationConverter);
         return opaqueTokenAuthenticationProvider;
     }
 
@@ -94,13 +94,13 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     }
 
     @Bean(name = "providerManager")
-    public AuthenticationManager providerManager() {
-        return new ProviderManager(opaqueTokenAuthenticationProvider());
+    public AuthenticationManager providerManager(AuthenticationProvider opaqueTokenAuthenticationProvider) {
+        return new ProviderManager(opaqueTokenAuthenticationProvider);
     }
 
     @Bean(name = "opaqueBearerTokenAuthenticationFilter")
-    public Filter opaqueBearerTokenAuthenticationFilter() {
-        return new BearerTokenAuthenticationFilter(providerManager());
+    public Filter opaqueBearerTokenAuthenticationFilter(AuthenticationManager providerManager) {
+        return new BearerTokenAuthenticationFilter(providerManager);
     }
 
     @Bean(name = "OpaqueTokenProviderConfig")
@@ -114,7 +114,7 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
-        http.addFilterAfter(opaqueBearerTokenAuthenticationFilter(), BasicAuthenticationFilter.class);
+    public List<FilterInfo> getFilters() {
+        return List.of(new FilterInfo(BasicAuthenticationFilter.class, "opaqueBearerTokenAuthenticationFilter", "after"));
     }
 }

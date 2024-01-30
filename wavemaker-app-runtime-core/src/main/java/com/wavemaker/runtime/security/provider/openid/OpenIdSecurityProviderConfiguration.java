@@ -35,7 +35,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.endpoint.AbstractOAuth2AuthorizationGrantRequest;
@@ -69,6 +68,7 @@ import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdLogoutSuccessHandler;
@@ -106,10 +106,9 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
-        http.addFilterBefore(openIDAuthorizationRequestRedirectFilter(), OAuth2LoginAuthenticationFilter.class);
-        http.addFilterAt(openIdLoginAuthenticationFilter(),
-            OAuth2LoginAuthenticationFilter.class);
+    public List<FilterInfo> getFilters() {
+        return List.of(new FilterInfo(OAuth2LoginAuthenticationFilter.class, "authorizationRequestRedirectFilter", "before"),
+            new FilterInfo(OAuth2LoginAuthenticationFilter.class, "oauth2LoginAuthenticationFilter", "at"));
     }
 
     @Bean(name = "openIdEntryPoint")
@@ -120,11 +119,13 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Bean(name = "oauth2LoginAuthenticationFilter")
-    public Filter openIdLoginAuthenticationFilter() {
-        OpenIdLoginAuthenticationFilter authenticationFilter = new OpenIdLoginAuthenticationFilter(inMemoryRegistrationRepository(),
-            inMemoryOAuth2AuthorizedClientService(), "/oauth2/code/*");
+    public Filter openIdLoginAuthenticationFilter(OAuth2AuthorizedClientService inMemoryOAuth2AuthorizedClientService,
+                                                  AuthorizationRequestRepository openIDAuthorizationRequestRepository,
+                                                  ClientRegistrationRepository inMemoryRegistrationRepository) {
+        OpenIdLoginAuthenticationFilter authenticationFilter = new OpenIdLoginAuthenticationFilter(inMemoryRegistrationRepository,
+            inMemoryOAuth2AuthorizedClientService, "/oauth2/code/*");
         authenticationFilter.setAuthorizationRequestRepository(
-            (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository());
+            (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository);
         authenticationFilter.setAuthenticationManager(authenticationManager);
         authenticationFilter.setAuthenticationSuccessHandler(successHandler);
         authenticationFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy);
@@ -140,16 +141,17 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Bean(name = "inMemoryOAuth2AuthorizedClientService")
-    public OAuth2AuthorizedClientService inMemoryOAuth2AuthorizedClientService() {
-        return new InMemoryOAuth2AuthorizedClientService(inMemoryRegistrationRepository());
+    public OAuth2AuthorizedClientService inMemoryOAuth2AuthorizedClientService(ClientRegistrationRepository inMemoryRegistrationRepository) {
+        return new InMemoryOAuth2AuthorizedClientService(inMemoryRegistrationRepository);
     }
 
     @Bean(name = "authorizationRequestRedirectFilter")
-    public Filter openIDAuthorizationRequestRedirectFilter() {
+    public Filter openIDAuthorizationRequestRedirectFilter(AuthorizationRequestRepository openIDAuthorizationRequestRepository,
+                                                           ClientRegistrationRepository inMemoryRegistrationRepository) {
         OpenIDAuthorizationRequestRedirectFilter openIDAuthorizationRequestRedirectFilter = new OpenIDAuthorizationRequestRedirectFilter(
-            inMemoryRegistrationRepository(), "/auth/oauth2");
+            inMemoryRegistrationRepository, "/auth/oauth2");
         openIDAuthorizationRequestRedirectFilter.setAuthorizationRequestRepository(
-            (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository());
+            (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository);
         return openIDAuthorizationRequestRedirectFilter;
     }
 
@@ -186,9 +188,9 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Bean(name = "openIdProviderRuntimeConfig")
-    public OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig() {
+    public OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig(OpenIdProviderInfo openIdProviderInfo) {
         List<OpenIdProviderInfo> openIdProvidersInfoList = new ArrayList<>();
-        openIdProvidersInfoList.add(openIdProviderInfo());
+        openIdProvidersInfoList.add(openIdProviderInfo);
         OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig = new OpenIdProviderRuntimeConfig();
         openIdProviderRuntimeConfig.setOpenIdProviderInfoList(openIdProvidersInfoList);
         return openIdProviderRuntimeConfig;

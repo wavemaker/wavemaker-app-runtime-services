@@ -52,10 +52,10 @@ public class DatabaseSecurityProviderConfiguration {
     private PersistentTokenBasedRememberMeServices rememberMeServices;
 
     @Bean(name = "databaseAuthenticationProvider")
-    public AuthenticationProvider daoAuthenticationProvider() {
+    public AuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder, UserDetailsService jdbcDaoImpl) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(databaseUserDetailsService(databaseProviderConfig()));
-        authenticationProvider.setPasswordEncoder(noOpPasswordEncoder());
+        authenticationProvider.setUserDetailsService(jdbcDaoImpl);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
         return authenticationProvider;
     }
 
@@ -65,10 +65,10 @@ public class DatabaseSecurityProviderConfiguration {
     }
 
     @Bean(name = "jdbcDaoImpl")
-    public UserDetailsService databaseUserDetailsService(DatabaseProviderConfig databaseProviderConfig) {
+    public UserDetailsService databaseUserDetailsService(UserProvider defaultUserProvider, AuthoritiesProvider defaultAuthoritiesProvider) {
         DatabaseUserDetailsService databaseUserDetailsService = new DatabaseUserDetailsService();
-        databaseUserDetailsService.setAuthoritiesProvider(defaultAuthoritiesProviderImpl(databaseProviderConfig));
-        databaseUserDetailsService.setUserProvider(defaultUserProviderImpl(databaseProviderConfig));
+        databaseUserDetailsService.setAuthoritiesProvider(defaultAuthoritiesProvider);
+        databaseUserDetailsService.setUserProvider(defaultUserProvider);
         return databaseUserDetailsService;
     }
 

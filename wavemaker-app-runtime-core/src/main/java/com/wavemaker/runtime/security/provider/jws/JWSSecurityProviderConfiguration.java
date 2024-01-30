@@ -35,7 +35,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -47,6 +46,7 @@ import com.wavemaker.app.security.models.jws.JWSConfiguration;
 import com.wavemaker.app.security.models.jws.JWSProviderConfiguration;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 
 import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_ROLE_PROVIDER;
@@ -79,13 +79,13 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "jwtIssuerAuthenticationManagerResolver")
-    public AuthenticationManagerResolver<HttpServletRequest> jwtIssuerAuthenticationManagerResolver() {
-        return new JwtIssuerAuthenticationManagerResolver(jwsAuthenticationManagerResolver());
+    public AuthenticationManagerResolver<HttpServletRequest> jwtIssuerAuthenticationManagerResolver(AuthenticationManagerResolver<String> jwsAuthenticationManagerResolver) {
+        return new JwtIssuerAuthenticationManagerResolver(jwsAuthenticationManagerResolver);
     }
 
     @Bean(name = "jwsBearerTokenAuthenticationFilter")
-    public Filter jwsBearerTokenAuthenticationFilter() {
-        return new BearerTokenAuthenticationFilter(jwtIssuerAuthenticationManagerResolver());
+    public Filter jwsBearerTokenAuthenticationFilter(AuthenticationManagerResolver<HttpServletRequest> jwtIssuerAuthenticationManagerResolver) {
+        return new BearerTokenAuthenticationFilter(jwtIssuerAuthenticationManagerResolver);
     }
 
     @Bean
@@ -105,8 +105,8 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
-        http.addFilterAfter(jwsBearerTokenAuthenticationFilter(), BasicAuthenticationFilter.class);
+    public List<FilterInfo> getFilters() {
+        return List.of(new FilterInfo(BasicAuthenticationFilter.class, "jwsBearerTokenAuthenticationFilter", "after"));
     }
 
     private DefaultAuthoritiesProviderImpl jwsAuthoritiesProvider(JWSProviderConfiguration jwsProviderConfiguration) {

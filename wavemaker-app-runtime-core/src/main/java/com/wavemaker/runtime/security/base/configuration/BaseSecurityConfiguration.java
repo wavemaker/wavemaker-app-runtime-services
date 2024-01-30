@@ -73,9 +73,9 @@ public class BaseSecurityConfiguration {
     }
 
     @Bean(name = "wmFrameOptionsFilter")
-    public Filter wmFrameOptionsFilter() {
+    public Filter wmFrameOptionsFilter(FrameOptions frameOptions) {
         WMFrameOptionsHeaderFilter wmFrameOptionsHeaderFilter = new WMFrameOptionsHeaderFilter();
-        wmFrameOptionsHeaderFilter.setFrameOptions(frameOptions());
+        wmFrameOptionsHeaderFilter.setFrameOptions(frameOptions);
         return wmFrameOptionsHeaderFilter;
     }
 
@@ -90,8 +90,8 @@ public class BaseSecurityConfiguration {
     }
 
     @Bean(name = "corsFilter")
-    public Filter corsFilter() {
-        return new CorsFilter(corsConfigurationSource());
+    public Filter corsFilter(CorsConfigurationSource corsConfigurationSource) {
+        return new CorsFilter(corsConfigurationSource);
     }
 
     @Bean(name = "corsConfigurationSource")
@@ -105,9 +105,10 @@ public class BaseSecurityConfiguration {
     }
 
     @Bean(name = "wmCompositeSecurityFilter")
-    public FilterChainProxy wmCompositeSecurityFilter() {
+    public FilterChainProxy wmCompositeSecurityFilter(Filter sslSecureFilter, Filter wmXSSFilter, Filter contentSecurityPolicyFilter,
+                                                      Filter wmFrameOptionsFilter, Filter wmXContentTypeOptionsFilter, Filter corsFilter) {
         SecurityFilterChain securityFilterChain = new DefaultSecurityFilterChain(new AntPathRequestMatcher("/**"),
-            contentSecurityPolicyFilter(), sslSecureFilter(), wmXSSFilter(), wmFrameOptionsFilter(), wmXContentTypeOptionsFilter(), corsFilter());
+            contentSecurityPolicyFilter, sslSecureFilter, wmXSSFilter, wmFrameOptionsFilter, wmXContentTypeOptionsFilter, corsFilter);
         return new FilterChainProxy(securityFilterChain);
     }
 
