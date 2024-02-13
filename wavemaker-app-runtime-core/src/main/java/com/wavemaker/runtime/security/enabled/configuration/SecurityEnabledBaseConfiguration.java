@@ -174,8 +174,8 @@ public class SecurityEnabledBaseConfiguration {
         int cookieMaxAge = loginConfig.getCookieMaxAge();
         String cookiePath = loginConfig.getCookiePath();
         boolean base64Encode = loginConfig.isCookieBase64Encode();
-        String jvmRoute = environment.getProperty("security.general.cookie.jvmRoute");
-        String sameSite = environment.getProperty("security.general.cookie.sameSite");
+        String jvmRoute = loginConfig.getJvmRoute();
+        String sameSite = loginConfig.getSameSite();
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
         if (StringUtils.isNotBlank(cookiePath)) {
             defaultCookieSerializer.setCookiePath(cookiePath);

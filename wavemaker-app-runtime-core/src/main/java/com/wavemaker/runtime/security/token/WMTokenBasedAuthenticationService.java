@@ -117,16 +117,16 @@ public class WMTokenBasedAuthenticationService {
     }
 
     protected WMUser toWMUser(final Authentication authentication) {
-        Authentication authenticationSource = ((WMAuthentication) authentication).getAuthenticationSource();
         if (authentication instanceof WMAuthentication) {
             String username = (String) authentication.getPrincipal();
-            return toWMUser(username, "", authentication.getAuthorities());
+            String userId = ((WMAuthentication) authentication).getUserId();
+            return toWMUser(userId, username, "", authentication.getAuthorities());
         }
         throw new TokenGenerationException("Unknown authentication,failed to build token for current user");
     }
 
-    private WMUser toWMUser(final String username, final String password, Collection<? extends GrantedAuthority> authorities) {
-        return new WMUser(username, username, password, username, 0, true, true, true, true, authorities, System.currentTimeMillis());
+    private WMUser toWMUser(final String userId, final String username, final String password, Collection<? extends GrantedAuthority> authorities) {
+        return new WMUser(userId, username, password, username, 0, true, true, true, true, authorities, System.currentTimeMillis());
     }
 
     protected Authentication toAuthentication(final WMUser wmUser) {

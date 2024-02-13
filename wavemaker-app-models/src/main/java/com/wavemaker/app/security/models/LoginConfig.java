@@ -42,6 +42,13 @@ public class LoginConfig {
 
     @ProfilizableProperty("${security.general.cookie.base64Encode:true}")
     private boolean cookieBase64Encode;
+
+    @ProfilizableProperty("${security.general.cookie.jvmRoute}")
+    private String jvmRoute;
+
+    @ProfilizableProperty("${security.general.cookie.sameSite}")
+    private String sameSite;
+
     @NotNull
     @Valid
     private SessionTimeoutConfig sessionTimeout;
@@ -96,6 +103,22 @@ public class LoginConfig {
 
     public void setCookieBase64Encode(boolean cookieBase64Encode) {
         this.cookieBase64Encode = cookieBase64Encode;
+    }
+
+    public String getJvmRoute() {
+        return jvmRoute;
+    }
+
+    public void setJvmRoute(String jvmRoute) {
+        this.jvmRoute = jvmRoute;
+    }
+
+    public String getSameSite() {
+        return sameSite;
+    }
+
+    public void setSameSite(String sameSite) {
+        this.sameSite = sameSite;
     }
 
     public SessionConcurrencyConfig getSessionConcurrencyConfig() {
