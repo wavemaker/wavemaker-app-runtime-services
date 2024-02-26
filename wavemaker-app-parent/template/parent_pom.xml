@@ -203,6 +203,13 @@
                 <version>${wavemaker.app.build.version}</version>
                 <executions>
                     <execution>
+                        <id>validate wm app</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>validate-wm-app</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>generate app sources</id>
                         <phase>process-classes</phase>
                         <goals>

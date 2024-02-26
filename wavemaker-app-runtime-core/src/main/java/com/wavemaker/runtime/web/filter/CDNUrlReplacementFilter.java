@@ -25,26 +25,44 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.proxy.AppPropertiesConstants;
+import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.web.wrapper.CDNUrlReplacementServletResponseWrapper;
 
 public class CDNUrlReplacementFilter extends GenericFilterBean {
     private static final String CDN_URL_PLACEHOLDER = "_cdnUrl_";
+
+    private static final String DEFAULT_CDN_URL = "ng-bundle/";
 
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
 
     private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
     private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
 
+    @Autowired
+    private Environment environment;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         if (requestMatches(httpServletRequest)) {
-            String cdnUrl = servletRequest.getServletContext().getInitParameter("cdnUrl");
+            String cdnUrl;
+            if (RuntimeEnvironment.isTestRunEnvironment()) {
+                cdnUrl = servletRequest.getServletContext().getInitParameter("cdnUrl");
+            } else {
+                cdnUrl = environment.getProperty(AppPropertiesConstants.APP_CDN_URL);
+                if (StringUtils.isBlank(cdnUrl)) {
+                    cdnUrl = DEFAULT_CDN_URL;
+                }
+            }
             cdnUrlReplacementFilterLogger.debug("Replacing _cdnUrl_ placeholder with the value : {}", cdnUrl);
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
             CDNUrlReplacementServletResponseWrapper cdnUrlReplacementServletResponseWrapper = new CDNUrlReplacementServletResponseWrapper(httpServletResponse);

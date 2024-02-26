@@ -125,10 +125,9 @@ public class WMApplicationListener implements ServletContextListener {
             }
         }
 
-        if (RuntimeEnvironment.isTestRunEnvironment()) {
-            FilterRegistration.Dynamic htmlFilter = registerDelegatingFilterProxyFilter(servletContext, "cdnUrlReplacementFilter");
-            htmlFilter.addMappingForUrlPatterns(null, true, "/*");
-        }
+        FilterRegistration.Dynamic cdnUrlReplacementFilter = registerDelegatingFilterProxyFilter(servletContext, "cdnUrlReplacementFilter");
+        cdnUrlReplacementFilter.addMappingForUrlPatterns(null, true, "/*");
+
         FilterRegistration.Dynamic activeThemeFilter = registerDelegatingFilterProxyFilter(servletContext, "activeThemeReplacementFilter");
         activeThemeFilter.addMappingForUrlPatterns(null, true, "/*");
 
