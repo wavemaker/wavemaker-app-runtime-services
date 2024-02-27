@@ -46,23 +46,27 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
 
     private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
     private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
-
+    private String cdnUrl;
     @Autowired
     private Environment environment;
+
+    @Override
+    protected void initFilterBean() throws ServletException {
+        super.initFilterBean();
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            cdnUrl = getServletContext().getInitParameter("cdnUrl");
+        } else {
+            cdnUrl = environment.getProperty(AppPropertiesConstants.APP_CDN_URL);
+            if (StringUtils.isBlank(cdnUrl)) {
+                cdnUrl = DEFAULT_CDN_URL;
+            }
+        }
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         if (requestMatches(httpServletRequest)) {
-            String cdnUrl;
-            if (RuntimeEnvironment.isTestRunEnvironment()) {
-                cdnUrl = servletRequest.getServletContext().getInitParameter("cdnUrl");
-            } else {
-                cdnUrl = environment.getProperty(AppPropertiesConstants.APP_CDN_URL);
-                if (StringUtils.isBlank(cdnUrl)) {
-                    cdnUrl = DEFAULT_CDN_URL;
-                }
-            }
             cdnUrlReplacementFilterLogger.debug("Replacing _cdnUrl_ placeholder with the value : {}", cdnUrl);
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
             CDNUrlReplacementServletResponseWrapper cdnUrlReplacementServletResponseWrapper = new CDNUrlReplacementServletResponseWrapper(httpServletResponse);
