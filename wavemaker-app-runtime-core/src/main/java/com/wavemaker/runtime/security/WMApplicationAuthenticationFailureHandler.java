@@ -29,8 +29,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -47,9 +46,10 @@ import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_
 /**
  * @author Uday Shankar
  */
-public class WMApplicationAuthenticationFailureHandler implements AuthenticationFailureHandler, BeanPostProcessor {
+public class WMApplicationAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(WMApplicationAuthenticationFailureHandler.class);
+    @Autowired(required = false)
     private List<WMAuthenticationFailureHandler> customFailureHandlerList = new ArrayList<>();
 
     @Override
@@ -76,19 +76,6 @@ public class WMApplicationAuthenticationFailureHandler implements Authentication
             response.setContentType(APPLICATION_JSON);
             response.getWriter().write(WMObjectMapper.getInstance().writeValueAsString(errorMap));
         }
-    }
-
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof WMAuthenticationFailureHandler) {
-            customFailureHandlerList.add((WMAuthenticationFailureHandler) bean);
-        }
-        return bean;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
     }
 
     private void invokeCustomWMAuthenticationFailureHandler(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
