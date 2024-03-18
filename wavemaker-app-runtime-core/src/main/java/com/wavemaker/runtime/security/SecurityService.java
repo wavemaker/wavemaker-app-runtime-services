@@ -303,13 +303,17 @@ public class SecurityService {
             userInfo.setLandingPage(getUserLandingPage());
             userInfo.setUserAttributes(getClientAttributes());
         }
-
-        SecurityInfo securityInfo = new SecurityInfo();
+        SecurityInfo securityInfo = getAppSecurityInfo();
         securityInfo.setAuthenticated(authenticated);
+        securityInfo.setUserInfo(userInfo);
+        return securityInfo;
+    }
+
+    public SecurityInfo getAppSecurityInfo() {
+        SecurityInfo securityInfo = new SecurityInfo();
         securityInfo.setSecurityEnabled(isSecurityEnabled());
         securityInfo.setRememberMeEnabled(isRememberMeEnabled());
         securityInfo.setLoginConfig(getLoginConfig());
-        securityInfo.setUserInfo(userInfo);
         securityInfo.setCsrfHeaderName(getCsrfHeaderName());
         securityInfo.setCsrfCookieName(getCsrfCookieName());
         return securityInfo;

@@ -99,8 +99,8 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 }
                 if ("APPLICATION".equals(getApplicationType(appProperties))) {
                     appProperties.put("securityEnabled", securityService.isSecurityEnabled());
-                    appProperties.put("xsrf_header_name", securityService.getSecurityInfo().getCsrfHeaderName());
-                    appProperties.put("xsrf_cookie_name", securityService.getSecurityInfo().getCsrfCookieName());
+                    appProperties.put("xsrf_header_name", securityService.getAppSecurityInfo().getCsrfHeaderName());
+                    appProperties.put("xsrf_cookie_name", securityService.getAppSecurityInfo().getCsrfCookieName());
                 }
                 appProperties
                     .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
