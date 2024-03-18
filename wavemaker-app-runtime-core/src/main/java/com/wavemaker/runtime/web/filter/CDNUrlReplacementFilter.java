@@ -17,6 +17,7 @@ package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -25,26 +26,53 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.proxy.AppPropertiesConstants;
+import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.web.wrapper.CDNUrlReplacementServletResponseWrapper;
 
 public class CDNUrlReplacementFilter extends GenericFilterBean {
     private static final String CDN_URL_PLACEHOLDER = "_cdnUrl_";
 
+    private static final String DEFAULT_NG_BUILD_CDN_URL = "ng-bundle/";
+    private static final String DEFAULT_WM_BUILD_CDN_URL = ".";
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
 
     private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
     private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
+    private String cdnUrl;
+    @Value("${app.build.ui.mode}")
+    private String buildMode;
+    @Autowired
+    private Environment environment;
+
+    @Override
+    protected void initFilterBean() throws ServletException {
+        super.initFilterBean();
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            cdnUrl = getServletContext().getInitParameter("cdnUrl");
+        } else if (Objects.equals(buildMode, "wm")) {
+            cdnUrl = DEFAULT_WM_BUILD_CDN_URL;
+        } else {
+            cdnUrl = environment.getProperty(AppPropertiesConstants.APP_CDN_URL);
+            if (StringUtils.isBlank(cdnUrl)) {
+                cdnUrl = DEFAULT_NG_BUILD_CDN_URL;
+            }
+        }
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         if (requestMatches(httpServletRequest)) {
-            String cdnUrl = servletRequest.getServletContext().getInitParameter("cdnUrl");
             cdnUrlReplacementFilterLogger.debug("Replacing _cdnUrl_ placeholder with the value : {}", cdnUrl);
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
             CDNUrlReplacementServletResponseWrapper cdnUrlReplacementServletResponseWrapper = new CDNUrlReplacementServletResponseWrapper(httpServletResponse);

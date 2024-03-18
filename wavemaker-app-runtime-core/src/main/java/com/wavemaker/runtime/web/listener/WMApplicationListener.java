@@ -68,13 +68,6 @@ public class WMApplicationListener implements ServletContextListener {
 
         ServletRegistration.Dynamic prefabWebContentServlet = registerServlet(servletContext, "prefabWebContentServlet", new PrefabWebContentServlet());
         prefabWebContentServlet.addMapping("/app/prefabs/*");
-
-        ServletRegistration.Dynamic cdnFilesServlet = registerServlet(servletContext, "cdn-files", new DispatcherServlet());
-        cdnFilesServlet.setLoadOnStartup(1);
-        cdnFilesServlet.setInitParameter("namespace", "project-cdn-files");
-        cdnFilesServlet.setInitParameter(CONTEXT_CONFIG_LOCATION, "/WEB-INF/cdn-dispatcher-servlet.xml");
-        cdnFilesServlet.setInitParameter("detectAllHandlerExceptionResolvers", "false");
-        cdnFilesServlet.addMapping("/_cdnUrl_/*");
     }
 
     private void registerFilters(ServletContext servletContext, String applicationType) {
@@ -125,10 +118,9 @@ public class WMApplicationListener implements ServletContextListener {
             }
         }
 
-        if (RuntimeEnvironment.isTestRunEnvironment()) {
-            FilterRegistration.Dynamic htmlFilter = registerDelegatingFilterProxyFilter(servletContext, "cdnUrlReplacementFilter");
-            htmlFilter.addMappingForUrlPatterns(null, true, "/*");
-        }
+        FilterRegistration.Dynamic cdnUrlReplacementFilter = registerDelegatingFilterProxyFilter(servletContext, "cdnUrlReplacementFilter");
+        cdnUrlReplacementFilter.addMappingForUrlPatterns(null, true, "/*");
+
         FilterRegistration.Dynamic activeThemeFilter = registerDelegatingFilterProxyFilter(servletContext, "activeThemeReplacementFilter");
         activeThemeFilter.addMappingForUrlPatterns(null, true, "/*");
 
