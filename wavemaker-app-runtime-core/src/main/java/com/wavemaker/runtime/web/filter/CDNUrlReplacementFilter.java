@@ -65,6 +65,13 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
             cdnUrl = environment.getProperty(AppPropertiesConstants.APP_CDN_URL);
             if (StringUtils.isBlank(cdnUrl)) {
                 cdnUrl = DEFAULT_NG_BUILD_CDN_URL;
+            } else {
+                if (!cdnUrl.endsWith("/")) {
+                    cdnUrl = cdnUrl + "/";
+                }
+                if (!cdnUrl.endsWith(DEFAULT_NG_BUILD_CDN_URL)) {
+                    cdnUrl = cdnUrl + DEFAULT_NG_BUILD_CDN_URL;
+                }
             }
         }
     }
