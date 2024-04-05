@@ -41,9 +41,7 @@ import com.wavemaker.runtime.web.wrapper.CDNUrlReplacementServletResponseWrapper
 
 public class CDNUrlReplacementFilter extends GenericFilterBean {
     private static final String CDN_URL_PLACEHOLDER = "_cdnUrl_";
-
-    private static final String DEFAULT_NG_BUILD_CDN_URL = "ng-bundle/";
-    private static final String DEFAULT_WM_BUILD_CDN_URL = ".";
+    private static final String DEFAULT_CDN_URL = ".";
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
 
     private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
@@ -60,17 +58,14 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             cdnUrl = getServletContext().getInitParameter("cdnUrl");
         } else if (Objects.equals(buildMode, "wm")) {
-            cdnUrl = DEFAULT_WM_BUILD_CDN_URL;
+            cdnUrl = DEFAULT_CDN_URL;
         } else {
             cdnUrl = environment.getProperty(AppPropertiesConstants.APP_CDN_URL);
             if (StringUtils.isBlank(cdnUrl)) {
-                cdnUrl = DEFAULT_NG_BUILD_CDN_URL;
+                cdnUrl = DEFAULT_CDN_URL;
             } else {
-                if (!cdnUrl.endsWith("/")) {
-                    cdnUrl = cdnUrl + "/";
-                }
-                if (!cdnUrl.endsWith(DEFAULT_NG_BUILD_CDN_URL)) {
-                    cdnUrl = cdnUrl + DEFAULT_NG_BUILD_CDN_URL;
+                if (cdnUrl.endsWith("/")) {
+                    cdnUrl = StringUtils.chop(cdnUrl);
                 }
             }
         }
