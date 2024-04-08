@@ -629,6 +629,7 @@ public class CleanupListener implements ServletContextListener {
     private static Field findField(Class klass, String name) {
         Field field = ReflectionUtils.findField(klass, name);
         if (field != null) {
+            // Reflection error
             ReflectionUtils.makeAccessible(field);
         }
         return field;

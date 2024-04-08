@@ -63,6 +63,13 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
             .anyMatch(an -> an instanceof XssDisable);
 
         if (!xssDisable) {
+//            DefaultChildObjectRetriever defaultChildObjectRetriever = new DefaultChildObjectRetriever(field -> {
+//                return !field.isAnnotationPresent(XssDisable.class) && !Modifier.isFinal(field.getModifiers());
+//            });
+//            RecursiveObjectProcessor objectProcessor = new RecursiveObjectProcessor(new XssEncodeProcessor(DataFlowType.OUTGOING, returnValue), new ProcessContext(),
+//                defaultChildObjectRetriever);
+//            objectProcessor.processObject(returnValue, null);
+
             ResponseTuple encodeResult = encode(returnValue, new ArrayList<>(), DataFlowType.OUTGOING);
             if (encodeResult.modified) {
                 returnValue = encodeResult.value;
@@ -78,9 +85,16 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         xssDisable = Arrays.stream(Objects.requireNonNull(parameter.getMethod()).getDeclaringClass().getDeclaredAnnotations())
             .anyMatch(an -> an instanceof XssDisable) || Arrays.stream(parameter.getMethod().getDeclaredAnnotations())
             .anyMatch(an -> an instanceof XssDisable);
+
         if (!xssDisable) {
+//            DefaultChildObjectRetriever defaultChildObjectRetriever = new DefaultChildObjectRetriever(field -> {
+//                return !field.isAnnotationPresent(XssDisable.class) && !Modifier.isFinal(field.getModifiers());
+//            });
+//            RecursiveObjectProcessor objectProcessor = new RecursiveObjectProcessor(new XssEncodeProcessor(DataFlowType.INCOMING, o), new ProcessContext(),
+//                defaultChildObjectRetriever);
+//            objectProcessor.processObject(o, null);
             ResponseTuple responseTuple = encode(o, new ArrayList(), DataFlowType.INCOMING);
-            return responseTuple.value;
+            return o;
         }
         return o;
     }
@@ -199,7 +213,7 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
         }
     }
 
-    private enum DataFlowType {
+    public enum DataFlowType {
         INCOMING,
         OUTGOING
     }
