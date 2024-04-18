@@ -61,7 +61,7 @@ public class SSLContextProvider {
 
     private void initSslContext() {
         try {
-            sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext = SSLContext.getInstance("TLS");
             sslContext.init(getKeyManager(), getTrustManager(), new SecureRandom());
         } catch (Exception e) {
             logger.warn("Failed in initialize ssl context", e);

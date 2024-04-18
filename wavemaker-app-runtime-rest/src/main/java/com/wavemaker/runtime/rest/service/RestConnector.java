@@ -193,7 +193,8 @@ public class RestConnector {
         SSLContextProvider sslContextProvider = new SSLContextProvider(httpConfiguration);
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
             .register("http", PlainConnectionSocketFactory.getSocketFactory())
-            .register("https", new SSLConnectionSocketFactory(sslContextProvider.getSslContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, sslContextProvider.getHostnameVerifier()))
+            .register("https", new SSLConnectionSocketFactory(sslContextProvider.getSslContext(),
+                httpConfiguration.getTlsVersions(), null, sslContextProvider.getHostnameVerifier()))
             .build();
 
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);

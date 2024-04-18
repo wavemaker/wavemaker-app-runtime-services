@@ -15,23 +15,29 @@
 
 package com.wavemaker.runtime.rest.service;
 
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.wavemaker.app.security.models.TrustStoreConfig.TrustStoreConfigType;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
 
 /**
  * @author Uday Shankar
  */
 public class HttpConfiguration {
+
+    private static final Pattern TLS_VERSION_PATTERN = Pattern.compile("TLSv1\\.[23]");
     private boolean useSystemProperties;
     private int connectionSocketTimeoutInSeconds;
     private int connectionTimeoutInSeconds;
     private int connectionRequestTimeoutInSeconds;
     private int maxTotalConnections;
     private int maxTotalConnectionsPerRoute;
-
+    private String[] tlsVersions;
     private boolean appProxyEnabled;
     private String appProxyHost;
     private int appProxyPort;
@@ -57,6 +63,7 @@ public class HttpConfiguration {
         connectionRequestTimeoutInSeconds = environment.getProperty("app.rest.connectionRequestTimeout", Integer.class, 5);
         maxTotalConnections = environment.getProperty("app.rest.maxTotalConnections", Integer.class, 100);
         maxTotalConnectionsPerRoute = environment.getProperty("app.rest.maxConnectionsPerRoute", Integer.class, 50);
+        tlsVersions = getTlsVersions(environment);
 
         appProxyEnabled = environment.getProperty(AppPropertiesConstants.APP_PROXY_ENABLED, Boolean.class, false);
         appProxyHost = environment.getProperty(AppPropertiesConstants.APP_PROXY_HOST);
@@ -98,6 +105,10 @@ public class HttpConfiguration {
 
     public int getMaxTotalConnectionsPerRoute() {
         return maxTotalConnectionsPerRoute;
+    }
+
+    public String[] getTlsVersions() {
+        return tlsVersions;
     }
 
     public boolean isAppProxyEnabled() {
@@ -173,6 +184,7 @@ public class HttpConfiguration {
             ", connectionRequestTimeoutInSeconds=" + connectionRequestTimeoutInSeconds +
             ", maxTotalConnections=" + maxTotalConnections +
             ", maxTotalConnectionsPerRoute=" + maxTotalConnectionsPerRoute +
+            ", tlsVersions=" + Arrays.toString(tlsVersions) +
             ", appProxyEnabled=" + appProxyEnabled +
             ", appProxyHost='" + appProxyHost + '\'' +
             ", appProxyPort=" + appProxyPort +
@@ -187,5 +199,14 @@ public class HttpConfiguration {
             ", trustStoreFileType='" + trustStoreFileType + '\'' +
             ", hostNameVerificationEnabled=" + hostNameVerificationEnabled +
             '}';
+    }
+
+    private String[] getTlsVersions(Environment environment) {
+        String[] tlsVersionsArray = environment.getProperty("app.rest.tlsVersions", String.class, "TLSv1.3,TLSv1.2").split(",");
+        boolean isValidTlsVersions = Arrays.stream(tlsVersionsArray).allMatch(TLS_VERSION_PATTERN.asMatchPredicate());
+        if (!isValidTlsVersions) {
+            throw new WMRuntimeException("Invalid value configured in app.rest.tlsVersions=" + Arrays.toString(tlsVersionsArray));
+        }
+        return tlsVersionsArray;
     }
 }
