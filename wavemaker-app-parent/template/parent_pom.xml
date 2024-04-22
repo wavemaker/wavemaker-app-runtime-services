@@ -376,12 +376,55 @@
     </profiles>
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>4.0.4</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Added this, to avoid the jaxb-api dependency to be loaded as a transitive dependency (in hibernate-core,cas-client-core, wavemaker-commons-util dependencies)
+            in project as the alternate of it jakarta.xml.bind-api will be loaded-->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Added this, to avoid the javax.activation-api dependency to be loaded as a transitive dependency(in wm-soap, hibernate-core dependencies) or direct dependency
+            in project, as javax.activation-api is replaced with jakarta-->
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>javax.activation-api</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Added this, to avoid the jakarta.activation dependency to be loaded as a transitive dependency (in wm-soap dependency) or direct dependency in project,
+            as it is clashing with the jakarta.activation-api (we are using jakarta-activation-api instead of jakarta.activation)-->
+            <dependency>
+                <groupId>com.sun.activation</groupId>
+                <artifactId>jakarta.activation</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Added this, to avoid the javax.servlet-api dependency to be loaded as a transitive or direct dependency in project, as javax.servlet-api is replaced with jakarta -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Added this, to avoid the javax.persistence-api dependency to be loaded as a transitive or direct dependency in project, as javax.persistence-api is replaced with jakarta -->
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Added this, to avoid javax.transaction-api dependency to be loaded as a transitive or direct dependency in project, as javax.transaction-api is replaced with jakarta -->
+            <dependency>
+                <groupId>javax.transaction</groupId>
+                <artifactId>javax.transaction-api</artifactId>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <properties>
         <java.required.version>11</java.required.version>
         <maven.eclipseLifecycleMappingPlugin.version>1.0.0</maven.eclipseLifecycleMappingPlugin.version>

@@ -47,8 +47,8 @@ dependencies {
         exclude("org.slf4j", "slf4j-simple")
     }
     implementation(appDependenciesLibs.wordnik.swagger.annotations)
-    implementation(appDependenciesLibs.javax.annotation.api)
-    compileOnly(appDependenciesLibs.javax.servlet.api)
+    implementation(appDependenciesLibs.jakarta.annotation.api)
+    compileOnly(appDependenciesLibs.jakarta.servlet.api)
     compileOnly(appDependenciesLibs.spring.contextSupport)
     compileOnly(appDependenciesLibs.spring.security.cas)
     compileOnly(appDependenciesLibs.spring.security.ldap)

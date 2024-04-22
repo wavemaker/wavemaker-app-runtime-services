@@ -23,14 +23,14 @@ dependencies {
     implementation(appDependenciesLibs.hibernate.core)
     implementation(appDependenciesLibs.aspectjrt)
     implementation(appDependenciesLibs.aspectjweaver)
-    implementation(appDependenciesLibs.javax.annotation.api)
+    implementation(appDependenciesLibs.jakarta.annotation.api)
     implementation(appDependenciesLibs.jakarta.validationApi)
     implementation(appDependenciesLibs.poiOoxml) {
         exclude("com.github.virtuald", "curvesapi")
     }
     implementation(appDependenciesLibs.freemarker)
     implementation(appDependenciesLibs.tika.core)
-    compileOnly(appDependenciesLibs.javax.servlet.api)
+    compileOnly(appDependenciesLibs.jakarta.servlet.api)
     runtimeOnly(appDependenciesLibs.antlr4Runtime)
     // The below dependency is adding antlr4 and its transitive dependencies as well, removing them using exclude for runtime configuration
     antlr(appDependenciesLibs.build.antlr4)

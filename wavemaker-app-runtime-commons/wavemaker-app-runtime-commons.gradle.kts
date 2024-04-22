@@ -19,7 +19,7 @@ dependencies {
     implementation(appDependenciesLibs.jackson.dataformat.yaml)
     implementation(appDependenciesLibs.jackson.datatype.jsr310)
     implementation(appDependenciesLibs.jackson.datatype.hibernate5)
-    compileOnly(appDependenciesLibs.javax.servlet.api)
+    compileOnly(appDependenciesLibs.jakarta.servlet.api)
     testImplementation(appDependenciesLibs.test.junit4)
     testImplementation(appDependenciesLibs.test.jsonassert)
     testRuntimeOnly(appDependenciesLibs.hibernate.core) {

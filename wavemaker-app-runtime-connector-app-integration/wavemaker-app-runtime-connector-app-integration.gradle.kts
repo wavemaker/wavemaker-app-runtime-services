@@ -12,7 +12,7 @@ dependencies {
     implementation(appDependenciesLibs.spring.beans)
     implementation(appDependenciesLibs.spring.context)
     implementation(appDependenciesLibs.snakeyaml)
-    compileOnly(appDependenciesLibs.javax.servlet.api)
+    compileOnly(appDependenciesLibs.jakarta.servlet.api)
 }
 
 javaLibraryMavenPublish {

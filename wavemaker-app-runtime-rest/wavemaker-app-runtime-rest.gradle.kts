@@ -20,13 +20,13 @@ dependencies {
     implementation(appDependenciesLibs.spring.webmvc)
     implementation(appDependenciesLibs.jackson.annotations)
     implementation(appDependenciesLibs.apache.httpclient)
-    implementation(appDependenciesLibs.javax.annotation.api)
+    implementation(appDependenciesLibs.jakarta.annotation.api)
     implementation(appDependenciesLibs.jakarta.validationApi)
     implementation(appDependenciesLibs.feign.core)
-    compileOnly(appDependenciesLibs.javax.servlet.api)
+    compileOnly(appDependenciesLibs.jakarta.servlet.api)
     testImplementation(appDependenciesLibs.test.junit4)
     testImplementation(appDependenciesLibs.test.mockito.all)
-    testImplementation(appDependenciesLibs.javax.servlet.api)
+    testImplementation(appDependenciesLibs.jakarta.servlet.api)
 }
 
 javaLibraryMavenPublish {

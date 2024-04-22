@@ -11,7 +11,7 @@ dependencies {
     implementation(appDependenciesLibs.commons.lang3)
     implementation(appDependenciesLibs.commons.collections4)
     implementation(appDependenciesLibs.spring.webmvc)
-    compileOnly(appDependenciesLibs.javax.servlet.api)
+    compileOnly(appDependenciesLibs.jakarta.servlet.api)
     testImplementation(appDependenciesLibs.test.junit4)
     testImplementation(appDependenciesLibs.test.spring.test)
 }
