@@ -21,6 +21,16 @@ dependencies {
     implementation(appDependenciesLibs.spring.data.commons)
     implementation(appDependenciesLibs.jackson.annotations)
     implementation(appDependenciesLibs.hibernate.core)
+    implementation(libs.jakarta.persistenceApi) {
+        because("This is explicitly added even if the module is not directly depending on this dependency. hibernate-core depends on " +
+                "javax.persistence-api but it is not available as it is declared as scope provided in parent_pom.xml." +
+                "To get the transaction related classes adding jakarta.persistence-api")
+    }
+    implementation(libs.jakarta.transaction.api) {
+        because("This is explicitly added even if the module is not directly depending on this dependency. hibernate-core depends on " +
+                "javax.persistence-api but it is not available as it is declared as scope provided in parent_pom.xml." +
+                "To get the transaction related classes adding jakarta.transaction-api")
+    }
     implementation(appDependenciesLibs.aspectjrt)
     implementation(appDependenciesLibs.aspectjweaver)
     implementation(appDependenciesLibs.jakarta.annotation.api)
