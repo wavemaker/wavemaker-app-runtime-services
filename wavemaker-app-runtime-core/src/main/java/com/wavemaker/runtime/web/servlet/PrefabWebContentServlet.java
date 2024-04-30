@@ -69,6 +69,10 @@ public class PrefabWebContentServlet extends HttpServlet {
         InputStream inputStream = null;
         try {
             inputStream = getServletContext().getResourceAsStream(FileValidationUtils.validateFilePath(prefabResourceUpdatedPath));
+            if (inputStream == null) {
+                HttpRequestUtils.writeJsonErrorResponse("Resource not found", HttpStatus.SC_NOT_FOUND, response);
+                return;
+            }
             ServletOutputStream outputStream = response.getOutputStream();
             WMIOUtils.copy(inputStream, outputStream);
         } finally {
