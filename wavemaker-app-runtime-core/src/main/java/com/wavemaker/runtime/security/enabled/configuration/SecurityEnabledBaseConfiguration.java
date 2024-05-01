@@ -17,7 +17,7 @@ package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -529,7 +529,7 @@ public class SecurityEnabledBaseConfiguration {
 
     private RolesConfig createRoleConfig(List<Role> roles) {
         RolesConfig rolesConfiguration = new RolesConfig();
-        Map<String, RoleConfig> roleMap = new HashMap<>();
+        Map<String, RoleConfig> roleMap = new LinkedHashMap<>();
         for (Role roleConfig : roles) {
             roleMap.put(roleConfig.getName(), roleConfig.getRoleConfig());
         }
