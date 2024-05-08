@@ -34,6 +34,8 @@ public class CASAuthoritiesProvider implements AuthoritiesProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(CASAuthoritiesProvider.class);
 
+    private String prefix;
+
     private String roleAttributeName;
 
     @Override
@@ -50,10 +52,17 @@ public class CASAuthoritiesProvider implements AuthoritiesProvider {
         List<String> rolesList = new ArrayList<>();
         while (roleTokenizer.hasMoreTokens()) {
             String role = roleTokenizer.nextToken();
+            if (!prefix.isEmpty() && !role.startsWith(prefix)) {
+                role = prefix + role;
+            }
             rolesList.add(role);
         }
         String[] rolesArray = new String[rolesList.size()];
         return new ArrayList<>(AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)));
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public void setRoleAttributeName(String roleAttributeName) {

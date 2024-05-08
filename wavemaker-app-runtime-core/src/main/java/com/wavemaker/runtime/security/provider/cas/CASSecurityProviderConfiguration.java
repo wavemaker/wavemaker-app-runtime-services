@@ -140,6 +140,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "cas20ServiceTicketValidator")
+    @Conditional(CASDefaultCondition.class)
     public TicketValidator cas20ServiceTicketValidator(CASProviderConfig casProviderConfig, HttpURLConnectionFactory casUrlConnectionFactory) {
         Cas20ServiceTicketValidator cas20ServiceTicketValidator = new Cas20ServiceTicketValidator(Objects.requireNonNull(
             casProviderConfig.getServerUrl()));
@@ -171,7 +172,8 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "casFilter")
-    public Filter casFilter(AuthenticationDetailsSource WMWebAuthenticationDetailsSource, ServiceProperties casServiceProperties) {
+    @Conditional(CASDefaultCondition.class)
+    public Filter casFilter(AuthenticationDetailsSource<HttpServletRequest, ?> WMWebAuthenticationDetailsSource, ServiceProperties casServiceProperties) {
         CasAuthenticationFilter casAuthenticationFilter = new CasAuthenticationFilter();
         casAuthenticationFilter.setFilterProcessesUrl("/j_spring_cas_security_check");
         casAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
@@ -219,6 +221,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @Conditional(CASAuthoritiesProviderCondition.class)
     public AuthoritiesProvider casAuthoritiesProvider() {
         CASAuthoritiesProvider casAuthoritiesProvider = new CASAuthoritiesProvider();
+        casAuthoritiesProvider.setPrefix("ROLE_");
         casAuthoritiesProvider.setRoleAttributeName(environment.getProperty("security.providers.cas.roleAttributeName"));
         return casAuthoritiesProvider;
     }
