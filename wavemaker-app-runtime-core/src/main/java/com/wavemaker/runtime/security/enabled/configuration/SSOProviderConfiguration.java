@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import com.wavemaker.app.security.models.LoginConfig;
 import com.wavemaker.app.security.models.LoginType;
@@ -31,6 +30,7 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
+import com.wavemaker.runtime.security.model.FilterInfo;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, SSOProviderCondition.class})
@@ -56,7 +56,8 @@ public class SSOProviderConfiguration implements WMSecurityConfiguration {
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
+    public List<FilterInfo> getFilters() {
         //no common Filters
+        return List.of();
     }
 }

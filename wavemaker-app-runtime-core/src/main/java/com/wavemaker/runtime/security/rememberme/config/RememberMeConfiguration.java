@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -44,6 +43,7 @@ import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.rememberme.WMRememberMeAuthenticationFilter;
 
 @Configuration
@@ -68,19 +68,19 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     private AuthenticationSuccessHandler wmCsrfTokenRepositorySuccessHandler;
 
     @Bean(name = "rememberMeServices")
-    public RememberMeServices rememberMeServices() {
+    public RememberMeServices rememberMeServices(PersistentTokenRepository rememberMeRepository, RememberMeConfig rememberMeConfig) {
         PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices =
-            new PersistentTokenBasedRememberMeServices("WM_APP_KEY", userDetailsService, rememberMeRepository());
+            new PersistentTokenBasedRememberMeServices("WM_APP_KEY", userDetailsService, rememberMeRepository);
         persistentTokenBasedRememberMeServices.setParameter("j_rememberme");
-        persistentTokenBasedRememberMeServices.setTokenValiditySeconds((int) rememberMeConfig().getTokenValiditySeconds());
+        persistentTokenBasedRememberMeServices.setTokenValiditySeconds((int) rememberMeConfig.getTokenValiditySeconds());
         return persistentTokenBasedRememberMeServices;
     }
 
     @Bean(name = "rememberMeAuthFilter")
-    public Filter rememberMeAuthFilter() {
+    public Filter rememberMeAuthFilter(RememberMeServices rememberMeServices, AuthenticationSuccessHandler rememberMeAuthenticationSuccessHandler) {
         WMRememberMeAuthenticationFilter wmRememberMeAuthenticationFilter = new WMRememberMeAuthenticationFilter(
-            authenticationManager, rememberMeServices());
-        wmRememberMeAuthenticationFilter.setAuthenticationSuccessHandler(rememberMeAuthenticationSuccessHandler());
+            authenticationManager, rememberMeServices);
+        wmRememberMeAuthenticationFilter.setAuthenticationSuccessHandler(rememberMeAuthenticationSuccessHandler);
         return wmRememberMeAuthenticationFilter;
     }
 
@@ -104,18 +104,18 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
         return wmApplicationAuthenticationSuccessHandler;
     }
 
-    @Override
-    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
-        return Collections.emptyList();
-    }
-
     @Bean(name = "rememberMeConfig")
     public RememberMeConfig rememberMeConfig() {
         return new RememberMeConfig();
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
-        http.addFilterAt(rememberMeAuthFilter(), RememberMeAuthenticationFilter.class);
+    public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<FilterInfo> getFilters() {
+        return List.of(new FilterInfo(RememberMeAuthenticationFilter.class, "rememberMeAuthFilter", "at"));
     }
 }

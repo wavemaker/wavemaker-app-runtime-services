@@ -47,12 +47,14 @@ public class ActiveDirectorySecurityProviderConfiguration {
 
     @Bean(name = "adAuthProvider")
     public AuthenticationProvider adAuthProvider(ActiveDirectoryAuthoritiesPopulator activeDirectoryAuthoritiesPopulator,
-                                                 ActiveDirectoryProviderConfig activeDirectoryProviderConfig) {
+                                                 ActiveDirectoryProviderConfig activeDirectoryProviderConfig,
+                                                 GrantedAuthoritiesMapper authoritiesMapper,
+                                                 UserDetailsContextMapper userDetailsContextMapper) {
         ActiveDirectoryAuthenticationProvider activeDirectoryAuthenticationProvider = new ActiveDirectoryAuthenticationProvider(
             activeDirectoryProviderConfig.getDomain(), activeDirectoryProviderConfig.getUrl(), activeDirectoryProviderConfig.getRootDn());
         activeDirectoryAuthenticationProvider.setUserSearchPattern(activeDirectoryProviderConfig.getUserSearchPattern());
-        activeDirectoryAuthenticationProvider.setAuthoritiesMapper(simpleAuthorityMapper());
-        activeDirectoryAuthenticationProvider.setUserDetailsContextMapper(userDetailsContextMapper());
+        activeDirectoryAuthenticationProvider.setAuthoritiesMapper(authoritiesMapper);
+        activeDirectoryAuthenticationProvider.setUserDetailsContextMapper(userDetailsContextMapper);
         activeDirectoryAuthenticationProvider.setAuthoritiesPopulator(activeDirectoryAuthoritiesPopulator);
         return activeDirectoryAuthenticationProvider;
     }
@@ -87,10 +89,9 @@ public class ActiveDirectorySecurityProviderConfiguration {
 
     @Bean(name = "adAuthoritiesPopulator")
     @Conditional(DatabaseActiveDirectoryAuthoritiesPopulatorCondition.class)
-    public ActiveDirectoryAuthoritiesPopulator activeDirectoryDatabaseAuthoritiesPopulator(ApplicationContext applicationContext,
-                                                                                           RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig) {
+    public ActiveDirectoryAuthoritiesPopulator activeDirectoryDatabaseAuthoritiesPopulator(AuthoritiesProvider defaultAuthoritiesProvider) {
         ActiveDirectoryDatabaseAuthoritiesPopulator activeDirectoryDatabaseAuthoritiesPopulator = new ActiveDirectoryDatabaseAuthoritiesPopulator();
-        activeDirectoryDatabaseAuthoritiesPopulator.setAuthoritiesProvider(defaultAuthoritiesProviderImpl(applicationContext, runtimeDatabaseRoleMappingConfig));
+        activeDirectoryDatabaseAuthoritiesPopulator.setAuthoritiesProvider(defaultAuthoritiesProvider);
         return activeDirectoryDatabaseAuthoritiesPopulator;
     }
 

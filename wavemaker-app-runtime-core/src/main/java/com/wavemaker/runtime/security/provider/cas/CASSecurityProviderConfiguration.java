@@ -45,7 +45,6 @@ import org.springframework.security.cas.authentication.CasAssertionAuthenticatio
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.RedirectStrategy;
@@ -67,6 +66,7 @@ import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.NullAuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.model.FilterInfo;
 import com.wavemaker.runtime.security.provider.cas.handler.WMCasAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
@@ -106,8 +106,8 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
-        http.addFilterAt(casFilter(), CasAuthenticationFilter.class);
+    public List<FilterInfo> getFilters() {
+        return List.of(new FilterInfo(CasAuthenticationFilter.class, "casFilter", "at"));
     }
 
     @Bean(name = "casProviderConfig")
@@ -116,10 +116,10 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "logoutSuccessHandler")
-    public LogoutSuccessHandler logoutSuccessHandler(CASProviderConfig casProviderConfig) {
+    public LogoutSuccessHandler logoutSuccessHandler(CASProviderConfig casProviderConfig, RedirectStrategy redirectStrategyBean) {
         SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
         simpleUrlLogoutSuccessHandler.setDefaultTargetUrl(casProviderConfig.getLogoutUrl());
-        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
+        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean);
         return simpleUrlLogoutSuccessHandler;
     }
 
@@ -129,22 +129,21 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "casAuthenticationProvider")
-    public AuthenticationProvider casAuthenticationProvider(SSLSocketFactory appSSLSocketFactory, HostnameVerifier appHostnameVerifier,
-                                                            CASProviderConfig casProviderConfig) {
+    public AuthenticationProvider casAuthenticationProvider(TicketValidator cas20ServiceTicketValidator, ServiceProperties casServiceProperties,
+                                                            AuthenticationUserDetailsService wmCasUserDetailsByNameServiceWrapper) {
         CasAuthenticationProvider casAuthenticationProvider = new CasAuthenticationProvider();
-        casAuthenticationProvider.setServiceProperties(casServiceProperties(casProviderConfig));
+        casAuthenticationProvider.setServiceProperties(casServiceProperties);
         casAuthenticationProvider.setKey("casAuthProviderKey");
-        casAuthenticationProvider.setTicketValidator(cas20ServiceTicketValidator(appSSLSocketFactory, appHostnameVerifier, casProviderConfig));
-        casAuthenticationProvider.setAuthenticationUserDetailsService(wmCasUserDetailsByNameServiceWrapper());
+        casAuthenticationProvider.setTicketValidator(cas20ServiceTicketValidator);
+        casAuthenticationProvider.setAuthenticationUserDetailsService(wmCasUserDetailsByNameServiceWrapper);
         return casAuthenticationProvider;
     }
 
     @Bean(name = "cas20ServiceTicketValidator")
-    public TicketValidator cas20ServiceTicketValidator(SSLSocketFactory appSSLSocketFactory, HostnameVerifier appHostnameVerifier,
-                                                       CASProviderConfig casProviderConfig) {
+    public TicketValidator cas20ServiceTicketValidator(CASProviderConfig casProviderConfig, HttpURLConnectionFactory casUrlConnectionFactory) {
         Cas20ServiceTicketValidator cas20ServiceTicketValidator = new Cas20ServiceTicketValidator(Objects.requireNonNull(
             casProviderConfig.getServerUrl()));
-        cas20ServiceTicketValidator.setURLConnectionFactory(casUrlConnectionFactory(appSSLSocketFactory, appHostnameVerifier));
+        cas20ServiceTicketValidator.setURLConnectionFactory(casUrlConnectionFactory);
         return cas20ServiceTicketValidator;
     }
 
@@ -167,28 +166,27 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "WMWebAuthenticationDetailsSource")
-    public AuthenticationDetailsSource<HttpServletRequest, ?> wmWebAuthenticationDetailsSource(CASProviderConfig casProviderConfig) {
-        return new ServiceAuthenticationDetailsSource(casServiceProperties(casProviderConfig));
+    public AuthenticationDetailsSource<HttpServletRequest, ?> wmWebAuthenticationDetailsSource(ServiceProperties casServiceProperties) {
+        return new ServiceAuthenticationDetailsSource(casServiceProperties);
     }
 
     @Bean(name = "casFilter")
-    public Filter casFilter() {
-        CASProviderConfig casProviderConfig = casProviderConfig();
+    public Filter casFilter(AuthenticationDetailsSource WMWebAuthenticationDetailsSource, ServiceProperties casServiceProperties) {
         CasAuthenticationFilter casAuthenticationFilter = new CasAuthenticationFilter();
         casAuthenticationFilter.setFilterProcessesUrl("/j_spring_cas_security_check");
         casAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
         casAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);
         casAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        casAuthenticationFilter.setAuthenticationDetailsSource(wmWebAuthenticationDetailsSource(casProviderConfig));
-        casAuthenticationFilter.setServiceProperties(casServiceProperties(casProviderConfig));
+        casAuthenticationFilter.setAuthenticationDetailsSource(WMWebAuthenticationDetailsSource);
+        casAuthenticationFilter.setServiceProperties(casServiceProperties);
         casAuthenticationFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy);
         return casAuthenticationFilter;
     }
 
     @Bean(name = "WMSecAuthEntryPoint")
-    public AuthenticationEntryPoint wmSecAuthEntryPoint(CASProviderConfig casProviderConfig) {
+    public AuthenticationEntryPoint wmSecAuthEntryPoint(CASProviderConfig casProviderConfig, ServiceProperties casServiceProperties) {
         WMCASAuthenticationEntryPoint authenticationEntryPoint = new WMCASAuthenticationEntryPoint();
-        authenticationEntryPoint.setServiceProperties(casServiceProperties(casProviderConfig));
+        authenticationEntryPoint.setServiceProperties(casServiceProperties);
         authenticationEntryPoint.setLoginUrl(casProviderConfig.getLoginUrl());
         return authenticationEntryPoint;
     }
