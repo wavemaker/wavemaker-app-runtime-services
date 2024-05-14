@@ -17,7 +17,7 @@ package com.wavemaker.app.security.models.config.openid;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;

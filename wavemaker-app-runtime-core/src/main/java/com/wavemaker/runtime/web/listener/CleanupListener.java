@@ -38,8 +38,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.poi.xssf.usermodel.XSSFPicture;

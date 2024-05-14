@@ -16,17 +16,18 @@ package com.wavemaker.runtime.security.provider.cas;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.jasig.cas.client.util.CommonUtils;
+import org.apereo.cas.client.util.CommonUtils;
+import org.apereo.cas.client.util.WebUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.Assert;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Copied from {@link CasAuthenticationEntryPoint}
@@ -92,7 +93,7 @@ public class SpringCasAuthenticationEntryPoint implements AuthenticationEntryPoi
      * @return the constructed service url.  CANNOT be NULL.
      */
     protected String createServiceUrl(final HttpServletRequest request, final HttpServletResponse response) {
-        return CommonUtils.constructServiceUrl(null, response, this.serviceProperties.getService(), null, this.serviceProperties.getArtifactParameter(), this.encodeServiceUrlWithSessionId);
+        return WebUtils.constructServiceUrl(null, response, this.serviceProperties.getService(), null, this.serviceProperties.getArtifactParameter(), this.encodeServiceUrlWithSessionId);
     }
 
     /**

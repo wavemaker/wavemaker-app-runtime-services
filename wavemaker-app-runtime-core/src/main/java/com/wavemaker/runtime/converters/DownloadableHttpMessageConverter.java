@@ -17,7 +17,7 @@ package com.wavemaker.runtime.converters;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;

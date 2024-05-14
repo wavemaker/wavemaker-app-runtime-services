@@ -16,15 +16,15 @@ package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Created by srujant on 7/8/18.
@@ -48,16 +48,16 @@ public class InMemoryOpenIDAuthorizationRequestRepository implements Authorizati
         }
     }
 
-    private String getStateParam(HttpServletRequest request) {
-        return request.getParameter(OAuth2Constants.STATE);
-    }
-
     @Override
-    public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request) {
+    public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
         OAuth2AuthorizationRequest authorizationRequest = this.loadAuthorizationRequest(request);
         if (authorizationRequest != null) {
             cache.invalidate(authorizationRequest);
         }
         return authorizationRequest;
+    }
+
+    private String getStateParam(HttpServletRequest request) {
+        return request.getParameter(OAuth2Constants.STATE);
     }
 }

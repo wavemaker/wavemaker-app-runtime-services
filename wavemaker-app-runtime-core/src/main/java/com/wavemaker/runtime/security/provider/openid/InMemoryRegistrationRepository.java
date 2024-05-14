@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -30,6 +28,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * Created by srujant on 30/7/18.
@@ -58,7 +58,7 @@ public class InMemoryRegistrationRepository implements ClientRegistrationReposit
                     .jwkSetUri(openIdProviderInfo.getJwkSetUrl())
                     .userInfoUri(openIdProviderInfo.getUserInfoUrl())
                     .scope(Arrays.copyOf(scopes.toArray(), scopes.size(), String[].class))
-                    .redirectUriTemplate(openIdProviderInfo.getRedirectUrlTemplate())
+                    .redirectUri(openIdProviderInfo.getRedirectUrlTemplate())
                     .clientId(openIdProviderInfo.getClientId())
                     .clientSecret(openIdProviderInfo.getClientSecret())
                     .clientName(openIdProviderInfo.getProviderId())

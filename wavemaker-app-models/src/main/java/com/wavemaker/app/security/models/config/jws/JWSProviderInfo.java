@@ -15,8 +15,8 @@
 
 package com.wavemaker.app.security.models.config.jws;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 

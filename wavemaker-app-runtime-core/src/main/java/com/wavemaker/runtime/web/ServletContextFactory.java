@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.web;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.web.context.ServletContextAware;
