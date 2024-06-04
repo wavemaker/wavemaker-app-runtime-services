@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.web.listener;
 
-import java.beans.Introspector;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.PlatformManagedObject;
@@ -41,19 +40,16 @@ import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.poi.xssf.usermodel.XSSFPicture;
+import org.hsqldb.DatabaseManager;
+import org.hsqldb.lib.HsqlTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.LRUMap;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.runtime.RuntimeEnvironment;
+import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -68,47 +64,11 @@ public class CleanupListener implements ServletContextListener {
 
     private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer
         .getInteger("wm.app.maxWaitTimeRunningThreads", 5000);
-
-    private boolean isSharedLib() {
-        return RuntimeEnvironment.isTestRunEnvironment();
-    }
+    private static final boolean SUN_MANAGEMENT_PACKAGE_OPEN = isSunManagementPackageOpen();
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
         init();
-        //properties set to time out LDAP connections automatically
-        /*System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
-        System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");*/
-        warmUpPoiInParentClassLoader();
-        if (RuntimeEnvironment.isTestRunEnvironment()) {
-            event.getServletContext().setInitParameter("spring.profiles.active", "wm_preview");
-        }
-    }
-
-    /*
-        In XSSFPicture, while creating prototype it internally using current app class loader references, due to this
-         app classloader was not cleared event after app undeploy.
-        To fix memory leak caused by first time initialization from Web app, We are loading prototype through
-        common class loader.
-     */
-    private void warmUpPoiInParentClassLoader() {
-        try {
-            ClassLoader currentCL = getAppClassLoader();
-            if (currentCL != XSSFPicture.class.getClassLoader()) {
-                try {
-                    Thread.currentThread().setContextClassLoader(XSSFPicture.class.getClassLoader());
-                    logger.info("warming up poi prototype field");
-                    final Method prototype = findMethod(XSSFPicture.class, "prototype");
-                    if (prototype != null) {
-                        prototype.invoke(null);
-                    }
-                } finally {
-                    Thread.currentThread().setContextClassLoader(currentCL);
-                }
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to initialize prototype method", e);
-        }
     }
 
     @Override
@@ -119,63 +79,13 @@ public class CleanupListener implements ServletContextListener {
              */
             deregisterDrivers(getAppClassLoader());
             deRegisterOracleDiagnosabilityMBean(getAppClassLoader());
-            typeFactoryClearTypeCache(getAppClassLoader());
-            resourceManagerClearPropertiesCache();
-            jacksonAnnotationIntrospectorClearAnnotationTypes(getAppClassLoader());
-            //clearCacheSourceAbstractClassGenerator()
-            clearLdapThreadConnections(getAppClassLoader());
             cleanupMBeanNotificationListeners(getAppClassLoader());
-            cleanupJULIReferences(getAppClassLoader());
             deregisterSecurityProviders(getAppClassLoader());
+            DeleteTempFileOnCloseInputStream.TempFileManager.stopScheduler();
             stopRunningThreads(getAppClassLoader(), MAX_WAIT_TIME_FOR_RUNNING_THREADS);
-            //Release all open references for logging
-//            LogFactory.release(getAppClassLoader());
-
-            // flush all of the Introspector's internal caches
-            Introspector.flushCaches();
             logger.info("Clean Up Successful!");
         } catch (Exception e) {
             logger.info("Failed to clean up some things on app undeploy", e);
-        }
-    }
-
-    private void jacksonAnnotationIntrospectorClearAnnotationTypes(ClassLoader classLoader) {
-        /*
-         *  ObjectMapper which comes from the shared classloader, is the parent classloader for all deployed applications.
-         *  It is having a static reference to JacksonAnnotationIntrospector" instance.
-         *  JacksonAnnotationIntrospector object is having a map, which is holding reference to custom annotation classes used in the application.
-         *  As parent class loader is holding the references to custom annotations used in child classloader, this is preventing the garbage collection of child
-         *  classloader even after undeploying the application.
-         *
-         *   Fix:
-         *   This cleanup task that removes all the entries from the map declared in JacksonAnnotationIntrospector object.
-         *   This removes all the references (from parent classloader) to the custom annotation classes used in the child class loader(deployed applications).
-         *
-         * */
-        if (isSharedLib()) {
-            String className = "com.fasterxml.jackson.databind.ObjectMapper";
-            try {
-                Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
-                if (klass != null) {
-                    logger.info(
-                        "Attempting to clear annotation map from {} JacksonAnnotationIntrospector class instance",
-                        klass);
-                    Field defaultAnnotationIntrospectorField = klass
-                        .getDeclaredField("DEFAULT_ANNOTATION_INTROSPECTOR");
-                    ReflectionUtils.makeAccessible(defaultAnnotationIntrospectorField);
-                    JacksonAnnotationIntrospector jacksonAnnotationIntrospector = (JacksonAnnotationIntrospector) defaultAnnotationIntrospectorField
-                        .get(null);
-                    Field annotationsInsideField = jacksonAnnotationIntrospector.getClass()
-                        .getDeclaredField("_annotationsInside");
-                    ReflectionUtils.makeAccessible(annotationsInsideField);
-                    LRUMap lruMap = (LRUMap) annotationsInsideField.get(jacksonAnnotationIntrospector);
-                    if (lruMap != null) {
-                        lruMap.clear();
-                    }
-                }
-            } catch (Throwable e) {
-                logger.warn("Failed to Clear annotationsMap  from {}", className, e);
-            }
         }
     }
 
@@ -183,24 +93,14 @@ public class CleanupListener implements ServletContextListener {
      * Added by akritim
      * To stop HSQL timer thread, if any
      */
-    private static void shutDownHSQLTimerThreadIfAny(ClassLoader classLoader) {
-        String className = "org.hsqldb.DatabaseManager";
+    private static void shutDownHSQLTimerThreadIfAny() {
         try {
-            Class klass = ClassLoaderUtils.findLoadedClass(classLoader, className);
-            if (klass != null && klass.getClassLoader() == classLoader) {
-                //Shutdown the thread only if the class is loaded by web-app
-                final Class<?> databaseManagerClass = ClassUtils.getClass("org.hsqldb.DatabaseManager");
-                final Class<?> hsqlTimerClass = ClassUtils.getClass("org.hsqldb.lib.HsqlTimer");
-
-                Method timerMethod = databaseManagerClass.getMethod("getTimer");
-
-                Object timerObj = timerMethod.invoke(null);
-                if (timerObj != null) {
-                    hsqlTimerClass.getMethod("shutDown").invoke(timerObj);
-                }
-            }
+            HsqlTimer timer = DatabaseManager.getTimer();
+            timer.shutDown();
+        } catch (NoClassDefFoundError e) {
+            logger.debug("Hsql classes not found in classpath, skipping hsql timer task");
         } catch (Throwable e) {
-            logger.warn("Failed to shutdown hsql timer thread {}", className, e);
+            logger.warn("Couldn't stop hsql's HsqlTimer thread", e);
         }
     }
 
@@ -208,37 +108,14 @@ public class CleanupListener implements ServletContextListener {
      * Added by akritim
      * To stop mysql thread, if any and resolve issue of "Abandoned connection cleanup thread" not stopping
      */
-    private static void shutDownMySQLThreadIfAny(ClassLoader classLoader) {
-        //For older versions of mysql driver(version 5)
-        String className = "com.mysql.jdbc.AbandonedConnectionCleanupThread";
+    private static void shutDownMySQLThreadIfAny() {
+        //For mysql driver(version 5.1.41+)
         try {
-            Class<?> klass = ClassLoaderUtils.findLoadedClass(classLoader, className);
-            if (klass != null && klass.getClassLoader() == classLoader) {
-                //Shutdown the thread only if the class is loaded by web-app
-                logger.info("Shutting down mysql thread {}", className);
-                Method shutdownMethod = ReflectionUtils.findMethod(klass, "checkedShutdown");
-                if (shutdownMethod == null) {
-                    shutdownMethod = ReflectionUtils.findMethod(klass, "shutdown");
-                }
-                if (shutdownMethod != null) {
-                    shutdownMethod.invoke(null);
-                }
-            }
+            AbandonedConnectionCleanupThread.checkedShutdown();
+        } catch (NoClassDefFoundError e) {
+            logger.debug("Mysql classes not found in classpath, skipping shutdown mysql thread task");
         } catch (Throwable e) {
-            logger.warn("Failed to shutdown mysql thread {}", className, e);
-        }
-
-        //For latest version of mysql driver(version 8+)
-        className = "com.mysql.cj.jdbc.AbandonedConnectionCleanupThread";
-        try {
-            Class<?> klass = ClassLoaderUtils.findLoadedClass(classLoader, className);
-            if (klass != null && klass.getClassLoader() == classLoader) {
-                //Shutdown the thread only if the class is loaded by web-app
-                logger.info("Shutting down mysql thread {}", className);
-                klass.getMethod("checkedShutdown").invoke(null);
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to shutdown mysql thread {}", className, e);
+            logger.warn("Couldn't stop mysql's AbandonedConnectionCleanupThread", e);
         }
     }
 
@@ -281,6 +158,10 @@ public class CleanupListener implements ServletContextListener {
      * For example Oracle's BlockSource creates an mbean listener which needs to be deregistered
      */
     public static void cleanupMBeanNotificationListeners(ClassLoader classLoader) {
+        if (!SUN_MANAGEMENT_PACKAGE_OPEN) {
+            logger.info("Cannot perform MBean clean up as java.management/sun.management is not open for unnamed modules");
+            return;
+        }
         cleanupNotificationListener(classLoader, ManagementFactory.getMemoryMXBean());
         List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
         for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMXBeans) {
@@ -317,153 +198,8 @@ public class CleanupListener implements ServletContextListener {
                 }
             }
         } catch (Exception e) {
-            String className = "oracle.jdbc.driver.BlockSource";
-            Class loadedClass = null;
-            try {
-                loadedClass = ClassLoaderUtils.findLoadedClass(classLoader, className);
-            } catch (Exception e1) {
-                logger.warn("Failed to find loaded class for class {}", className, e1);
-            }
-            if (loadedClass == null) {
-                logger.info(
-                    "MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
-                logger.trace("Exception Stack trace", e);
-            } else {
-                logger.warn(
-                    "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
-                    e);
-            }
+            logger.warn("MBean clean up is not successful, any uncleared notification listeners might create a memory leak", e);
         }
-    }
-
-    /**
-     * Clears up the juli references for the given class loader
-     */
-    public static void cleanupJULIReferences(ClassLoader classLoader) {
-        /*String className = "java.util.logging.Level$KnownLevel";
-        try {
-            Class klass = Class.forName(className, true, classLoader);
-            Field nameToKnownLevelsField = findField(klass, "nameToLevels");
-            Field intToKnownLevelsField = findField(klass, "intToLevels");
-            Field levelObjectField = findField(klass, "levelObject");
-            Field mirroredLevelField = findField(klass, "mirroredLevel");
-            synchronized (klass) {
-                if (nameToKnownLevelsField != null) {
-                    Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
-                    removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
-                }
-                if (intToKnownLevelsField != null) {
-                    Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
-                    removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
-                }
-
-
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to clean up juli references in the class " + className, e);
-        }*/
-    }
-
-    /*private static void removeTCLKnownLevels(
-            ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
-            Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
-        Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
-        Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
-        while (mapEntryIterator.hasNext()) {
-            Map.Entry<Object, List> entry = mapEntryIterator.next();
-            List knownLevels = entry.getValue();
-            Iterator iterator = knownLevels.iterator();
-            List<Object> removableMirroredObjects = new ArrayList<>();
-            while (iterator.hasNext()) {
-                Object knownLevelObject = iterator.next();
-                Object levelObject = levelObjectField.get(knownLevelObject);
-                if (levelObject.getClass().getClassLoader() == classLoader) {
-                    iterator.remove();
-                    removableMirroredObjects.add(mirroredLevelField.get(knownLevelObject));
-                }
-            }
-            iterator = knownLevels.iterator();
-            while (iterator.hasNext()) {
-                Object knownLevelObject = iterator.next();
-                Object levelObject = levelObjectField.get(knownLevelObject);
-                if (removableMirroredObjects.contains(levelObject)) {
-                    iterator.remove();
-                }
-            }
-            if (knownLevels.isEmpty()) {
-                mapEntryIterator.remove();
-            }
-        }
-    }*/
-
-    /**
-     * Added by akritim
-     * To clear TypeFactory's TypeCache
-     */
-    private void typeFactoryClearTypeCache(ClassLoader classLoader) {
-        if (isSharedLib()) {
-            String className = "com.fasterxml.jackson.databind.type.TypeFactory";
-            try {
-                Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
-                if (klass != null) {
-                    logger.info("Attempt to clear typeCache from {} class instance", klass);
-                    TypeFactory.defaultInstance().clearCache();
-                }
-            } catch (Throwable e) {
-                logger.warn("Failed to Clear TypeCache from {}", className, e);
-            }
-        }
-    }
-
-    /**
-     * Added by akritim
-     * To clear ResourceManager's PropertiesCache
-     */
-    private void resourceManagerClearPropertiesCache() {
-        /*Class<ResourceManager> klass = ResourceManager.class;
-        try {
-            Field propertiesCache = findField(klass, "propertiesCache");
-            if (propertiesCache != null) {
-                WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
-                        .get(null);
-                if (!map.isEmpty()) {
-                    logger.info("Clearing propertiesCache from ");
-                    map.clear();
-                }
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to clear propertiesCache from {}", klass, e);
-        }*/
-    }
-
-    private void clearLdapThreadConnections(ClassLoader classLoader) {
-        /*List<Thread> threads = getThreads(classLoader);
-        for (Thread thread : threads) {
-            if (isAliveAndNotCurrentThread(thread)) {
-                try {
-                    if (thread.getName().startsWith("Thread-")) {
-                        Field targetField = findField(Thread.class, "target");
-                        if(targetField != null) {
-                            Runnable runnable = (Runnable) targetField.get(thread);
-                            if (runnable != null && runnable instanceof Connection) {
-                                logger.info("Interrupting LDAP connection thread");
-                                Connection conn = (Connection) runnable;
-                                WMIOUtils.closeSilently(conn.inStream);
-                                WMIOUtils.closeSilently(conn.outStream);
-                                Field parent = findField(Connection.class, "parent");
-                                if(parent != null) {
-                                    LdapClient ldapClient = (LdapClient) parent.get(conn);
-                                    ldapClient.closeConnection();
-                                    LdapPoolManager.expire(3000);
-                                }
-                            }
-                        }
-                    }
-                } catch (Throwable t) {
-                    logger.warn("Failed to stop the thread {} properly", thread, t);
-                }
-            }
-        }*/
     }
 
     /**
@@ -519,8 +255,8 @@ public class CleanupListener implements ServletContextListener {
      * Post interrupt after a specific timeout if any threads are still alive it logs a message
      */
     public static void stopRunningThreads(ClassLoader classLoader, long waitTimeOutInMillis) {
-        shutDownMySQLThreadIfAny(classLoader);
-        shutDownHSQLTimerThreadIfAny(classLoader);
+        shutDownMySQLThreadIfAny();
+        shutDownHSQLTimerThreadIfAny();
         try {
             List<Thread> threads = getThreads(classLoader);
             List<Thread> runningThreads = new ArrayList<>();
@@ -646,6 +382,12 @@ public class CleanupListener implements ServletContextListener {
         if (logger == null) {
             logger = LoggerFactory.getLogger(CleanupListener.class);
         }
+    }
+
+    private static boolean isSunManagementPackageOpen() {
+        Module javaManagementModule = NotificationEmitter.class.getModule();
+        Module unnamedModule = CleanupListener.class.getModule();
+        return javaManagementModule.isOpen("sun.management", unnamedModule);
     }
 
 }

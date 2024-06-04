@@ -40,6 +40,8 @@ dependencies {
     implementation(appDependenciesLibs.jackson.datatype.hibernate5)
     implementation(appDependenciesLibs.apache.httpclient)
     implementation(appDependenciesLibs.tika.core)
+    compileOnly(appDependenciesLibs.jdbc.driver.mysql)
+    compileOnly(appDependenciesLibs.jdbc.driver.hsqldb)
     compileOnly(appDependenciesLibs.opensaml.saml.impl)
     compileOnly(appDependenciesLibs.opensaml.core)
     compileOnly(appDependenciesLibs.opensaml.api)
@@ -60,10 +62,6 @@ dependencies {
     compileOnly(appDependenciesLibs.mongodb.driver.sync)
     compileOnly(appDependenciesLibs.spring.session.data.mongodb)
     compileOnly(appDependenciesLibs.spring.session.data.redis)
-    compileOnly(appDependenciesLibs.poiOoxml) {
-        because("Needed this for cleaning up memory references in Cleanupistener. " +
-                "TODO need to remove this dependency")
-    }
     compileOnly(appDependenciesLibs.hibernate.core) {
         because("Used for getting roles for logged in user. Used in conjuction with database service in the project." +
                 "TODO need to remove this dependency.")
