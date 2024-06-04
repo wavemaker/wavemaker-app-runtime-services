@@ -15,6 +15,7 @@ dependencies {
     runtimeOnly(appDependenciesLibs.javax.jaxws.rt) {
         because("soap runtime built on java 8 depends on javax.jws.soap package which is not available in java 11")
     }
+    compileOnly(appDependenciesLibs.jaxb.impl)
 }
 
 javaLibraryMavenPublish {
