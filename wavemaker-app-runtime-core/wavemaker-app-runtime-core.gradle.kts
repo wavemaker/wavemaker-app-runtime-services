@@ -24,6 +24,7 @@ dependencies {
     implementation(projects.wavemakerAppRuntimeConnectorAppIntegration)
     implementation(projects.wavemakerToolsApidocsCore)
     implementation(projects.wavemakerAppModels)
+    implementation(projects.wavemakerAppMemoryManagement)
     implementation(appDependenciesLibs.commons.collections4)
     implementation(appDependenciesLibs.commons.text)
     implementation(appDependenciesLibs.guava)
@@ -40,8 +41,6 @@ dependencies {
     implementation(appDependenciesLibs.jackson.datatype.hibernate5)
     implementation(appDependenciesLibs.apache.httpclient)
     implementation(appDependenciesLibs.tika.core)
-    compileOnly(appDependenciesLibs.jdbc.driver.mysql)
-    compileOnly(appDependenciesLibs.jdbc.driver.hsqldb)
     compileOnly(appDependenciesLibs.opensaml.saml.impl)
     compileOnly(appDependenciesLibs.opensaml.core)
     compileOnly(appDependenciesLibs.opensaml.api)
@@ -101,6 +100,7 @@ tasks {
         dependsOn(":wavemaker-tools-apidocs-core:jar")
         dependsOn(":wavemaker-app-runtime-connector-app-integration:jar")
         dependsOn(":wavemaker-app-runtime-connector-api:jar")
+        dependsOn(":wavemaker-app-memory-management:jar")
     }
 }
 
