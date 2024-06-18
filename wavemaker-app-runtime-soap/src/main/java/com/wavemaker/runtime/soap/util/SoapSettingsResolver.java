@@ -21,10 +21,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.wavemaker.runtime.soap.SoapCacheCleanUpHandler;
 import com.wavemaker.runtime.soap.SoapServiceSettings;
 import com.wavemaker.runtime.ws.JAXWSProperties;
 
@@ -80,6 +82,12 @@ public class SoapSettingsResolver {
                 }
             }
         }
+        addSoapCacheCleanUpHandler(service);
     }
 
+    private static void addSoapCacheCleanUpHandler(BindingProvider service) {
+        List<Handler> handlerChain = service.getBinding().getHandlerChain();
+        handlerChain.add(new SoapCacheCleanUpHandler());
+        service.getBinding().setHandlerChain(handlerChain);
+    }
 }

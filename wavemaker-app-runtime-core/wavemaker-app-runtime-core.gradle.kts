@@ -24,6 +24,7 @@ dependencies {
     implementation(projects.wavemakerAppRuntimeConnectorAppIntegration)
     implementation(projects.wavemakerToolsApidocsCore)
     implementation(projects.wavemakerAppModels)
+    implementation(projects.wavemakerAppMemoryManagement)
     implementation(appDependenciesLibs.commons.collections4)
     implementation(appDependenciesLibs.commons.text)
     implementation(appDependenciesLibs.guava)
@@ -60,10 +61,6 @@ dependencies {
     compileOnly(appDependenciesLibs.mongodb.driver.sync)
     compileOnly(appDependenciesLibs.spring.session.data.mongodb)
     compileOnly(appDependenciesLibs.spring.session.data.redis)
-    compileOnly(appDependenciesLibs.poiOoxml) {
-        because("Needed this for cleaning up memory references in Cleanupistener. " +
-                "TODO need to remove this dependency")
-    }
     compileOnly(appDependenciesLibs.hibernate.core) {
         because("Used for getting roles for logged in user. Used in conjuction with database service in the project." +
                 "TODO need to remove this dependency.")
@@ -74,6 +71,7 @@ dependencies {
     //Logging related dependencies
     implementation(appDependenciesLibs.slf4j.api)
     implementation(appDependenciesLibs.log4j.core)
+    implementation(appDependenciesLibs.log4j.web)
     loggingCapabilityConfiguration(appDependenciesLibs.log4j.slf4j.impl)
 
     //runtime dependencies lib
@@ -103,6 +101,7 @@ tasks {
         dependsOn(":wavemaker-tools-apidocs-core:jar")
         dependsOn(":wavemaker-app-runtime-connector-app-integration:jar")
         dependsOn(":wavemaker-app-runtime-connector-api:jar")
+        dependsOn(":wavemaker-app-memory-management:jar")
     }
 }
 
