@@ -16,7 +16,7 @@ package com.wavemaker.app.security.models.config.openid;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import com.wavemaker.app.security.models.config.openid.validator.ValidateScopes;
 

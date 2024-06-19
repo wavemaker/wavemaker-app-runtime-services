@@ -17,8 +17,8 @@ package com.wavemaker.app.security.models.config.openid.validator;
 
 import java.util.List;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ScopesValidator implements ConstraintValidator<ValidateScopes, List<String>> {
     @Override

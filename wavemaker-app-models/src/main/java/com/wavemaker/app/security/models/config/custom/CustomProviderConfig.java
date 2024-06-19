@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.custom;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;

@@ -18,7 +18,7 @@ package com.wavemaker.runtime.core.props;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.io.Resource;

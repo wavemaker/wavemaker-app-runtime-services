@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.rest.processor.request;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;

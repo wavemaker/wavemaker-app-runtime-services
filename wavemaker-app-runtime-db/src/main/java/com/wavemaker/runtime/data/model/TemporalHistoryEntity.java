@@ -16,7 +16,7 @@ package com.wavemaker.runtime.data.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

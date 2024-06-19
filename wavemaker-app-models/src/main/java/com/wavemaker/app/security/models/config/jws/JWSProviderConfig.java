@@ -18,7 +18,7 @@ package com.wavemaker.app.security.models.config.jws;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 
