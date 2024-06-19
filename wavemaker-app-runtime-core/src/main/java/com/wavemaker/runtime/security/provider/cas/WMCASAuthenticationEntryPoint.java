@@ -18,12 +18,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
-import org.jasig.cas.client.util.CommonUtils;
+import org.apereo.cas.client.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.cas.ServiceProperties;
@@ -33,6 +29,10 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
@@ -62,7 +62,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.could.not.encode.redirectpage"), e);
             }
         }
-        return CommonUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),
+        return WebUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),
             this.serviceProperties.getArtifactParameter(), true);
     }
 

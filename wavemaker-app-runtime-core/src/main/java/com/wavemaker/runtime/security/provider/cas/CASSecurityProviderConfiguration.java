@@ -20,12 +20,13 @@ import java.util.Objects;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletRequest;
 
-import org.jasig.cas.client.ssl.HttpURLConnectionFactory;
-import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
-import org.jasig.cas.client.validation.TicketValidator;
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.apereo.cas.client.ssl.HttpURLConnectionFactory;
+import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
+import org.apereo.cas.client.validation.TicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
