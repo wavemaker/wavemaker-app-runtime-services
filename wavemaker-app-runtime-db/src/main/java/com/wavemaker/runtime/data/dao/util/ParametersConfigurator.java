@@ -14,13 +14,13 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dao.util;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.query.Query;
-import org.hibernate.type.Type;
 
 import com.wavemaker.runtime.commons.variable.VariableType;
 import com.wavemaker.runtime.commons.variable.VariableTypeHelper;
@@ -51,9 +51,9 @@ public class ParametersConfigurator {
 
             if (typeOptional.isPresent()) {
                 if (listType) {
-                    query.setParameterList(parameterName, (Collection) value, typeOptional.get());
+                    query.setParameterList(parameterName, (Collection) value);
                 } else {
-                    query.setParameter(parameterName, value, typeOptional.get());
+                    query.setParameter(parameterName, value);
                 }
             } else {
                 if (listType) {

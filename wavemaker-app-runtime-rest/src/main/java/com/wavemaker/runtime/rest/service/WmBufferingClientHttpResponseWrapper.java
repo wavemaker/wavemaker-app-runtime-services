@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
@@ -38,13 +38,8 @@ public class WmBufferingClientHttpResponseWrapper implements ClientHttpResponse 
     }
 
     @Override
-    public HttpStatus getStatusCode() throws IOException {
+    public HttpStatusCode getStatusCode() throws IOException {
         return this.response.getStatusCode();
-    }
-
-    @Override
-    public int getRawStatusCode() throws IOException {
-        return this.response.getRawStatusCode();
     }
 
     @Override

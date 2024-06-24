@@ -38,7 +38,7 @@ dependencies {
     implementation(appDependenciesLibs.hibernate.validator)
     implementation(appDependenciesLibs.jackson.dataformat.yaml)
     implementation(appDependenciesLibs.jackson.datatype.jsr310)
-    implementation(appDependenciesLibs.jackson.datatype.hibernate5)
+    implementation(appDependenciesLibs.jackson.datatype.hibernate6)
     implementation(appDependenciesLibs.apache.httpclient)
     implementation(appDependenciesLibs.tika.core)
     compileOnly(appDependenciesLibs.opensaml.saml.impl)
@@ -65,6 +65,8 @@ dependencies {
         because("Used for getting roles for logged in user. Used in conjuction with database service in the project." +
                 "TODO need to remove this dependency.")
     }
+    // wrote because to get jakarta xml bind packages to detect in this module, but previously javax packages of xml bind is used to detect
+    implementation(appDependenciesLibs.jakarta.xml.bind.api)
     runtimeOnly(appDependenciesLibs.commons.fileupload)
     testImplementation(appDependenciesLibs.test.junit4)
 

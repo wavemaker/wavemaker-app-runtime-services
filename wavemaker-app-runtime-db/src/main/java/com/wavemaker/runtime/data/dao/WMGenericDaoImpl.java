@@ -25,16 +25,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.ArrayUtils;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -67,6 +64,11 @@ import com.wavemaker.runtime.data.model.AggregationInfo;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.DaoUtils;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 public abstract class WMGenericDaoImpl<E extends Serializable, I extends Serializable> implements
     WMGenericDao<E, I> {
@@ -156,7 +158,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @Override
     public Page<E> list(Pageable pageable) {
-        return search(null, PageUtils.defaultIfNull(pageable));
+        return searchByQuery(null, PageUtils.defaultIfNull(pageable));
     }
 
     @Override
@@ -166,9 +168,27 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
         this.sortValidator.validate(validPageable, entityClass);
         return getTemplate().execute(session -> {
-            Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
-            criteria.add(Restrictions.eq(key, value));
-            return CriteriaUtils.executeAndGetPageableData(criteria, validPageable, null);
+//            Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
+//            criteria.add(Restrictions.eq(key, value));
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<E> criteria = builder.createQuery(entityClass);
+            Root<E> root = criteria.from(entityClass);
+            criteria.select(root).where(builder.equal(root.get(key), value));
+
+            Query query = session.createQuery(criteria);
+            Long rowCount = Long.valueOf(query.getResultList().size());
+
+            if (pageable.getSort() != null) {
+                for (final Sort.Order order : pageable.getSort()) {
+                    final String property = order.getProperty();
+                    if (order.getDirection() == Sort.Direction.DESC) {
+                        criteria.orderBy(builder.desc(root.get(property)));
+                    } else {
+                        criteria.orderBy(builder.asc(root.get(property)));
+                    }
+                }
+            }
+            return CriteriaUtils.executeAndGetPageableData(criteria, session, validPageable, rowCount);
         });
     }
 
@@ -179,20 +199,23 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         this.sortValidator.validate(validPageable, entityClass);
         DaoUtils.validateQueryFilters(queryFilters);
         return getTemplate().execute((HibernateCallback<Page>) session -> {
-            Criteria criteria = session.createCriteria(entityClass);
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery criteria = builder.createQuery(entityClass);
+            Root<E> from = criteria.from(entityClass);
+
             Set<String> aliases = new HashSet<>();
             if (ArrayUtils.isNotEmpty(queryFilters)) {
                 for (QueryFilter queryFilter : queryFilters) {
                     final String attributeName = queryFilter.getAttributeName();
-
                     // if search filter contains related table property, then add entity alias to criteria to perform search on related properties.
-                    CriteriaUtils.criteriaForRelatedProperty(criteria, attributeName, aliases);
+                    CriteriaUtils.criteriaForRelatedProperty(criteria, from, attributeName, aliases);
 
-                    Criterion criterion = CriteriaUtils.createCriterion(queryFilter);
-                    criteria.add(criterion);
+                    CriteriaUtils.createCriterion(queryFilter, builder, criteria, from);
                 }
             }
-            return CriteriaUtils.executeAndGetPageableData(criteria, validPageable, aliases);
+            Query query = session.createQuery(criteria);
+            Long rowCount = Long.valueOf(query.getResultList().size());
+            return CriteriaUtils.executeAndGetPageableData(criteria, session, validPageable, rowCount);
         });
     }
 
@@ -250,7 +273,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
         getTemplate().execute(session -> {
             final WMQueryInfo queryInfo = queryGenerator.searchByQuery(options.getQuery()).build();
             final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider.from(queryInfo, entityClass);
-            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo, session.getTypeHelper(), getWMQLTypeHelper());
+            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo, ((SessionFactoryImplementor) session.getSessionFactory()).getTypeConfiguration(), getWMQLTypeHelper());
 
             final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
             QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());

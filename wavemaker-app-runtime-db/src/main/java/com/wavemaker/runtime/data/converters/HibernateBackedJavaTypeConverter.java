@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.converters;
 
-import org.hibernate.type.descriptor.java.JavaTypeDescriptor;
+import org.hibernate.type.descriptor.java.JavaType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -22,25 +22,25 @@ import org.hibernate.type.descriptor.java.JavaTypeDescriptor;
  */
 public class HibernateBackedJavaTypeConverter implements JavaTypeConverter {
 
-    private JavaTypeDescriptor descriptor;
+    private JavaType javaType;
 
-    public HibernateBackedJavaTypeConverter(final JavaTypeDescriptor descriptor) {
-        this.descriptor = descriptor;
+    public HibernateBackedJavaTypeConverter(final JavaType javaType) {
+        this.javaType = javaType;
     }
 
     @Override
     public Object fromString(final String value) {
-        return descriptor.fromString(value);
+        return javaType.fromString(value);
     }
 
     @Override
     public Object fromDbValue(final Object value) {
-        return descriptor.wrap(value, null);
+        return javaType.wrap(value, null);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Object toDbValue(final Object value, Class<?> toType) {
-        return descriptor.unwrap(value, toType, null);
+        return javaType.unwrap(value, toType, null);
     }
 }

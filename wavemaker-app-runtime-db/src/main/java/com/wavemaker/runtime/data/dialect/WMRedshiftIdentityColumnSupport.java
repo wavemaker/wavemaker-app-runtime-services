@@ -14,9 +14,9 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dialect;
 
-import org.hibernate.dialect.identity.PostgreSQL81IdentityColumnSupport;
+import org.hibernate.dialect.identity.PostgreSQLIdentityColumnSupport;
 
-public class WMRedshiftIdentityColumnSupport extends PostgreSQL81IdentityColumnSupport {
+public class WMRedshiftIdentityColumnSupport extends PostgreSQLIdentityColumnSupport {
 
     public WMRedshiftIdentityColumnSupport() {
         super();

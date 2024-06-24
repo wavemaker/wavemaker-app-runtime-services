@@ -56,7 +56,7 @@ public class WMRestTemplate extends RestTemplate {
         ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRestTemplate.class.getClassLoader());
 
     private static final boolean JAXB_2_PRESENT =
-        ClassUtils.isPresent("javax.xml.bind.Binder", WMRestTemplate.class.getClassLoader());
+        ClassUtils.isPresent("jakarta.xml.bind.Binder", WMRestTemplate.class.getClassLoader());
 
     private static final boolean JACKSON_2_PRESENT =
         ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", WMRestTemplate.class.getClassLoader()) &&
@@ -152,9 +152,9 @@ public class WMRestTemplate extends RestTemplate {
             }
             if (this.delegate != null) {
                 T body = this.delegate.extractData(response);
-                return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).body(body);
+                return ResponseEntity.status(response.getStatusCode().value()).headers(response.getHeaders()).body(body);
             } else {
-                return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).build();
+                return ResponseEntity.status(response.getStatusCode().value()).headers(response.getHeaders()).build();
             }
         }
     }

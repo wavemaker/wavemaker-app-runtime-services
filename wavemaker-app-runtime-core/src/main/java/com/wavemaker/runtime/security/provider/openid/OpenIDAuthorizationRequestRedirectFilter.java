@@ -21,11 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -45,6 +40,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.wavemaker.commons.auth.oauth2.OAuth2Helper;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Filter class to redirect the request to the OpenId authentication provider configured in the application.
@@ -128,8 +128,6 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         OAuth2AuthorizationRequest.Builder builder;
         if (AuthorizationGrantType.AUTHORIZATION_CODE.equals(clientRegistration.getAuthorizationGrantType())) {
             builder = OAuth2AuthorizationRequest.authorizationCode();
-        } else if (AuthorizationGrantType.IMPLICIT.equals(clientRegistration.getAuthorizationGrantType())) {
-            builder = OAuth2AuthorizationRequest.implicit();
         } else {
             throw new IllegalArgumentException("Invalid Authorization Grant Type for Client Registration (" +
                 clientRegistration.getRegistrationId() + "): " + clientRegistration.getAuthorizationGrantType());

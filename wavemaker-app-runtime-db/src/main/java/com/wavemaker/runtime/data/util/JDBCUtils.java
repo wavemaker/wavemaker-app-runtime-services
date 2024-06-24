@@ -18,7 +18,7 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hibernate.dialect.OracleTypesHelper;
+import org.hibernate.dialect.OracleTypes;
 
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.MessageResource;
@@ -95,7 +95,7 @@ public class JDBCUtils {
         if (typeCode == null) {
             // for lazy loading. Oracle Cursor type.
             if (javaType == JavaType.CURSOR) {
-                typeCode = OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType();
+                typeCode = OracleTypes.CURSOR;
             } else {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.sql.type.code.not.found"), javaType);
             }

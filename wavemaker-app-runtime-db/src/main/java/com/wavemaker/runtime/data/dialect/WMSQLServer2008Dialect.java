@@ -14,22 +14,22 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dialect;
 
-import java.sql.Types;
+//import java.sql.Types;
 
-import org.hibernate.dialect.SQLServer2008Dialect;
-import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.dialect.SQLServerDialect;
+/*import org.hibernate.type.StandardBasicTypes;
 
-import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.CommonConstants;*/
 
-public class WMSQLServer2008Dialect extends SQLServer2008Dialect {
+public class WMSQLServer2008Dialect extends SQLServerDialect {
 
     public WMSQLServer2008Dialect() {
         super();
-        registerHibernateType(Types.NCHAR, StandardBasicTypes.STRING.getName());
-        registerHibernateType(Types.LONGNVARCHAR, StandardBasicTypes.TEXT.getName());
-        registerHibernateType(Types.NVARCHAR, StandardBasicTypes.STRING.getName());
-
-        registerColumnType(Types.CHAR, "nchar(1)");
-        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
+//        registerHibernateType(Types.NCHAR, StandardBasicTypes.STRING.getName());
+//        registerHibernateType(Types.LONGNVARCHAR, StandardBasicTypes.TEXT.getName());
+//        registerHibernateType(Types.NVARCHAR, StandardBasicTypes.STRING.getName());
+//
+//        registerColumnType(Types.CHAR, "nchar(1)");
+//        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
     }
 }

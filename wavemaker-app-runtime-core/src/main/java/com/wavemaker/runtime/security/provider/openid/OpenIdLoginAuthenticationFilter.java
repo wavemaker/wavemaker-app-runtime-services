@@ -16,9 +16,9 @@ package com.wavemaker.runtime.security.provider.openid;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +110,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
         }
         request.setAttribute(OpenIdConstants.REDIRECT_URI, redirectURI);
 
-        this.authorizationRequestRepository.removeAuthorizationRequest(request);
+        this.authorizationRequestRepository.removeAuthorizationRequest(request, response);
 
         String registrationId = (String) authorizationRequest.getAdditionalParameters().get(OpenIdConstants.REGISTRATION_ID);
         ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(registrationId);

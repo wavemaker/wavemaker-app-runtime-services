@@ -190,8 +190,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.mavenCompilerPlugin.version}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>21</source>
+                    <target>21</target>
                     <fork>true</fork>
                     <encoding>UTF-8</encoding>
                     <compilerArgument>-parameters</compilerArgument>
@@ -378,7 +378,7 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>4.0.4</version>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -426,7 +426,7 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <java.required.version>11</java.required.version>
+        <java.required.version>21</java.required.version>
         <maven.eclipseLifecycleMappingPlugin.version>1.0.0</maven.eclipseLifecycleMappingPlugin.version>
         <maven.mavenAntrunPlugin.version>3.1.0</maven.mavenAntrunPlugin.version>
         <maven.mavenCleanPlugin.version>3.3.2</maven.mavenCleanPlugin.version>

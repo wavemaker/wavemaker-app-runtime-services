@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.servlet.Filter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +37,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.endpoint.AbstractOAuth2AuthorizationGrantRequest;
-import org.springframework.security.oauth2.client.endpoint.NimbusAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.oidc.authentication.OidcAuthorizationCodeAuthenticationProvider;
@@ -72,6 +70,8 @@ import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdLogoutSuccessHandler;
+
+import jakarta.servlet.Filter;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, OpenIdProviderCondition.class})
@@ -201,17 +201,17 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Bean(name = "oAuth2AccessTokenResponseClient")
-    public OAuth2AccessTokenResponseClient<? extends AbstractOAuth2AuthorizationGrantRequest> nimbusAuthorizationCodeTokenResponseClient() {
-        return new NimbusAuthorizationCodeTokenResponseClient();
+    public OAuth2AccessTokenResponseClient<? extends AbstractOAuth2AuthorizationGrantRequest> defaultAuthorizationCodeTokenResponseClient() {
+        return new DefaultAuthorizationCodeTokenResponseClient();
     }
 
     @Bean(name = "openIdAuthenticationProvider")
     public AuthenticationProvider oidcAuthorizationCodeAuthenticationProvider(OAuth2AccessTokenResponseClient<? extends AbstractOAuth2AuthorizationGrantRequest>
-                                                                                  nimbusAuthorizationCodeTokenResponseClient,
+                                                                                  defaultAuthorizationCodeTokenResponseClient,
                                                                               OAuth2UserService<? extends OAuth2UserRequest, ? extends OAuth2User>
                                                                                   openIdUserService) {
         OidcAuthorizationCodeAuthenticationProvider oidcAuthorizationCodeAuthenticationProvider = new OidcAuthorizationCodeAuthenticationProvider(
-            (OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>) nimbusAuthorizationCodeTokenResponseClient,
+            (OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>) defaultAuthorizationCodeTokenResponseClient,
             (OAuth2UserService<OidcUserRequest, OidcUser>) openIdUserService);
         oidcAuthorizationCodeAuthenticationProvider.setJwtDecoderFactory(new OpenIdTokenDecoderFactory());
         return oidcAuthorizationCodeAuthenticationProvider;

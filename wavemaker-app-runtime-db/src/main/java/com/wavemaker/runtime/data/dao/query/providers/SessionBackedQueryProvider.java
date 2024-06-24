@@ -16,13 +16,13 @@ package com.wavemaker.runtime.data.dao.query.providers;
 
 import java.util.Optional;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.query.Query;
-import org.hibernate.query.spi.NamedQueryRepository;
+import org.hibernate.query.named.NamedObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -78,8 +78,8 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
         Query<Number> query = null;
 
         final String countQueryName = this.name + "__count";
-        final NamedQueryRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
-            .getNamedQueryRepository();
+        final NamedObjectRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
+            .getQueryEngine().getNamedObjectRepository();
         if (queryExists(repository, countQueryName)) {
             query = getAndConfigureQuery(session, countQueryName, Number.class);
         } else {
@@ -106,11 +106,11 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
     @SuppressWarnings("unchecked")
     private Query<R> createSortedQuery(final Session session, final Sort sort, final WMResultTransformer transformer) {
         final Query<R> query;
-        final NamedQueryRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
-            .getNamedQueryRepository();
-        if (repository.getNamedQueryDefinition(name) != null) {
+        final NamedObjectRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
+            .getQueryEngine().getNamedObjectRepository();
+        if (repository.getSqmQueryMemento(name) != null) {
             final String sortedQuery = QueryHelper
-                .applySortingForHqlQuery(repository.getNamedQueryDefinition(name).getQueryString(), sort,
+                .applySortingForHqlQuery(repository.getSqmQueryMemento(name).getHqlString(), sort,
                     transformer);
             if (isMappedType(responseType)) {
                 query = session.createQuery(sortedQuery, responseType);
@@ -118,11 +118,11 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
                 query = session.createQuery(sortedQuery).setResultTransformer(transformer);
 
             }
-        } else if (repository.getNamedSQLQueryDefinition(name) != null) {
+        } else if (repository.getNativeQueryMemento(name) != null) {
             final String sortedQuery = QueryHelper
-                .applySortingForNativeQuery(repository.getNamedSQLQueryDefinition(name).getQueryString(),
+                .applySortingForNativeQuery(repository.getNativeQueryMemento(name).getSqlString(),
                     sort, transformer,
-                    ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
+                    ((SessionFactoryImplementor) session.getSessionFactory()).getJdbcServices().getDialect());
             query = session.createNativeQuery(sortedQuery).setResultTransformer(transformer);
         } else {
             throw ((SessionImplementor) session).getExceptionConverter()
@@ -131,8 +131,8 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
         return query;
     }
 
-    private boolean queryExists(final NamedQueryRepository repository, final String countQueryName) {
-        return repository.getNamedQueryDefinition(countQueryName) != null || repository.getNamedSQLQueryDefinition(countQueryName) != null;
+    private boolean queryExists(final NamedObjectRepository repository, final String countQueryName) {
+        return repository.getSqmQueryMemento(countQueryName) != null || repository.getNativeQueryMemento(countQueryName) != null;
     }
 
     private boolean isMappedType(Class<?> type) {

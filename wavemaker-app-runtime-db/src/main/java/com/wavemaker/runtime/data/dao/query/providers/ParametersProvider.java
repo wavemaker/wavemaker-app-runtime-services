@@ -14,12 +14,12 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dao.query.providers;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Optional;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import org.hibernate.type.Type;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -63,9 +63,9 @@ public interface ParametersProvider {
 
             if (typeOptional.isPresent()) {
                 if (listType) {
-                    query.setParameterList(parameterName, (Collection) value, typeOptional.get());
+                    query.setParameterList(parameterName, (Collection) value);
                 } else {
-                    query.setParameter(parameterName, value, typeOptional.get());
+                    query.setParameter(parameterName, value);
                 }
             } else {
                 if (listType) {

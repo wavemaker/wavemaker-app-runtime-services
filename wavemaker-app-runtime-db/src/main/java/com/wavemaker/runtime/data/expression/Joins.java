@@ -14,8 +14,8 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.expression;
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.LogicalExpression;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -23,5 +23,5 @@ import org.hibernate.criterion.LogicalExpression;
  */
 public interface Joins {
 
-    LogicalExpression criterion(Criterion lhs, Criterion rhs);
+    CriteriaQuery criterion(Predicate lhs, Predicate rhs);
 }

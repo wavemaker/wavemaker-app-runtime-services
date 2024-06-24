@@ -16,7 +16,7 @@ package com.wavemaker.runtime.data.converters;
 
 import java.sql.Time;
 
-import org.hibernate.type.TimeType;
+import org.hibernate.type.descriptor.java.JdbcTimeJavaType;
 
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 
@@ -27,7 +27,7 @@ import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 public class TimeTypeConverter extends HibernateBackedJavaTypeConverter {
 
     public TimeTypeConverter() {
-        super(TimeType.INSTANCE.getJavaTypeDescriptor());
+        super(JdbcTimeJavaType.INSTANCE);
     }
 
     @Override

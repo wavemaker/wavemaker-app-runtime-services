@@ -14,12 +14,13 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dao.query.providers;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
-import org.hibernate.type.Type;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.JavaType;
@@ -55,7 +56,7 @@ public class RuntimeParametersProvider implements ParametersProvider {
     public Optional<Type> getType(final Session session, final String name) {
         if (parameterMap.containsKey(name)) {
             final JavaType javaType = parameterMap.get(name).getType();
-            return HibernateUtils.findType(session.getTypeHelper(), javaType.getClassName());
+            return HibernateUtils.findType(((SessionFactoryImplementor) session.getSessionFactory()).getTypeConfiguration(), javaType.getClassName());
         }
 
         return Optional.empty();

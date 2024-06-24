@@ -14,10 +14,10 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dialect;
 
-import org.hibernate.dialect.PostgreSQL82Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
 
-public class WMRedshiftSQLDialect extends PostgreSQL82Dialect {
+public class WMRedshiftSQLDialect extends PostgreSQLDialect {
 
     public WMRedshiftSQLDialect() {
         super();

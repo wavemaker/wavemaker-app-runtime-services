@@ -14,21 +14,21 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.dialect;
 
-import org.hibernate.dialect.PostgreSQL82Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
 
-import com.wavemaker.commons.CommonConstants;
+//import com.wavemaker.commons.CommonConstants;
 
 /**
  * @author Dilip Kumar
  * @since 19/4/16
  */
-public class WMPostgresSQLDialect extends PostgreSQL82Dialect {
+public class WMPostgresSQLDialect extends PostgreSQLDialect {
 
     public WMPostgresSQLDialect() {
         super();
-
-        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "timestamp without time zone");
+//
+//        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "timestamp without time zone");
     }
 
     @Override

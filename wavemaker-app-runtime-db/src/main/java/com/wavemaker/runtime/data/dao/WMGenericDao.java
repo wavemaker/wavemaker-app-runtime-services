@@ -48,9 +48,16 @@ public interface WMGenericDao<E, I> {
 
     Page<E> list(Pageable pageable);
 
-    @Deprecated
+   /* @Deprecated
     Page getAssociatedObjects(Object value, String entityName, String key, Pageable pageable);
 
+    Page<E> search(QueryFilter[] queryFilters, Pageable pageable);*/
+
+    @SuppressWarnings("unchecked")
+    Page<E> getAssociatedObjects(
+        Object value, String fieldName, String key, Pageable pageable);
+
+    @SuppressWarnings("unchecked")
     Page<E> search(QueryFilter[] queryFilters, Pageable pageable);
 
     Page<E> searchByQuery(String query, Pageable pageable);

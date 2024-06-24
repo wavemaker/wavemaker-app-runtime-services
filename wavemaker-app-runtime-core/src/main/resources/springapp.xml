@@ -79,10 +79,10 @@
           class="com.wavemaker.runtime.exception.resolver.ApplicationRestServiceExceptionResolver"/>
 
     <bean id="multipartResolver"
-          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+          class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
 
         <property name="resolveLazily" value="true"/>
-        <property name="maxUploadSize" value="300000000"/>
+<!--        <property name="maxUploadSize" value="300000000"/>-->
         <!-- Max size in bytes. -->
     </bean>
 
