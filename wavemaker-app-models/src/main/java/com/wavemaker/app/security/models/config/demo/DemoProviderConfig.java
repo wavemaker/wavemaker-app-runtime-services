@@ -17,8 +17,8 @@ package com.wavemaker.app.security.models.config.demo;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 
 import com.wavemaker.app.security.models.DemoUser;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;

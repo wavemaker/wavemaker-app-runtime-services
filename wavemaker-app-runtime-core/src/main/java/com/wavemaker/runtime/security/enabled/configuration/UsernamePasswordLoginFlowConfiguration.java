@@ -17,7 +17,7 @@ package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.List;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

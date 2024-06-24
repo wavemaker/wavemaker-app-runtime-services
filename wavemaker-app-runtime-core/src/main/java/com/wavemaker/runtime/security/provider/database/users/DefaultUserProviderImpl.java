@@ -17,7 +17,7 @@ package com.wavemaker.runtime.security.provider.database.users;
 import java.math.BigInteger;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.hibernate.Session;
 import org.springframework.security.core.GrantedAuthority;

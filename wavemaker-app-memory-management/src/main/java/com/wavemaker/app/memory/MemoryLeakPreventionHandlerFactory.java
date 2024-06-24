@@ -11,8 +11,8 @@ package com.wavemaker.app.memory;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 
 public class MemoryLeakPreventionHandlerFactory {
 

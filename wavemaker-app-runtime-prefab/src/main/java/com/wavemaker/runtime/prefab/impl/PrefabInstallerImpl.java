@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.prefab.impl;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

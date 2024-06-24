@@ -16,7 +16,7 @@ package com.wavemaker.runtime.security;
 
 import java.io.Serializable;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author Uday Shankar

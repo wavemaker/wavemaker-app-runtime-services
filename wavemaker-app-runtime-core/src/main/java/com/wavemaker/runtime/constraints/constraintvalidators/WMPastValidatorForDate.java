@@ -17,8 +17,8 @@ package com.wavemaker.runtime.constraints.constraintvalidators;
 
 import java.util.Date;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import com.wavemaker.runtime.constraints.WMPast;
 

@@ -14,8 +14,8 @@
  ******************************************************************************/
 package com.wavemaker.runtime.data.model.queries;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import com.wavemaker.runtime.commons.variable.VariableType;
 import com.wavemaker.runtime.data.model.JavaType;

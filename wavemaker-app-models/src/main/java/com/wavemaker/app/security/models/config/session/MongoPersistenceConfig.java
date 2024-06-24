@@ -15,7 +15,7 @@
 
 package com.wavemaker.app.security.models.config.session;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.PersistenceConfig;

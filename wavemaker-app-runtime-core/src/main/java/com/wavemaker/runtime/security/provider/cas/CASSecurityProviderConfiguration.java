@@ -20,8 +20,8 @@ import java.util.Objects;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.jasig.cas.client.ssl.HttpURLConnectionFactory;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;

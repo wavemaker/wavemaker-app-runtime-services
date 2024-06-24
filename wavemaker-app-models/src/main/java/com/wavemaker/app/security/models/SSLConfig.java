@@ -14,8 +14,8 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;

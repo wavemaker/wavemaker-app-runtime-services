@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

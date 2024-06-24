@@ -15,7 +15,7 @@
 
 package com.wavemaker.runtime.security.base.configuration;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -17,7 +17,7 @@ package com.wavemaker.runtime.app;
 import java.io.InputStream;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.web.context.ServletContextAware;
 

@@ -16,7 +16,7 @@ package com.wavemaker.runtime.security.token.repository;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

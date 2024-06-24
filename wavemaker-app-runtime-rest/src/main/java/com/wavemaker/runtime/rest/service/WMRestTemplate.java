@@ -56,7 +56,7 @@ public class WMRestTemplate extends RestTemplate {
         ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRestTemplate.class.getClassLoader());
 
     private static final boolean JAXB_2_PRESENT =
-        ClassUtils.isPresent("javax.xml.bind.Binder", WMRestTemplate.class.getClassLoader());
+        ClassUtils.isPresent("jakarta.xml.bind.Binder", WMRestTemplate.class.getClassLoader());
 
     private static final boolean JACKSON_2_PRESENT =
         ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", WMRestTemplate.class.getClassLoader()) &&

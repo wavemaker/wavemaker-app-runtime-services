@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.commons;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;

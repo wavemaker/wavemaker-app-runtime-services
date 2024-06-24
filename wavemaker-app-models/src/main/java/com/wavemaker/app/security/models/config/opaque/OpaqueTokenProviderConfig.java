@@ -15,8 +15,8 @@
 
 package com.wavemaker.app.security.models.config.opaque;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;

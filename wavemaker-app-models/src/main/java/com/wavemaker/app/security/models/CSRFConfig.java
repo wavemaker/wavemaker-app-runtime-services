@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;

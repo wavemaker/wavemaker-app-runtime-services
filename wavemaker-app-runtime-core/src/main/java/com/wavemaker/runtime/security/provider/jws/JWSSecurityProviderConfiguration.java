@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;

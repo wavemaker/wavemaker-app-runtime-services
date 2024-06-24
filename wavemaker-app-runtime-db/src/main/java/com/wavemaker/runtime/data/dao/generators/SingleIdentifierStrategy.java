@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 import com.wavemaker.runtime.data.util.AnnotationUtils;
 

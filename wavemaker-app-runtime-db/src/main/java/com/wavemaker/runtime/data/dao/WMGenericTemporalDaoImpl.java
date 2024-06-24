@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 import org.hibernate.query.Query;
 import org.springframework.beans.BeanUtils;

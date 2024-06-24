@@ -17,7 +17,7 @@ package com.wavemaker.runtime.data.model.procedures;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

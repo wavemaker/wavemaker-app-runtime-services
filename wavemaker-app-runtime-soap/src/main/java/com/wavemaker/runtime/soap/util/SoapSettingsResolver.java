@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.handler.Handler;
+import jakarta.xml.ws.handler.MessageContext;
 
 import org.apache.commons.lang3.StringUtils;
 

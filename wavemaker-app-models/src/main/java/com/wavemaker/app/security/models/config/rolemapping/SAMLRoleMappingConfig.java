@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.rolemapping;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
