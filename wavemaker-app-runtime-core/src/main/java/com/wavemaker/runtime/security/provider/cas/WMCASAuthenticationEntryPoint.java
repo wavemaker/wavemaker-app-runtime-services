@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jasig.cas.client.util.CommonUtils;
+import org.apereo.cas.client.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.cas.ServiceProperties;
@@ -62,7 +62,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.could.not.encode.redirectpage"), e);
             }
         }
-        return CommonUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),
+        return WebUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),
             this.serviceProperties.getArtifactParameter(), true);
     }
 
