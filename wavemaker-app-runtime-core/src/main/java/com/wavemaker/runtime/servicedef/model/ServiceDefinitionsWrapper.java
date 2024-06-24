@@ -18,9 +18,7 @@ import java.util.Map;
 
 import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
-import com.wavemaker.runtime.security.xss.XssDisable;
 
-@XssDisable
 public class ServiceDefinitionsWrapper {
 
     private Map<String, ServiceDefinition> serviceDefs;
