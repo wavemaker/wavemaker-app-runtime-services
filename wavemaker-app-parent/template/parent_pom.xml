@@ -429,7 +429,7 @@
         <java.required.version>11</java.required.version>
         <maven.eclipseLifecycleMappingPlugin.version>1.0.0</maven.eclipseLifecycleMappingPlugin.version>
         <maven.mavenAntrunPlugin.version>3.1.0</maven.mavenAntrunPlugin.version>
-        <maven.mavenCleanPlugin.version>3.3.2</maven.mavenCleanPlugin.version>
+        <maven.mavenCleanPlugin.version>3.4.0</maven.mavenCleanPlugin.version>
         <maven.mavenCompilerPlugin.version>3.13.0</maven.mavenCompilerPlugin.version>
         <maven.mavenEnforcerPlugin.version>3.5.0</maven.mavenEnforcerPlugin.version>
         <maven.mavenResourcesPlugin.version>3.3.1</maven.mavenResourcesPlugin.version>
