@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wavemaker.runtime.security.xss.XssDisable;
 import com.wavemaker.runtime.servicedef.model.ServiceDefinitionsWrapper;
 import com.wavemaker.runtime.servicedef.service.ServiceDefinitionService;
 
@@ -33,11 +34,13 @@ public class ServiceDefinitionController {
     @Autowired
     private ServiceDefinitionService serviceDefinitionService;
 
+    @XssDisable
     @GetMapping(value = "/servicedefs")
     public ServiceDefinitionsWrapper getServiceDefinitionWrapper() {
         return serviceDefinitionService.getServiceDefinitionWrapper();
     }
 
+    @XssDisable
     @GetMapping(value = "/prefabs/{prefabName}/servicedefs")
     public ServiceDefinitionsWrapper getPrefabServiceDefinitionWrapper(@PathVariable("prefabName") String prefabName) {
         return serviceDefinitionService.getServiceDefinitionWrapperForPrefab(prefabName);
