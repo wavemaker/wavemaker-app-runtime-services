@@ -31,7 +31,7 @@ public class MemoryLeakPreventionHandler {
                 logger.info("Executing listener: {}", memoryLeakPreventionListener.getClass().getSimpleName());
                 memoryLeakPreventionListener.listen(classLoader);
             } catch (Throwable e) {
-                logger.info("Failed to execute listener {}", memoryLeakPreventionListener.getClass().getSimpleName());
+                logger.warn("Failed to execute listener {}", memoryLeakPreventionListener.getClass().getSimpleName());
             }
         });
         logger.info("Executed all memory leak prevention listeners");
