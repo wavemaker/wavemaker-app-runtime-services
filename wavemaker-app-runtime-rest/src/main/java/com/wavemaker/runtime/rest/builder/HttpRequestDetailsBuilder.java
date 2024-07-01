@@ -19,11 +19,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.auth.AuthenticationException;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.message.BasicHttpRequest;
+import org.apache.hc.client5.http.auth.AuthenticationException;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -85,11 +83,12 @@ public class HttpRequestDetailsBuilder {
     }
 
     public HttpRequestDetailsBuilder setBasicAuthorization(String username, String password) {
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
-        HttpRequest httpRequest = new BasicHttpRequest(httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password.toCharArray());
         String authorization = null;
         try {
-            authorization = new BasicScheme(StandardCharsets.UTF_8).authenticate(credentials, httpRequest, null).getValue();
+            BasicScheme basicScheme = new BasicScheme(StandardCharsets.UTF_8);
+            basicScheme.initPreemptive(credentials);
+            authorization = basicScheme.generateAuthResponse(null, null, null);
         } catch (AuthenticationException e) {
             throw new WMRuntimeException(e);
         }

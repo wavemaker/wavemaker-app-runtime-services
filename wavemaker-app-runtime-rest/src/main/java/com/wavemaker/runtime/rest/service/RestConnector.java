@@ -22,32 +22,32 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.routing.HttpRoute;
-import org.apache.http.conn.routing.HttpRoutePlanner;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.HttpRoute;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.routing.HttpRoutePlanner;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -121,10 +121,8 @@ public class RestConnector {
 
         final RequestConfig requestConfig = RequestConfig.custom()
             .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
-            .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
-            .setSocketTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionSocketTimeoutInSeconds()))
-            .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionTimeoutInSeconds()))
-            .setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(httpConfiguration.getConnectionRequestTimeoutInSeconds()))
+            .setCookieSpec(StandardCookieSpec.IGNORE)
+            .setConnectionRequestTimeout(Timeout.ofSeconds(httpConfiguration.getConnectionRequestTimeoutInSeconds()))
             .build();
 
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient) {
@@ -177,9 +175,9 @@ public class RestConnector {
     private void configureAppProxy(HttpClientBuilder httpClientBuilder) {
         if (httpConfiguration.isAppProxyEnabled()) {
             HttpHost proxyHost = new HttpHost(httpConfiguration.getAppProxyHost(), httpConfiguration.getAppProxyPort());
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(proxyHost),
-                new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword()));
+                new UsernamePasswordCredentials(httpConfiguration.getAppProxyUsername(), httpConfiguration.getAppProxyPassword().toCharArray()));
             httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
             logger.info("creating RoutePlanner with proxy url {}", proxyHost);
             HttpRoutePlanner httpRoutePlanner = createCustomRoutePlanner(proxyHost,
@@ -200,6 +198,9 @@ public class RestConnector {
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);
         poolingHttpClientConnectionManager.setMaxTotal(httpConfiguration.getMaxTotalConnections());
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(httpConfiguration.getMaxTotalConnectionsPerRoute());
+        ConnectionConfig connectionConfig = ConnectionConfig.custom().setConnectTimeout(Timeout.ofSeconds(httpConfiguration.getConnectionTimeoutInSeconds()))
+            .setSocketTimeout(Timeout.ofSeconds(httpConfiguration.getConnectionSocketTimeoutInSeconds())).build();
+        poolingHttpClientConnectionManager.setDefaultConnectionConfig(connectionConfig);
         return poolingHttpClientConnectionManager;
     }
 
@@ -217,7 +218,7 @@ public class RestConnector {
     private HttpRoutePlanner createCustomRoutePlanner(HttpHost proxyHost, List<String> includedUrls, List<String> excludedUrls) {
         DefaultProxyRoutePlanner defaultRoutePlanner = new DefaultProxyRoutePlanner(proxyHost);
 
-        return (target, request, context) -> {
+        return (target, context) -> {
             boolean explicitlyIncluded = includedUrls.stream().anyMatch(url -> matches(target, url));
 
             boolean useProxy = true;
@@ -234,7 +235,7 @@ public class RestConnector {
             }
             if (useProxy) {
                 logger.debug("Using proxy {} for target {}", proxyHost, target);
-                return defaultRoutePlanner.determineRoute(target, request, context);
+                return defaultRoutePlanner.determineRoute(target, context);
             } else {
                 return new HttpRoute(target);
             }
@@ -296,7 +297,7 @@ public class RestConnector {
     static class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
 
         @Override
-        protected boolean hasError(HttpStatus statusCode) {
+        protected boolean hasError(HttpStatusCode statusCode) {
             return false;
         }
     }
