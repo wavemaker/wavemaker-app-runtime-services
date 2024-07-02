@@ -18,7 +18,7 @@ dependencies {
     implementation(appDependenciesLibs.spring.data.commons)
     implementation(appDependenciesLibs.jackson.dataformat.yaml)
     implementation(appDependenciesLibs.jackson.datatype.jsr310)
-    implementation(appDependenciesLibs.jackson.datatype.hibernate5)
+    implementation(appDependenciesLibs.jackson.datatype.hibernate6)
     compileOnly(appDependenciesLibs.jakarta.servlet.api)
     testImplementation(appDependenciesLibs.test.junit4)
     testImplementation(appDependenciesLibs.test.jsonassert)
