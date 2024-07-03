@@ -65,6 +65,9 @@ dependencies {
         because("Used for getting roles for logged in user. Used in conjuction with database service in the project." +
                 "TODO need to remove this dependency.")
     }
+    implementation(appDependenciesLibs.jakarta.xml.bind.api) {
+        because("Used for getting jakarta xml bind packages, but previously javax bind api used to be loaded in app runtime core")
+    }
     runtimeOnly(appDependenciesLibs.commons.fileupload)
     testImplementation(appDependenciesLibs.test.junit4)
 

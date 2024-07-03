@@ -45,6 +45,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
@@ -440,26 +441,25 @@ public class SecurityEnabledBaseConfiguration {
     @Bean
     public SecurityFilterChain filterChainWithSessions(HttpSecurity http, Filter logoutFilter) throws Exception {
         http
-            .csrf().disable()
-            .headers().disable()
+            .csrf(AbstractHttpConfigurer::disable)
+            .headers(AbstractHttpConfigurer::disable)
             .securityMatcher(new NegatedRequestMatcher(new StatelessRequestMatcher(environment.getProperty("security.general.tokenService.parameter"))))
-            .sessionManagement().sessionFixation().migrateSession()
-            .maximumSessions(environment.getProperty("security.general.login.maxSessionsAllowed", Integer.class))
-            .maxSessionsPreventsLogin(false)
-            .sessionRegistry(sessionRegistry)
-            .and()
-            .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-            .and()
+            .sessionManagement(sessionManagementConfigurer ->
+                sessionManagementConfigurer.sessionFixation().
+                    migrateSession().
+                    sessionConcurrency(sessionConcurrencyConfigurer ->
+                        sessionManagementConfigurer.
+                            maximumSessions(environment.getProperty("security.general.login.maxSessionsAllowed", Integer.class)).
+                            maxSessionsPreventsLogin(false).
+                            sessionRegistry(sessionRegistry))
+                    .sessionCreationPolicy(SessionCreationPolicy.NEVER))
             .requestCache(requestCustomizer ->
                 requestCustomizer.requestCache(nullRequestCache()))
-            .exceptionHandling()
-            .authenticationEntryPoint(appAuthenticationEntryPoint())
-            .and()
-            .securityContext().securityContextRepository(securityContextRepository())
-            .and()
+            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(appAuthenticationEntryPoint()))
+            .securityContext(securityContext -> securityContext.securityContextRepository(securityContextRepository()))
             .authenticationManager(authenticationManager())
             .authorizeRequests(this::authorizeHttpRequests)
-            .logout().disable()
+            .logout(AbstractHttpConfigurer::disable)
             .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
             .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
             .addFilterAt(logoutFilter, LogoutFilter.class)
@@ -473,23 +473,19 @@ public class SecurityEnabledBaseConfiguration {
     @Bean
     public SecurityFilterChain filterChainWithoutSessions(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
-            .headers().disable()
+            .csrf(AbstractHttpConfigurer::disable)
+            .headers(AbstractHttpConfigurer::disable)
             .securityMatcher(new StatelessRequestMatcher(environment.getProperty("security.general.tokenService.parameter")))
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .requestCache()
-            .requestCache(nullRequestCache())
-            .and()
-            .exceptionHandling()
-            .authenticationEntryPoint(appAuthenticationEntryPoint())
-            .and()
-            .securityContext().securityContextRepository(noSessionsSecurityContextRepository())
-            .and()
+            .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.
+                sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .requestCache(requestCacheConfigurer -> requestCacheConfigurer.
+                requestCache(nullRequestCache()))
+            .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(appAuthenticationEntryPoint()))
+            .securityContext(securityContext -> securityContext.
+                securityContextRepository(noSessionsSecurityContextRepository()))
             .authenticationManager(authenticationManager())
             .authorizeRequests(this::authorizeHttpRequests)
-            .logout().disable()
+            .logout(AbstractHttpConfigurer::disable)
             .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
         wmSecurityConfigurationList.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
         addCustomFilters(http);
@@ -556,17 +552,17 @@ public class SecurityEnabledBaseConfiguration {
         switch (securityInterceptUrlEntry.getPermission()) {
             case Authenticated:
                 registry.requestMatchers(AntPathRequestMatcher.antMatcher(
-                    Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
+                    Objects.requireNonNull(HttpMethod.valueOf(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).authenticated();
                 break;
             case Role:
                 registry.requestMatchers(AntPathRequestMatcher.antMatcher(
-                    Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
+                    Objects.requireNonNull(HttpMethod.valueOf(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).hasAnyRole(securityInterceptUrlEntry.getRoles());
                 break;
             case PermitAll:
                 registry.requestMatchers(AntPathRequestMatcher.antMatcher(
-                    Objects.requireNonNull(HttpMethod.resolve(securityInterceptUrlEntry.getHttpMethod().name())),
+                    Objects.requireNonNull(HttpMethod.valueOf(securityInterceptUrlEntry.getHttpMethod().name())),
                     securityInterceptUrlEntry.getUrlPattern())).permitAll();
                 break;
             default:

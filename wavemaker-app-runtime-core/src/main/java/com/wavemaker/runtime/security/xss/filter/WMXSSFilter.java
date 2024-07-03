@@ -42,8 +42,8 @@ public class WMXSSFilter extends GenericFilterBean {
         super.initFilterBean();
 
         xXssProtectionHeaderWriter = new XXssProtectionHeaderWriter();
-        xXssProtectionHeaderWriter.setBlock(true);
-        xXssProtectionHeaderWriter.setEnabled(true);
+        xXssProtectionHeaderWriter.setHeaderValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK);
+        xXssProtectionHeaderWriter.setHeaderValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED);
     }
 
     @Override

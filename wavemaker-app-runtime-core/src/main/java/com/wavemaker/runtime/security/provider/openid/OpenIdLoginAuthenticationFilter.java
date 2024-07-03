@@ -110,7 +110,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
         }
         request.setAttribute(OpenIdConstants.REDIRECT_URI, redirectURI);
 
-        this.authorizationRequestRepository.removeAuthorizationRequest(request);
+        this.authorizationRequestRepository.removeAuthorizationRequest(request, response);
 
         String registrationId = (String) authorizationRequest.getAdditionalParameters().get(OpenIdConstants.REGISTRATION_ID);
         ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(registrationId);

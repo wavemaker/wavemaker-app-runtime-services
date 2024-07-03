@@ -128,8 +128,6 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         OAuth2AuthorizationRequest.Builder builder;
         if (AuthorizationGrantType.AUTHORIZATION_CODE.equals(clientRegistration.getAuthorizationGrantType())) {
             builder = OAuth2AuthorizationRequest.authorizationCode();
-        } else if (AuthorizationGrantType.IMPLICIT.equals(clientRegistration.getAuthorizationGrantType())) {
-            builder = OAuth2AuthorizationRequest.implicit();
         } else {
             throw new IllegalArgumentException("Invalid Authorization Grant Type for Client Registration (" +
                 clientRegistration.getRegistrationId() + "): " + clientRegistration.getAuthorizationGrantType());
