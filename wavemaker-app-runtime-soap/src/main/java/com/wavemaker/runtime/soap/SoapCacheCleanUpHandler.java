@@ -22,7 +22,7 @@ import jakarta.xml.ws.handler.MessageContext;
 import jakarta.xml.ws.handler.soap.SOAPHandler;
 import jakarta.xml.ws.handler.soap.SOAPMessageContext;
 
-import com.sun.xml.bind.v2.ClassFactory;
+import org.glassfish.jaxb.core.v2.ClassFactory;
 
 public class SoapCacheCleanUpHandler implements SOAPHandler<SOAPMessageContext> {
     @Override
