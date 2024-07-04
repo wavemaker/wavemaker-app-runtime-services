@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.std.SqlDateSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wavemaker.commons.json.deserializer.HttpHeadersDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
@@ -325,9 +325,9 @@ public class WMObjectMapper extends ObjectMapper {
             // mixing to ignore pageable field from page response.
             addMixIn(Slice.class, SliceMixin.class);
 
-            Hibernate5Module hibernate5Module = new Hibernate5Module();
-            hibernate5Module.disable(Hibernate5Module.Feature.FORCE_LAZY_LOADING);
-            registerModule(hibernate5Module);
+            Hibernate5JakartaModule hibernate5JakartaModule = new Hibernate5JakartaModule();
+            hibernate5JakartaModule.disable(Hibernate5JakartaModule.Feature.FORCE_LAZY_LOADING);
+            registerModule(hibernate5JakartaModule);
 
             SimpleModule module = new SimpleModule("WMDefaultSerializer");
             module.addSerializer(byte[].class, new NoOpByteArraySerializer());

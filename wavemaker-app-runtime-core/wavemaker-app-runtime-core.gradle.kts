@@ -38,7 +38,7 @@ dependencies {
     implementation(appDependenciesLibs.hibernate.validator)
     implementation(appDependenciesLibs.jackson.dataformat.yaml)
     implementation(appDependenciesLibs.jackson.datatype.jsr310)
-    implementation(appDependenciesLibs.jackson.datatype.hibernate5)
+    implementation(appDependenciesLibs.jackson.datatype.hibernate)
     implementation(appDependenciesLibs.apache.httpclient)
     implementation(appDependenciesLibs.tika.core)
     compileOnly(appDependenciesLibs.opensaml.saml.impl)
