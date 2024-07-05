@@ -51,7 +51,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.commons.WMAppContext;
-import com.wavemaker.runtime.commons.WMAppObjectMapper;
+import com.wavemaker.runtime.commons.WMObjectMapper;
 import com.wavemaker.runtime.commons.file.model.DownloadResponse;
 import com.wavemaker.runtime.commons.util.MultipartConstants;
 import com.wavemaker.runtime.commons.util.WMRandomUtils;
@@ -94,12 +94,12 @@ public class WMMultipartUtils {
     }
 
     public static <T> T toObject(MultipartFile multipartFile, Class<T> instance) throws IOException {
-        WMAppObjectMapper objectMapper = WMAppObjectMapper.getInstance();
+        WMObjectMapper objectMapper = WMObjectMapper.getInstance();
         return objectMapper.readValue(multipartFile.getInputStream(), instance);
     }
 
     public static <T> T toObject(String json, Class<T> instance) throws IOException {
-        WMAppObjectMapper objectMapper = WMAppObjectMapper.getInstance();
+        WMObjectMapper objectMapper = WMObjectMapper.getInstance();
         return objectMapper.readValue(json, instance);
     }
 

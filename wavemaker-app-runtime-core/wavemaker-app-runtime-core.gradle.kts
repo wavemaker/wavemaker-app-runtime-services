@@ -74,7 +74,6 @@ dependencies {
     //Logging related dependencies
     implementation(appDependenciesLibs.slf4j.api)
     implementation(appDependenciesLibs.log4j.core)
-    implementation(appDependenciesLibs.log4j.web)
     loggingCapabilityConfiguration(appDependenciesLibs.log4j.slf4j.impl)
 
     //runtime dependencies lib

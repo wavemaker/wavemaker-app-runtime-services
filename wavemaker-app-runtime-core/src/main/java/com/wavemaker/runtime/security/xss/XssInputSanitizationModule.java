@@ -12,21 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.commons;
 
-/**
- * Created by kishorer on 30/6/16.
- */
-public class WMAppObjectMapper extends WMObjectMapper {
+package com.wavemaker.runtime.security.xss;
 
-    private static WMAppObjectMapper instance = new WMAppObjectMapper();
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-    public static WMAppObjectMapper getInstance() {
-        return instance;
+public class XssInputSanitizationModule extends SimpleModule {
+    public XssInputSanitizationModule() {
+        super("XssInputSanitizationModule");
+        addDeserializer(String.class, new XssStringDeserializer());
     }
-
-    private WMAppObjectMapper() {
-        super();
-    }
-
 }
