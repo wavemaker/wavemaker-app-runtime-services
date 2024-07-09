@@ -17,24 +17,23 @@ package com.wavemaker.runtime.security.xss;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
-public class XssStringDeserializer extends StdDeserializer<String> {
-    public XssStringDeserializer() {
-        super(String.class);
+public class XssCharArraySerializer extends StdSerializer<char[]> {
+    public XssCharArraySerializer() {
+        super(char[].class);
     }
 
     @Override
-    public String deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
+    public void serialize(char[] value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         XSSSecurityHandler xssSecurityHandler = XSSSecurityHandler.getInstance();
-        String value = jsonParser.getText();
-        if (xssSecurityHandler.isInputSanitizationEnabled() && XssContext.isXssEnabled()) {
-            return xssSecurityHandler.sanitizeIncomingData(value);
+        if (xssSecurityHandler.isOutputSanitizationEnabled() && XssContext.isXssEnabled()) {
+            gen.writeString(xssSecurityHandler.sanitizeOutgoingData(new String(value)));
         } else {
-            return value;
+            gen.writeString(new String(value));
         }
     }
 }

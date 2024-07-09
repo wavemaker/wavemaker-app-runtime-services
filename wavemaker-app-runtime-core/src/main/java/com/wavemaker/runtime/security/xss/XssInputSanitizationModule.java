@@ -21,5 +21,6 @@ public class XssInputSanitizationModule extends SimpleModule {
     public XssInputSanitizationModule() {
         super("XssInputSanitizationModule");
         addDeserializer(String.class, new XssStringDeserializer());
+        addDeserializer(char[].class, new XssCharArrayDeserializer());
     }
 }

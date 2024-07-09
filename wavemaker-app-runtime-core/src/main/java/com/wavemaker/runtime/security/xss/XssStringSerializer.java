@@ -18,11 +18,15 @@ package com.wavemaker.runtime.security.xss;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
-public class XssStringSerializer extends JsonSerializer<String> {
+public class XssStringSerializer extends StdSerializer<String> {
+
+    public XssStringSerializer() {
+        super(String.class);
+    }
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {

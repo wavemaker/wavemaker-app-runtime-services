@@ -22,19 +22,19 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
-public class XssStringDeserializer extends StdDeserializer<String> {
-    public XssStringDeserializer() {
-        super(String.class);
+public class XssCharArrayDeserializer extends StdDeserializer<char[]> {
+    public XssCharArrayDeserializer() {
+        super(char[].class);
     }
 
     @Override
-    public String deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
+    public char[] deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        String value = p.getValueAsString();
         XSSSecurityHandler xssSecurityHandler = XSSSecurityHandler.getInstance();
-        String value = jsonParser.getText();
         if (xssSecurityHandler.isInputSanitizationEnabled() && XssContext.isXssEnabled()) {
-            return xssSecurityHandler.sanitizeIncomingData(value);
+            return xssSecurityHandler.sanitizeIncomingData(value).toCharArray();
         } else {
-            return value;
+            return value.toCharArray();
         }
     }
 }

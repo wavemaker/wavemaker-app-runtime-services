@@ -30,6 +30,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
+import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
+
 public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
     public WMRequestResponseBodyMethodProcessor(List<HttpMessageConverter<?>> converters) {
@@ -44,6 +46,10 @@ public class WMRequestResponseBodyMethodProcessor extends RequestResponseBodyMet
                 .anyMatch(XssDisable.class::isInstance) || Arrays.stream(method.getDeclaredAnnotations())
                 .anyMatch(XssDisable.class::isInstance);
             XssContext.setXssEnabled(!xssDisable);
+            if (!xssDisable && returnValue instanceof String) {
+                //Handling encoding if returnValue is string as StringHttpMessageConverter is invoked for strings instead of XssStringSerializer
+                returnValue = XSSSecurityHandler.getInstance().sanitizeOutgoingData((String) returnValue);
+            }
             super.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
         } finally {
             XssContext.cleanup();
