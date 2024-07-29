@@ -21,5 +21,6 @@ public class XssOutputSanitizationModule extends SimpleModule {
     public XssOutputSanitizationModule() {
         super("XssOutputSanitizationModule");
         addSerializer(String.class, new XssStringSerializer());
+        addSerializer(char[].class, new XssCharArraySerializer());
     }
 }
