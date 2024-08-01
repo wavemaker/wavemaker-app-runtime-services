@@ -25,12 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
-import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
-import org.springframework.web.servlet.mvc.condition.ParamsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
-import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -106,13 +100,9 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
     }
 
     private RequestMappingInfo getRequestMappingInfo(RestServiceInfoBeanEntry restServiceEntry) {
-        RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
-            RequestMethod.valueOf(restServiceEntry.getHttpMethod()));
-        PatternsRequestCondition patterns = new PatternsRequestCondition(restServiceEntry.getUrl());
-        ParamsRequestCondition params = new ParamsRequestCondition();
-        HeadersRequestCondition headers = new HeadersRequestCondition();
-        ConsumesRequestCondition consumes = new ConsumesRequestCondition();
-        ProducesRequestCondition produces = new ProducesRequestCondition();
-        return new RequestMappingInfo(restServiceEntry.getMethodName(), patterns, methods, params, headers, consumes, produces, null);
+        return RequestMappingInfo
+            .paths(restServiceEntry.getUrl())
+            .methods(RequestMethod.valueOf(restServiceEntry.getHttpMethod()))
+            .build();
     }
 }
