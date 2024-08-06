@@ -21,8 +21,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,9 +51,14 @@ public class FileServiceManager {
      * @return File
      * ******************************************************************************
      */
-    public File uploadFile(MultipartFile file, String relativePath, File uploadDirectory) throws IOException {
-        File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
 
+    @Value("${app.file.upload.allowed.extensions}")
+    private String allowedFileExtensions;
+
+    public File uploadFile(MultipartFile file, String relativePath, File uploadDirectory) throws IOException {
+        validateFileExtension(new File(file.getOriginalFilename()));
+
+        File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
         File outputFile = createUniqueFile(file.getOriginalFilename(), relativeUploadDirectory);
 
         /* Write the file to the filesystem */
@@ -81,8 +90,8 @@ public class FileServiceManager {
      * ******************************************************************************
      */
     public File uploadFile(MultipartFile file, String targetFilename, String relativePath, File uploadDirectory) throws IOException {
+        validateFileExtension(new File(file.getOriginalFilename()));
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
-
         File outputFile = new File(relativeUploadDirectory, targetFilename);
 
         /* Write the file to the filesystem */
@@ -239,4 +248,21 @@ public class FileServiceManager {
         return relativeUploadDirectory;
     }
 
+    private void validateFileExtension(File file) {
+        Set<String> allowedExtensions = Arrays.stream(allowedFileExtensions.split(","))
+            .map(String::trim)
+            .filter(extension -> !extension.isEmpty() && !(extension.startsWith("$") || extension.startsWith("{")))
+            .map(extension -> extension.startsWith(".") ? extension.substring(1).toLowerCase() : extension.toLowerCase())
+            .collect(Collectors.toSet());
+
+        String fileName = file.getName();
+        String fileExtension = getFileExtension(fileName);
+        if (!allowedExtensions.isEmpty() && !allowedExtensions.contains(fileExtension)) {
+            throw new WMRuntimeException(MessageResource.FILE_EXTENSION_NOT_ALLOWED, fileExtension);
+        }
+    }
+
+    private String getFileExtension(String fileName) {
+        return StringUtils.substringAfterLast(fileName, ".").toLowerCase();
+    }
 }

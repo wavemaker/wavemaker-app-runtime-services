@@ -144,5 +144,6 @@
   "com.wavemaker.runtime.ws$RpcEncodedNotSupported": "RPC/encoded style is not supported.",
   "com.wavemaker.runtime.ws$WadlMethodNotFound": "Unable to locate method in the WADL file.",
   "com.wavemaker.runtime.security.authentication.failed": "Authentication Failed :{0}",
-  "com.wavemaker.runtime.$RestServiceInvocationError" : "Error while invoking rest service status code {0}, Check logs for more information"
+  "com.wavemaker.runtime.$RestServiceInvocationError": "Error while invoking rest service status code {0}, Check logs for more information",
+  "com.wavemaker.runtime.file.upload.extension$not_allowed": "File extension {0} is not allowed."
 }
