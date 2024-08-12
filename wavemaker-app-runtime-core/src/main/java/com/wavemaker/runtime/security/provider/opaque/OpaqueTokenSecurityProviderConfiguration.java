@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.hibernate5.HibernateOperations;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -93,14 +92,9 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
         return new RuntimeDatabaseRoleMappingConfig();
     }
 
-    @Bean(name = "providerManager")
-    public AuthenticationManager providerManager() {
-        return new ProviderManager(opaqueTokenAuthenticationProvider());
-    }
-
     @Bean(name = "opaqueBearerTokenAuthenticationFilter")
     public Filter opaqueBearerTokenAuthenticationFilter() {
-        return new BearerTokenAuthenticationFilter(providerManager());
+        return new BearerTokenAuthenticationFilter(new ProviderManager(opaqueTokenAuthenticationProvider()));
     }
 
     @Bean(name = "OpaqueTokenProviderConfig")

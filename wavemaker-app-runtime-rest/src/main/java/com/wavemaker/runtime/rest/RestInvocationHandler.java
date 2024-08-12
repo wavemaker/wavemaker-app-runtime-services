@@ -58,7 +58,7 @@ public class RestInvocationHandler implements InvocationHandler {
     private static Pattern pathParameterPattern = Pattern.compile("\\/\\{(\\w*)\\}");
     private static Pattern queryParameterPattern = Pattern.compile("=\\{(\\w*)\\}");
     private static Pattern headerParameterPattern = Pattern.compile("\\{(\\w*)\\}");
-    private static Pattern splitHeaderPattern = Pattern.compile("(.*):\\s\\{*((\\w|\\/)*)\\}*");
+    private static Pattern splitHeaderPattern = Pattern.compile("([^:]+):\\s*(.+)");
 
     private RestRuntimeService restRuntimeService;
 
@@ -75,10 +75,10 @@ public class RestInvocationHandler implements InvocationHandler {
         Map<String, String> pathVariablesMap = new HashMap<>();
         MultiValueMap<String, String> queryVariablesMap = new LinkedMultiValueMap<>();
         Map<String, String> headerVariableMap = new HashMap<>();
-
+        MultiValueMap<String, Object> formVariableMap = new LinkedMultiValueMap<>();
         List<String> queryVariablesList = getQueryVariables(method.getAnnotation(RequestLine.class).value());
         List<String> headerPlaceholders = extractHeaderPlaceholders(method.getAnnotation(Headers.class).value());
-
+        boolean urlEncodedHeaderPresent = urlEncodedHeaderPresent(method.getAnnotation(Headers.class).value());
         int position = 0;
         for (Annotation[] parameterAnnotation : method.getParameterAnnotations()) {
             if (args[position] != null) {
@@ -87,6 +87,8 @@ public class RestInvocationHandler implements InvocationHandler {
                         queryVariablesMap.add(((Param) parameterAnnotation[0]).value(), args[position].toString());
                     } else if (headerPlaceholders.contains(((Param) parameterAnnotation[0]).value())) {
                         headerVariableMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
+                    } else if (urlEncodedHeaderPresent) {
+                        formVariableMap.add(((Param) parameterAnnotation[0]).value(), args[position]);
                     } else {
                         pathVariablesMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
                     }
@@ -105,6 +107,25 @@ public class RestInvocationHandler implements InvocationHandler {
         httpRequestData.setQueryParametersMap(queryVariablesMap);
         httpRequestData.setPathVariablesMap(pathVariablesMap);
 
+        StringBuilder requestBodyBuilder = new StringBuilder();
+        if (!formVariableMap.isEmpty()) {
+            formVariableMap.forEach((key, values) -> {
+                values.forEach(value -> {
+                    if (requestBodyBuilder.length() > 0) {
+                        requestBodyBuilder.append("&");
+                    }
+                    if (value instanceof String) {
+                        requestBodyBuilder.append(key).append("=").append((String) value);
+                    }
+                });
+            });
+            try {
+                httpRequestData.setRequestBody(new ByteArrayInputStream(WMObjectMapper.getInstance().
+                    writeValueAsBytes(requestBodyBuilder.toString())));
+            } catch (IOException e) {
+                logger.error(String.valueOf(e));
+            }
+        }
         logger.debug("constructed request data {}", httpRequestData.getPathVariablesMap());
         logger.debug("constructed request query param {}", httpRequestData.getQueryParametersMap());
 
@@ -117,7 +138,6 @@ public class RestInvocationHandler implements InvocationHandler {
                     matcher.group(2));
             }
         });
-
         String[] split = method.getAnnotation(RequestLine.class).value().split(" ");
         HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
             split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
@@ -175,5 +195,10 @@ public class RestInvocationHandler implements InvocationHandler {
         }
         return queryVariables;
 
+    }
+
+    private boolean urlEncodedHeaderPresent(String[] headerList) {
+        return Arrays.stream(headerList)
+            .anyMatch(header -> header.contains("application/x-www-form-urlencoded"));
     }
 }
