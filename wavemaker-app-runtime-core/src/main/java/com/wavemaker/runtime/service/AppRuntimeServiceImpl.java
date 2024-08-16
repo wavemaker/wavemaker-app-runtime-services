@@ -56,7 +56,8 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         "displayName",
         "dateFormat",
         "timeFormat",
-        "preferBrowserLang"};
+        "preferBrowserLang",
+        "allowedFileUploadExtensions"};
 
     private Map<String, Object> applicationProperties;
 
