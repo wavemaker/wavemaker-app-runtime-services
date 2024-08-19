@@ -35,6 +35,7 @@ import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.commons.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.commons.file.model.DownloadResponse;
 import com.wavemaker.runtime.commons.file.model.ExportedFileContentWrapper;
+import com.wavemaker.runtime.commons.util.FileUploadConstants;
 import com.wavemaker.runtime.service.AppRuntimeService;
 
 /**
@@ -64,6 +65,10 @@ public class AppRuntimeController {
         String acceptLanguageHeader = request.getHeader("Accept-Language");
         if (acceptLanguageHeader != null) {
             applicationProperties.put("preferredLanguage", URLEncoder.encode(acceptLanguageHeader, "UTF-8"));
+        }
+        Object allowedFileUploadExtensions = applicationProperties.get(FileUploadConstants.ALLOWED_FILE_UPLOAD_EXTENSIONS);
+        if (allowedFileUploadExtensions == null) {
+            applicationProperties.put(FileUploadConstants.ALLOWED_FILE_UPLOAD_EXTENSIONS, FileUploadConstants.DEFAULT_ALLOWED_FILE_UPLOAD_EXTENSIONS);
         }
         response.getWriter().write("var _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
         response.getWriter().flush();

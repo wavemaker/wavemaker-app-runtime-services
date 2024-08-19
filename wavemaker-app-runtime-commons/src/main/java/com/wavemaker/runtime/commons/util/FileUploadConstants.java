@@ -19,11 +19,13 @@ public class FileUploadConstants {
 
     public static final String APP_PROPERTIES_FILE = ".wmproject.properties";
 
-    public static final String DEFAULT_ALLOWED_FILE_UPLOAD_EXTENSIONS = "doc, docx, xls, xlsx, csv, pdf, jpg, jpeg, png, gif, txt";
+    public static final String DEFAULT_ALLOWED_FILE_UPLOAD_EXTENSIONS = "doc, docx, xls, xlsx, csv, pdf, txt, image/*";
 
     public static final String SUPPORTED_IMAGE_EXTENSIONS = "bmp,gif,jpe,jpg,jpeg,tif,tiff,pbm,png,ico,svg";
 
     public static final String SUPPORTED_AUDIO_EXTENSIONS = "mp3,ogg,webm,wma,3gp,wav,m4a";
 
     public static final String SUPPORTED_VIDEO_EXTENSIONS = "mp4,ogg,webm,wmv,mpeg,mpg,avi";
+
+    public static final String ALLOWED_FILE_UPLOAD_EXTENSIONS = "allowedFileUploadExtensions";
 }
