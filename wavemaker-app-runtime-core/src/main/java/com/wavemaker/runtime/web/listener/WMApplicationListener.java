@@ -17,6 +17,7 @@ package com.wavemaker.runtime.web.listener;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
@@ -25,6 +26,7 @@ import jakarta.servlet.ServletRegistration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -54,10 +56,14 @@ public class WMApplicationListener implements ServletContextListener {
 
     private void registerServlets(ServletContext servletContext) {
         ServletRegistration.Dynamic servicesServlet = registerServlet(servletContext, "services", new DispatcherServlet());
+        Environment environment = WMAppContext.getInstance().getSpringBean(Environment.class);
         servicesServlet.setLoadOnStartup(1);
         servicesServlet.setInitParameter("namespace", "project-services");
         servicesServlet.setInitParameter(CONTEXT_CONFIG_LOCATION, "");
         servicesServlet.setInitParameter("detectAllHandlerExceptionResolvers", "false");
+        servicesServlet.setMultipartConfig(new MultipartConfigElement("",
+            environment.getProperty("app.multipartconfig.maxFileSize", Long.class, 300000000L),
+            environment.getProperty("app.multipartconfig.maxRequestSize", Long.class, -1L), 0));
         servicesServlet.addMapping("/services/*");
 
         ServletRegistration.Dynamic prefabsServlet = registerServlet(servletContext, "prefabs", new PrefabControllerServlet());
