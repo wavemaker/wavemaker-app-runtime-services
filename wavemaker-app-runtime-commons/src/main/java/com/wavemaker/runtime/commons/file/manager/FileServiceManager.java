@@ -261,7 +261,7 @@ public class FileServiceManager {
 
     private void validateFileExtension(String fileName) {
         String fileExtension = getFileExtension(fileName);
-        if (!ALLOWED_FILE_EXTENSIONS.contains(fileExtension)) {
+        if (!ALLOWED_FILE_EXTENSIONS.contains(fileExtension) && !ALLOWED_FILE_EXTENSIONS.contains("*/*")) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.upload.extension$not_allowed"));
         }
     }
@@ -279,6 +279,10 @@ public class FileServiceManager {
                 ALLOWED_FILE_EXTENSIONS.add(extension.substring(1));
             } else {
                 switch (extension) {
+                    case "*/*":
+                        ALLOWED_FILE_EXTENSIONS.clear();
+                        ALLOWED_FILE_EXTENSIONS.add("*/*");
+                        return;
                     case "image/*":
                         ALLOWED_FILE_EXTENSIONS.addAll(List.of(FileUploadConstants.SUPPORTED_IMAGE_EXTENSIONS.split(",")));
                         break;
