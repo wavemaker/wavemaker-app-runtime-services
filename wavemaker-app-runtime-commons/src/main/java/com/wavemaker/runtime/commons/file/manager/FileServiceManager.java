@@ -21,6 +21,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -28,11 +35,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.io.ClassPathFile;
 import com.wavemaker.commons.util.FileValidationUtils;
+import com.wavemaker.commons.util.PropertiesFileUtils;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.runtime.commons.util.FileUploadConstants;
 
 @Service
 public class FileServiceManager {
+
+    public Set<String> ALLOWED_FILE_EXTENSIONS = new HashSet<>();
+
+    @PostConstruct
+    private void initializeAllowedFileExtensions() {
+        initAllowedFileExtensionsFromPropertyFile();
+    }
 
     /**
      * Delegate method for file service upload method. This method creates a unique file name from the filename
@@ -48,9 +65,12 @@ public class FileServiceManager {
      * ******************************************************************************
      */
     public File uploadFile(MultipartFile file, String relativePath, File uploadDirectory) throws IOException {
+        String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+        validateFileExtension(originalFilename);
+
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
 
-        File outputFile = createUniqueFile(file.getOriginalFilename(), relativeUploadDirectory);
+        File outputFile = createUniqueFile(originalFilename, relativeUploadDirectory);
 
         /* Write the file to the filesystem */
         InputStream inputStream = null;
@@ -81,8 +101,8 @@ public class FileServiceManager {
      * ******************************************************************************
      */
     public File uploadFile(MultipartFile file, String targetFilename, String relativePath, File uploadDirectory) throws IOException {
+        validateFileExtension(file.getOriginalFilename());
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
-
         File outputFile = new File(relativeUploadDirectory, targetFilename);
 
         /* Write the file to the filesystem */
@@ -239,4 +259,48 @@ public class FileServiceManager {
         return relativeUploadDirectory;
     }
 
+    private void validateFileExtension(String fileName) {
+        String fileExtension = getFileExtension(fileName);
+        if (!ALLOWED_FILE_EXTENSIONS.contains(fileExtension) && !ALLOWED_FILE_EXTENSIONS.contains("*/*")) {
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.upload.extension$not_allowed"));
+        }
+    }
+
+    private void initAllowedFileExtensionsFromPropertyFile() {
+        ClassPathFile file = new ClassPathFile(Thread.currentThread().getContextClassLoader(), FileUploadConstants.APP_PROPERTIES_FILE);
+        Properties properties = PropertiesFileUtils.loadFromXml(file);
+        String allowedFileUploadExtensions = properties.getProperty("allowedFileUploadExtensions",
+            FileUploadConstants.DEFAULT_ALLOWED_FILE_UPLOAD_EXTENSIONS);
+
+        String[] extensionsList = allowedFileUploadExtensions.split(",");
+        for (String extension : extensionsList) {
+            extension = extension.trim().toLowerCase();
+            if (extension.startsWith(".")) {
+                ALLOWED_FILE_EXTENSIONS.add(extension.substring(1));
+            } else {
+                switch (extension) {
+                    case "*/*":
+                        ALLOWED_FILE_EXTENSIONS.clear();
+                        ALLOWED_FILE_EXTENSIONS.add("*/*");
+                        return;
+                    case "image/*":
+                        ALLOWED_FILE_EXTENSIONS.addAll(List.of(FileUploadConstants.SUPPORTED_IMAGE_EXTENSIONS.split(",")));
+                        break;
+                    case "audio/*":
+                        ALLOWED_FILE_EXTENSIONS.addAll(List.of(FileUploadConstants.SUPPORTED_AUDIO_EXTENSIONS.split(",")));
+                        break;
+                    case "video/*":
+                        ALLOWED_FILE_EXTENSIONS.addAll(List.of(FileUploadConstants.SUPPORTED_VIDEO_EXTENSIONS.split(",")));
+                        break;
+                    default:
+                        ALLOWED_FILE_EXTENSIONS.add(extension);
+                        break;
+                }
+            }
+        }
+    }
+
+    private String getFileExtension(String fileName) {
+        return StringUtils.substringAfterLast(fileName, ".").toLowerCase();
+    }
 }

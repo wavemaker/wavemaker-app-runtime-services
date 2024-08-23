@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.rest;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -29,22 +30,25 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.rest.WmFileSystemResource;
 import com.wavemaker.runtime.commons.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
+import com.wavemaker.runtime.rest.model.Message;
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
+import com.wavemaker.runtime.rest.util.HttpRequestUtils;
 
 import feign.Headers;
 import feign.Param;
@@ -53,12 +57,12 @@ import feign.RequestLine;
 
 public class RestInvocationHandler implements InvocationHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(RestInvocationHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestInvocationHandler.class);
 
-    private static Pattern pathParameterPattern = Pattern.compile("\\/\\{(\\w*)\\}");
-    private static Pattern queryParameterPattern = Pattern.compile("=\\{(\\w*)\\}");
-    private static Pattern headerParameterPattern = Pattern.compile("\\{(\\w*)\\}");
-    private static Pattern splitHeaderPattern = Pattern.compile("([^:]+):\\s*(.+)");
+    private static final Pattern pathParameterPattern = Pattern.compile("\\/\\{(\\w*)\\}");
+    private static final Pattern queryParameterPattern = Pattern.compile("=\\{(\\w*)\\}");
+    private static final Pattern headerParameterPattern = Pattern.compile("\\{(\\w*)\\}");
+    private static final Pattern splitHeaderPattern = Pattern.compile("([^:]+):\\s*(.+)");
 
     private RestRuntimeService restRuntimeService;
 
@@ -77,8 +81,10 @@ public class RestInvocationHandler implements InvocationHandler {
         Map<String, String> headerVariableMap = new HashMap<>();
         MultiValueMap<String, Object> formVariableMap = new LinkedMultiValueMap<>();
         List<String> queryVariablesList = getQueryVariables(method.getAnnotation(RequestLine.class).value());
+        List<String> pathVariablesList = getPathVariables(method.getAnnotation(RequestLine.class).value());
         List<String> headerPlaceholders = extractHeaderPlaceholders(method.getAnnotation(Headers.class).value());
-        boolean urlEncodedHeaderPresent = urlEncodedHeaderPresent(method.getAnnotation(Headers.class).value());
+        boolean urlEncodedHeader = isUrlEncodedHeaderPresent(method.getAnnotation(Headers.class).value());
+        boolean multipartFormDataHeader = isMultipartFormDataHeaderPresent(method.getAnnotation(Headers.class).value());
         int position = 0;
         for (Annotation[] parameterAnnotation : method.getParameterAnnotations()) {
             if (args[position] != null) {
@@ -87,10 +93,10 @@ public class RestInvocationHandler implements InvocationHandler {
                         queryVariablesMap.add(((Param) parameterAnnotation[0]).value(), args[position].toString());
                     } else if (headerPlaceholders.contains(((Param) parameterAnnotation[0]).value())) {
                         headerVariableMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
-                    } else if (urlEncodedHeaderPresent) {
-                        formVariableMap.add(((Param) parameterAnnotation[0]).value(), args[position]);
-                    } else {
+                    } else if (pathVariablesList.contains(((Param) parameterAnnotation[0]).value())) {
                         pathVariablesMap.put(((Param) parameterAnnotation[0]).value(), args[position].toString());
+                    } else if (urlEncodedHeader || multipartFormDataHeader) {
+                        formVariableMap.add(((Param) parameterAnnotation[0]).value(), args[position]);
                     }
                 } else if (parameterAnnotation.length != 0 && parameterAnnotation[0] instanceof QueryMap) {
                     queryVariablesMap.addAll((MultiValueMap<String, String>) args[position]);
@@ -107,23 +113,17 @@ public class RestInvocationHandler implements InvocationHandler {
         httpRequestData.setQueryParametersMap(queryVariablesMap);
         httpRequestData.setPathVariablesMap(pathVariablesMap);
 
-        StringBuilder requestBodyBuilder = new StringBuilder();
         if (!formVariableMap.isEmpty()) {
-            formVariableMap.forEach((key, values) -> {
-                values.forEach(value -> {
-                    if (requestBodyBuilder.length() > 0) {
-                        requestBodyBuilder.append("&");
-                    }
-                    if (value instanceof String) {
-                        requestBodyBuilder.append(key).append("=").append((String) value);
-                    }
-                });
-            });
-            try {
-                httpRequestData.setRequestBody(new ByteArrayInputStream(WMObjectMapper.getInstance().
-                    writeValueAsBytes(requestBodyBuilder.toString())));
-            } catch (IOException e) {
-                logger.error(String.valueOf(e));
+            Message formMessage = null;
+            if (multipartFormDataHeader) {
+                MultiValueMap<String, Object> convertedMap = convertToMultipartData(formVariableMap);
+                formMessage = HttpRequestUtils.createMessage(convertedMap, MediaType.MULTIPART_FORM_DATA_VALUE);
+            } else if (urlEncodedHeader) {
+                formMessage = HttpRequestUtils.createMessage(formVariableMap, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+            }
+            if (formMessage != null) {
+                httpRequestData.setRequestBody(formMessage.getInputStream());
+                httpRequestData.getHttpHeaders().addAll(formMessage.getHttpHeaders());
             }
         }
         logger.debug("constructed request data {}", httpRequestData.getPathVariablesMap());
@@ -131,13 +131,17 @@ public class RestInvocationHandler implements InvocationHandler {
 
         //Resolving the headers and setting them to httpRequestData
         //eg: if Header is like X-RapidAPI-Key: {x_RapidAPI_Key} in this case we will look for x_RapidAPI_Key in variableMap and set its value
-        Arrays.stream(method.getAnnotation(Headers.class).value()).forEach(header -> {
-            Matcher matcher = splitHeaderPattern.matcher(header);
-            while (matcher.find()) {
-                httpRequestData.getHttpHeaders().add(matcher.group(1), header.contains("{") ? headerVariableMap.get(matcher.group(2)) :
-                    matcher.group(2));
-            }
-        });
+        Arrays.stream(method.getAnnotation(Headers.class).value())
+            .map(splitHeaderPattern::matcher)
+            .filter(Matcher::find)
+            .forEach(matcher -> {
+                String headerName = matcher.group(1);
+                String headerValue = matcher.group(2);
+                if (headerValue.startsWith("{") && headerValue.endsWith("}")) {
+                    headerValue = headerVariableMap.getOrDefault(headerValue.substring(1, headerValue.length() - 1), headerValue);
+                }
+                httpRequestData.getHttpHeaders().addIfAbsent(headerName, headerValue);
+            });
         String[] split = method.getAnnotation(RequestLine.class).value().split(" ");
         HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
             split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
@@ -167,6 +171,27 @@ public class RestInvocationHandler implements InvocationHandler {
         return null;
     }
 
+    private MultiValueMap<String, Object> convertToMultipartData(MultiValueMap<String, Object> formVariableMap) {
+        MultiValueMap<String, Object> convertedMap = new LinkedMultiValueMap<>();
+        formVariableMap.forEach((key, value) -> {
+            if (value != null) {
+                if (value.get(0) instanceof List) {
+                    List<?> listValue = (List<?>) value.get(0);
+                    if (!listValue.isEmpty() && listValue.get(0) instanceof File) {
+                        for (Object item : listValue) {
+                            if (item instanceof File) {
+                                addFileToConvertMap((File) item, convertedMap, key);
+                            }
+                        }
+                    }
+                } else {
+                    convertedMap.add(key, value.get(0));
+                }
+            }
+        });
+        return convertedMap;
+    }
+
     private List<String> extractHeaderPlaceholders(String[] value) {
         List<String> headerVariables = new ArrayList();
         Arrays.stream(value).forEach(header -> {
@@ -178,8 +203,8 @@ public class RestInvocationHandler implements InvocationHandler {
         return headerVariables;
     }
 
-    private Queue<String> getPathVariables(String value) {
-        Queue<String> arrayList = new LinkedList<>();
+    private List<String> getPathVariables(String value) {
+        List<String> arrayList = new LinkedList<>();
         Matcher matcher = pathParameterPattern.matcher(value);
         while (matcher.find()) {
             arrayList.add(matcher.group(1));
@@ -197,8 +222,18 @@ public class RestInvocationHandler implements InvocationHandler {
 
     }
 
-    private boolean urlEncodedHeaderPresent(String[] headerList) {
+    private void addFileToConvertMap(File file, MultiValueMap<String, Object> convertedMap, String key) {
+        WmFileSystemResource fileSystemResource = new WmFileSystemResource(file, MediaType.MULTIPART_FORM_DATA_VALUE);
+        convertedMap.add(key, fileSystemResource);
+    }
+
+    private boolean isUrlEncodedHeaderPresent(String[] headerList) {
         return Arrays.stream(headerList)
-            .anyMatch(header -> header.contains("application/x-www-form-urlencoded"));
+            .anyMatch(header -> header.contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE));
+    }
+
+    private boolean isMultipartFormDataHeaderPresent(String[] headerList) {
+        return Arrays.stream(headerList)
+            .anyMatch(header -> header.contains(MediaType.MULTIPART_FORM_DATA_VALUE));
     }
 }

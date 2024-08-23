@@ -10,6 +10,7 @@ dependencies {
     implementation(enforcedPlatform(appDependenciesLibs.boms.jackson.get().toString()))
     implementation(projects.wavemakerCommonsUtil)
     implementation(projects.wavemakerAppRuntimePrefab)
+    implementation(appDependenciesLibs.jakarta.annotation.api)
     implementation(appDependenciesLibs.commons.io)
     implementation(appDependenciesLibs.commons.lang3)
     implementation(appDependenciesLibs.spring.context)
