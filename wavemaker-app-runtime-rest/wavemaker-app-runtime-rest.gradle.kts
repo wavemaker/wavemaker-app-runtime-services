@@ -25,7 +25,7 @@ dependencies {
     implementation(appDependenciesLibs.feign.core)
     compileOnly(appDependenciesLibs.jakarta.servlet.api)
     testImplementation(appDependenciesLibs.test.junit4)
-    testImplementation(appDependenciesLibs.test.mockito.all)
+    testImplementation(appDependenciesLibs.test.mockito.core)
     testImplementation(appDependenciesLibs.jakarta.servlet.api)
 }
 
