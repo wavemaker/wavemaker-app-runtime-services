@@ -25,6 +25,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.GenericJDBCException;
 import org.hibernate.exception.SQLGrammarException;
@@ -208,7 +209,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     private ModelAndView handleRuntimeException(RuntimeException ex) {
         String msg = ExceptionUtils.getRootCauseMessage(ex);
-        ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
+        ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, getDefaultInternalServerErrorMsg(msg));
         return getModelAndView(errorResponse);
     }
 
@@ -219,8 +220,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     }
 
     private ModelAndView handleException(Exception ex, HttpServletResponse response) {
-        String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
-        ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
+        ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, getDefaultInternalServerErrorMsg(ex.getMessage()));
         return getModelAndView(errorResponse);
     }
 
@@ -235,9 +235,8 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             args = defaultArgs;
         } else {
             messageResource = MessageResource.UNEXPECTED_ERROR;
-            String message = messageResourceHolder.getMessage();
-            String errorMsg = (message != null) ? message : "";
-            args = new Object[]{errorMsg};
+            String message = getDefaultInternalServerErrorMsg(messageResourceHolder.getMessage());
+            args = new Object[]{message};
         }
         ErrorResponse errorResponse = getErrorResponse(messageResource, args);
         errorResponse.setMessage(messageResource.getMessageWithPlaceholders());
@@ -296,5 +295,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
         modelAndView.addObject("errors", errorResponses);
         return modelAndView;
+    }
+
+    private String getDefaultInternalServerErrorMsg(String message) {
+        return StringUtils.isNotBlank(message) ? message : "Internal Server Error";
     }
 }
