@@ -15,7 +15,7 @@
             <ref bean="mappingJackson2HttpMessageConverter"/>
         </mvc:message-converters>
         <mvc:argument-resolvers>
-            <bean class="com.wavemaker.runtime.resolver.WMPageableHandlerMethodArgumentResolver" >
+            <bean class="com.wavemaker.runtime.resolver.WMPageableHandlerMethodArgumentResolver">
                 <property name="pageParameterName" value="page"/>
                 <property name="sizeParameterName" value="size"/>
                 <property name="oneIndexedParameters" value="true"/>
@@ -39,6 +39,11 @@
     <bean id="wmObjectMapper" class="com.wavemaker.runtime.commons.WMObjectMapper"/>
 
     <bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+    <bean id="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"
+          class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="patternParser" value="#{null}"/>
+    </bean>
 
     <bean id="handlerExceptionResolver" class="com.wavemaker.runtime.exception.resolver.ApplicationRestServiceExceptionResolver"/>
 </beans>
