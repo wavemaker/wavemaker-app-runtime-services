@@ -19,6 +19,7 @@ import java.lang.reflect.Proxy;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
 
@@ -33,6 +34,9 @@ public class RestFactoryBean<T> implements FactoryBean<T> {
     @Autowired
     private RestRuntimeService restRuntimeService;
 
+    @Autowired
+    private Environment environment;
+
     public RestFactoryBean(Class<T> serviceKlass, String serviceId, ClassLoader classLoader) {
         this.serviceKlass = serviceKlass;
         this.serviceId = serviceId;
@@ -43,7 +47,7 @@ public class RestFactoryBean<T> implements FactoryBean<T> {
     public T getObject() throws Exception {
         return (T) Proxy.newProxyInstance(
             classLoader,
-            new Class[]{serviceKlass}, new RestInvocationHandler(serviceId, restRuntimeService));
+            new Class[]{serviceKlass}, new RestInvocationHandler(serviceId, restRuntimeService, environment));
     }
 
     @Override

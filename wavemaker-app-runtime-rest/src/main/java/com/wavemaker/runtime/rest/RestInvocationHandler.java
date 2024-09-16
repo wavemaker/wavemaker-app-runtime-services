@@ -36,9 +36,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -66,11 +68,14 @@ public class RestInvocationHandler implements InvocationHandler {
 
     private RestRuntimeService restRuntimeService;
 
+    private EncodingMode encodingMode;
+
     private String serviceId;
 
-    public RestInvocationHandler(String serviceId, RestRuntimeService restRuntimeService) {
+    public RestInvocationHandler(String serviceId, RestRuntimeService restRuntimeService, Environment environment) {
         this.serviceId = serviceId;
         this.restRuntimeService = restRuntimeService;
+        this.encodingMode = environment.getProperty("app.rest.apiorchestration.encoding.mode", EncodingMode.class);
     }
 
     @Override
@@ -146,7 +151,7 @@ public class RestInvocationHandler implements InvocationHandler {
         HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
             split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
             split[0],
-            httpRequestData, RestExecutor.getRequestContextThreadLocal());
+            httpRequestData, RestExecutor.getRequestContextThreadLocal(), encodingMode);
 
         try {
             if (method.getReturnType() != void.class) {

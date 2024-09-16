@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -48,7 +49,7 @@ public class RestRuntimeController {
         }
 
         try {
-            restRuntimeService.executeRestCall(serviceId, path, httpServletRequest, httpServletResponse);
+            restRuntimeService.executeRestCall(serviceId, path, httpServletRequest, httpServletResponse, EncodingMode.NONE);
         } catch (WMRuntimeException e) {
             throw e;
         } catch (Throwable e) {

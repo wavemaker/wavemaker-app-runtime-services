@@ -43,6 +43,8 @@ import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
 import org.springframework.web.util.UriTemplateHandler;
 
 import com.wavemaker.runtime.commons.converters.WMYamlJackson2HttpMessageConverter;
@@ -95,7 +97,6 @@ public class WMRestTemplate extends RestTemplate {
         }
     }
 
-    private UriTemplateHandler uriTemplateHandler = new CustomUriTemplateHandler();
     private Consumer<ClientHttpResponse> extractDataConsumer;
 
     public WMRestTemplate() {
@@ -125,7 +126,9 @@ public class WMRestTemplate extends RestTemplate {
 
     @Override
     public UriTemplateHandler getUriTemplateHandler() {
-        return this.uriTemplateHandler;
+        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory();
+        uriBuilderFactory.setEncodingMode(EncodingMode.NONE);
+        return uriBuilderFactory;
     }
 
     /**

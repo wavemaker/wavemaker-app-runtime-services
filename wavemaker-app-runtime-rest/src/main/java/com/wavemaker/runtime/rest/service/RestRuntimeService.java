@@ -32,7 +32,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +39,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
+import org.springframework.web.util.UriBuilder;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
@@ -47,7 +49,6 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.comparator.UrlComparator;
 import com.wavemaker.commons.comparator.UrlStringComparator;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
-import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.commons.web.filter.RequestTrackingFilter;
 import com.wavemaker.commons.web.filter.ServerTimingMetric;
 import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
@@ -110,19 +111,21 @@ public class RestRuntimeService {
     }
 
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
-        return executeRestCall(serviceId, operationId, httpRequestData, null);
+        return executeRestCall(serviceId, operationId, httpRequestData, null, null);
     }
 
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData,
-                                               HttpServletRequest httpServletRequest) {
+                                               HttpServletRequest httpServletRequest, EncodingMode encodingMode) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         Triple<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, pathAndOperation.getLeft(),
-            SwaggerDocUtil.getOperationType(pathAndOperation.getMiddle(), pathAndOperation.getRight().getOperationId()).toUpperCase(), httpRequestData);
+            SwaggerDocUtil.getOperationType(pathAndOperation.getMiddle(), pathAndOperation.getRight().getOperationId()).toUpperCase(), httpRequestData,
+            null, encodingMode);
         return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, httpServletRequest, "");
     }
 
-    public void executeRestCall(String serviceId, String path, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public void executeRestCall(String serviceId, String path, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+                                EncodingMode encodingMode) {
         HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
         HttpRequestDataProcessorContext httpRequestDataProcessorContext = new HttpRequestDataProcessorContext(httpServletRequest, httpRequestData);
         List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors(serviceId);
@@ -131,29 +134,7 @@ public class RestRuntimeService {
             logger.debug("Executing the httpRequestDataProcessor {} on the context {}", httpRequestDataProcessor, context);
             httpRequestDataProcessor.process(httpRequestDataProcessorContext);
         }
-        executeRestCall(serviceId, path, httpRequestData, httpServletRequest, httpServletResponse, context);
-    }
-
-    public HttpResponseDetails executeRestCall(String serviceId, String path, String method, HttpRequestData httpRequestData, RequestContext requestContext) {
-        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, method, httpRequestData);
-        if (requestContext != null) {
-            HttpHeaders httpHeaders = httpRequestDetails.getHeaders();
-            if (!requestContext.getHeaders().isEmpty()) {
-                httpHeaders.putAll(requestContext.getHeaders());
-                httpRequestDetails.setHeaders(httpHeaders);
-            }
-            if (!requestContext.getQueryParams().isEmpty()) {
-                StringBuilder endpointAddress = new StringBuilder(httpRequestDetails.getEndpointAddress());
-                updateUrlWithQueryParameters(endpointAddress, new HashMap<>(httpRequestData.getQueryParametersMap()));
-                httpRequestDetails.setEndpointAddress(endpointAddress.toString());
-            }
-        }
-        return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, null, "");
-    }
-
-    public void executeRestCall(String serviceId, String path, final HttpRequestData httpRequestData,
-                                final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) {
-        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, httpServletRequest.getMethod(), httpRequestData);
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, httpServletRequest.getMethod(), httpRequestData, null, encodingMode);
         HttpResponseDetails httpResponseDetails = executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, httpServletRequest, context);
         try {
             HttpRequestUtils.writeResponse(httpResponseDetails, httpServletResponse);
@@ -162,8 +143,14 @@ public class RestRuntimeService {
         }
     }
 
-    public HttpResponseDetails executeRestCallWithProcessors(String serviceId, HttpRequestDetails httpRequestDetails, final HttpRequestData httpRequestData,
-                                                             final HttpServletRequest httpServletRequest, final String context) {
+    public HttpResponseDetails executeRestCall(String serviceId, String path, String method, HttpRequestData httpRequestData,
+                                               RequestContext requestContext, EncodingMode encodingMode) {
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, path, method, httpRequestData, requestContext, encodingMode);
+        return executeRestCallWithProcessors(serviceId, httpRequestDetails, httpRequestData, null, "");
+    }
+
+    private HttpResponseDetails executeRestCallWithProcessors(String serviceId, HttpRequestDetails httpRequestDetails, final HttpRequestData httpRequestData,
+                                                              final HttpServletRequest httpServletRequest, final String context) {
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
         final RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
         List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();
@@ -182,7 +169,7 @@ public class RestRuntimeService {
             requestTrackingFilter.addServerTimingMetrics(new ServerTimingMetric("rest-server", processingTime, null));
 
             try {
-                httpResponseDetails.setStatusCode(response.getRawStatusCode());
+                httpResponseDetails.setStatusCode(response.getStatusCode().value());
                 httpResponseDetails.setBody(response.getBody());
             } catch (IOException e) {
                 throw new WMRuntimeException(e);
@@ -213,7 +200,8 @@ public class RestRuntimeService {
         return httpRequestData;
     }
 
-    private HttpRequestDetails constructHttpRequest(String serviceId, String path, String method, HttpRequestData httpRequestData) {
+    private HttpRequestDetails constructHttpRequest(String serviceId, String path, String method, HttpRequestData httpRequestData,
+                                                    RequestContext requestContext, EncodingMode encodingMode) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         final Pair<String, Operation> operationPair = findOperation(swagger, path, method);
 
@@ -227,13 +215,54 @@ public class RestRuntimeService {
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
 
         updateAuthorizationInfo(serviceId, swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
-        httpRequestDetails.setEndpointAddress(getEndPointAddress(serviceId, operationPair.getLeft(), queryParameters, pathParameters));
+        updateUrlWithRequestContext(requestContext, queryParameters, httpHeaders);
+        String endPointAddress = getUriBuilder(serviceId, operationPair.getLeft(), queryParameters, encodingMode).build(pathParameters).toString();
+        httpRequestDetails.setEndpointAddress(endPointAddress);
         httpRequestDetails.setMethod(method);
 
         httpRequestDetails.setHeaders(httpHeaders);
         httpRequestDetails.setBody(httpRequestData.getRequestBody());
 
         return httpRequestDetails;
+    }
+
+    private UriBuilder getUriBuilder(String serviceId, String pathValue, Map<String, Object> queryParameters,
+                                     EncodingMode encodingMode) {
+        String scheme = getPropertyValue(serviceId, RestConstants.SCHEME_KEY);
+        String host = getPropertyValue(serviceId, RestConstants.HOST_KEY);
+        String basePath = getPropertyValue(serviceId, RestConstants.BASE_PATH_KEY);
+
+        String url = new StringBuilder(scheme).append("://").append(host)
+            .append(getNormalizedString(basePath)).append(getNormalizedString(pathValue)).toString();
+
+        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory();
+        encodingMode = (encodingMode != null) ? encodingMode : EncodingMode.TEMPLATE_AND_VALUES;
+        uriBuilderFactory.setEncodingMode(encodingMode);
+
+        UriBuilder uriBuilder = uriBuilderFactory.uriString(url);
+        updateUrlWithQueryParams(uriBuilder, queryParameters);
+        return uriBuilder;
+    }
+
+    private void updateUrlWithQueryParams(UriBuilder uriBuilder, Map<String, Object> queryParameters) {
+        queryParameters.forEach((key, valueList) -> {
+            if (valueList instanceof List<?>) {
+                ((List<?>) valueList).forEach(value -> uriBuilder.queryParam(key, value));
+            } else {
+                uriBuilder.queryParam(key, valueList);
+            }
+        });
+    }
+
+    private void updateUrlWithRequestContext(RequestContext requestContext, Map<String, Object> queryParameters, HttpHeaders headers) {
+        if (requestContext != null) {
+            if (requestContext.getHeaders() != null) {
+                headers.putAll(requestContext.getHeaders());
+            }
+            if (requestContext.getQueryParams() != null) {
+                queryParameters.putAll(requestContext.getQueryParams());
+            }
+        }
     }
 
     private Triple<String, Path, Operation> findPathAndOperation(Swagger swagger, String operationId) {
@@ -305,36 +334,6 @@ public class RestRuntimeService {
                 if (pathVariableValue != null) {
                     pathParameters.put(paramName, pathVariableValue);
                 }
-            }
-        }
-    }
-
-    private String getEndPointAddress(String serviceId, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
-        String scheme = getPropertyValue(serviceId, RestConstants.SCHEME_KEY);
-        String host = getPropertyValue(serviceId, RestConstants.HOST_KEY);
-        String basePath = getPropertyValue(serviceId, RestConstants.BASE_PATH_KEY);
-
-        StringBuilder sb = new StringBuilder(scheme).append("://").append(host)
-            .append(getNormalizedString(basePath)).append(getNormalizedString(pathValue));
-
-        updateUrlWithQueryParameters(sb, queryParameters);
-
-        StringSubstitutor stringSubstitutor = new StringSubstitutor(pathParameters, "{", "}");
-        return stringSubstitutor.replace(sb.toString());
-    }
-
-    private void updateUrlWithQueryParameters(StringBuilder endpointAddressSb, Map<String, Object> queryParameters) {
-        boolean first = true;
-        for (Map.Entry<String, Object> queryParam : queryParameters.entrySet()) {
-            String[] strings = WMUtils.getStringList(queryParam.getValue());
-            for (String str : strings) {
-                if (first) {
-                    endpointAddressSb.append("?");
-                } else {
-                    endpointAddressSb.append("&");
-                }
-                endpointAddressSb.append(queryParam.getKey()).append("=").append(str);
-                first = false;
             }
         }
     }
