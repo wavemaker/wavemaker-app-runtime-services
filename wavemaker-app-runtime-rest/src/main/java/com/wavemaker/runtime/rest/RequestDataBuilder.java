@@ -16,17 +16,16 @@ package com.wavemaker.runtime.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.wavemaker.commons.io.NoCloseInputStream;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -36,7 +35,7 @@ import com.wavemaker.runtime.rest.model.HttpRequestData;
  */
 public class RequestDataBuilder {
 
-    public HttpRequestData getRequestData(HttpServletRequest httpServletRequest) throws URISyntaxException, IOException {
+    public HttpRequestData getRequestData(HttpServletRequest httpServletRequest) throws IOException {
         HttpRequestData httpRequestData = new HttpRequestData();
         httpRequestData.setHttpHeaders(getHttpHeaders(httpServletRequest));
         httpRequestData.setQueryParametersMap(getQueryParameters(httpServletRequest));
@@ -58,24 +57,15 @@ public class RequestDataBuilder {
         return httpHeaders;
     }
 
-    private MultiValueMap<String, String> getQueryParameters(HttpServletRequest httpServletRequest) throws URISyntaxException {
-        String fullUrl = getFullURL(httpServletRequest);
-        return UriComponentsBuilder.fromUri(new URI(fullUrl)).build().getQueryParams();
+    private MultiValueMap<String, String> getQueryParameters(HttpServletRequest httpServletRequest) {
+        Map<String, String[]> queryParameterMap = httpServletRequest.getParameterMap();
+        MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<>();
+        queryParameterMap.forEach((key, value) -> queryParameters.addAll(key, Arrays.stream(value).toList()));
+        return queryParameters;
     }
 
     private Map<String, String> getPathVariablesMap(HttpServletRequest httpServletRequest) {
         return (Map<String, String>) httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-    }
-
-    private String getFullURL(HttpServletRequest request) {
-        StringBuffer requestURL = request.getRequestURL();
-        String queryString = request.getQueryString();
-
-        if (queryString == null) {
-            return requestURL.toString();
-        } else {
-            return requestURL.append('?').append(queryString).toString();
-        }
     }
 
     private InputStream getRequestBody(HttpServletRequest httpServletRequest) throws IOException {

@@ -216,7 +216,7 @@ public class RestRuntimeService {
 
         updateAuthorizationInfo(serviceId, swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
         updateUrlWithRequestContext(requestContext, queryParameters, httpHeaders);
-        String endPointAddress = getUriBuilder(serviceId, operationPair.getLeft(), queryParameters, encodingMode).build(pathParameters).toString();
+        String endPointAddress = getEndPointAddress(serviceId, operationPair.getLeft(), queryParameters, pathParameters, encodingMode);
         httpRequestDetails.setEndpointAddress(endPointAddress);
         httpRequestDetails.setMethod(method);
 
@@ -226,8 +226,8 @@ public class RestRuntimeService {
         return httpRequestDetails;
     }
 
-    private UriBuilder getUriBuilder(String serviceId, String pathValue, Map<String, Object> queryParameters,
-                                     EncodingMode encodingMode) {
+    private String getEndPointAddress(String serviceId, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters,
+                                      EncodingMode encodingMode) {
         String scheme = getPropertyValue(serviceId, RestConstants.SCHEME_KEY);
         String host = getPropertyValue(serviceId, RestConstants.HOST_KEY);
         String basePath = getPropertyValue(serviceId, RestConstants.BASE_PATH_KEY);
@@ -241,7 +241,7 @@ public class RestRuntimeService {
 
         UriBuilder uriBuilder = uriBuilderFactory.uriString(url);
         updateUrlWithQueryParams(uriBuilder, queryParameters);
-        return uriBuilder;
+        return uriBuilder.build(pathParameters).toString();
     }
 
     private void updateUrlWithQueryParams(UriBuilder uriBuilder, Map<String, Object> queryParameters) {

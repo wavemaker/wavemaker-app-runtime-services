@@ -49,7 +49,7 @@ public class RestRuntimeController {
         }
 
         try {
-            restRuntimeService.executeRestCall(serviceId, path, httpServletRequest, httpServletResponse, EncodingMode.NONE);
+            restRuntimeService.executeRestCall(serviceId, path, httpServletRequest, httpServletResponse, EncodingMode.TEMPLATE_AND_VALUES);
         } catch (WMRuntimeException e) {
             throw e;
         } catch (Throwable e) {
