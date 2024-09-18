@@ -68,7 +68,6 @@ dependencies {
     implementation(appDependenciesLibs.jakarta.xml.bind.api) {
         because("Used for getting jakarta xml bind packages, but previously javax bind api used to be loaded in app runtime core")
     }
-    runtimeOnly(appDependenciesLibs.commons.fileupload)
     testImplementation(appDependenciesLibs.test.junit4)
 
     //Logging related dependencies
