@@ -39,6 +39,7 @@ import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.commons.WMAppContext;
 import com.wavemaker.runtime.commons.util.WMRandomUtils;
+import com.wavemaker.runtime.security.xss.XssDisable;
 import com.wavemaker.runtime.webprocess.WebProcessHelper;
 import com.wavemaker.runtime.webprocess.model.WebProcess;
 import com.wordnik.swagger.annotations.Api;
@@ -105,6 +106,7 @@ public class WebProcessController {
 
     @GetMapping(value = "/decode")
     @ApiOperation(value = "ends a web process and shows a page that has encoded output")
+    @XssDisable
     public String decode(String encodedProcessdata, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Cookie cookie = WebProcessHelper.getCookie(request.getCookies(), WebProcessHelper.WEB_PROCESS_COOKIE_NAME);
         if (cookie != null) {

@@ -19,6 +19,5 @@
 /**/wmmobile/**
 /app/prefabs/**
 /services/application/wmProperties.js
-/services/webprocess/**
 /manifest.json
 /ngsw.json

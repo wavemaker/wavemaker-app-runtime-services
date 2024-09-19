@@ -46,15 +46,17 @@ public abstract class WebProcessFilter extends GenericFilterBean {
         if (webProcessCookie != null) {
             WebProcess webProcess = WebProcessHelper.decodeWebProcess(webProcessCookie.getValue());
             if (webProcess.getProcessName().equals(this.processName)) {
-                if (request.getRequestURI().endsWith("/services/webprocess/decode")
-                    && this.onDecode(webProcess, request, response)) {
-                    return;
-                }
-                String processOutput = this.endProcess(webProcess, request, response);
-                if (processOutput != null) {
-                    request.setAttribute(WebProcessHelper.WEB_PROCESS_OUTPUT, processOutput);
-                    request.getRequestDispatcher("/services/webprocess/end").forward(servletRequest, servletResponse);
-                    return;
+                if (request.getRequestURI().endsWith("/services/webprocess/decode")) {
+                    if (this.onDecode(webProcess, request, response)) {
+                        return;
+                    }
+                } else {
+                    String processOutput = this.endProcess(webProcess, request, response);
+                    if (processOutput != null) {
+                        request.setAttribute(WebProcessHelper.WEB_PROCESS_OUTPUT, processOutput);
+                        request.getRequestDispatcher("/services/webprocess/end").forward(servletRequest, servletResponse);
+                        return;
+                    }
                 }
             }
         }

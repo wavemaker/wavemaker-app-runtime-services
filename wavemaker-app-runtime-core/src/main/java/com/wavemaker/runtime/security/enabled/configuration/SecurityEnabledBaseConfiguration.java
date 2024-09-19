@@ -518,6 +518,7 @@ public class SecurityEnabledBaseConfiguration {
             new SecurityInterceptUrlEntry("/services/prefabs/**/servicedefs", Permission.PermitAll),
             new SecurityInterceptUrlEntry("/services/security/**", Permission.PermitAll),
             new SecurityInterceptUrlEntry("/services/servicedefs", Permission.PermitAll),
+            new SecurityInterceptUrlEntry("/services/webprocess/**", Permission.PermitAll),
             new SecurityInterceptUrlEntry("/**", com.wavemaker.app.web.http.HttpMethod.OPTIONS, Permission.PermitAll),
             new SecurityInterceptUrlEntry("/", Permission.Authenticated),
             new SecurityInterceptUrlEntry("/**", Permission.Authenticated));
