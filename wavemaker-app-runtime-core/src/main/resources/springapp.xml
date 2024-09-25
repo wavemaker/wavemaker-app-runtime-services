@@ -21,6 +21,10 @@
 
     <bean class="com.wavemaker.runtime.security.config.SecurityConfiguration" id="securityConfiguration"/>
 
+    <bean id="requestHandlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="useTrailingSlashMatch" value="${app.request.useTrailingSlashMatch:false}"/>
+    </bean>
+
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
         <property name="favorPathExtension" value="false"/>
