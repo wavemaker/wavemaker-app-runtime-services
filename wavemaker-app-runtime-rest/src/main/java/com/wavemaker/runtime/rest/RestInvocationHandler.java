@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -72,10 +71,10 @@ public class RestInvocationHandler implements InvocationHandler {
 
     private String serviceId;
 
-    public RestInvocationHandler(String serviceId, RestRuntimeService restRuntimeService, Environment environment) {
+    public RestInvocationHandler(String serviceId, RestRuntimeService restRuntimeService, EncodingMode encodingMode) {
         this.serviceId = serviceId;
         this.restRuntimeService = restRuntimeService;
-        this.encodingMode = environment.getProperty("app.rest.apiorchestration.encoding.mode", EncodingMode.class);
+        this.encodingMode = encodingMode;
     }
 
     @Override

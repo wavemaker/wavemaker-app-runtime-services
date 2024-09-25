@@ -110,12 +110,28 @@ public class RestRuntimeService {
         restRuntimeServiceCacheHelper.setEnvironment(environment);
     }
 
+    /**
+     * @deprecated : This method is deprecated
+     * <p>
+     * The recommended way to make the rest api calls from java service is by using <a href="https://docs.wavemaker.com/learn/app-development/services/java-services/api-composer-toolkit">API Orchestration</a>
+     * </p>
+     */
+    @Deprecated
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
-        return executeRestCall(serviceId, operationId, httpRequestData, null, null);
+        return executeRestCall(serviceId, operationId, httpRequestData, null);
     }
 
+    /**
+     * @deprecated : This method is deprecated
+     * <p>
+     * The recommended way to make the rest api calls from java service is by using <a href="https://docs.wavemaker.com/learn/app-development/services/java-services/api-composer-toolkit">API Orchestration</a>
+     * </p>
+     */
+    @Deprecated
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData,
-                                               HttpServletRequest httpServletRequest, EncodingMode encodingMode) {
+                                               HttpServletRequest httpServletRequest) {
+        EncodingMode encodingMode = environment.getProperty("app.rest.apiorchestration.encoding.mode", EncodingMode.class,
+            EncodingMode.TEMPLATE_AND_VALUES);
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         Triple<String, Path, Operation> pathAndOperation = findPathAndOperation(swagger, operationId);
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, pathAndOperation.getLeft(),

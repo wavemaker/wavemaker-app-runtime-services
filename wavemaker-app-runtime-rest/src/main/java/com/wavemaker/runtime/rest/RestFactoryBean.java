@@ -19,7 +19,8 @@ import java.lang.reflect.Proxy;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
 
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
 
@@ -34,8 +35,8 @@ public class RestFactoryBean<T> implements FactoryBean<T> {
     @Autowired
     private RestRuntimeService restRuntimeService;
 
-    @Autowired
-    private Environment environment;
+    @Value("${app.rest.apiorchestration.encoding.mode:TEMPLATE_AND_VALUES}")
+    private EncodingMode encodingMode;
 
     public RestFactoryBean(Class<T> serviceKlass, String serviceId, ClassLoader classLoader) {
         this.serviceKlass = serviceKlass;
@@ -47,7 +48,7 @@ public class RestFactoryBean<T> implements FactoryBean<T> {
     public T getObject() throws Exception {
         return (T) Proxy.newProxyInstance(
             classLoader,
-            new Class[]{serviceKlass}, new RestInvocationHandler(serviceId, restRuntimeService, environment));
+            new Class[]{serviceKlass}, new RestInvocationHandler(serviceId, restRuntimeService, encodingMode));
     }
 
     @Override
