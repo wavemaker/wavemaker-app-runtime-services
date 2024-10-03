@@ -47,7 +47,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.FilterInvocation;
@@ -70,7 +69,7 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -80,7 +79,6 @@ import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
@@ -117,13 +115,11 @@ import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenResponseWriterAuth
 import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlComparator;
 import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlStringComparator;
 import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
-import com.wavemaker.runtime.security.enabled.configuration.requestmatcher.StatelessRequestMatcher;
 import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcessingFilter;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
-import com.wavemaker.runtime.security.handler.WMSecurityContextRepositorySuccessHandler;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 import com.wavemaker.runtime.security.token.repository.TokenRepository;
 import com.wavemaker.runtime.security.token.repository.WMTokenRepository;
@@ -235,7 +231,7 @@ public class SecurityEnabledBaseConfiguration {
         concurrentSessionControlAuthenticationStrategy.setMaximumSessions(loginConfig().getSessionConcurrencyConfig().getMaxSessionsAllowed());
         concurrentSessionControlAuthenticationStrategy.setExceptionIfMaximumExceeded(false);
         RegisterSessionAuthenticationStrategy registerSessionAuthenticationStrategy = new RegisterSessionAuthenticationStrategy(sessionRegistry);
-        List<SessionAuthenticationStrategy> delegateStrategies = new ArrayList<>(Arrays.asList(concurrentSessionControlAuthenticationStrategy, registerSessionAuthenticationStrategy, sessionFixationProtectionStrategy(), csrfAuthenticationStrategy()));
+        List<SessionAuthenticationStrategy> delegateStrategies = Arrays.asList(concurrentSessionControlAuthenticationStrategy, registerSessionAuthenticationStrategy, sessionFixationProtectionStrategy(), csrfAuthenticationStrategy());
         return new CompositeSessionAuthenticationStrategy(delegateStrategies);
     }
 
@@ -319,7 +315,6 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "successHandler")
     public AuthenticationSuccessHandler successHandler() {
         List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
-        defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler());
         defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler());
         defaultSuccessHandlerList.add(wmCsrfTokenResponseWriterAuthenticationSuccessHandler());
         WMApplicationAuthenticationSuccessHandler wmApplicationAuthenticationSuccessHandler = new WMApplicationAuthenticationSuccessHandler();
@@ -348,19 +343,6 @@ public class SecurityEnabledBaseConfiguration {
         HttpSessionSecurityContextRepository httpSessionSecurityContextRepository = new HttpSessionSecurityContextRepository();
         httpSessionSecurityContextRepository.setDisableUrlRewriting(true);
         return httpSessionSecurityContextRepository;
-    }
-
-    @Bean(name = "noSessionsSecurityContextRepository")
-    public SecurityContextRepository noSessionsSecurityContextRepository() {
-        HttpSessionSecurityContextRepository httpSessionSecurityContextRepository = new HttpSessionSecurityContextRepository();
-        httpSessionSecurityContextRepository.setDisableUrlRewriting(true);
-        httpSessionSecurityContextRepository.setAllowSessionCreation(false);
-        return httpSessionSecurityContextRepository;
-    }
-
-    @Bean(name = "wmSecurityContextRepositorySuccessHandler")
-    public AuthenticationSuccessHandler wmSecurityContextRepositorySuccessHandler() {
-        return new WMSecurityContextRepositorySuccessHandler(securityContextRepository());
     }
 
     @Bean(name = "failureHandler")
@@ -442,52 +424,33 @@ public class SecurityEnabledBaseConfiguration {
     public SecurityFilterChain filterChainWithSessions(HttpSecurity http, Filter logoutFilter) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
             .headers(AbstractHttpConfigurer::disable)
-            .securityMatcher(new NegatedRequestMatcher(new StatelessRequestMatcher(environment.getProperty("security.general.tokenService.parameter"))))
             .sessionManagement(sessionManagementConfigurer ->
                 sessionManagementConfigurer.sessionFixation().
                     migrateSession().
                     sessionConcurrency(sessionConcurrencyConfigurer ->
-                        sessionManagementConfigurer.
+                        sessionConcurrencyConfigurer.
                             maximumSessions(environment.getProperty("security.general.login.maxSessionsAllowed", Integer.class)).
                             maxSessionsPreventsLogin(false).
-                            sessionRegistry(sessionRegistry))
-                    .sessionCreationPolicy(SessionCreationPolicy.NEVER))
+                            sessionRegistry(sessionRegistry)))
             .requestCache(requestCustomizer ->
                 requestCustomizer.requestCache(nullRequestCache()))
             .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(appAuthenticationEntryPoint()))
-            .securityContext(securityContext -> securityContext.securityContextRepository(securityContextRepository()))
+            .securityContext(securityContext -> securityContext.
+                securityContextRepository(securityContextRepository()))
             .authenticationManager(authenticationManager())
             .authorizeRequests(this::authorizeHttpRequests)
             .logout(AbstractHttpConfigurer::disable)
             .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
             .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
             .addFilterAt(logoutFilter, LogoutFilter.class)
-            .addFilterAfter(loginWebProcessFilter(), SecurityContextPersistenceFilter.class);
-        wmSecurityConfigurationList.forEach(securityConfiguration ->
-            securityConfiguration.addFilters(http));
-        addCustomFilters(http);
-        return http.build();
-    }
-
-    @Bean
-    public SecurityFilterChain filterChainWithoutSessions(HttpSecurity http) throws Exception {
-        http
-            .csrf(AbstractHttpConfigurer::disable)
-            .headers(AbstractHttpConfigurer::disable)
-            .securityMatcher(new StatelessRequestMatcher(environment.getProperty("security.general.tokenService.parameter")))
-            .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.
-                sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .requestCache(requestCacheConfigurer -> requestCacheConfigurer.
-                requestCache(nullRequestCache()))
-            .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(appAuthenticationEntryPoint()))
-            .securityContext(securityContext -> securityContext.
-                securityContextRepository(noSessionsSecurityContextRepository()))
-            .authenticationManager(authenticationManager())
-            .authorizeRequests(this::authorizeHttpRequests)
-            .logout(AbstractHttpConfigurer::disable)
+            .addFilterAfter(loginWebProcessFilter(), SecurityContextHolderFilter.class)
             .addFilterBefore(wmTokenBasedPreAuthenticatedProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
-        wmSecurityConfigurationList.forEach(securityConfiguration -> securityConfiguration.addFilters(http));
+        wmSecurityConfigurationList.forEach(securityConfiguration -> {
+            securityConfiguration.addFilters(http);
+            securityConfiguration.addStatelessFilters(http);
+        });
         addCustomFilters(http);
         return http.build();
     }

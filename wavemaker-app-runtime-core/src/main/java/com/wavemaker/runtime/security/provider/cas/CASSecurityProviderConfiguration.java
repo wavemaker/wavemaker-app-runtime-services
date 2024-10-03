@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -56,6 +57,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.Permission;
@@ -99,6 +101,10 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @Qualifier("compositeSessionAuthenticationStrategy")
     @Lazy
     private SessionAuthenticationStrategy compositeSessionAuthenticationStrategy;
+
+    @Autowired
+    @Lazy
+    private SecurityContextRepository securityContextRepository;
 
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
@@ -182,6 +188,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         casAuthenticationFilter.setAuthenticationDetailsSource(wmWebAuthenticationDetailsSource(casProviderConfig));
         casAuthenticationFilter.setServiceProperties(casServiceProperties(casProviderConfig));
         casAuthenticationFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy);
+        casAuthenticationFilter.setSecurityContextRepository(securityContextRepository);
         return casAuthenticationFilter;
     }
 

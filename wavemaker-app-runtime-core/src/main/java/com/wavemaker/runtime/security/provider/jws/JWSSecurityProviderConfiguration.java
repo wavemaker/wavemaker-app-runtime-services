@@ -39,6 +39,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
@@ -85,7 +86,9 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
 
     @Bean(name = "jwsBearerTokenAuthenticationFilter")
     public Filter jwsBearerTokenAuthenticationFilter() {
-        return new BearerTokenAuthenticationFilter(jwtIssuerAuthenticationManagerResolver());
+        BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter = new BearerTokenAuthenticationFilter(jwtIssuerAuthenticationManagerResolver());
+        bearerTokenAuthenticationFilter.setSecurityContextRepository(new NullSecurityContextRepository());
+        return bearerTokenAuthenticationFilter;
     }
 
     @Bean
@@ -105,7 +108,7 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
+    public void addStatelessFilters(HttpSecurity http) {
         http.addFilterAfter(jwsBearerTokenAuthenticationFilter(), BasicAuthenticationFilter.class);
     }
 

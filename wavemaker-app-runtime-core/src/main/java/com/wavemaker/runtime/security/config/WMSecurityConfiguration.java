@@ -25,5 +25,7 @@ public interface WMSecurityConfiguration {
 
     List<SecurityInterceptUrlEntry> getSecurityInterceptUrls();
 
-    void addFilters(HttpSecurity http);
+    default void addFilters(HttpSecurity http) {}
+
+    default void addStatelessFilters(HttpSecurity http) {}
 }

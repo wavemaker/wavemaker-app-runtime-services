@@ -60,6 +60,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.Permission;
@@ -95,6 +96,10 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Lazy
     private SessionAuthenticationStrategy compositeSessionAuthenticationStrategy;
 
+    @Autowired
+    @Lazy
+    private SecurityContextRepository securityContextRepository;
+
     @Value("${security.providers.openId.activeProviders}")
     private String openIdActiveProvider;
 
@@ -128,6 +133,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         authenticationFilter.setAuthenticationManager(authenticationManager);
         authenticationFilter.setAuthenticationSuccessHandler(successHandler);
         authenticationFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy);
+        authenticationFilter.setSecurityContextRepository(securityContextRepository);
         return authenticationFilter;
     }
 

@@ -57,6 +57,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -118,6 +119,10 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     @Autowired
     @Qualifier("openSamlLogoutResponseResolver")
     private Saml2LogoutResponseResolver openSamlLogoutResponseResolver;
+
+    @Autowired
+    @Lazy
+    private SecurityContextRepository securityContextRepository;
 
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
@@ -231,6 +236,7 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
         wmSaml2WebSsoAuthenticationFilter.setAuthenticationManager(authenticationManager);
         wmSaml2WebSsoAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
         wmSaml2WebSsoAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);
+        wmSaml2WebSsoAuthenticationFilter.setSecurityContextRepository(securityContextRepository);
         return wmSaml2WebSsoAuthenticationFilter;
     }
 

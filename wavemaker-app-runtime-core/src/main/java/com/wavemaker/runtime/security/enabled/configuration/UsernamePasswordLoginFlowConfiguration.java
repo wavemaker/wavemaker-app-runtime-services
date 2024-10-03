@@ -38,6 +38,8 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.NullSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
@@ -71,6 +73,10 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     @Autowired(required = false)
     private RememberMeServices rememberMeServices;
 
+    @Autowired
+    @Lazy
+    private SecurityContextRepository securityContextRepository;
+
     @Bean(name = "redirectStrategyBean")
     public RedirectStrategy redirectStrategyBean() {
         return new DefaultRedirectStrategy();
@@ -91,7 +97,9 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
 
     @Bean(name = "WMBasicAuthenticationFilter")
     public Filter wmBasicAuthenticationFilter() {
-        return new WMBasicAuthenticationFilter(authenticationManager);
+        WMBasicAuthenticationFilter basicAuthenticationFilter = new WMBasicAuthenticationFilter(authenticationManager);
+        basicAuthenticationFilter.setSecurityContextRepository(new NullSecurityContextRepository());
+        return basicAuthenticationFilter;
     }
 
     @Bean(name = "WMSecAuthFilter")
@@ -107,6 +115,7 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
         if (rememberMeServices != null) {
             usernamePasswordAuthenticationFilter.setRememberMeServices(rememberMeServices);
         }
+        usernamePasswordAuthenticationFilter.setSecurityContextRepository(securityContextRepository);
         return usernamePasswordAuthenticationFilter;
     }
 
@@ -117,7 +126,11 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
 
     @Override
     public void addFilters(HttpSecurity http) {
-        http.addFilterAt(wmBasicAuthenticationFilter(), BasicAuthenticationFilter.class);
         http.addFilterAt(wmSecAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
+    @Override
+    public void addStatelessFilters(HttpSecurity http) {
+        http.addFilterAt(wmBasicAuthenticationFilter(), BasicAuthenticationFilter.class);
     }
 }

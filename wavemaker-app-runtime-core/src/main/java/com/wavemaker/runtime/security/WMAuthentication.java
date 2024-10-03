@@ -26,6 +26,7 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
+import com.wavemaker.runtime.security.session.util.WMSecurityUtils;
 
 /**
  * Created by srujant on 13/8/18.
@@ -94,6 +95,7 @@ public class WMAuthentication extends AbstractMutableAuthoritiesAuthenticationTo
 
     public void addAttribute(String key, Object value, Attribute.AttributeScope scope) {
         attributes.put(key, new Attribute(scope, value));
+        WMSecurityUtils.saveContext();
     }
 
     private static Set<? extends GrantedAuthority> mapAuthorities(

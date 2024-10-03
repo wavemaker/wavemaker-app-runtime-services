@@ -36,6 +36,7 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
@@ -94,7 +95,9 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
 
     @Bean(name = "opaqueBearerTokenAuthenticationFilter")
     public Filter opaqueBearerTokenAuthenticationFilter() {
-        return new BearerTokenAuthenticationFilter(new ProviderManager(opaqueTokenAuthenticationProvider()));
+        BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter = new BearerTokenAuthenticationFilter(new ProviderManager(opaqueTokenAuthenticationProvider()));
+        bearerTokenAuthenticationFilter.setSecurityContextRepository(new NullSecurityContextRepository());
+        return bearerTokenAuthenticationFilter;
     }
 
     @Bean(name = "OpaqueTokenProviderConfig")
@@ -108,7 +111,7 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
     }
 
     @Override
-    public void addFilters(HttpSecurity http) {
+    public void addStatelessFilters(HttpSecurity http) {
         http.addFilterAfter(opaqueBearerTokenAuthenticationFilter(), BasicAuthenticationFilter.class);
     }
 }
