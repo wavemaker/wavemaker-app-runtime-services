@@ -19,11 +19,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.config.Lookup;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -51,8 +55,9 @@ public class FileDownload {
         CloseableHttpClient closeableHttpClient = null;
         try {
             if (!secure) {
-                closeableHttpClient = HttpClients.custom().
-                    setSSLContext(SSLUtils.getAllTrustedCertificateSSLContext()).build();
+                Lookup<TlsSocketStrategy> tlsSocketStrategy = name -> new DefaultClientTlsStrategy(SSLUtils.getAllTrustedCertificateSSLContext());
+                BasicHttpClientConnectionManager connectionManager = BasicHttpClientConnectionManager.create(tlsSocketStrategy);
+                closeableHttpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
             } else {
                 closeableHttpClient = HttpClients.custom().build();
             }
@@ -65,7 +70,7 @@ public class FileDownload {
         return downloadedFile;
     }
 
-    public static class FileResponseHandler implements ResponseHandler<File> {
+    public static class FileResponseHandler implements HttpClientResponseHandler<File> {
 
         private File file;
 
@@ -74,8 +79,8 @@ public class FileDownload {
         }
 
         @Override
-        public File handleResponse(HttpResponse httpResponse) throws IOException {
-            InputStream content = httpResponse.getEntity().getContent();
+        public File handleResponse(ClassicHttpResponse response) throws IOException {
+            InputStream content = response.getEntity().getContent();
             FileUtils.copyInputStreamToFile(content, file);
             return file;
         }

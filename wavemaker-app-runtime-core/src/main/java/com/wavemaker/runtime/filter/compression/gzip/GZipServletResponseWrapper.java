@@ -24,7 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.springframework.util.MimeType;
 
 import com.wavemaker.runtime.filter.compression.CompressionFilterConfig;
