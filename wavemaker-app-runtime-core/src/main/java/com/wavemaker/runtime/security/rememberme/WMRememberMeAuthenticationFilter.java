@@ -29,9 +29,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -48,6 +50,7 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationManager authenticationManager;
     private RememberMeServices rememberMeServices;
+    private SecurityContextRepository securityContextRepository;
 
     public WMRememberMeAuthenticationFilter(
         AuthenticationManager authenticationManager,
@@ -83,8 +86,10 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
                 try {
                     rememberMeAuth = authenticationManager.authenticate(rememberMeAuth);
 
-                    // Store to SecurityContextHolder
-                    SecurityContextHolder.getContext().setAuthentication(rememberMeAuth);
+                    // Store to SecurityContextHolder and SecurityContextRepository
+                    SecurityContext context = SecurityContextHolder.getContext();
+                    context.setAuthentication(rememberMeAuth);
+                    securityContextRepository.saveContext(context, request, response);
                     isRememberMeAuthentication = true;
 
                     if (logger.isDebugEnabled()) {
@@ -167,5 +172,9 @@ public class WMRememberMeAuthenticationFilter extends GenericFilterBean implemen
         AuthenticationSuccessHandler successHandler) {
         Assert.notNull(successHandler, "successHandler cannot be null");
         this.successHandler = successHandler;
+    }
+
+    public void setSecurityContextRepository(SecurityContextRepository securityContextRepository) {
+        this.securityContextRepository = securityContextRepository;
     }
 }

@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.session.util;
+package com.wavemaker.runtime.security.utils;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

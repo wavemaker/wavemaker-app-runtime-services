@@ -38,6 +38,7 @@ import org.springframework.security.web.authentication.rememberme.InMemoryTokenR
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
@@ -58,14 +59,13 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    @Qualifier("wmSecurityContextRepositorySuccessHandler")
-    @Lazy
-    private AuthenticationSuccessHandler wmSecurityContextRepositorySuccessHandler;
-
-    @Autowired
     @Qualifier("wmCsrfTokenRepositorySuccessHandler")
     @Lazy
     private AuthenticationSuccessHandler wmCsrfTokenRepositorySuccessHandler;
+
+    @Autowired
+    @Lazy
+    private SecurityContextRepository securityContextRepository;
 
     @Bean(name = "rememberMeServices")
     public RememberMeServices rememberMeServices() {
@@ -81,6 +81,7 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
         WMRememberMeAuthenticationFilter wmRememberMeAuthenticationFilter = new WMRememberMeAuthenticationFilter(
             authenticationManager, rememberMeServices());
         wmRememberMeAuthenticationFilter.setAuthenticationSuccessHandler(rememberMeAuthenticationSuccessHandler());
+        wmRememberMeAuthenticationFilter.setSecurityContextRepository(securityContextRepository);
         return wmRememberMeAuthenticationFilter;
     }
 
@@ -98,7 +99,6 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     public AuthenticationSuccessHandler rememberMeAuthenticationSuccessHandler() {
         WMApplicationAuthenticationSuccessHandler wmApplicationAuthenticationSuccessHandler = new WMApplicationAuthenticationSuccessHandler();
         List<AuthenticationSuccessHandler> defaultSuccessHandlerList = new ArrayList<>();
-        defaultSuccessHandlerList.add(wmSecurityContextRepositorySuccessHandler);
         defaultSuccessHandlerList.add(wmCsrfTokenRepositorySuccessHandler);
         wmApplicationAuthenticationSuccessHandler.setDefaultSuccessHandlerList(defaultSuccessHandlerList);
         return wmApplicationAuthenticationSuccessHandler;

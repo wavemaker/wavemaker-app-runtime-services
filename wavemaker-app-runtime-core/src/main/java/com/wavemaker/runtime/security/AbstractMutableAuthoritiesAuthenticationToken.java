@@ -22,7 +22,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import com.wavemaker.runtime.security.session.util.WMSecurityUtils;
+import com.wavemaker.runtime.security.utils.WMSecurityUtils;
 
 public abstract class AbstractMutableAuthoritiesAuthenticationToken extends AbstractAuthenticationToken {
 

@@ -26,7 +26,7 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
-import com.wavemaker.runtime.security.session.util.WMSecurityUtils;
+import com.wavemaker.runtime.security.utils.WMSecurityUtils;
 
 /**
  * Created by srujant on 13/8/18.
