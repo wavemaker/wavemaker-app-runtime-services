@@ -39,6 +39,11 @@ public class WMSecurityUtils {
         saveContext();
     }
 
+    public static void setAuthentication(SecurityContext context, Authentication authentication) {
+        context.setAuthentication(authentication);
+        saveContext();
+    }
+
     public static void saveContext() {
         HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
         securityContextRepository.saveContext(SecurityContextHolder.getContext(), WMRequestFilter.getCurrentThreadHttpServletRequest(),
