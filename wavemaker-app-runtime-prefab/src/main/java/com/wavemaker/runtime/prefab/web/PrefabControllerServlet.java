@@ -210,9 +210,6 @@ public class PrefabControllerServlet extends DispatcherServlet {
                 throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.prefab.not.found"), prefabName);
             }
             prefabContext = prefabRegistry.getPrefabContext(prefab.getName());
-            // setting prefab name in request object
-            request.setAttribute(WebUtils.INCLUDE_SERVLET_PATH_ATTRIBUTE,
-                getServletPathWithPrefabName(request.getServletPath(), prefabContext.getId()));
             request.setAttribute(PrefabConstants.REQUEST_PREFAB_CONTEXT, prefabContext);
         }
         return prefabContext;
@@ -265,5 +262,14 @@ public class PrefabControllerServlet extends DispatcherServlet {
         }
 
         throw ex;
+    }
+
+    @Override
+    protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ApplicationContext applicationContext = lookupContext(request);
+        // setting prefab name in request object
+        request.setAttribute(WebUtils.INCLUDE_SERVLET_PATH_ATTRIBUTE,
+            getServletPathWithPrefabName(request.getServletPath(), applicationContext.getId()));
+        super.doService(request, response);
     }
 }

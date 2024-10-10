@@ -40,10 +40,5 @@
 
     <bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
-    <bean id="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"
-          class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
-        <property name="patternParser" value="#{null}"/>
-    </bean>
-
     <bean id="handlerExceptionResolver" class="com.wavemaker.runtime.exception.resolver.ApplicationRestServiceExceptionResolver"/>
 </beans>
