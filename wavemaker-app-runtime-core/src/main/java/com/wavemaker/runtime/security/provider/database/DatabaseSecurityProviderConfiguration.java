@@ -18,10 +18,12 @@ package com.wavemaker.runtime.security.provider.database;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -49,7 +51,11 @@ public class DatabaseSecurityProviderConfiguration {
     private ApplicationContext applicationContext;
 
     @Autowired(required = false)
+    @Lazy
     private PersistentTokenBasedRememberMeServices rememberMeServices;
+
+    @Value("${security.general.rememberMe.enabled:false}")
+    private boolean rememberMeEnabled;
 
     @Bean(name = "databaseAuthenticationProvider")
     public AuthenticationProvider daoAuthenticationProvider() {
@@ -104,7 +110,7 @@ public class DatabaseSecurityProviderConfiguration {
     public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
                                      LogoutHandler wmCsrfLogoutHandler) {
         LogoutFilter logoutFilter;
-        if (rememberMeServices != null) {
+        if (rememberMeEnabled) {
             logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
         } else {
             logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);

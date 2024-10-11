@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.AbstractContextSource;
@@ -60,6 +61,7 @@ import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingC
 public class LdapSecurityProviderConfiguration {
 
     @Autowired(required = false)
+    @Lazy
     private PersistentTokenBasedRememberMeServices rememberMeServices;
 
     @Autowired
@@ -165,7 +167,7 @@ public class LdapSecurityProviderConfiguration {
     public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
                                      LogoutHandler wmCsrfLogoutHandler) {
         LogoutFilter logoutFilter;
-        if (rememberMeServices != null) {
+        if (environment.getProperty("security.general.rememberMe.enabled", Boolean.class, false)) {
             logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
         } else {
             logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
