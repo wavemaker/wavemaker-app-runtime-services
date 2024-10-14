@@ -55,15 +55,17 @@ public class WMApplicationListener implements ServletContextListener {
     }
 
     private void registerServlets(ServletContext servletContext) {
-        ServletRegistration.Dynamic servicesServlet = registerServlet(servletContext, "services", new DispatcherServlet());
         Environment environment = WMAppContext.getInstance().getSpringBean(Environment.class);
+        MultipartConfigElement multipartConfigElement = new MultipartConfigElement("",
+            environment.getProperty("app.multipartconfig.maxFileSize", Long.class, 300000000L),
+            environment.getProperty("app.multipartconfig.maxRequestSize", Long.class, -1L), 0);
+
+        ServletRegistration.Dynamic servicesServlet = registerServlet(servletContext, "services", new DispatcherServlet());
         servicesServlet.setLoadOnStartup(1);
         servicesServlet.setInitParameter("namespace", "project-services");
         servicesServlet.setInitParameter(CONTEXT_CONFIG_LOCATION, "");
         servicesServlet.setInitParameter("detectAllHandlerExceptionResolvers", "false");
-        servicesServlet.setMultipartConfig(new MultipartConfigElement("",
-            environment.getProperty("app.multipartconfig.maxFileSize", Long.class, 300000000L),
-            environment.getProperty("app.multipartconfig.maxRequestSize", Long.class, -1L), 0));
+        servicesServlet.setMultipartConfig(multipartConfigElement);
         servicesServlet.addMapping("/services/*");
 
         ServletRegistration.Dynamic prefabsServlet = registerServlet(servletContext, "prefabs", new PrefabControllerServlet());
@@ -71,6 +73,7 @@ public class WMApplicationListener implements ServletContextListener {
         prefabsServlet.setInitParameter("contextClass", "org.springframework.web.context.support.AnnotationConfigWebApplicationContext");
         prefabsServlet.setInitParameter(CONTEXT_CONFIG_LOCATION, "com.wavemaker.runtime.prefab.config.PrefabServletConfig");
         prefabsServlet.addMapping("/prefabs/*");
+        prefabsServlet.setMultipartConfig(multipartConfigElement);
 
         ServletRegistration.Dynamic prefabWebContentServlet = registerServlet(servletContext, "prefabWebContentServlet", new PrefabWebContentServlet());
         prefabWebContentServlet.addMapping("/app/prefabs/*");
