@@ -379,6 +379,10 @@
             <version>${jakarta.servlet.api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -419,6 +423,17 @@
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>javax.transaction-api</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Added this, to avoid spring-jcl and commons-logging and use jcl-over-slf4j as alternative which bridges the logging to slf4j -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jcl</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
                 <scope>provided</scope>
             </dependency>
         </dependencies>

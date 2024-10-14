@@ -10,6 +10,7 @@ val runtimeLibDependencies: Configuration by configurations.creating {
 }
 
 dependencies {
+    implementation(enforcedPlatform(appDependenciesLibs.boms.slf4j.get().toString()))
     implementation(enforcedPlatform(appDependenciesLibs.boms.springFramework.get().toString()))
     implementation(enforcedPlatform(appDependenciesLibs.boms.springSecurity.get().toString()))
     implementation(enforcedPlatform(appDependenciesLibs.boms.springData.get().toString()))
