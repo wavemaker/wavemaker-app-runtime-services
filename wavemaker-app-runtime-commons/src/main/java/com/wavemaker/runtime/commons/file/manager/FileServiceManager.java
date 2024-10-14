@@ -101,7 +101,10 @@ public class FileServiceManager {
      * ******************************************************************************
      */
     public File uploadFile(MultipartFile file, String targetFilename, String relativePath, File uploadDirectory) throws IOException {
-        validateFileExtension(file.getOriginalFilename());
+        if (StringUtils.isBlank(targetFilename)) {
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.upload.targetFileName.cannot.be.empty"));
+        }
+        validateFileExtension(targetFilename);
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
         File outputFile = new File(relativeUploadDirectory, targetFilename);
 
