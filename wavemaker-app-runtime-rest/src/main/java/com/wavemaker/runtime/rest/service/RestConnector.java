@@ -16,7 +16,6 @@ package com.wavemaker.runtime.rest.service;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +45,6 @@ import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
-import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,19 +121,12 @@ public class RestConnector {
             .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
             .setCookieSpec(StandardCookieSpec.IGNORE)
             .setConnectionRequestTimeout(Timeout.ofSeconds(httpConfiguration.getConnectionRequestTimeoutInSeconds()))
+            .setProtocolUpgradeEnabled(false)
             .build();
+        httpClientContext.setRequestConfig(requestConfig);
 
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient) {
-            @Override
-            protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-                return httpClientContext;
-            }
-
-            @Override
-            protected RequestConfig createRequestConfig(Object client) {
-                return requestConfig;
-            }
-        };
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        clientHttpRequestFactory.setHttpContextFactory((method, uri) -> httpClientContext);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.putAll(httpRequestDetails.getHeaders());
