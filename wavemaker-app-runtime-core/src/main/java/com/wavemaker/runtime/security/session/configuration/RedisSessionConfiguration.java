@@ -16,35 +16,35 @@
 package com.wavemaker.runtime.security.session.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
-import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisIndexedHttpSession;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 import com.wavemaker.commons.util.SystemUtils;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 
+import java.time.Duration;
+
 @Configuration
 @Conditional({SecurityEnabledCondition.class, RedisSessionConfigCondition.class})
-@ComponentScan("org.springframework.session.data.redis.config.annotation.web.http")
+@EnableRedisIndexedHttpSession
 public class RedisSessionConfiguration {
     @Autowired
     private Environment environment;
 
-    @Bean(name = "redisHttpSessionConfiguration")
-    public RedisHttpSessionConfiguration redisHttpSessionConfiguration() {
-        RedisHttpSessionConfiguration redisHttpSessionConfiguration = new RedisHttpSessionConfiguration();
-        redisHttpSessionConfiguration.setMaxInactiveIntervalInSeconds(
-            environment.getProperty("security.general.session.timeout", Integer.class) * 60);
-        return redisHttpSessionConfiguration;
-    }
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Bean(name = "lettuceConnectionFactory")
     public LettuceConnectionFactory lettuceConnectionFactory() {
@@ -55,9 +55,17 @@ public class RedisSessionConfiguration {
         return lettuceConnectionFactory;
     }
 
+    @Bean
+    public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
+        return new JdkSerializationRedisSerializer(applicationContext.getClassLoader());
+    }
+
     @Bean(name = "sessionRegistry")
     public SessionRegistry sessionRegistry(
         FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
-        return new SpringSessionBackedSessionRegistry<>(sessionRepository);
+        RedisIndexedSessionRepository redisIndexedSessionRepository = (RedisIndexedSessionRepository) sessionRepository;
+        redisIndexedSessionRepository
+            .setDefaultMaxInactiveInterval(Duration.ofSeconds(environment.getProperty("security.general.session.timeout", Integer.class) * 60));
+        return new SpringSessionBackedSessionRegistry<>(redisIndexedSessionRepository);
     }
 }
