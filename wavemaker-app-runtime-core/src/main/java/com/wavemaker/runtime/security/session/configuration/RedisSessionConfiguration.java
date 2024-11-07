@@ -21,6 +21,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.RedisConfiguration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -35,28 +38,32 @@ import com.wavemaker.commons.util.SystemUtils;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 
 import java.time.Duration;
+import java.util.Objects;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, RedisSessionConfigCondition.class})
 @EnableRedisIndexedHttpSession
 public class RedisSessionConfiguration {
+
     @Autowired
     private Environment environment;
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    @Bean(name = "redisConnectionFactory")
+    public RedisConnectionFactory redisConnectionFactory(RedisConfiguration redisConfiguration) {
+        return new LettuceConnectionFactory(redisConfiguration);
+    }
 
-    @Bean(name = "lettuceConnectionFactory")
-    public LettuceConnectionFactory lettuceConnectionFactory() {
-        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(environment.getProperty("security.session.redis.host"),
-            environment.getProperty("security.session.redis.port", Integer.class));
-        lettuceConnectionFactory.setDatabase(environment.getProperty("security.session.redis.database", Integer.class));
-        lettuceConnectionFactory.setPassword(SystemUtils.decryptIfEncrypted(environment.getProperty("security.session.redis.password")));
-        return lettuceConnectionFactory;
+    @Bean(name = "redisConfiguration")
+    public RedisConfiguration redisConfiguration() {
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(Objects.requireNonNull(environment.getProperty("security.session.redis.host")),
+            Objects.requireNonNull(environment.getProperty("security.session.redis.port", Integer.class)));
+        redisStandaloneConfiguration.setDatabase(Objects.requireNonNull(environment.getProperty("security.session.redis.database", Integer.class)));
+        redisStandaloneConfiguration.setPassword(SystemUtils.decryptIfEncrypted(environment.getProperty("security.session.redis.password")));
+        return redisStandaloneConfiguration;
     }
 
     @Bean
-    public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
+    public RedisSerializer<Object> springSessionDefaultRedisSerializer(ApplicationContext applicationContext) {
         return new JdkSerializationRedisSerializer(applicationContext.getClassLoader());
     }
 
@@ -65,7 +72,8 @@ public class RedisSessionConfiguration {
         FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
         RedisIndexedSessionRepository redisIndexedSessionRepository = (RedisIndexedSessionRepository) sessionRepository;
         redisIndexedSessionRepository
-            .setDefaultMaxInactiveInterval(Duration.ofSeconds(environment.getProperty("security.general.session.timeout", Integer.class) * 60));
+            .setDefaultMaxInactiveInterval(Duration.ofSeconds(Objects.requireNonNull(environment.getProperty("security.general.session.timeout", Integer.class)) * 60L));
         return new SpringSessionBackedSessionRegistry<>(redisIndexedSessionRepository);
     }
+
 }
