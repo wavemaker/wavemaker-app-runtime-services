@@ -179,8 +179,7 @@ public class RestInvocationHandler implements InvocationHandler {
         MultiValueMap<String, Object> convertedMap = new LinkedMultiValueMap<>();
         formVariableMap.forEach((key, value) -> {
             if (value != null) {
-                if (value.get(0) instanceof List) {
-                    List<?> listValue = (List<?>) value.get(0);
+                if (value.get(0) instanceof List<?> listValue) {
                     if (!listValue.isEmpty() && listValue.get(0) instanceof File) {
                         for (Object item : listValue) {
                             if (item instanceof File) {

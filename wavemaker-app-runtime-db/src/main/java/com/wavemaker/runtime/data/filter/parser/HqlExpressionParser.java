@@ -69,8 +69,7 @@ public class HqlExpressionParser {
     private void resolveCondition(ParseTree node, HqlParserContext hqlParserContext, JavaType keyJavaType) {
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
-            if (child instanceof TerminalNodeImpl) {
-                TerminalNodeImpl terminalNode = ((TerminalNodeImpl) child);
+            if (child instanceof TerminalNodeImpl terminalNode) {
                 if (valueTerminals.contains(terminalNode.getSymbol().getType())) {
                     String value = terminalNode.getText();
 

@@ -57,8 +57,7 @@ public class IdentityProviderUserAuthoritiesProvider implements AuthoritiesProvi
                     rolesArray = convertListToArray(rolesList);
                 } else if (roles instanceof String[]) {
                     rolesArray = (String[]) roles;
-                } else if (roles instanceof List) {
-                    List rolesList = (List) roles;
+                } else if (roles instanceof List rolesList) {
                     rolesArray = convertListToArray(rolesList);
                 } else {
                     String rolesList = roles.toString();

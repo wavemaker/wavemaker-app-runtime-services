@@ -83,8 +83,7 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(final Object bean, final String beanName) {
-        if (bean instanceof RestServiceInfoBean) {
-            RestServiceInfoBean restServiceInfoBean = (RestServiceInfoBean) bean;
+        if (bean instanceof RestServiceInfoBean restServiceInfoBean) {
             restServiceInfoBean.getEntryList().forEach(restInfoEntry -> {
                 RequestMappingInfo requestMappingInfo = getRequestMappingInfo(restInfoEntry);
                 requestMappingHandlerMapping

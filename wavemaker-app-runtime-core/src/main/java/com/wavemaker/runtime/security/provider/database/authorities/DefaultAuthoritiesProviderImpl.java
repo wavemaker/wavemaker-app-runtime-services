@@ -98,8 +98,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
         if (!content.isEmpty()) {
             for (Object o : content) {
                 Object role;
-                if (o instanceof Object[]) {
-                    Object[] result = (Object[]) o;
+                if (o instanceof Object[] result) {
                     if (result.length == 1) {
                         role = String.valueOf(result[0]);
                     } else {

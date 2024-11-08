@@ -76,10 +76,9 @@ public class Aggregation {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Aggregation)) {
+        if (!(o instanceof Aggregation that)) {
             return false;
         }
-        final Aggregation that = (Aggregation) o;
         return Objects.equals(getField(), that.getField()) &&
             Objects.equals(getType(), that.getType()) &&
             Objects.equals(getAlias(), that.getAlias());
