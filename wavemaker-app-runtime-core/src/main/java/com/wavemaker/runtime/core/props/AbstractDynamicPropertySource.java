@@ -28,8 +28,7 @@ public abstract class AbstractDynamicPropertySource extends PropertySource imple
 
     @Override
     public void setEnvironment(Environment environment) {
-        if (environment instanceof ConfigurableEnvironment) {
-            ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
+        if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
             addPropertySource(configurableEnvironment, this);
         }
     }

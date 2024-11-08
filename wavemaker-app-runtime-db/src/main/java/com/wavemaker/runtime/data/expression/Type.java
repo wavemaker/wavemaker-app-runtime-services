@@ -56,8 +56,7 @@ public enum Type implements Criteria {
             }
 
             Criterion criterion;
-            if (value instanceof Collection) {
-                final Collection values = (Collection) value;
+            if (value instanceof Collection values) {
                 if (values.isEmpty()) {
                     throw new IllegalArgumentException("Equals expression should have a collection/array of values with at-least one entry.");
                 }
@@ -82,8 +81,7 @@ public enum Type implements Criteria {
         @Override
         public Criterion criterion(final String name, final Object value) {
             Criterion criterion;
-            if (value instanceof Collection) {
-                Collection collection = (Collection) value;
+            if (value instanceof Collection collection) {
                 if (collection.size() != 2) {
                     throw new IllegalArgumentException("Between expression should have a collection/array of values with just two entries.");
                 }

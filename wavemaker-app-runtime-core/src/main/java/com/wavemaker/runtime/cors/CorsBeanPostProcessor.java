@@ -51,8 +51,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
-        if (bean instanceof CorsConfig) {
-            CorsConfig corsConfig = (CorsConfig) bean;
+        if (bean instanceof CorsConfig corsConfig) {
             if (corsConfig.isEnabled()) {
                 initializeCorsConfiguration(corsConfig);
             }

@@ -34,8 +34,7 @@ import com.wavemaker.tools.api.core.models.AccessSpecifier;
 public class WMAppRequestInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (handler instanceof HandlerMethod handlerMethod) {
             if (handlerMethod.getMethod().getAnnotations() != null) {
                 for (Annotation annotation : handlerMethod.getMethod().getAnnotations()) {
                     if (annotation instanceof WMAccessVisibility && ((WMAccessVisibility) annotation).value().equals(AccessSpecifier.UNAVAILABLE)) {
