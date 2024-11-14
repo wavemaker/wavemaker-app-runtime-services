@@ -95,6 +95,9 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic wmRequestFilter = registerDelegatingFilterProxyFilter(servletContext, "wmRequestFilter");
         wmRequestFilter.addMappingForUrlPatterns(null, false, "/*");
 
+        FilterRegistration.Dynamic multipartFilter = registerDelegatingFilterProxyFilter(servletContext, "multipartFilter");
+        multipartFilter.addMappingForUrlPatterns(null, false, "/*");
+
         FilterRegistration.Dynamic httpPutFormContentFilter = registerDelegatingFilterProxyFilter(servletContext, "formContentFilter");
         httpPutFormContentFilter.addMappingForUrlPatterns(null, false, "/*");
 

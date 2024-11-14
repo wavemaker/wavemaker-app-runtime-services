@@ -96,6 +96,10 @@
 
     <bean id="appFileSystem" class="com.wavemaker.runtime.app.AppFileSystem"/>
 
+    <bean id="multipartFilter" class="org.springframework.web.multipart.support.MultipartFilter">
+        <property name="multipartResolverBeanName" value="multipartResolver"/>
+    </bean>
+
     <bean id="nonHistoryEntitiesFilter" class="com.wavemaker.runtime.data.util.NegatingTypeFilter">
         <constructor-arg ref="historyEntitiesFilter"/>
     </bean>
