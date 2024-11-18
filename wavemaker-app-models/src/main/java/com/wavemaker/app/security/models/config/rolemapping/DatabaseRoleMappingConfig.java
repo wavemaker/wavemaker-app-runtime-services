@@ -14,6 +14,8 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.rolemapping;
 
+import jakarta.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
@@ -22,17 +24,27 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(as = DatabaseRoleMappingConfig.class)
 public class DatabaseRoleMappingConfig implements RoleMappingConfig {
 
+    @NotBlank
     private String modelName;
 
+    @NotBlank
     private String entityName;
+
+    @NotBlank
     private String tableName;
 
+    @NotBlank
     private String usernameField;
+
+    @NotBlank
     private String usernameColumn;
 
     private boolean useRolesQuery;
 
+    @NotBlank
     private String roleField;
+
+    @NotBlank
     private String roleColumn;
 
     private RoleQueryType queryType;
