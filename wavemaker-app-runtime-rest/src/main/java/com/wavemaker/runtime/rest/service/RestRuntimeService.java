@@ -389,10 +389,6 @@ public class RestRuntimeService {
         httpHeaders.set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
     }
 
-    private String getNormalizedString(String str) {
-        return (str != null) ? str.trim() : "";
-    }
-
     private String getPropertyValue(String serviceId, String key) {
         String fullKey = "rest." + serviceId + "." + key;
         return environment.getProperty(fullKey);
