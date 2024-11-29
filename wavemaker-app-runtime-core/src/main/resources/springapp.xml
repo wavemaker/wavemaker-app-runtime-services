@@ -195,6 +195,8 @@
     <bean id="appSSLSocketFactory" class="com.wavemaker.runtime.ssl.SSLSocketFactoryFactoryBean"/>
 
     <bean id="appHostnameVerifier" class="com.wavemaker.runtime.ssl.HostnameVerifierFactoryBean"/>
+    <bean id="aiController" class="com.wavemaker.runtime.ai.controller.AIController"/>
+    <bean id="queryAiFineTuneService" class="com.wavemaker.runtime.ai.service.OpenAiFineTuneService"/>
 
     <bean id="servletContext" class="com.wavemaker.runtime.web.ServletContextFactory"/>
 
