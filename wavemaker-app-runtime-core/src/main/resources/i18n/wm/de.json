@@ -21,6 +21,7 @@
   "com.wavemaker.runtime.data$DuplicateConstraint " : " Constraint already defined in table {0} with same columns.",
   "com.wavemaker.runtime.data$EntityNotFound": "Geen record gevonden",
   "com.wavemaker.runtime.data$InvalidInput": "Ungültige Eingabe: {0}",
+  "com.wavemaker.projects.mobile.support.eol": "Der Projektsupport für Cordova ist abgelaufen",
   "com.wavemaker.runtime.data$InvalidTypeAsUnique ": " Column of data type LOB cannot be unique at column {0} in table {1}.",
   "com.wavemaker.runtime.data$NamedQueryNotFound": "Die benannte Abfrage {1} nicht in Betrieb gibt {0}",
   "com.wavemaker.runtime.data$QueryDoesntTakeParams": "Die benannte Abfrage {0} keine Eingabeparameter erklären, aber {1} wurde als Eingabe für die Abfrage übergeben",
