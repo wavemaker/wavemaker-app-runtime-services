@@ -190,6 +190,8 @@
 
     <bean id="restConnector" class="com.wavemaker.runtime.rest.service.RestConnector"/>
 
+    <bean id="uriBuilder" class="com.wavemaker.runtime.rest.builder.WMRestUriBuilder"/>
+
     <bean id="appSSLSocketFactory" class="com.wavemaker.runtime.ssl.SSLSocketFactoryFactoryBean"/>
 
     <bean id="appHostnameVerifier" class="com.wavemaker.runtime.ssl.HostnameVerifierFactoryBean"/>

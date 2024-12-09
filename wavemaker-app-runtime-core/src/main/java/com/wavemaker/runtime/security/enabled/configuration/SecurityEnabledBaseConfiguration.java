@@ -116,6 +116,7 @@ import com.wavemaker.runtime.security.enabled.configuration.comparator.Intercept
 import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlStringComparator;
 import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
 import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
+import com.wavemaker.runtime.security.filter.WMRequestResponseHolderFilter;
 import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcessingFilter;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
@@ -202,6 +203,11 @@ public class SecurityEnabledBaseConfiguration {
         SessionRepositoryFilter<? extends Session> sessionRepositoryFilter = new SessionRepositoryFilter<>(sessionRepository);
         sessionRepositoryFilter.setHttpSessionIdResolver(httpSessionIdResolver());
         return sessionRepositoryFilter;
+    }
+
+    @Bean(name = "wmRequestResponseHolderFilter")
+    public Filter wmRequestResponseHolderFiler() {
+        return new WMRequestResponseHolderFilter();
     }
 
     @Bean(name = "wmcsrfFilter")
@@ -443,6 +449,7 @@ public class SecurityEnabledBaseConfiguration {
             .authorizeRequests(this::authorizeHttpRequests)
             .logout(AbstractHttpConfigurer::disable)
             .addFilterAt(sessionRepositoryFilter(), DisableEncodeUrlFilter.class)
+            .addFilterAt(wmRequestResponseHolderFiler(), DisableEncodeUrlFilter.class)
             .addFilterAt(wmCsrfFilter(), CsrfFilter.class)
             .addFilterAt(logoutFilter, LogoutFilter.class)
             .addFilterAfter(loginWebProcessFilter(), SecurityContextHolderFilter.class)

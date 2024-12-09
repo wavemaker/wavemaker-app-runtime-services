@@ -20,7 +20,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
-import com.wavemaker.runtime.web.filter.WMRequestFilter;
+import com.wavemaker.runtime.security.filter.WMRequestResponseHolderFilter;
 
 public class WMSecurityUtils {
 
@@ -45,8 +45,12 @@ public class WMSecurityUtils {
     }
 
     public static void saveContext() {
+        saveContext(SecurityContextHolder.getContext());
+    }
+
+    public static void saveContext(SecurityContext securityContext) {
         HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
-        securityContextRepository.saveContext(SecurityContextHolder.getContext(), WMRequestFilter.getCurrentThreadHttpServletRequest(),
-            WMRequestFilter.getCurrentThreadHttpServletResponse());
+        securityContextRepository.saveContext(securityContext, WMRequestResponseHolderFilter.getCurrentThreadHttpServletRequest(),
+            WMRequestResponseHolderFilter.getCurrentThreadHttpServletResponse());
     }
 }

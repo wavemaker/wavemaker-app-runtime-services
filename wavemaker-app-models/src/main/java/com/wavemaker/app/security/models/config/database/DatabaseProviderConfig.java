@@ -14,6 +14,8 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.database;
 
+import jakarta.validation.constraints.NotBlank;
+
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 
@@ -25,22 +27,31 @@ public class DatabaseProviderConfig extends AbstractProviderConfig {
     public static final String DATABASE = "DATABASE";
 
     @NonProfilizableProperty(value = "${security.providers.database.modelName}")
+    @NotBlank
     private String modelName;
 
+    @NotBlank
     private String entityName;
 
+    @NotBlank
     private String tableName;
 
+    @NotBlank
     private String unamePropertyName;
 
+    @NotBlank
     private String unameColumnName;
 
+    @NotBlank
     private String uidPropertyName;
 
+    @NotBlank
     private String uidColumnName;
 
+    @NotBlank
     private String pwPropertyName;
 
+    @NotBlank
     private String pwColumnName;
 
     private String rolePropertyName;

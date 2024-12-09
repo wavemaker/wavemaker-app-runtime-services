@@ -37,6 +37,7 @@ public class HttpConfiguration {
     private int connectionRequestTimeoutInSeconds;
     private int maxTotalConnections;
     private int maxTotalConnectionsPerRoute;
+    private int connectionTimeToLive;
     private String[] tlsVersions;
     private boolean appProxyEnabled;
     private String appProxyHost;
@@ -63,6 +64,7 @@ public class HttpConfiguration {
         connectionRequestTimeoutInSeconds = environment.getProperty("app.rest.connectionRequestTimeout", Integer.class, 5);
         maxTotalConnections = environment.getProperty("app.rest.maxTotalConnections", Integer.class, 100);
         maxTotalConnectionsPerRoute = environment.getProperty("app.rest.maxConnectionsPerRoute", Integer.class, 50);
+        connectionTimeToLive = environment.getProperty("app.rest.connectionTimeToLive", Integer.class, -1);
         tlsVersions = getTlsVersions(environment);
 
         appProxyEnabled = environment.getProperty(AppPropertiesConstants.APP_PROXY_ENABLED, Boolean.class, false);
@@ -105,6 +107,10 @@ public class HttpConfiguration {
 
     public int getMaxTotalConnectionsPerRoute() {
         return maxTotalConnectionsPerRoute;
+    }
+
+    public int getConnectionTimeToLive() {
+        return connectionTimeToLive;
     }
 
     public String[] getTlsVersions() {
@@ -184,6 +190,7 @@ public class HttpConfiguration {
             ", connectionRequestTimeoutInSeconds=" + connectionRequestTimeoutInSeconds +
             ", maxTotalConnections=" + maxTotalConnections +
             ", maxTotalConnectionsPerRoute=" + maxTotalConnectionsPerRoute +
+            ", connectionTimeToLive=" + connectionTimeToLive +
             ", tlsVersions=" + Arrays.toString(tlsVersions) +
             ", appProxyEnabled=" + appProxyEnabled +
             ", appProxyHost='" + appProxyHost + '\'' +

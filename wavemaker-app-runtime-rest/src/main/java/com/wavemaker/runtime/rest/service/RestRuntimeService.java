@@ -38,10 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.PathMatcher;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
-import org.springframework.web.util.UriBuilder;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.UnAuthorizedResourceAccessException;
@@ -55,6 +55,7 @@ import com.wavemaker.runtime.commons.util.PropertyPlaceHolderReplacementHelper;
 import com.wavemaker.runtime.rest.RequestContext;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
+import com.wavemaker.runtime.rest.builder.UriBuilder;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -102,6 +103,9 @@ public class RestRuntimeService {
 
     @Autowired
     private RestConnector restConnector;
+
+    @Autowired
+    private UriBuilder uriBuilder;
 
     @PostConstruct
     public void init() {
@@ -222,7 +226,7 @@ public class RestRuntimeService {
         final Pair<String, Operation> operationPair = findOperation(swagger, path, method);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        Map<String, Object> queryParameters = new HashMap<>();
+        MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<>();
         Map<String, String> pathParameters = new HashMap<>();
         Operation operation = operationPair.getRight();
         filterAndApplyServerVariablesOnRequestData(httpRequestData, swagger, operation,
@@ -242,35 +246,16 @@ public class RestRuntimeService {
         return httpRequestDetails;
     }
 
-    private String getEndPointAddress(String serviceId, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters,
+    private String getEndPointAddress(String serviceId, String pathValue, MultiValueMap<String, String> queryParameters, Map<String, String> pathParameters,
                                       EncodingMode encodingMode) {
         String scheme = getPropertyValue(serviceId, RestConstants.SCHEME_KEY);
         String host = getPropertyValue(serviceId, RestConstants.HOST_KEY);
         String basePath = getPropertyValue(serviceId, RestConstants.BASE_PATH_KEY);
 
-        String url = new StringBuilder(scheme).append("://").append(host)
-            .append(getNormalizedString(basePath)).append(getNormalizedString(pathValue)).toString();
-
-        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory();
-        encodingMode = (encodingMode != null) ? encodingMode : EncodingMode.TEMPLATE_AND_VALUES;
-        uriBuilderFactory.setEncodingMode(encodingMode);
-
-        UriBuilder uriBuilder = uriBuilderFactory.uriString(url);
-        updateUrlWithQueryParams(uriBuilder, queryParameters);
-        return uriBuilder.build(pathParameters).toString();
+        return uriBuilder.getEndpointAddress(scheme, host, basePath, pathValue, queryParameters, pathParameters, encodingMode);
     }
 
-    private void updateUrlWithQueryParams(UriBuilder uriBuilder, Map<String, Object> queryParameters) {
-        queryParameters.forEach((key, valueList) -> {
-            if (valueList instanceof List<?>) {
-                ((List<?>) valueList).forEach(value -> uriBuilder.queryParam(key, value));
-            } else {
-                uriBuilder.queryParam(key, valueList);
-            }
-        });
-    }
-
-    private void updateUrlWithRequestContext(RequestContext requestContext, Map<String, Object> queryParameters, HttpHeaders headers) {
+    private void updateUrlWithRequestContext(RequestContext requestContext, MultiValueMap<String, String> queryParameters, HttpHeaders headers) {
         if (requestContext != null) {
             if (requestContext.getHeaders() != null) {
                 headers.putAll(requestContext.getHeaders());
@@ -324,7 +309,7 @@ public class RestRuntimeService {
 
     private void filterAndApplyServerVariablesOnRequestData(
         HttpRequestData httpRequestData, Swagger swagger, Operation operation, HttpHeaders headers,
-        Map<String, Object> queryParameters, Map<String, String> pathParameters) {
+        MultiValueMap<String, String> queryParameters, Map<String, String> pathParameters) {
         for (Parameter parameter : operation.getParameters()) {
             if (parameter instanceof RefParameter) {
                 parameter = swagger.getParameter(((RefParameter) parameter).getSimpleRef());
@@ -354,7 +339,8 @@ public class RestRuntimeService {
         }
     }
 
-    private void updateAuthorizationInfo(String serviceId, Map<String, SecuritySchemeDefinition> securitySchemeDefinitionMap, Operation operation, Map<String, Object> queryParameters, HttpHeaders httpHeaders, HttpRequestData httpRequestData) {
+    private void updateAuthorizationInfo(String serviceId, Map<String, SecuritySchemeDefinition> securitySchemeDefinitionMap, Operation operation,
+                                         MultiValueMap<String, String> queryParameters, HttpHeaders httpHeaders, HttpRequestData httpRequestData) {
         //check basic auth is there for operation
         List<Map<String, List<String>>> securityMap = operation.getSecurity();
         if (securityMap != null) {
@@ -364,8 +350,9 @@ public class RestRuntimeService {
                     SecuritySchemeDefinition securitySchemeDefinition = securitySchemeDefinitionMap.get(security.getKey());
                     if (securitySchemeDefinition instanceof OAuth2Definition oAuth2Definition) {
                         if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
-                            queryParameters.put(oAuth2Definition.getAccessTokenParamName(), httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
-                                .getAccessTokenParamName()));
+                            String tokenValue = httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
+                                .getAccessTokenParamName());
+                            queryParameters.add(oAuth2Definition.getAccessTokenParamName(), tokenValue);
                         } else {
                             sendAsAuthorizationHeader(httpHeaders, httpRequestData);
                         }
@@ -375,9 +362,9 @@ public class RestRuntimeService {
                         String apiKeyName = apiKeyAuthDefinition.getName();
                         String sanitizedApiKeyName = Arrays.stream(apiKeyName.split("\\W+")).collect(Collectors.joining());
                         if (ParameterType.QUERY.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
-                            String value = getPropertyValue(serviceId, "apikey.query." + sanitizedApiKeyName);
-                            if (value != null) {
-                                queryParameters.put(apiKeyAuthDefinition.getName(), value);
+                            String apiKeyValue = getPropertyValue(serviceId, "apikey.query." + sanitizedApiKeyName);
+                            if (apiKeyValue != null) {
+                                queryParameters.add(apiKeyAuthDefinition.getName(), apiKeyValue);
                             }
                         }
                         if (ParameterType.HEADER.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
@@ -398,10 +385,6 @@ public class RestRuntimeService {
             throw new UnAuthorizedResourceAccessException("Authorization details are not specified in the request headers");
         }
         httpHeaders.set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
-    }
-
-    private String getNormalizedString(String str) {
-        return (str != null) ? str.trim() : "";
     }
 
     private String getPropertyValue(String serviceId, String key) {
