@@ -149,8 +149,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             for (ConstraintViolation<?> constraintViolation : constraintViolations) {
                 String paramName = "";
                 Path propertyPath = constraintViolation.getPropertyPath();
-                if (propertyPath != null && propertyPath instanceof PathImpl) {
-                    PathImpl pathImpl = (PathImpl) propertyPath;
+                if (propertyPath != null && propertyPath instanceof PathImpl pathImpl) {
                     NodeImpl leafNode = pathImpl.getLeafNode();
                     if (leafNode != null) {
                         paramName = leafNode.getName();
@@ -189,8 +188,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         if (allErrors != null) {
             List<ErrorResponse> errorResponseList = new ArrayList<>(allErrors.size());
             for (ObjectError objectError : allErrors) {
-                if (objectError instanceof FieldError) {
-                    FieldError fieldError = (FieldError) objectError;
+                if (objectError instanceof FieldError fieldError) {
                     errorResponseList
                         .add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, fieldError.getField(),
                             fieldError.getDefaultMessage()));

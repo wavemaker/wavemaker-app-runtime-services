@@ -21,8 +21,7 @@ import com.wavemaker.commons.comparator.UrlStringComparator;
 public class InterceptUrlStringComparator extends UrlStringComparator<Object> {
     @Override
     public String getUrlPattern(final Object o) {
-        if (o instanceof SecurityInterceptUrlEntry) {
-            SecurityInterceptUrlEntry url = (SecurityInterceptUrlEntry) o;
+        if (o instanceof SecurityInterceptUrlEntry url) {
             return url.getUrlPattern();
         }
         return null;

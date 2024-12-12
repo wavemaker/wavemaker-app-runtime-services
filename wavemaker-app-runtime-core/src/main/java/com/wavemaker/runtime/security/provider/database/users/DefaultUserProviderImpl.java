@@ -84,8 +84,7 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
             final Object column3 = resultMap[2];
             if (column3 instanceof Integer) {
                 enabled = (Integer) column3;
-            } else if (column3 instanceof BigInteger) {
-                final BigInteger bigInteger = (BigInteger) column3;
+            } else if (column3 instanceof BigInteger bigInteger) {
                 enabled = bigInteger.intValue();
             }
             String userName = String.valueOf(resultMap[3]);

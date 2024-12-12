@@ -66,8 +66,7 @@ public abstract class DaoUtils {
                 }
 
                 AttributeType attributeType = queryFilter.getAttributeType();
-                if (attributeValue instanceof Collection) {
-                    Collection collection = (Collection) attributeValue;
+                if (attributeValue instanceof Collection collection) {
                     Object[] objects = collection.toArray();
                     updateObjectsArray(objects, attributeType);
                     queryFilter.setAttributeValue(Arrays.asList(objects));

@@ -100,8 +100,7 @@ public class OpenSaml4Config {
         return responseToken -> {
             Saml2Authentication saml2Authentication = OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter().convert(responseToken);
             Object principal = saml2Authentication.getPrincipal();
-            if (principal instanceof Saml2AuthenticatedPrincipal) {
-                Saml2AuthenticatedPrincipal saml2Principal = (Saml2AuthenticatedPrincipal) principal;
+            if (principal instanceof Saml2AuthenticatedPrincipal saml2Principal) {
                 List<GrantedAuthority> grantedAuthorities = resolveGrantedAuthorities(saml2Principal);
                 DefaultSaml2AuthenticatedPrincipal newSaml2Principal = new DefaultSaml2AuthenticatedPrincipal(saml2Principal.getName(), saml2Principal.getAttributes());
                 newSaml2Principal.setRelyingPartyRegistrationId(saml2Principal.getRelyingPartyRegistrationId());

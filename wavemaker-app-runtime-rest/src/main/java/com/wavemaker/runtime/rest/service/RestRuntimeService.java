@@ -348,8 +348,7 @@ public class RestRuntimeService {
                 for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
                     //TODO update the code to handle if multiple securityConfigurations are enabled for the api.
                     SecuritySchemeDefinition securitySchemeDefinition = securitySchemeDefinitionMap.get(security.getKey());
-                    if (securitySchemeDefinition instanceof OAuth2Definition) {
-                        OAuth2Definition oAuth2Definition = (OAuth2Definition) securitySchemeDefinition;
+                    if (securitySchemeDefinition instanceof OAuth2Definition oAuth2Definition) {
                         if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
                             String tokenValue = httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
                                 .getAccessTokenParamName());
@@ -359,8 +358,7 @@ public class RestRuntimeService {
                         }
                     } else if (securitySchemeDefinition instanceof BasicAuthDefinition) {
                         sendAsAuthorizationHeader(httpHeaders, httpRequestData);
-                    } else if (securitySchemeDefinition instanceof ApiKeyAuthDefinition) {
-                        ApiKeyAuthDefinition apiKeyAuthDefinition = (ApiKeyAuthDefinition) securitySchemeDefinition;
+                    } else if (securitySchemeDefinition instanceof ApiKeyAuthDefinition apiKeyAuthDefinition) {
                         String apiKeyName = apiKeyAuthDefinition.getName();
                         String sanitizedApiKeyName = Arrays.stream(apiKeyName.split("\\W+")).collect(Collectors.joining());
                         if (ParameterType.QUERY.name().equalsIgnoreCase(apiKeyAuthDefinition.getIn().toString())) {
