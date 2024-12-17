@@ -34,8 +34,7 @@ public class WMCustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) {
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authentication;
+        if (authentication instanceof UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
             String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
             String password = (String) usernamePasswordAuthenticationToken.getCredentials();
             HttpServletRequest httpServletRequest = WMRequestFilter.getCurrentThreadHttpServletRequest();

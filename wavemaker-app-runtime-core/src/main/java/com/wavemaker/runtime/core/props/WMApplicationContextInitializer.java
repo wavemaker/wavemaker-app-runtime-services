@@ -35,8 +35,7 @@ public class WMApplicationContextInitializer implements ApplicationContextInitia
             try {
                 Class<?> bootStrapPropertySourceClass = Class.forName(bootstrapPropertySourceParam, true, applicationContext.getClassLoader());
                 Object o = BeanUtils.instantiateClass(bootStrapPropertySourceClass);
-                if (o instanceof AbstractBootstrapPropertySource) {
-                    AbstractBootstrapPropertySource bootstrapPropertySource = (AbstractBootstrapPropertySource) o;
+                if (o instanceof AbstractBootstrapPropertySource bootstrapPropertySource) {
                     bootstrapPropertySource.init(applicationContext);
                 } else {
                     throw new WMRuntimeException("Parameter 'bootstrapPropertySource' " + bootstrapPropertySourceParam +

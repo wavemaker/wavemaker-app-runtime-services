@@ -61,8 +61,7 @@ public class HqlParser {
     private void parse(ParseTree rule, HqlParserContext hqlParserContext) {
         for (int i = 0; i < rule.getChildCount(); i++) {
             ParseTree child = rule.getChild(i);
-            if (child instanceof HqlFilterParser.ExpressionContext) {
-                HqlFilterParser.ExpressionContext expression = (HqlFilterParser.ExpressionContext) child;
+            if (child instanceof HqlFilterParser.ExpressionContext expression) {
                 HqlExpressionParser expressionResolver = new HqlExpressionParser(expression);
                 expressionResolver.parse(hqlParserContext);
             } else if (child instanceof TerminalNodeImpl) {

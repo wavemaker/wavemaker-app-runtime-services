@@ -56,10 +56,9 @@ public class AggregationInfo {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof AggregationInfo)) {
+        if (!(o instanceof AggregationInfo that)) {
             return false;
         }
-        final AggregationInfo that = (AggregationInfo) o;
         return Objects.equals(getGroupByFields(), that.getGroupByFields()) &&
             Objects.equals(getAggregations(), that.getAggregations()) &&
             Objects.equals(getFilter(), that.getFilter());

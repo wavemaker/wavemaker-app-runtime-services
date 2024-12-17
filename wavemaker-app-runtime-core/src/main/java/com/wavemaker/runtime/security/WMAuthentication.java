@@ -48,8 +48,7 @@ public class WMAuthentication extends AbstractMutableAuthoritiesAuthenticationTo
         super((Collection<GrantedAuthority>) mapAuthorities(authenticationSource.getAuthorities()));
         this.principal = authenticationSource.getName();
         this.authenticationSource = authenticationSource;
-        if (authenticationSource.getPrincipal() instanceof WMUser) {
-            WMUser wmUser = (WMUser) authenticationSource.getPrincipal();
+        if (authenticationSource.getPrincipal() instanceof WMUser wmUser) {
             this.userId = wmUser.getUserId();
             Map<String, Object> customAttributes = wmUser.getCustomAttributes();
             for (Map.Entry<String, Object> entry : customAttributes.entrySet()) {

@@ -44,8 +44,7 @@ public class WMSamlRPInitiatedSuccessHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         logger.debug("Successfully logged out from the application... creating saml sso logout request");
         Authentication authentication1;
-        if (authentication instanceof WMAuthentication) {
-            WMAuthentication wmAuthentication = (WMAuthentication) authentication;
+        if (authentication instanceof WMAuthentication wmAuthentication) {
             authentication1 = wmAuthentication.getAuthenticationSource();
         } else {
             authentication1 = authentication;

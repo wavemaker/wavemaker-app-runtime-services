@@ -67,16 +67,20 @@ public class ProceduresUtilsTest {
     }
 
     public void jdbcComplianceProcedure() {
-        final String procedure1 = "sp_create_workorder_detail\n" +
-            ":workorder,\n" +
-            ":workorderType,\n" +
-            ":typeid,\n" +
-            ":workorder1,\n";
-        final String jdbcComplianceProcedure1 = "sp_create_workorder_detail\n" +
-            "?,\n" +
-            "?,\n" +
-            "?,\n" +
-            "?,\n";
+        final String procedure1 = """
+            sp_create_workorder_detail
+            :workorder,
+            :workorderType,
+            :typeid,
+            :workorder1,
+            """;
+        final String jdbcComplianceProcedure1 = """
+            sp_create_workorder_detail
+            ?,
+            ?,
+            ?,
+            ?,
+            """;
 
         final String procedure2 = "sp_create_workorder_detail    :workorder,:workorderType,:typeid,:workorder1";
         final String jdbcComplianceProcedure2 = "sp_create_workorder_detail    ?,?,?,?";

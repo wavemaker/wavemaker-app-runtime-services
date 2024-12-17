@@ -34,8 +34,7 @@ public class WMCasHttpsURLConnectionFactory implements HttpURLConnectionFactory 
 
     @Override
     public HttpURLConnection buildHttpURLConnection(URLConnection conn) {
-        if (conn instanceof HttpsURLConnection) {
-            HttpsURLConnection httpsConnection = (HttpsURLConnection) conn;
+        if (conn instanceof HttpsURLConnection httpsConnection) {
             if (sslSocketFactory != null) {
                 httpsConnection.setSSLSocketFactory(sslSocketFactory);
             }

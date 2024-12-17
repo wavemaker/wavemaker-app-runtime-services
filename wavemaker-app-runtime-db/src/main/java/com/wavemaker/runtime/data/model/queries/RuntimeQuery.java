@@ -123,10 +123,9 @@ public class RuntimeQuery {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof RuntimeQuery)) {
+        if (!(o instanceof RuntimeQuery that)) {
             return false;
         }
-        final RuntimeQuery that = (RuntimeQuery) o;
         return isNativeSql() == that.isNativeSql() &&
             Objects.equals(getQueryString(), that.getQueryString()) &&
             Objects.equals(getParameters(), that.getParameters());
