@@ -47,6 +47,11 @@ import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
     @JsonSubTypes.Type(value = OpaqueTokenProviderConfig.class, name = OpaqueTokenProviderConfig.OPAQUE_TOKEN),
 })
 public interface SecurityProviderConfig {
+
+    default String getProviderId() {
+        return null;
+    }
+
     String getType();
 
     boolean isEnabled();

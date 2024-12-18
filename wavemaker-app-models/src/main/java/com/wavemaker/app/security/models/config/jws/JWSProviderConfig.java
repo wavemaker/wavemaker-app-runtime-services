@@ -15,33 +15,81 @@
 
 package com.wavemaker.app.security.models.config.jws;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
 public class JWSProviderConfig extends AbstractProviderConfig {
 
     public static final String JWS = "JWS";
 
+    @NotBlank
+    private String providerId;
+    private boolean enabled;
+    @NotBlank
+    private String issuerUrl;
+    @NotBlank
+    private String principalClaimName;
+    private boolean roleMappingEnabled;
     @Valid
-    private Map<String, JWSProviderInfo> jwsProviderIdVsProviderInfo;
+    private RoleMappingConfig roleMappingConfig;
 
     @Override
     public String getType() {
         return JWS;
     }
 
-    public Map<String, JWSProviderInfo> getJwsProviderIdVsProviderInfo() {
-        if (jwsProviderIdVsProviderInfo == null) {
-            jwsProviderIdVsProviderInfo = new HashMap<>();
-        }
-        return jwsProviderIdVsProviderInfo;
+    @Override
+    public String getProviderId() {
+        return providerId;
     }
 
-    public void setJwsProviderIdVsProviderInfo(Map<String, JWSProviderInfo> jwsProviderIdVsProviderInfo) {
-        this.jwsProviderIdVsProviderInfo = jwsProviderIdVsProviderInfo;
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getIssuerUrl() {
+        return issuerUrl;
+    }
+
+    public void setIssuerUrl(String issuerUrl) {
+        this.issuerUrl = issuerUrl;
+    }
+
+    public String getPrincipalClaimName() {
+        return principalClaimName;
+    }
+
+    public void setPrincipalClaimName(String principalClaimName) {
+        this.principalClaimName = principalClaimName;
+    }
+
+    public boolean isRoleMappingEnabled() {
+        return roleMappingEnabled;
+    }
+
+    public void setRoleMappingEnabled(boolean roleMappingEnabled) {
+        this.roleMappingEnabled = roleMappingEnabled;
+    }
+
+    @Override
+    public RoleMappingConfig getRoleMappingConfig() {
+        return roleMappingConfig;
+    }
+
+    public void setRoleMappingConfig(RoleMappingConfig roleMappingConfig) {
+        this.roleMappingConfig = roleMappingConfig;
     }
 }
