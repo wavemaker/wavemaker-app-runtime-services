@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.List;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -45,7 +45,9 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.WMAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
+import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
 import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
+import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, UsernamePasswordLoginFlowCondition.class})
@@ -77,21 +79,35 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     @Lazy
     private SecurityContextRepository securityContextRepository;
 
-    @Bean(name = "redirectStrategyBean")
-    public RedirectStrategy redirectStrategyBean() {
+    @Autowired
+    @Qualifier("logoutSuccessHandler")
+    @Lazy
+    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+
+    @PostConstruct
+    public void init() {
+        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("DEMO", logoutSuccessHandler());
+        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("DATABASE", logoutSuccessHandler());
+        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("LDAP", logoutSuccessHandler());
+        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("AD", logoutSuccessHandler());
+        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("CUSTOM", logoutSuccessHandler());
+    }
+
+    @Bean(name = "usernamePasswordFlowRedirectStrategy")
+    public RedirectStrategy redirectStrategy() {
         return new DefaultRedirectStrategy();
     }
 
-    @Bean(name = "logoutSuccessHandler")
+    @Bean(name = "usernamePasswordFlowLogoutSuccessHandler")
     public LogoutSuccessHandler logoutSuccessHandler() {
         SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
         simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
-        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
+        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategy());
         return simpleUrlLogoutSuccessHandler;
     }
 
     @Bean(name = "WMSecAuthEntryPoint")
-    public AuthenticationEntryPoint wmSecAuthEntryPoint() {
+    public WMAppEntryPoint wmSecAuthEntryPoint() {
         return new WMAuthenticationEntryPoint("/index.html");
     }
 

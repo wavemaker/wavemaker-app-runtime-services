@@ -21,6 +21,7 @@ import java.util.Objects;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -48,12 +49,9 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -64,11 +62,16 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
+import com.wavemaker.runtime.security.constants.SecurityConstants;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.NullAuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
 import com.wavemaker.runtime.security.provider.cas.handler.WMCasAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
@@ -106,6 +109,15 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @Lazy
     private SecurityContextRepository securityContextRepository;
 
+    @Autowired
+    @Qualifier("logoutSuccessHandler")
+    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+
+    @PostConstruct
+    public void init() {
+        this.wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(SecurityConstants.CAS_PROVIDER, logoutSuccessHandler());
+    }
+
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
         return List.of(new SecurityInterceptUrlEntry("/j_spring_cas_security_check", Permission.PermitAll));
@@ -121,16 +133,16 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         return new CASProviderConfig();
     }
 
-    @Bean(name = "logoutSuccessHandler")
-    public LogoutSuccessHandler logoutSuccessHandler(CASProviderConfig casProviderConfig) {
+    @Bean(name = "casLogoutSuccessHandler")
+    public LogoutSuccessHandler logoutSuccessHandler() {
         SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
-        simpleUrlLogoutSuccessHandler.setDefaultTargetUrl(casProviderConfig.getLogoutUrl());
-        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
+        simpleUrlLogoutSuccessHandler.setDefaultTargetUrl(casProviderConfig().getLogoutUrl());
+        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategy());
         return simpleUrlLogoutSuccessHandler;
     }
 
-    @Bean(name = "redirectStrategyBean")
-    public RedirectStrategy redirectStrategyBean() {
+    @Bean(name = "casRedirectStrategy")
+    public RedirectStrategy redirectStrategy() {
         return new CASRedirectStrategy();
     }
 
@@ -143,6 +155,12 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         casAuthenticationProvider.setTicketValidator(cas20ServiceTicketValidator(appSSLSocketFactory, appHostnameVerifier, casProviderConfig));
         casAuthenticationProvider.setAuthenticationUserDetailsService(wmCasUserDetailsByNameServiceWrapper());
         return casAuthenticationProvider;
+    }
+
+    @Bean(name = "casDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.CAS_ORDER)
+    public WMDelegatingAuthenticationProvider casDelegatingAuthenticationProvider(AuthenticationProvider casAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(casAuthenticationProvider, "CAS");
     }
 
     @Bean(name = "cas20ServiceTicketValidator")
@@ -192,8 +210,8 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
         return casAuthenticationFilter;
     }
 
-    @Bean(name = "WMSecAuthEntryPoint")
-    public AuthenticationEntryPoint wmSecAuthEntryPoint(CASProviderConfig casProviderConfig) {
+    @Bean(name = "casEntryPoint")
+    public WMAppEntryPoint wmSecAuthEntryPoint(CASProviderConfig casProviderConfig) {
         WMCASAuthenticationEntryPoint authenticationEntryPoint = new WMCASAuthenticationEntryPoint();
         authenticationEntryPoint.setServiceProperties(casServiceProperties(casProviderConfig));
         authenticationEntryPoint.setLoginUrl(casProviderConfig.getLoginUrl());
@@ -243,13 +261,5 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @ConfigurationProperties("security.providers.cas.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
         return new RuntimeDatabaseRoleMappingConfig();
-    }
-
-    @Bean(name = "logoutFilter")
-    public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler) {
-        LogoutFilter logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
     }
 }

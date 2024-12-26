@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,15 +48,16 @@ import org.springframework.security.saml2.provider.service.web.authentication.Sa
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseResolver;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -68,12 +70,12 @@ import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
-import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
+import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessRedirectionHandler;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestFilter;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSamlRPInitiatedSuccessHandler;
 
@@ -109,10 +111,6 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     private LogoutHandler wmCsrfLogoutHandler;
 
     @Autowired
-    @Lazy
-    private LogoutSuccessHandler logoutSuccessHandler;
-
-    @Autowired
     @Qualifier("saml2AuthenticationRequestResolver")
     private Saml2AuthenticationRequestResolver saml2AuthenticationRequestResolver;
 
@@ -123,6 +121,19 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     @Autowired
     @Lazy
     private SecurityContextRepository securityContextRepository;
+
+    @Autowired
+    private Saml2LogoutRequestResolver saml2LogoutRequestResolver;
+
+    @Autowired
+    @Qualifier("logoutSuccessHandler")
+    @Lazy
+    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+
+    @PostConstruct
+    public void init() {
+        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("SAML", saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver));
+    }
 
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
@@ -142,11 +153,6 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
         samlConfig.setIdpMetadataFileLocation(samlProviderConfig.getIdpMetadataFile());
         samlConfig.setMetadataSource(samlProviderConfig.getIdpMetadataSource());
         return samlConfig;
-    }
-
-    @Bean(name = "wmAuthenticationSuccessRedirectionHandler")
-    public WMAuthenticationRedirectionHandler wmAuthenticationSuccessRedirectionHandler() {
-        return new WMSamlAuthenticationSuccessRedirectionHandler();
     }
 
     @Bean(name = "samlFilter")
@@ -190,21 +196,13 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "wmLoginUrlAuthenticationEntryPoint")
-    public AuthenticationEntryPoint wmLoginUrlAuthenticationEntryPoint() {
+    public WMAppEntryPoint wmLoginUrlAuthenticationEntryPoint() {
         return new WMSAMLEntryPoint("/saml2/authenticate/saml");
     }
 
     @Bean(name = "saml2RelyingPartyInitiatedLogoutSuccessHandler")
     public LogoutSuccessHandler saml2RelyingPartyInitiatedLogoutSuccessHandler(Saml2LogoutRequestResolver saml2LogoutRequestResolver) {
         return new WMSamlRPInitiatedSuccessHandler(saml2LogoutRequestResolver);
-    }
-
-    @Bean(name = "samlLogoutFilter")
-    public LogoutFilter samlLogoutFilter(@Autowired Saml2LogoutRequestResolver saml2LogoutRequestResolver) {
-        LogoutFilter logoutFilter = new LogoutFilter(saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver),
-            securityContextLogoutHandler, wmCsrfLogoutHandler);
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
     }
 
     @Bean(name = "openSamlLogoutResponseValidator")
@@ -214,14 +212,7 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
 
     @Bean(name = "saml2LogoutResponseFilter")
     public Filter saml2LogoutResponseFilter() {
-        return new Saml2LogoutResponseFilter(relyingPartyRegistrationResolver, openSamlLogoutResponseValidator(), logoutSuccessHandler);
-    }
-
-    @Bean(name = "logoutFilter")
-    public SAMLDelegatingLogoutFilter logoutFilter() {
-        SAMLDelegatingLogoutFilter samlDelegatingLogoutFilter = new SAMLDelegatingLogoutFilter();
-        samlDelegatingLogoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return samlDelegatingLogoutFilter;
+        return new Saml2LogoutResponseFilter(relyingPartyRegistrationResolver, openSamlLogoutResponseValidator(), logoutSuccessHandler());
     }
 
     @Bean(name = "openSamlLogoutRequestValidator")
@@ -270,5 +261,18 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     @Bean(name = "samlProviderConfig")
     public SAMLProviderConfig samlProviderConfig() {
         return new SAMLProviderConfig();
+    }
+
+    @Bean(name = "samlLogoutSuccessHandler")
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
+        simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
+        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
+        return simpleUrlLogoutSuccessHandler;
+    }
+
+    @Bean(name = "samlRedirectStrategyBean")
+    public RedirectStrategy redirectStrategyBean() {
+        return new DefaultRedirectStrategy();
     }
 }

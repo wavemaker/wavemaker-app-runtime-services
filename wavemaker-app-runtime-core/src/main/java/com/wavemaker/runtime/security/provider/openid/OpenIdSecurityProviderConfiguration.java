@@ -18,21 +18,22 @@ package com.wavemaker.runtime.security.provider.openid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -53,32 +54,37 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
-import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
+import com.wavemaker.runtime.security.constants.SecurityConstants;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
+import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.provider.authoritiesprovider.OpenidAuthoritiesProviderManager;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.openid.handler.WMOpenIdLogoutSuccessHandler;
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, OpenIdProviderCondition.class})
-public class OpenIdSecurityProviderConfiguration implements WMSecurityConfiguration {
+public class OpenIdSecurityProviderConfiguration implements WMSecurityConfiguration, BeanFactoryAware {
 
     private static final String SECURITY_PROVIDERS_OPEN_ID = "security.providers.openId.";
+
+    private BeanFactory beanFactory;
+
     @Autowired
     private Environment environment;
 
@@ -100,8 +106,29 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Lazy
     private SecurityContextRepository securityContextRepository;
 
-    @Value("${security.providers.openId.activeProviders}")
-    private String openIdActiveProvider;
+    @Autowired
+    @Qualifier("logoutSuccessHandler")
+    @Lazy
+    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+
+    private List<String> openIdActiveProviders = new ArrayList<>();
+
+    @PostConstruct
+    public void init() {
+        DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
+        openIdActiveProviders = SecurityPropertyUtils.getProviderIds(environment, SecurityConstants.OPENID_PROVIDER);
+
+        openIdActiveProviders.forEach(providerId -> {
+            WMAppEntryPoint openIdAuthenticationEntryPoint = openIdAuthenticationEntryPoint(providerId);
+            String beanName = providerId + "OpenIdEntryPoint";
+            defaultListableBeanFactory.registerSingleton(beanName, openIdAuthenticationEntryPoint);
+
+            //@PostConstruct is not being called so initializing bean
+            defaultListableBeanFactory.initializeBean(openIdAuthenticationEntryPoint, beanName);
+        });
+
+        registerOpenidLogoutSuccessHandler();
+    }
 
     @Override
     public List<SecurityInterceptUrlEntry> getSecurityInterceptUrls() {
@@ -117,10 +144,9 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
             OAuth2LoginAuthenticationFilter.class);
     }
 
-    @Bean(name = "openIdEntryPoint")
-    public AuthenticationEntryPoint openIdAuthenticationEntryPoint() {
+    public WMAppEntryPoint openIdAuthenticationEntryPoint(String providerId) {
         OpenIdAuthenticationEntryPoint openIdAuthenticationEntryPoint = new OpenIdAuthenticationEntryPoint();
-        openIdAuthenticationEntryPoint.setProviderId(openIdActiveProvider);
+        openIdAuthenticationEntryPoint.setProviderId(providerId);
         return openIdAuthenticationEntryPoint;
     }
 
@@ -137,12 +163,17 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return authenticationFilter;
     }
 
-    @Bean(name = "logoutSuccessHandler")
-    public LogoutSuccessHandler wmOpenIdLogoutSuccessHandler(RedirectStrategy redirectStrategy) {
+    @Bean(name = "openidLogoutSuccessHandler")
+    public LogoutSuccessHandler wmOpenIdLogoutSuccessHandler() {
         WMOpenIdLogoutSuccessHandler wmOpenIdLogoutSuccessHandler = new WMOpenIdLogoutSuccessHandler();
         wmOpenIdLogoutSuccessHandler.setDefaultTargetUrl("/");
-        wmOpenIdLogoutSuccessHandler.setRedirectStrategy(redirectStrategy);
+        wmOpenIdLogoutSuccessHandler.setRedirectStrategy(redirectStrategy());
         return wmOpenIdLogoutSuccessHandler;
+    }
+
+    @Bean(name = "openidRedirectStrategy")
+    public RedirectStrategy redirectStrategy() {
+        return new DefaultRedirectStrategy();
     }
 
     @Bean(name = "inMemoryOAuth2AuthorizedClientService")
@@ -170,33 +201,35 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     @Bean(name = "openIdProviderInfo")
-    public OpenIdProviderInfo openIdProviderInfo() {
-        OpenIdProviderInfo openIdProviderInfo = new OpenIdProviderInfo();
-        openIdProviderInfo.setProviderId(openIdActiveProvider);
-        openIdProviderInfo.setClientId(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".clientId"));
-        openIdProviderInfo.setClientSecret(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".clientSecret"));
-        openIdProviderInfo.setAuthorizationUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".authorizationUrl"));
-        openIdProviderInfo.setJwkSetUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".jwkSetUrl"));
-        openIdProviderInfo.setLogoutUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".logoutUrl"));
-        openIdProviderInfo.setTokenUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".tokenUrl"));
-        openIdProviderInfo.setUserInfoUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".userInfoUrl"));
-        openIdProviderInfo.setRedirectUrlTemplate("{baseUrl}/oauth2/code/{registrationId}");
-        openIdProviderInfo.setUserNameAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".userNameAttributeName"));
-        String scopes = environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".scopes");
-        List<String> scopesList = new ArrayList<>();
-        if (scopes != null) {
-            Collections.addAll(scopesList, scopes.split(","));
+    public List<OpenIdProviderConfig> openIdProviderInfoList() {
+        List<OpenIdProviderConfig> openIdProviderInfoList = new ArrayList<>();
+        for (String providerId : openIdActiveProviders) {
+            OpenIdProviderConfig openIdProviderConfig = new OpenIdProviderConfig();
+            openIdProviderConfig.setProviderId(providerId);
+            openIdProviderConfig.setClientId(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".clientId"));
+            openIdProviderConfig.setClientSecret(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".clientSecret"));
+            openIdProviderConfig.setAuthorizationUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".authorizationUrl"));
+            openIdProviderConfig.setJwkSetUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".jwkSetUrl"));
+            openIdProviderConfig.setLogoutUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".logoutUrl"));
+            openIdProviderConfig.setTokenUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".tokenUrl"));
+            openIdProviderConfig.setUserInfoUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".userInfoUrl"));
+            openIdProviderConfig.setRedirectUrlTemplate("{baseUrl}/oauth2/code/{registrationId}");
+            openIdProviderConfig.setUserNameAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".userNameAttributeName"));
+            String scopes = environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".scopes");
+            List<String> scopesList = new ArrayList<>();
+            if (scopes != null) {
+                Collections.addAll(scopesList, scopes.split(","));
+            }
+            openIdProviderConfig.setScopes(scopesList);
+            openIdProviderInfoList.add(openIdProviderConfig);
         }
-        openIdProviderInfo.setScopes(scopesList);
-        return openIdProviderInfo;
+        return openIdProviderInfoList;
     }
 
     @Bean(name = "openIdProviderRuntimeConfig")
     public OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig() {
-        List<OpenIdProviderInfo> openIdProvidersInfoList = new ArrayList<>();
-        openIdProvidersInfoList.add(openIdProviderInfo());
         OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig = new OpenIdProviderRuntimeConfig();
-        openIdProviderRuntimeConfig.setOpenIdProviderInfoList(openIdProvidersInfoList);
+        openIdProviderRuntimeConfig.setOpenIdProviderConfigList(openIdProviderInfoList());
         return openIdProviderRuntimeConfig;
     }
 
@@ -223,38 +256,28 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return oidcAuthorizationCodeAuthenticationProvider;
     }
 
+    @Bean(name = "openIdDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.OPENID_ORDER)
+    public WMDelegatingAuthenticationProvider openIdDelegatingAuthenticationProvider(AuthenticationProvider openIdAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(openIdAuthenticationProvider, "OPENID");
+    }
+
     @Bean(name = "openIdUserService")
     public OAuth2UserService<? extends OAuth2UserRequest, ? extends OAuth2User> openIdUserService() {
         return new OpenIdUserService();
     }
 
-    @Bean("openIdAuthoritiesProvider")
-    @Conditional(OpenIdRoleMappingCondition.class)
-    public AuthoritiesProvider userAuthoritiesProvider() {
-        IdentityProviderUserAuthoritiesProvider identityProviderUserAuthoritiesProvider = new IdentityProviderUserAuthoritiesProvider();
-        identityProviderUserAuthoritiesProvider.setRoleAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".roleAttributeName"));
-        return identityProviderUserAuthoritiesProvider;
+    @Bean
+    public OpenidAuthoritiesProviderManager openidAuthoritiesProviderManager() {
+        return new OpenidAuthoritiesProviderManager();
     }
 
-    @Bean("openIdAuthoritiesProvider")
-    @Conditional(OpenIdDatabaseRoleMappingCondition.class)
-    public AuthoritiesProvider databaseUserAuthoritiesProvider(ApplicationContext applicationContext) {
-        DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-
-        defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations)
-            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.modelName") + "Template"));
-        defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager)
-            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.modelName") + "TransactionManager"));
-        defaultAuthoritiesProvider.setHql(Objects.equals(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.queryType"), "HQL"));
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + openIdActiveProvider + ".database.rolesByUsernameQuery"));
-        return defaultAuthoritiesProvider;
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 
-    @Bean(name = "logoutFilter")
-    public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler) {
-        LogoutFilter logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
+    private void registerOpenidLogoutSuccessHandler() {
+        this.wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(SecurityConstants.OPENID_PROVIDER, wmOpenIdLogoutSuccessHandler());
     }
 }

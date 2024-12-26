@@ -15,45 +15,85 @@
 
 package com.wavemaker.runtime.security.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.google.common.collect.Sets;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.AD_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.CAS_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.CUSTOM_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.DEMO_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.JWS_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.LDAP_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.OPAQUE_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.OPENID_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.SAML_PROVIDER;
+import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 
 public class SecurityPropertyUtils {
 
     private SecurityPropertyUtils() {
     }
 
-    public static Set<String> getActiveProviders(Environment environment) {
+    public static Set<String> getActiveProviderTypes(Environment environment) {
         String activeProviderStr = environment.getProperty("security.activeProviders");
         if (StringUtils.isBlank(activeProviderStr)) {
             return Collections.emptySet();
         } else {
-            return Sets.newHashSet(StringUtils.split(activeProviderStr, ','));
+            Set<String> activeProviders = Sets.newHashSet(StringUtils.split(activeProviderStr, ','));
+            return activeProviders.stream().map(str -> str.contains(SecurityConstants.PROVIDER_ID_SEPARATOR) ?
+                str.substring(0, str.indexOf(SecurityConstants.PROVIDER_ID_SEPARATOR)) : str).collect(Collectors.toSet());
         }
     }
 
     public static void validateActiveProviders(Environment environment) {
-        Set<String> activeProviders = getActiveProviders(environment);
-        boolean validActiveProviders = !activeProviders.isEmpty() && Set.of(DEMO_PROVIDER, DATABASE_PROVIDER, LDAP_PROVIDER, AD_PROVIDER, CAS_PROVIDER, SAML_PROVIDER,
-            OPENID_PROVIDER, OPAQUE_PROVIDER, JWS_PROVIDER, CUSTOM_PROVIDER).containsAll(activeProviders);
+        Set<String> activeProviderTypes = getActiveProviderTypes(environment);
+        boolean validActiveProviders = !activeProviderTypes.isEmpty() && SecurityProviders.getProviders().containsAll(activeProviderTypes);
         if (!validActiveProviders) {
-            throw new IllegalStateException("Invalid value for the security.activeProviders " + activeProviders);
+            throw new IllegalStateException("Invalid value for the security.activeProviders " + activeProviderTypes);
+        }
+    }
+
+    public static List<String> getProviderIds(Environment environment, String providerType) {
+        String activeProviderStr = environment.getProperty("security.activeProviders");
+        if (StringUtils.isBlank(activeProviderStr)) {
+            return Collections.emptyList();
+        } else {
+            List<String> providerIds = new ArrayList<>();
+            List<String> activeProviders = List.of(StringUtils.split(activeProviderStr, ','));
+            activeProviders.forEach(provider -> {
+                if (provider.startsWith(providerType)) {
+                    provider = provider.substring(provider.indexOf(SecurityConstants.PROVIDER_ID_SEPARATOR) + 1);
+                    providerIds.add(provider);
+                }
+            });
+            return providerIds;
+        }
+    }
+
+    public static MultiValueMap<String, String> getProviderIdVsProviderType(Environment environment) {
+        String activeProviderStr = environment.getProperty("security.activeProviders");
+        if (StringUtils.isBlank(activeProviderStr)) {
+            return new LinkedMultiValueMap<>();
+        } else {
+            MultiValueMap<String, String> providerTypeVsProviderId = new LinkedMultiValueMap<>();
+            List<String> activeProviders = Arrays.stream(StringUtils.split(activeProviderStr, ',')).toList();
+            for (String s : activeProviders) {
+                if (s.contains(SecurityConstants.PROVIDER_ID_SEPARATOR)) {
+                    String[] providerTypeAndProviderId = s.split(SecurityConstants.PROVIDER_ID_SEPARATOR);
+                    if (providerTypeVsProviderId.containsKey(providerTypeAndProviderId[0])) {
+                        providerTypeVsProviderId.add(providerTypeAndProviderId[0], providerTypeAndProviderId[1]);
+                    } else {
+                        List<String> values = new ArrayList<>();
+                        values.add(providerTypeAndProviderId[1]);
+                        providerTypeVsProviderId.put(providerTypeAndProviderId[0], values);
+                    }
+                } else {
+                    providerTypeVsProviderId.put(s, List.of(s));
+                }
+            }
+            return providerTypeVsProviderId;
         }
     }
 }

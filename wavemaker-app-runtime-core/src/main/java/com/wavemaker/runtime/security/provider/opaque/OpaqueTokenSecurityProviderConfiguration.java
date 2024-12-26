@@ -42,6 +42,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.opaque.OpaqueTokenProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -70,6 +71,11 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
         OpaqueTokenAuthenticationProvider opaqueTokenAuthenticationProvider = new OpaqueTokenAuthenticationProvider(nimbusOpaqueTokenIntrospector());
         opaqueTokenAuthenticationProvider.setAuthenticationConverter(opaqueAuthenticationConverter());
         return opaqueTokenAuthenticationProvider;
+    }
+
+    @Bean(name = "opaqueTokenDelegatingAuthenticationProvider")
+    public WMDelegatingAuthenticationProvider opaqueTokenDelegatingAuthenticationProvider(AuthenticationProvider opaqueTokenAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(opaqueTokenAuthenticationProvider, "OPAQUE_TOKEN");
     }
 
     @Bean(name = "opaqueAuthoritiesProvider")

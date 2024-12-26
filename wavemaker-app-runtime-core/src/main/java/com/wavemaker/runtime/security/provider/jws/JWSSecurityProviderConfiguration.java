@@ -19,15 +19,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,31 +43,14 @@ import com.wavemaker.app.security.models.jws.JWSConfiguration;
 import com.wavemaker.app.security.models.jws.JWSProviderConfiguration;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.provider.authoritiesprovider.JWSAuthoritiesProviderManager;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_ROLE_PROVIDER;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, JWSProviderCondition.class})
-public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration, BeanFactoryAware {
-    private BeanFactory beanFactory;
+public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
-
-    @PostConstruct
-    public void onPostConstruct() {
-        DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
-        jwsConfiguration().getJws().forEach((providerId, jwsProviderConfiguration) -> {
-            if (jwsProviderConfiguration.isEnabled() && jwsProviderConfiguration.isRoleMappingEnabled() && jwsProviderConfiguration
-                .getRoleProvider().equals(DATABASE_ROLE_PROVIDER)) {
-                DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = jwsAuthoritiesProvider(jwsProviderConfiguration);
-                defaultListableBeanFactory.registerSingleton(providerId + "JWSAuthoritiesProvider", defaultAuthoritiesProvider);
-
-                //@PostConstruct is not being called so initializing bean
-                defaultListableBeanFactory.initializeBean(defaultAuthoritiesProvider, providerId + "JWSAuthoritiesProvider");
-            }
-        });
-    }
 
     @Bean(name = "jwsAuthenticationManagerResolver")
     public AuthenticationManagerResolver<String> jwsAuthenticationManagerResolver() {
@@ -97,9 +75,9 @@ public class JWSSecurityProviderConfiguration implements WMSecurityConfiguration
         return new JWSConfiguration();
     }
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
+    @Bean
+    public JWSAuthoritiesProviderManager jwsAuthoritiesProviderManager() {
+        return new JWSAuthoritiesProviderManager();
     }
 
     @Override

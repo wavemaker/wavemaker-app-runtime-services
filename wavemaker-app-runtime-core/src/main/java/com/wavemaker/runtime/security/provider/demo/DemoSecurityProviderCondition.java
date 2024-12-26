@@ -32,8 +32,8 @@ public class DemoSecurityProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (activeProviders.contains(DEMO_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(DEMO_PROVIDER)) {
             logger.info("Initializing DEMO beans as DEMO is selected as active security provider");
             return true;
         }

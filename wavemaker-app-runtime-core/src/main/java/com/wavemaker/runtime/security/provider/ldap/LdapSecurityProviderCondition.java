@@ -32,8 +32,8 @@ public class LdapSecurityProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (activeProviders.contains(LDAP_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(LDAP_PROVIDER)) {
             logger.info("Initializing LDAP beans as LDAP is selected as active security provider");
             return true;
         }

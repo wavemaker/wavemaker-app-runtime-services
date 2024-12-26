@@ -16,20 +16,20 @@ package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.List;
 
-import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 
 /**
  * Created by srujant on 30/7/18.
  */
 public class OpenIdProviderRuntimeConfig {
 
-    private List<OpenIdProviderInfo> openIdProviderInfoList;
+    private List<OpenIdProviderConfig> openIdProviderConfigList;
 
-    public List<OpenIdProviderInfo> getOpenIdProviderInfoList() {
-        return openIdProviderInfoList;
+    public List<OpenIdProviderConfig> getOpenIdProviderConfigList() {
+        return openIdProviderConfigList;
     }
 
-    public void setOpenIdProviderInfoList(List<OpenIdProviderInfo> openIdProviderInfoList) {
-        this.openIdProviderInfoList = openIdProviderInfoList;
+    public void setOpenIdProviderConfigList(List<OpenIdProviderConfig> openIdProviderConfigList) {
+        this.openIdProviderConfigList = openIdProviderConfigList;
     }
 }

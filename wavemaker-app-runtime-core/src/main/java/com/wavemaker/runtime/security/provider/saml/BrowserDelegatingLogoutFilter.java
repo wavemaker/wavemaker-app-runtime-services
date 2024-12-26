@@ -15,6 +15,7 @@
 package com.wavemaker.runtime.security.provider.saml;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,30 +26,26 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
+import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 
 /**
  * Created by ArjunSahasranam on 25/11/16.
  */
-public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
+public class BrowserDelegatingLogoutFilter extends LogoutFilter {
 
-    private RequestMatcher logoutRequestMatcher;
+    private static final Logger logger = LoggerFactory.getLogger(BrowserDelegatingLogoutFilter.class);
 
-    @Autowired
-    private LogoutFilter samlLogoutFilter;
-
-    private static final Logger logger = LoggerFactory.getLogger(SAMLDelegatingLogoutFilter.class);
-
-    public SAMLDelegatingLogoutFilter() {
+    public BrowserDelegatingLogoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler... handlers) {
+        super(logoutSuccessHandler, handlers);
         setFilterProcessesUrl("/j_spring_security_logout");
     }
 
@@ -60,39 +57,19 @@ public class SAMLDelegatingLogoutFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) res;
         if (requiresLogout(request, response)) {
             logger.info("Request for logout");
-            if (HttpRequestUtils.isAjaxRequest(request)) {
+            WMAuthentication wmAuthentication = new WMAuthentication(SecurityContextHolder.getContext().getAuthentication());
+            if (HttpRequestUtils.isAjaxRequest(request) &&
+                SecurityProviders.getBrowserRedirectLogoutSupportedProviders().anyMatch(securityProviders ->
+                    Objects.equals(securityProviders.getProviderType(), wmAuthentication.getProviderType()))) {
                 logger.info("Redirecting to the same request uri {}", request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(JSONUtils.toJSON(new StringWrapper(request.getRequestURI())));
                 response.getWriter().flush();
             } else {
-                logger.info("Delegating to {}", samlLogoutFilter.getClass().getSimpleName());
-                samlLogoutFilter.doFilter(request, response, chain);
+                super.doFilter(request, response, chain);
             }
         } else {
             chain.doFilter(request, response);
         }
-    }
-
-    /**
-     * Allow subclasses to modify when a logout should take place.
-     *
-     * @param request  the request
-     * @param response the response
-     *
-     * @return <code>true</code> if logout should occur, <code>false</code> otherwise
-     */
-    protected boolean requiresLogout(HttpServletRequest request,
-                                     HttpServletResponse response) {
-        return logoutRequestMatcher.matches(request);
-    }
-
-    public void setLogoutRequestMatcher(RequestMatcher logoutRequestMatcher) {
-        Assert.notNull(logoutRequestMatcher, "logoutRequestMatcher cannot be null");
-        this.logoutRequestMatcher = logoutRequestMatcher;
-    }
-
-    public void setFilterProcessesUrl(String filterProcessesUrl) {
-        this.logoutRequestMatcher = new AntPathRequestMatcher(filterProcessesUrl);
     }
 }

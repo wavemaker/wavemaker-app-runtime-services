@@ -17,7 +17,6 @@ package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,21 +24,18 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.CAS_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.OPENID_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.SAML_PROVIDER;
 
 public class SSOProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(SSOProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (Stream.of(CAS_PROVIDER, OPENID_PROVIDER, SAML_PROVIDER).
-            anyMatch(s -> Objects.requireNonNull(activeProviders).contains(s))) {
-            logger.info("Initializing SSOProviderConfiguration for {} active provider", activeProviders);
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (SecurityProviders.getSSOProviders().
+            anyMatch(s -> Objects.requireNonNull(activeProviderTypes).contains(s.getProviderType()))) {
+            logger.info("Initializing SSOProviderConfiguration for {} active provider", activeProviderTypes);
             return true;
         }
         return false;

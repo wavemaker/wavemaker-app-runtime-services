@@ -32,8 +32,8 @@ public class JWSProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (activeProviders.contains(JWS_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(JWS_PROVIDER)) {
             logger.info("Initializing JWS beans as JWS is selected as active security provider");
             return true;
         }

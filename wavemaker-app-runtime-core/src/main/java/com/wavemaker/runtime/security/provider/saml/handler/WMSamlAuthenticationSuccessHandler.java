@@ -15,6 +15,7 @@
 package com.wavemaker.runtime.security.provider.saml.handler;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,8 +34,10 @@ import com.wavemaker.runtime.security.provider.saml.SAMLConstants;
 public class WMSamlAuthenticationSuccessHandler implements WMAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
-        Authentication samlAuthenticationToken = authentication.getAuthenticationSource();
-        Object samlCredential = samlAuthenticationToken.getCredentials();
-        authentication.addAttribute(SAMLConstants.SAML_CREDENTIALS, samlCredential, Attribute.AttributeScope.SERVER_ONLY);
+        if (Objects.equals(authentication.getProviderType(), "SAML")) {
+            Authentication samlAuthenticationToken = authentication.getAuthenticationSource();
+            Object samlCredential = samlAuthenticationToken.getCredentials();
+            authentication.addAttribute(SAMLConstants.SAML_CREDENTIALS, samlCredential, Attribute.AttributeScope.SERVER_ONLY);
+        }
     }
 }

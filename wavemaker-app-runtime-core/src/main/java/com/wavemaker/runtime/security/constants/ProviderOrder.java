@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2022-2023 WaveMaker, Inc.
+ * Copyright (C) 2024-2025 WaveMaker, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.security.entrypoint;
 
-/**
- * Created by srujant on 2/8/18.
- */
-public interface FormLoginEntryPoint extends WMAppEntryPoint {
+package com.wavemaker.runtime.security.constants;
+
+public class ProviderOrder {
+
+    public static final int DEMO_ORDER = 10;
+    public static final int DATABASE_ORDER = 20;
+    public static final int LDAP_ORDER = 30;
+    public static final int AD_ORDER = 40;
+    public static final int CUSTOM_ORDER = 50;
+    public static final int OPENID_ORDER = 60;
+    public static final int SAML_ORDER = 70;
+    public static final int CAS_ORDER = 80;
 }

@@ -28,6 +28,7 @@ import jakarta.servlet.Filter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,9 +49,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
@@ -61,8 +60,8 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
@@ -104,6 +103,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.security.WMAppAccessDeniedHandler;
 import com.wavemaker.runtime.security.WMApplicationAuthenticationFailureHandler;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.csrf.CsrfSecurityRequestMatcher;
 import com.wavemaker.runtime.security.csrf.WMCsrfFilter;
@@ -121,6 +121,8 @@ import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcess
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
+import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.provider.saml.BrowserDelegatingLogoutFilter;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 import com.wavemaker.runtime.security.token.repository.TokenRepository;
 import com.wavemaker.runtime.security.token.repository.WMTokenRepository;
@@ -131,9 +133,10 @@ import com.wavemaker.runtime.webprocess.filter.LoginProcessFilter;
 @EnableMethodSecurity
 @Conditional(SecurityEnabledCondition.class)
 public class SecurityEnabledBaseConfiguration {
+
     @Autowired
     @Lazy
-    private List<AuthenticationProvider> authenticationProvidersList;
+    private List<WMDelegatingAuthenticationProvider> authenticationProvidersList;
 
     @Autowired
     @Lazy
@@ -152,6 +155,12 @@ public class SecurityEnabledBaseConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired(required = false)
+    private PersistentTokenBasedRememberMeServices rememberMeServices;
+
+    @Value("${security.general.rememberMe.enabled:false}")
+    private boolean rememberMeEnabled;
+
     @Bean(name = "defaultWebSecurityExpressionHandler")
     public SecurityExpressionHandler<FilterInvocation> defaultWebSecurityExpressionHandler() {
         return new DefaultWebSecurityExpressionHandler();
@@ -160,7 +169,7 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "authenticationManager")
     public AuthenticationManager authenticationManager() {
         try {
-            return new ProviderManager(authenticationProvidersList);
+            return new ProviderManager(authenticationProvidersList.stream().map(authenticationProvider -> (AuthenticationProvider) authenticationProvider).toList());
         } catch (Exception e) {
             throw new WMRuntimeException(e);
         }
@@ -278,19 +287,6 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "csrfLogoutHandler")
     public LogoutHandler csrfLogoutHandler() {
         return new CsrfLogoutHandler(csrfTokenRepository());
-    }
-
-    @Bean(name = "logoutSuccessHandler")
-    public LogoutSuccessHandler logoutSuccessHandler() {
-        SimpleUrlLogoutSuccessHandler simpleUrlLogoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
-        simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
-        simpleUrlLogoutSuccessHandler.setRedirectStrategy(redirectStrategyBean());
-        return simpleUrlLogoutSuccessHandler;
-    }
-
-    @Bean(name = "redirectStrategyBean")
-    public RedirectStrategy redirectStrategyBean() {
-        return new DefaultRedirectStrategy();
     }
 
     @Bean(name = "securityContextLogoutHandler")
@@ -465,6 +461,23 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "filterSecurityInterceptor")
     public FilterSecurityInterceptor filterSecurityInterceptor(SecurityFilterChain filterChainWithSessions) {
         return (FilterSecurityInterceptor) filterChainWithSessions.getFilters().stream().filter(FilterSecurityInterceptor.class::isInstance).findFirst().orElseThrow();
+    }
+
+    @Bean(name = "logoutFilter")
+    public LogoutFilter logoutFilter(LogoutHandler securityContextLogoutHandler, LogoutHandler wmCsrfLogoutHandler) {
+        LogoutFilter logoutFilter;
+        if (rememberMeEnabled && rememberMeServices != null) {
+            logoutFilter = new BrowserDelegatingLogoutFilter(wmApplicationLogoutSuccessHandler(), securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
+        } else {
+            logoutFilter = new BrowserDelegatingLogoutFilter(wmApplicationLogoutSuccessHandler(), securityContextLogoutHandler, wmCsrfLogoutHandler);
+        }
+        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
+        return logoutFilter;
+    }
+
+    @Bean(name = "logoutSuccessHandler")
+    public LogoutSuccessHandler wmApplicationLogoutSuccessHandler() {
+        return new WMApplicationLogoutSuccessHandler();
     }
 
     private void authorizeHttpRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry) {

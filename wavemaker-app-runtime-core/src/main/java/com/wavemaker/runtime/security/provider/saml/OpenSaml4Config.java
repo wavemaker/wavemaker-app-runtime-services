@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -43,6 +44,8 @@ import org.springframework.security.saml2.provider.service.web.authentication.lo
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseResolver;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -94,6 +97,12 @@ public class OpenSaml4Config {
         OpenSaml4AuthenticationProvider openSaml4AuthenticationProvider = new OpenSaml4AuthenticationProvider();
         openSaml4AuthenticationProvider.setResponseAuthenticationConverter(customAuthenticationConverter());
         return openSaml4AuthenticationProvider;
+    }
+
+    @Bean(name = "samlDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.SAML_ORDER)
+    public WMDelegatingAuthenticationProvider samlDelegatingAuthenticationProvider(AuthenticationProvider samlAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(samlAuthenticationProvider, "SAML");
     }
 
     private Converter<OpenSaml4AuthenticationProvider.ResponseToken, ? extends AbstractAuthenticationToken> customAuthenticationConverter() {

@@ -32,8 +32,8 @@ public class OpenIdProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (activeProviders.contains(OPENID_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(OPENID_PROVIDER)) {
             logger.info("Initializing OPENID beans as OPENID is selected as active security provider");
             return true;
         }

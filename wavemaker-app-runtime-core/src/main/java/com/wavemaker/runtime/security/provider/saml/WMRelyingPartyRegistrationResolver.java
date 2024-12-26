@@ -107,7 +107,7 @@ public class WMRelyingPartyRegistrationResolver implements Converter<HttpServlet
             .apply(relyingPartyRegistration.getSingleLogoutServiceLocation());
         String singleLogoutServiceResponseLocation = templateResolver
             .apply(relyingPartyRegistration.getSingleLogoutServiceResponseLocation());
-        return RelyingPartyRegistration.withRelyingPartyRegistration(relyingPartyRegistration)
+        return relyingPartyRegistration.mutate()
             .entityId(relyingPartyEntityId).assertionConsumerServiceLocation(assertionConsumerServiceLocation)
             .singleLogoutServiceLocation(singleLogoutServiceLocation)
             .singleLogoutServiceResponseLocation(singleLogoutServiceResponseLocation).build();

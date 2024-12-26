@@ -35,8 +35,8 @@ public class CustomSecurityProviderCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(environment);
-        if (activeProviders.contains(CUSTOM_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(environment);
+        if (activeProviderTypes.contains(CUSTOM_PROVIDER)) {
             logger.info("Initializing CUSTOM beans as CUSTOM is selected as active security provider");
             return true;
         }

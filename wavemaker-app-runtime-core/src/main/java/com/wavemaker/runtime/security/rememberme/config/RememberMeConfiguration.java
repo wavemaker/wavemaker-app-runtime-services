@@ -42,6 +42,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 
 import com.wavemaker.app.security.models.RememberMeConfig;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
@@ -88,6 +89,11 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
     @Bean(name = "rememberMeAuthenticationProvider")
     public AuthenticationProvider rememberMeAuthenticationProvider() {
         return new RememberMeAuthenticationProvider("WM_APP_KEY");
+    }
+
+    @Bean(name = "rememberMeDelegatingAuthenticationProvider")
+    public WMDelegatingAuthenticationProvider rememberMeDelegatingAuthenticationProvider(AuthenticationProvider rememberMeAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(rememberMeAuthenticationProvider, "REMEMBER_ME");
     }
 
     @Bean(name = "rememberMeRepository")

@@ -31,8 +31,8 @@ public class SAMLSecurityProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (activeProviders.contains(SecurityConstants.SAML_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(SecurityConstants.SAML_PROVIDER)) {
             logger.info("Initializing SAML beans as SAML is selected as active security provider");
             return true;
         }

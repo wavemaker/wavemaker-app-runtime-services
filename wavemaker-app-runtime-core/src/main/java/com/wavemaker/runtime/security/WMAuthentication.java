@@ -40,6 +40,7 @@ public class WMAuthentication extends AbstractMutableAuthoritiesAuthenticationTo
     private String principal;
     private long loginTime;
     private String userId;
+    private String providerType;
 
     @JsonIgnore
     private transient Authentication authenticationSource;
@@ -91,6 +92,14 @@ public class WMAuthentication extends AbstractMutableAuthoritiesAuthenticationTo
 
     public void setLoginTime(long loginTime) {
         this.loginTime = loginTime;
+    }
+
+    public String getProviderType() {
+        return providerType;
+    }
+
+    public void setProviderType(String providerType) {
+        this.providerType = providerType;
     }
 
     public void addAttribute(String key, Object value, Attribute.AttributeScope scope) {

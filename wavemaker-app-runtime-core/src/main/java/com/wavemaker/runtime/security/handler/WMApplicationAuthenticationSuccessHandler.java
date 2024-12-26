@@ -32,6 +32,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.runtime.security.utils.WMSecurityUtils;
 
 /**
  * Created by srujant on 31/10/18.
@@ -48,7 +50,12 @@ public class WMApplicationAuthenticationSuccessHandler implements Authentication
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         authentication = new WMAuthentication(authentication);
+        Object providerTypeAttr = request.getAttribute(SecurityConstants.PROVIDER_TYPE);
+        if (providerTypeAttr instanceof String providerType) {
+            ((WMAuthentication) authentication).setProviderType(providerType);
+        }
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        WMSecurityUtils.saveContext();
         try {
             invokeCustomWMAuthenticationSuccessHandler(request, response, (WMAuthentication) authentication);
             invokeDefaultAuthenticationSuccessHandlers(request, response, authentication);

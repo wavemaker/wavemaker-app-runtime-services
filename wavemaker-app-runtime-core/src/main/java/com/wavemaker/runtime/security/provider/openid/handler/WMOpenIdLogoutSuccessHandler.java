@@ -30,11 +30,12 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.util.CollectionUtils;
 
-import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 import com.wavemaker.runtime.security.provider.openid.OpenIdProviderRuntimeConfig;
 
 public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
@@ -76,8 +77,14 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String logoutUrl = null;
-        if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderInfoList())) {
-            logoutUrl = openIdProviderRuntimeConfig.getOpenIdProviderInfoList().get(0).getLogoutUrl();
+        if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderConfigList())) {
+            Object providerId = ((WMAuthentication) authentication).getAttributes().get("providerId").getValue();
+            for (OpenIdProviderConfig openIdProviderConfig : openIdProviderRuntimeConfig.getOpenIdProviderConfigList()) {
+                if (openIdProviderConfig.getProviderId().equals(providerId)) {
+                    logoutUrl = openIdProviderConfig.getLogoutUrl();
+                    break;
+                }
+            }
         }
         if (StringUtils.isNotBlank(logoutUrl) && authentication != null) {
             StringBuilder targetUrl = new StringBuilder()

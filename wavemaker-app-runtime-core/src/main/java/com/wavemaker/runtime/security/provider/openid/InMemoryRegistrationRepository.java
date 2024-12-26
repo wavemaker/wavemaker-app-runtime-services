@@ -29,7 +29,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import com.wavemaker.app.security.models.config.openid.OpenIdProviderInfo;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 
 /**
  * Created by srujant on 30/7/18.
@@ -44,28 +44,28 @@ public class InMemoryRegistrationRepository implements ClientRegistrationReposit
     public void init() {
         registrations = new HashMap<>();
         String openIdScope = "openid";
-        if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderInfoList())) {
-            for (OpenIdProviderInfo openIdProviderInfo : openIdProviderRuntimeConfig.getOpenIdProviderInfoList()) {
-                List<String> scopes = openIdProviderInfo.getScopes();
+        if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderConfigList())) {
+            for (OpenIdProviderConfig openIdProviderConfig : openIdProviderRuntimeConfig.getOpenIdProviderConfigList()) {
+                List<String> scopes = openIdProviderConfig.getScopes();
                 if (!scopes.contains(openIdScope)) {
                     scopes.add(openIdScope);
                 }
 
-                ClientRegistration client = ClientRegistration.withRegistrationId(openIdProviderInfo.getProviderId())
+                ClientRegistration client = ClientRegistration.withRegistrationId(openIdProviderConfig.getProviderId())
                     .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                    .authorizationUri(openIdProviderInfo.getAuthorizationUrl())
-                    .tokenUri(openIdProviderInfo.getTokenUrl())
-                    .jwkSetUri(openIdProviderInfo.getJwkSetUrl())
-                    .userInfoUri(openIdProviderInfo.getUserInfoUrl())
+                    .authorizationUri(openIdProviderConfig.getAuthorizationUrl())
+                    .tokenUri(openIdProviderConfig.getTokenUrl())
+                    .jwkSetUri(openIdProviderConfig.getJwkSetUrl())
+                    .userInfoUri(openIdProviderConfig.getUserInfoUrl())
                     .scope(Arrays.copyOf(scopes.toArray(), scopes.size(), String[].class))
-                    .redirectUri(openIdProviderInfo.getRedirectUrlTemplate())
-                    .clientId(openIdProviderInfo.getClientId())
-                    .clientSecret(openIdProviderInfo.getClientSecret())
-                    .clientName(openIdProviderInfo.getProviderId())
+                    .redirectUri(openIdProviderConfig.getRedirectUrlTemplate())
+                    .clientId(openIdProviderConfig.getClientId())
+                    .clientSecret(openIdProviderConfig.getClientSecret())
+                    .clientName(openIdProviderConfig.getProviderId())
                     .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                    .userNameAttributeName(openIdProviderInfo.getUserNameAttributeName())
+                    .userNameAttributeName(openIdProviderConfig.getUserNameAttributeName())
                     .build();
-                registrations.put(openIdProviderInfo.getProviderId(), client);
+                registrations.put(openIdProviderConfig.getProviderId(), client);
             }
         }
     }

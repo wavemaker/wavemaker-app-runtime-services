@@ -38,9 +38,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
-import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.app.security.models.jws.JWSConfiguration;
 import com.wavemaker.app.security.models.jws.JWSProviderConfiguration;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
+import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.provider.authoritiesprovider.JWSAuthoritiesProviderManager;
 
 public class JWSAuthenticationManagerResolver implements AuthenticationManagerResolver<String> {
 
@@ -49,6 +51,9 @@ public class JWSAuthenticationManagerResolver implements AuthenticationManagerRe
 
     @Autowired
     private JWSConfiguration jwsConfiguration;
+
+    @Autowired
+    private JWSAuthoritiesProviderManager jwsAuthoritiesProviderManager;
 
     private final Map<String, AuthenticationManager> authenticationManagers = new ConcurrentHashMap<>();
 
@@ -80,7 +85,7 @@ public class JWSAuthenticationManagerResolver implements AuthenticationManagerRe
                     jwtAuthenticationConverter.setPrincipalClaimName(principalClaimName);
                     JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
                     jwtAuthenticationProvider.setJwtAuthenticationConverter(jwtAuthenticationConverter);
-                    return new JWSAuthenticationProvider(jwtAuthenticationProvider)::authenticate;
+                    return new WMDelegatingAuthenticationProvider(new JWSAuthenticationProvider(jwtAuthenticationProvider), "JWS")::authenticate;
                 });
         }
         return null;
@@ -99,7 +104,7 @@ public class JWSAuthenticationManagerResolver implements AuthenticationManagerRe
                 return jwtGrantedAuthoritiesConverter;
             } else if (Objects.equals(jwsRoleProvider, "Database")) {
                 String principalClaimName = jwsProviderConfiguration.getPrincipalClaimName();
-                AuthoritiesProvider authoritiesProvider = (AuthoritiesProvider) applicationContext.getBean(jwsProviderId + "JWSAuthoritiesProvider");
+                AuthoritiesProvider authoritiesProvider = jwsAuthoritiesProviderManager.getAuthoritiesProvider(jwsProviderId);
                 return new JWSDatabaseGrantedAuthoritiesConverter(principalClaimName, authoritiesProvider);
             } else {
                 return new JwtGrantedAuthoritiesConverter();

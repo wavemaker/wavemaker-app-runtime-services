@@ -34,8 +34,8 @@ public class CASSecurityProviderCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(environment);
-        if (activeProviders.contains(CAS_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(environment);
+        if (activeProviderTypes.contains(CAS_PROVIDER)) {
             logger.info("Initializing CAS beans as CAS is selected as active security provider");
             return true;
         }

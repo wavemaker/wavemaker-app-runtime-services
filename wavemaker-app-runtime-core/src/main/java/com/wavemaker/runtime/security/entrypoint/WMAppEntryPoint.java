@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2022-2023 WaveMaker, Inc.
+ * Copyright (C) 2024-2025 WaveMaker, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.wavemaker.runtime.security.entrypoint;
 
-/**
- * Created by srujant on 2/8/18.
- */
-public interface FormLoginEntryPoint extends WMAppEntryPoint {
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+public interface WMAppEntryPoint extends AuthenticationEntryPoint {
 }

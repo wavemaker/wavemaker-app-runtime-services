@@ -15,6 +15,7 @@
 package com.wavemaker.runtime.security.provider.cas.handler;
 
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,11 +34,13 @@ public class WMCasAuthenticationSuccessHandler implements WMAuthenticationSucces
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) {
-        CasAuthenticationToken casAuthentication = (CasAuthenticationToken) authentication.getAuthenticationSource();
-        Map<String, Object> attributes = casAuthentication.getAssertion().getPrincipal().getAttributes();
-        logger.debug("Cas authentication user attributes : {}", attributes);
-        attributes.forEach((key, value) -> {
-            authentication.addAttribute(key, value, Attribute.AttributeScope.ALL);
-        });
+        if (Objects.equals(authentication.getProviderType(), "CAS")) {
+            CasAuthenticationToken casAuthentication = (CasAuthenticationToken) authentication.getAuthenticationSource();
+            Map<String, Object> attributes = casAuthentication.getAssertion().getPrincipal().getAttributes();
+            logger.debug("Cas authentication user attributes : {}", attributes);
+            attributes.forEach((key, value) -> {
+                authentication.addAttribute(key, value, Attribute.AttributeScope.ALL);
+            });
+        }
     }
 }

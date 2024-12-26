@@ -18,26 +18,22 @@ package com.wavemaker.runtime.security.provider.demo;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 
 import com.wavemaker.runtime.security.DemoUserDetailsManager;
 import com.wavemaker.runtime.security.WMUser;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.demo.model.DemoConfig;
 
@@ -45,13 +41,6 @@ import com.wavemaker.runtime.security.provider.demo.model.DemoConfig;
 @EnableConfigurationProperties
 @Conditional({SecurityEnabledCondition.class, DemoSecurityProviderCondition.class})
 public class DemoSecurityProviderConfiguration {
-
-    @Autowired(required = false)
-    @Lazy
-    private PersistentTokenBasedRememberMeServices rememberMeServices;
-
-    @Value("${security.general.rememberMe.enabled:false}")
-    private boolean rememberMeEnabled;
 
     @Bean(name = "demoConfig")
     @ConfigurationProperties(prefix = "security.providers.demo")
@@ -81,17 +70,10 @@ public class DemoSecurityProviderConfiguration {
         return daoAuthenticationProvider;
     }
 
-    @Bean(name = "logoutFilter")
-    public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler) {
-        LogoutFilter logoutFilter;
-        if (rememberMeEnabled) {
-            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
-        } else {
-            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
-        }
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
+    @Bean(name = "databaseDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.DEMO_ORDER)
+    public WMDelegatingAuthenticationProvider databaseDelegatingAuthenticationProvider(AuthenticationProvider demoAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(demoAuthenticationProvider, "DEMO");
     }
 }
 

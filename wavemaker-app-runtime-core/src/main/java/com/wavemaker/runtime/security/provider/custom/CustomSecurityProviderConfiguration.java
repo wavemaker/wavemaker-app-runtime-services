@@ -21,13 +21,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.wavemaker.runtime.security.WMCustomAuthenticationManager;
 import com.wavemaker.runtime.security.WMCustomAuthenticationProvider;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 
 @Configuration
@@ -45,18 +45,16 @@ public class CustomSecurityProviderConfiguration {
         return wmCustomAuthenticationProvider;
     }
 
+    @Bean(name = "customDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.CUSTOM_ORDER)
+    public WMDelegatingAuthenticationProvider customDelegatingAuthenticationProvider(AuthenticationProvider wmCustomAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(wmCustomAuthenticationProvider, "CUSTOM");
+    }
+
     @Bean(name = "wmCustomAuthenticationManager")
     public WMCustomAuthenticationManager wmCustomAuthenticationManager()
         throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Object o = Class.forName(customAuthenticationManagerClass).getDeclaredConstructor().newInstance();
         return (WMCustomAuthenticationManager) o;
-    }
-
-    @Bean(name = "logoutFilter")
-    public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler) {
-        LogoutFilter logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
     }
 }

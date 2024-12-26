@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -28,6 +28,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
+import com.wavemaker.runtime.security.provider.authoritiesprovider.OpenidAuthoritiesProviderManager;
 
 /**
  * Loads authorities associated with the authenticated user, using {@link AuthoritiesProvider} class.
@@ -36,13 +37,16 @@ import com.wavemaker.runtime.security.core.AuthoritiesProvider;
  */
 public class OpenIdUserService extends OidcUserService {
 
-    @Autowired(required = false)
-    @Qualifier("openIdAuthoritiesProvider")
-    private AuthoritiesProvider authoritiesProvider;
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private OpenidAuthoritiesProviderManager openidAuthoritiesProviderManager;
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
+        AuthoritiesProvider authoritiesProvider = getAuthoritiesProvider(userRequest.getClientRegistration().getRegistrationId());
         if (authoritiesProvider != null) {
             OpenIdAuthenticationContext openIdAuthenticationContext = new OpenIdAuthenticationContext(oidcUser.getName(), oidcUser);
             List<GrantedAuthority> grantedAuthorities = authoritiesProvider.loadAuthorities(openIdAuthenticationContext);
@@ -57,6 +61,16 @@ public class OpenIdUserService extends OidcUserService {
             }
         }
         return oidcUser;
+    }
+
+    private AuthoritiesProvider getAuthoritiesProvider(String providerId) {
+        boolean roleMappingEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.openId." + providerId +
+            ".roleMappingEnabled", Boolean.class));
+        String roleProvider = environment.getProperty("security.providers.openId." + providerId + ".roleProvider");
+        if (roleMappingEnabled) {
+            return this.openidAuthoritiesProviderManager.getAuthoritiesProvider(providerId, roleProvider);
+        }
+        return null;
     }
 
 }

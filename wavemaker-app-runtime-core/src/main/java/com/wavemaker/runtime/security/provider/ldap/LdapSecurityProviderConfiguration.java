@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.AbstractContextSource;
@@ -43,14 +43,12 @@ import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsService;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.ldap.LdapProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -59,10 +57,6 @@ import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingC
 @Configuration
 @Conditional({SecurityEnabledCondition.class, LdapSecurityProviderCondition.class})
 public class LdapSecurityProviderConfiguration {
-
-    @Autowired(required = false)
-    @Lazy
-    private PersistentTokenBasedRememberMeServices rememberMeServices;
 
     @Autowired
     private Environment environment;
@@ -144,6 +138,12 @@ public class LdapSecurityProviderConfiguration {
         return ldapAuthenticationProvider;
     }
 
+    @Bean(name = "ldapDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.LDAP_ORDER)
+    public WMDelegatingAuthenticationProvider ldapDelegatingAuthenticationProvider(AuthenticationProvider ldapAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(ldapAuthenticationProvider, "LDAP");
+    }
+
     @Bean(name = "authoritiesMapper")
     public GrantedAuthoritiesMapper authoritiesMapper() {
         SimpleAuthorityMapper simpleAuthorityMapper = new SimpleAuthorityMapper();
@@ -161,18 +161,5 @@ public class LdapSecurityProviderConfiguration {
     @Bean(name = "LdapProviderConfig")
     public LdapProviderConfig ldapProviderConfig() {
         return new LdapProviderConfig();
-    }
-
-    @Bean(name = "logoutFilter")
-    public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler) {
-        LogoutFilter logoutFilter;
-        if (environment.getProperty("security.general.rememberMe.enabled", Boolean.class, false)) {
-            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
-        } else {
-            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
-        }
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
     }
 }

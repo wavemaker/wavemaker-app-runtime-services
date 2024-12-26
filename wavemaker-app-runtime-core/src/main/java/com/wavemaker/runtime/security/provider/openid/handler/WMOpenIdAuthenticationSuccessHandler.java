@@ -15,6 +15,7 @@
 package com.wavemaker.runtime.security.provider.openid.handler;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,10 +25,10 @@ import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuth
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
-import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
+import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 
 /**
  * Created by srujant on 13/11/18.
@@ -35,15 +36,20 @@ import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 public class WMOpenIdAuthenticationSuccessHandler implements WMAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
-        OAuth2LoginAuthenticationToken oAuth2LoginAuthenticationToken = (OAuth2LoginAuthenticationToken) authentication.getAuthenticationSource();
-        OidcUser oidcUser = (OidcUser) oAuth2LoginAuthenticationToken.getPrincipal();
-        oidcUser.getClaims().entrySet().stream().forEach(entry -> {
-            authentication.addAttribute(entry.getKey(), entry.getValue(), Attribute.AttributeScope.ALL);
-        });
-        authentication.addAttribute(OpenIdConstants.ID_TOKEN_VALUE, oidcUser.getIdToken().getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
-        OAuth2AccessToken accessToken = oAuth2LoginAuthenticationToken.getAccessToken();
-        if (accessToken != null) {
-            authentication.addAttribute(OpenIdConstants.ACCESS_TOKEN_VALUE, accessToken.getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
+        if (Objects.equals(authentication.getProviderType(), "OPENID")) {
+            OAuth2LoginAuthenticationToken oAuth2LoginAuthenticationToken = (OAuth2LoginAuthenticationToken) authentication.getAuthenticationSource();
+            OidcUser oidcUser = (OidcUser) oAuth2LoginAuthenticationToken.getPrincipal();
+            oidcUser.getClaims().entrySet().stream().forEach(entry -> {
+                authentication.addAttribute(entry.getKey(), entry.getValue(), Attribute.AttributeScope.ALL);
+            });
+            String[] authenticationRequestSplit = request.getServletPath().split("/");
+            String openIdProvider = authenticationRequestSplit[authenticationRequestSplit.length - 1];
+            authentication.addAttribute("providerId", openIdProvider, Attribute.AttributeScope.SERVER_ONLY);
+            authentication.addAttribute(OpenIdConstants.ID_TOKEN_VALUE, oidcUser.getIdToken().getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
+            OAuth2AccessToken accessToken = oAuth2LoginAuthenticationToken.getAccessToken();
+            if (accessToken != null) {
+                authentication.addAttribute(OpenIdConstants.ACCESS_TOKEN_VALUE, accessToken.getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
+            }
         }
     }
 }

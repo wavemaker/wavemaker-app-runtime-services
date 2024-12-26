@@ -17,7 +17,6 @@ package com.wavemaker.runtime.security.rememberme.config;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +25,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.DEMO_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.LDAP_PROVIDER;
 
 public class RememberMeConfigCondition implements Condition {
 
@@ -40,9 +36,9 @@ public class RememberMeConfigCondition implements Condition {
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
         boolean rememberMeEnabled = environment.getProperty("security.general.rememberMe.enabled", Boolean.class);
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(environment);
-        if (rememberMeEnabled && Stream.of(DEMO_PROVIDER, DATABASE_PROVIDER, LDAP_PROVIDER)
-            .anyMatch(s -> Objects.requireNonNull(activeProviders).contains(s))) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(environment);
+        if (rememberMeEnabled && SecurityProviders.getRememberMeSupportedProviders()
+            .anyMatch(s -> Objects.requireNonNull(activeProviderTypes).contains(s.getProviderType()))) {
             logger.info("Initializing RememberMeConfiguration beans as rememberMe is enabled");
             return true;
         }

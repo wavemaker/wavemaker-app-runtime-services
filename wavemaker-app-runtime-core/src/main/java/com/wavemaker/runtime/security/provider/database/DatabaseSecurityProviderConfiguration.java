@@ -18,26 +18,23 @@ package com.wavemaker.runtime.security.provider.database;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.database.DatabaseProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -50,19 +47,18 @@ public class DatabaseSecurityProviderConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired(required = false)
-    @Lazy
-    private PersistentTokenBasedRememberMeServices rememberMeServices;
-
-    @Value("${security.general.rememberMe.enabled:false}")
-    private boolean rememberMeEnabled;
-
     @Bean(name = "databaseAuthenticationProvider")
     public AuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(databaseUserDetailsService(databaseProviderConfig()));
         authenticationProvider.setPasswordEncoder(noOpPasswordEncoder());
         return authenticationProvider;
+    }
+
+    @Bean(name = "databaseDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.DATABASE_ORDER)
+    public WMDelegatingAuthenticationProvider databaseDelegatingAuthenticationProvider(AuthenticationProvider databaseAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(databaseAuthenticationProvider, "DATABASE");
     }
 
     @Bean(name = "passwordEncoder")
@@ -104,18 +100,5 @@ public class DatabaseSecurityProviderConfiguration {
     @Bean(name = "databaseProviderConfig")
     public DatabaseProviderConfig databaseProviderConfig() {
         return new DatabaseProviderConfig();
-    }
-
-    @Bean(name = "logoutFilter")
-    public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler) {
-        LogoutFilter logoutFilter;
-        if (rememberMeEnabled) {
-            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler, rememberMeServices);
-        } else {
-            logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
-        }
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
     }
 }

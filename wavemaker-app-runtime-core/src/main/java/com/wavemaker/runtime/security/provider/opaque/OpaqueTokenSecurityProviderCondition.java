@@ -32,8 +32,8 @@ public class OpaqueTokenSecurityProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (activeProviders.contains(OPAQUE_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(OPAQUE_PROVIDER)) {
             logger.info("Initializing OPAQUE beans as OPAQUE is selected as active security provider");
             return true;
         }

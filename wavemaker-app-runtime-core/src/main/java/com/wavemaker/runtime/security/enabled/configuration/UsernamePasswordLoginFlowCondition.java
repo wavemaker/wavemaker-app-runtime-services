@@ -17,7 +17,6 @@ package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,23 +24,18 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.AD_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.CUSTOM_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.DEMO_PROVIDER;
-import static com.wavemaker.runtime.security.constants.SecurityConstants.LDAP_PROVIDER;
 
 public class UsernamePasswordLoginFlowCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(UsernamePasswordLoginFlowCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(context.getEnvironment());
-        if (Stream.of(DEMO_PROVIDER, DATABASE_PROVIDER, LDAP_PROVIDER, AD_PROVIDER, CUSTOM_PROVIDER)
-            .anyMatch(s -> Objects.requireNonNull(activeProviders).contains(s))) {
-            logger.info("Initializing UsernamePasswordAuthFlowConfiguration beans for {} active provider", activeProviders);
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
+        if (SecurityProviders.getUsernamePasswordFlowProviders()
+            .anyMatch(s -> Objects.requireNonNull(activeProviderTypes).contains(s.getProviderType()))) {
+            logger.info("Initializing UsernamePasswordAuthFlowConfiguration beans for {} active providers", activeProviderTypes);
             return true;
         }
         return false;

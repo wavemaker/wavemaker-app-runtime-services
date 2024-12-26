@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -29,13 +30,12 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.wavemaker.app.security.models.config.ad.ActiveDirectoryProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
+import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
+import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -55,6 +55,12 @@ public class ActiveDirectorySecurityProviderConfiguration {
         activeDirectoryAuthenticationProvider.setUserDetailsContextMapper(userDetailsContextMapper());
         activeDirectoryAuthenticationProvider.setAuthoritiesPopulator(activeDirectoryAuthoritiesPopulator);
         return activeDirectoryAuthenticationProvider;
+    }
+
+    @Bean("adDelegatingAuthenticationProvider")
+    @Order(ProviderOrder.AD_ORDER)
+    public WMDelegatingAuthenticationProvider adDelegatingAuthenticationProvider(AuthenticationProvider adAuthProvider) {
+        return new WMDelegatingAuthenticationProvider(adAuthProvider, "AD");
     }
 
     @Bean(name = "authoritiesMapper")
@@ -117,13 +123,5 @@ public class ActiveDirectorySecurityProviderConfiguration {
     @Bean(name = "activeDirectoryProviderConfig")
     public ActiveDirectoryProviderConfig activeDirectoryProviderConfig() {
         return new ActiveDirectoryProviderConfig();
-    }
-
-    @Bean(name = "logoutFilter")
-    public LogoutFilter logoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler securityContextLogoutHandler,
-                                     LogoutHandler wmCsrfLogoutHandler) {
-        LogoutFilter logoutFilter = new LogoutFilter(logoutSuccessHandler, securityContextLogoutHandler, wmCsrfLogoutHandler);
-        logoutFilter.setFilterProcessesUrl("/j_spring_security_logout");
-        return logoutFilter;
     }
 }

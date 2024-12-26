@@ -34,8 +34,8 @@ public class DatabaseSecurityProviderCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        Set<String> activeProviders = SecurityPropertyUtils.getActiveProviders(environment);
-        if (activeProviders.contains(DATABASE_PROVIDER)) {
+        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(environment);
+        if (activeProviderTypes.contains(DATABASE_PROVIDER)) {
             logger.info("Initializing DATABASE beans as DATABASE is selected as active security provider");
             return true;
         }
