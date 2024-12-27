@@ -36,6 +36,7 @@ import com.wavemaker.app.security.models.config.ad.ActiveDirectoryProviderConfig
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.constants.ProviderOrder;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -60,7 +61,7 @@ public class ActiveDirectorySecurityProviderConfiguration {
     @Bean("adDelegatingAuthenticationProvider")
     @Order(ProviderOrder.AD_ORDER)
     public WMDelegatingAuthenticationProvider adDelegatingAuthenticationProvider(AuthenticationProvider adAuthProvider) {
-        return new WMDelegatingAuthenticationProvider(adAuthProvider, "AD");
+        return new WMDelegatingAuthenticationProvider(adAuthProvider, SecurityProviders.AD);
     }
 
     @Bean(name = "authoritiesMapper")

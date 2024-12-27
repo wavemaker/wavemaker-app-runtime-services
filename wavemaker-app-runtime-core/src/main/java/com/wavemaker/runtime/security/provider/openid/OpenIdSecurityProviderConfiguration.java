@@ -68,6 +68,7 @@ import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthent
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
@@ -259,7 +260,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Bean(name = "openIdDelegatingAuthenticationProvider")
     @Order(ProviderOrder.OPENID_ORDER)
     public WMDelegatingAuthenticationProvider openIdDelegatingAuthenticationProvider(AuthenticationProvider openIdAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(openIdAuthenticationProvider, "OPENID");
+        return new WMDelegatingAuthenticationProvider(openIdAuthenticationProvider, SecurityProviders.OPENID);
     }
 
     @Bean(name = "openIdUserService")

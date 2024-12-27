@@ -28,6 +28,7 @@ import com.wavemaker.runtime.security.WMCustomAuthenticationManager;
 import com.wavemaker.runtime.security.WMCustomAuthenticationProvider;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.constants.ProviderOrder;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 
 @Configuration
@@ -48,7 +49,7 @@ public class CustomSecurityProviderConfiguration {
     @Bean(name = "customDelegatingAuthenticationProvider")
     @Order(ProviderOrder.CUSTOM_ORDER)
     public WMDelegatingAuthenticationProvider customDelegatingAuthenticationProvider(AuthenticationProvider wmCustomAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(wmCustomAuthenticationProvider, "CUSTOM");
+        return new WMDelegatingAuthenticationProvider(wmCustomAuthenticationProvider, SecurityProviders.CUSTOM);
     }
 
     @Bean(name = "wmCustomAuthenticationManager")

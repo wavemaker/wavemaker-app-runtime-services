@@ -26,6 +26,7 @@ import org.springframework.security.cas.authentication.CasAuthenticationToken;
 
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 
 public class WMCasAuthenticationSuccessHandler implements WMAuthenticationSuccessHandler {
@@ -34,7 +35,7 @@ public class WMCasAuthenticationSuccessHandler implements WMAuthenticationSucces
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) {
-        if (Objects.equals(authentication.getProviderType(), "CAS")) {
+        if (Objects.equals(authentication.getProviderType(), SecurityProviders.CAS)) {
             CasAuthenticationToken casAuthentication = (CasAuthenticationToken) authentication.getAuthenticationSource();
             Map<String, Object> attributes = casAuthentication.getAssertion().getPrincipal().getAttributes();
             logger.debug("Cas authentication user attributes : {}", attributes);

@@ -35,6 +35,7 @@ import com.wavemaker.app.security.models.config.database.DatabaseProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.constants.ProviderOrder;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -58,7 +59,7 @@ public class DatabaseSecurityProviderConfiguration {
     @Bean(name = "databaseDelegatingAuthenticationProvider")
     @Order(ProviderOrder.DATABASE_ORDER)
     public WMDelegatingAuthenticationProvider databaseDelegatingAuthenticationProvider(AuthenticationProvider databaseAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(databaseAuthenticationProvider, "DATABASE");
+        return new WMDelegatingAuthenticationProvider(databaseAuthenticationProvider, SecurityProviders.DATABASE);
     }
 
     @Bean(name = "passwordEncoder")

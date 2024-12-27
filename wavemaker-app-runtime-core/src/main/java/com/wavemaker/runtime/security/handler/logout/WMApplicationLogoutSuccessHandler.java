@@ -27,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 
 public class WMApplicationLogoutSuccessHandler implements LogoutSuccessHandler {
 
@@ -34,8 +35,8 @@ public class WMApplicationLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        String providerType = ((WMAuthentication) authentication).getProviderType();
-        this.providerTypeVsLogoutSuccessHandler.get(providerType).onLogoutSuccess(request, response, authentication);
+        SecurityProviders securityProvider = ((WMAuthentication) authentication).getProviderType();
+        this.providerTypeVsLogoutSuccessHandler.get(securityProvider.getProviderType()).onLogoutSuccess(request, response, authentication);
     }
 
     public void registerLogoutSuccessHandler(String providerType, LogoutSuccessHandler logoutSuccessHandler) {

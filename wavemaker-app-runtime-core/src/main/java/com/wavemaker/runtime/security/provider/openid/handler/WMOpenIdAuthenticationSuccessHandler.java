@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 
@@ -36,7 +37,7 @@ import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
 public class WMOpenIdAuthenticationSuccessHandler implements WMAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
-        if (Objects.equals(authentication.getProviderType(), "OPENID")) {
+        if (Objects.equals(authentication.getProviderType(), SecurityProviders.OPENID)) {
             OAuth2LoginAuthenticationToken oAuth2LoginAuthenticationToken = (OAuth2LoginAuthenticationToken) authentication.getAuthenticationSource();
             OidcUser oidcUser = (OidcUser) oAuth2LoginAuthenticationToken.getPrincipal();
             oidcUser.getClaims().entrySet().stream().forEach(entry -> {

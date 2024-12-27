@@ -66,6 +66,7 @@ import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthent
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.constants.ProviderOrder;
 import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.NullAuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -160,7 +161,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @Bean(name = "casDelegatingAuthenticationProvider")
     @Order(ProviderOrder.CAS_ORDER)
     public WMDelegatingAuthenticationProvider casDelegatingAuthenticationProvider(AuthenticationProvider casAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(casAuthenticationProvider, "CAS");
+        return new WMDelegatingAuthenticationProvider(casAuthenticationProvider, SecurityProviders.CAS);
     }
 
     @Bean(name = "cas20ServiceTicketValidator")

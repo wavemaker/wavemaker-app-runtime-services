@@ -20,15 +20,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.filter.WMRequestResponseHolderFilter;
 
 public class WMDelegatingAuthenticationProvider implements AuthenticationProvider {
 
     private AuthenticationProvider delegate;
 
-    private String providerType;
+    private SecurityProviders providerType;
 
-    public WMDelegatingAuthenticationProvider(AuthenticationProvider authenticationProvider, String providerType) {
+    public WMDelegatingAuthenticationProvider(AuthenticationProvider authenticationProvider, SecurityProviders providerType) {
         this.delegate = authenticationProvider;
         this.providerType = providerType;
     }

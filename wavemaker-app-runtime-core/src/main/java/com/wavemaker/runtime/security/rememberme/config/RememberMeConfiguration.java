@@ -93,7 +93,7 @@ public class RememberMeConfiguration implements WMSecurityConfiguration {
 
     @Bean(name = "rememberMeDelegatingAuthenticationProvider")
     public WMDelegatingAuthenticationProvider rememberMeDelegatingAuthenticationProvider(AuthenticationProvider rememberMeAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(rememberMeAuthenticationProvider, "REMEMBER_ME");
+        return new WMDelegatingAuthenticationProvider(rememberMeAuthenticationProvider, null);
     }
 
     @Bean(name = "rememberMeRepository")

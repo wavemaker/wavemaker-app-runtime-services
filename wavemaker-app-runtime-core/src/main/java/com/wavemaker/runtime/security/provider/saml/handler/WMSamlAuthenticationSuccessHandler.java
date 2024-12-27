@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.saml.SAMLConstants;
 
@@ -34,7 +35,7 @@ import com.wavemaker.runtime.security.provider.saml.SAMLConstants;
 public class WMSamlAuthenticationSuccessHandler implements WMAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
-        if (Objects.equals(authentication.getProviderType(), "SAML")) {
+        if (Objects.equals(authentication.getProviderType(), SecurityProviders.SAML)) {
             Authentication samlAuthenticationToken = authentication.getAuthenticationSource();
             Object samlCredential = samlAuthenticationToken.getCredentials();
             authentication.addAttribute(SAMLConstants.SAML_CREDENTIALS, samlCredential, Attribute.AttributeScope.SERVER_ONLY);

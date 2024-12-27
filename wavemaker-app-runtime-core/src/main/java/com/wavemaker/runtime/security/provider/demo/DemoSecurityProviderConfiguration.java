@@ -34,6 +34,7 @@ import com.wavemaker.runtime.security.DemoUserDetailsManager;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.constants.ProviderOrder;
+import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.demo.model.DemoConfig;
 
@@ -73,7 +74,7 @@ public class DemoSecurityProviderConfiguration {
     @Bean(name = "databaseDelegatingAuthenticationProvider")
     @Order(ProviderOrder.DEMO_ORDER)
     public WMDelegatingAuthenticationProvider databaseDelegatingAuthenticationProvider(AuthenticationProvider demoAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(demoAuthenticationProvider, "DEMO");
+        return new WMDelegatingAuthenticationProvider(demoAuthenticationProvider, SecurityProviders.DEMO);
     }
 }
 
