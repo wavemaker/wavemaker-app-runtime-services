@@ -15,7 +15,6 @@
 
 package com.wavemaker.runtime.security.rememberme.config;
 
-import java.util.Objects;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 public class RememberMeConfigCondition implements Condition {
@@ -35,10 +34,9 @@ public class RememberMeConfigCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment environment = context.getEnvironment();
-        boolean rememberMeEnabled = environment.getProperty("security.general.rememberMe.enabled", Boolean.class);
-        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(environment);
-        if (rememberMeEnabled && SecurityProviders.getRememberMeSupportedProviders()
-            .anyMatch(s -> Objects.requireNonNull(activeProviderTypes).contains(s.getProviderType()))) {
+        boolean rememberMeEnabled = environment.getProperty("security.general.rememberMe.enabled", Boolean.class, false);
+        Set<AuthProviderType> activeProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(context.getEnvironment());
+        if (rememberMeEnabled && activeProviderTypes.stream().anyMatch(AuthProviderType::isRememberMeSupported)) {
             logger.info("Initializing RememberMeConfiguration beans as rememberMe is enabled");
             return true;
         }

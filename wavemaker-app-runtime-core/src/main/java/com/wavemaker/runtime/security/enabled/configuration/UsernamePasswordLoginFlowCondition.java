@@ -15,7 +15,6 @@
 
 package com.wavemaker.runtime.security.enabled.configuration;
 
-import java.util.Objects;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -24,7 +23,8 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.AuthenticationMode;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 public class UsernamePasswordLoginFlowCondition implements Condition {
@@ -32,11 +32,12 @@ public class UsernamePasswordLoginFlowCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
-        if (SecurityProviders.getUsernamePasswordFlowProviders()
-            .anyMatch(s -> Objects.requireNonNull(activeProviderTypes).contains(s.getProviderType()))) {
-            logger.info("Initializing UsernamePasswordAuthFlowConfiguration beans for {} active providers", activeProviderTypes);
-            return true;
+        Set<AuthProviderType> activeProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(context.getEnvironment());
+        for (AuthProviderType authProviderType : activeProviderTypes) {
+            if (authProviderType.getAuthenticationMode() == AuthenticationMode.USERNAME_PASSWORD) {
+                logger.info("Initializing UsernamePasswordAuthFlowConfiguration beans for {} active providers", activeProviderTypes);
+                return true;
+            }
         }
         return false;
     }

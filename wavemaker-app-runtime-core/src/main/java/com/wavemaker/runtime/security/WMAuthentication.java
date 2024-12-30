@@ -27,7 +27,7 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wavemaker.commons.util.EncodeUtils;
 import com.wavemaker.runtime.security.authority.SimpleGrantedAuthority;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.WMSecurityUtils;
 
 /**
@@ -41,7 +41,7 @@ public class WMAuthentication extends AbstractMutableAuthoritiesAuthenticationTo
     private String principal;
     private long loginTime;
     private String userId;
-    private SecurityProviders providerType;
+    private AuthProviderType authProviderType;
 
     @JsonIgnore
     private transient Authentication authenticationSource;
@@ -95,12 +95,12 @@ public class WMAuthentication extends AbstractMutableAuthoritiesAuthenticationTo
         this.loginTime = loginTime;
     }
 
-    public SecurityProviders getProviderType() {
-        return providerType;
+    public AuthProviderType getAuthProviderType() {
+        return authProviderType;
     }
 
-    public void setProviderType(SecurityProviders providerType) {
-        this.providerType = providerType;
+    public void setAuthProviderType(AuthProviderType authProviderType) {
+        this.authProviderType = authProviderType;
     }
 
     public void addAttribute(String key, Object value, Attribute.AttributeScope scope) {

@@ -15,7 +15,6 @@
 package com.wavemaker.runtime.security.provider.saml;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,7 +34,6 @@ import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.WMAuthentication;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
 
 /**
  * Created by ArjunSahasranam on 25/11/16.
@@ -58,9 +56,7 @@ public class BrowserDelegatingLogoutFilter extends LogoutFilter {
         if (requiresLogout(request, response)) {
             logger.info("Request for logout");
             WMAuthentication wmAuthentication = new WMAuthentication(SecurityContextHolder.getContext().getAuthentication());
-            if (HttpRequestUtils.isAjaxRequest(request) &&
-                SecurityProviders.getBrowserRedirectLogoutSupportedProviders().anyMatch(securityProviders ->
-                    Objects.equals(securityProviders.getProviderType(), wmAuthentication.getProviderType()))) {
+            if (HttpRequestUtils.isAjaxRequest(request) && wmAuthentication.getAuthProviderType().isBrowserRedirectLogout()) {
                 logger.info("Redirecting to the same request uri {}", request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(JSONUtils.toJSON(new StringWrapper(request.getRequestURI())));

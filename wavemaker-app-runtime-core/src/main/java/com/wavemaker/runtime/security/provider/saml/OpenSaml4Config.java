@@ -45,11 +45,11 @@ import org.springframework.security.saml2.provider.service.web.authentication.lo
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
-import com.wavemaker.runtime.security.constants.ProviderOrder;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.DefaultAuthenticationContext;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.ProviderOrder;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestResolver;
 import com.wavemaker.runtime.security.provider.saml.util.SamlUtils;
 
@@ -103,7 +103,7 @@ public class OpenSaml4Config {
     @Bean(name = "samlDelegatingAuthenticationProvider")
     @Order(ProviderOrder.SAML_ORDER)
     public WMDelegatingAuthenticationProvider samlDelegatingAuthenticationProvider(AuthenticationProvider samlAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(samlAuthenticationProvider, SecurityProviders.SAML);
+        return new WMDelegatingAuthenticationProvider(samlAuthenticationProvider, AuthProviderType.SAML);
     }
 
     private Converter<OpenSaml4AuthenticationProvider.ResponseToken, ? extends AbstractAuthenticationToken> customAuthenticationConverter() {

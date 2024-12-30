@@ -16,7 +16,7 @@
 package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 
@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.util.MultiValueMap;
 
 import com.wavemaker.app.security.models.LoginConfig;
 import com.wavemaker.app.security.models.LoginType;
@@ -34,7 +33,8 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProvider;
+import com.wavemaker.runtime.security.model.AuthenticationMode;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 @Configuration
@@ -71,16 +71,7 @@ public class SSOProviderConfiguration implements WMSecurityConfiguration {
     }
 
     private boolean isSingleSSOasActiveProvider() {
-        MultiValueMap<String, String> providerTypeVsProviderId = SecurityPropertyUtils.getProviderIdVsProviderType(environment);
-        if (providerTypeVsProviderId.size() == 1) {
-            for (Map.Entry<String, List<String>> entry : providerTypeVsProviderId.entrySet()) {
-                if (SecurityProviders.getSSOProviders().toList().contains(entry.getKey())) {
-                    return true;
-                }
-            }
-        } else {
-            return false;
-        }
-        return false;
+        Set<AuthProvider> authProviders = SecurityPropertyUtils.getAuthProviders(environment);
+        return authProviders.size() == 1 && authProviders.iterator().next().getAuthProviderType().getAuthenticationMode() == AuthenticationMode.SSO;
     }
 }

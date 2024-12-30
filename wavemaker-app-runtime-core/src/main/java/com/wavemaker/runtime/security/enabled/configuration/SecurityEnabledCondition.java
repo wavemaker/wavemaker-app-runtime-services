@@ -15,11 +15,15 @@
 
 package com.wavemaker.runtime.security.enabled.configuration;
 
+import java.util.Set;
+
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 public class SecurityEnabledCondition implements Condition {
@@ -28,7 +32,10 @@ public class SecurityEnabledCondition implements Condition {
         Environment environment = context.getEnvironment();
         boolean securityEnabled = Boolean.parseBoolean(environment.getProperty("security.enabled"));
         if (securityEnabled) {
-            SecurityPropertyUtils.validateActiveProviders(environment);
+            Set<AuthProviderType> activeAuthProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(environment);
+            if (activeAuthProviderTypes.isEmpty()) {
+                throw new WMRuntimeException("Active auth providers cannot be empty when security is enabled");
+            }
         }
         return securityEnabled;
     }

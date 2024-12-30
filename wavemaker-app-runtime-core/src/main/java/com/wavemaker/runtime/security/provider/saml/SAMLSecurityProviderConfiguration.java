@@ -68,6 +68,7 @@ import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.app.security.models.config.saml.SAMLConfig;
 import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
@@ -132,7 +133,7 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
 
     @PostConstruct
     public void init() {
-        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("SAML", saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver));
+        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(AuthProviderType.SAML, saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver));
     }
 
     @Override

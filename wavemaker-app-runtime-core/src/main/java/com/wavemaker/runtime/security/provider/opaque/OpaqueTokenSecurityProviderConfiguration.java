@@ -44,7 +44,7 @@ import com.wavemaker.app.security.models.config.opaque.OpaqueTokenProviderConfig
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -76,7 +76,7 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
 
     @Bean(name = "opaqueTokenDelegatingAuthenticationProvider")
     public WMDelegatingAuthenticationProvider opaqueTokenDelegatingAuthenticationProvider(AuthenticationProvider opaqueTokenAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(opaqueTokenAuthenticationProvider, SecurityProviders.OPAQUE_TOKEN);
+        return new WMDelegatingAuthenticationProvider(opaqueTokenAuthenticationProvider, AuthProviderType.OPAQUE_TOKEN);
     }
 
     @Bean(name = "opaqueAuthoritiesProvider")

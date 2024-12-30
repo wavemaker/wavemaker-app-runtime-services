@@ -23,17 +23,16 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.AD_PROVIDER;
 
 public class ActiveDirectorySecurityProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(ActiveDirectorySecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
-        if (activeProviderTypes.contains(AD_PROVIDER)) {
+        Set<AuthProviderType> activeProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(AuthProviderType.AD)) {
             logger.info("Initializing AD beans as AD is selected as active security provider");
             return true;
         }

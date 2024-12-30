@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 public class SAMLSecurityProviderCondition implements Condition {
@@ -31,8 +31,8 @@ public class SAMLSecurityProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
-        if (activeProviderTypes.contains(SecurityConstants.SAML_PROVIDER)) {
+        Set<AuthProviderType> activeProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(AuthProviderType.SAML)) {
             logger.info("Initializing SAML beans as SAML is selected as active security provider");
             return true;
         }

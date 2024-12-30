@@ -20,17 +20,9 @@ public class SecurityConstants {
     private SecurityConstants() {
     }
 
-    //providers
-    public static final String AD_PROVIDER = "AD";
-    public static final String LDAP_PROVIDER = "LDAP";
-    public static final String DATABASE_PROVIDER = "DATABASE";
-    public static final String DEMO_PROVIDER = "DEMO";
+    // role providers
     public static final String OPENID_PROVIDER = "OPENID";
     public static final String CAS_PROVIDER = "CAS";
-    public static final String SAML_PROVIDER = "SAML";
-    public static final String OPAQUE_PROVIDER = "OPAQUE_TOKEN";
-    public static final String JWS_PROVIDER = "JWS";
-    public static final String CUSTOM_PROVIDER = "CUSTOM";
 
     //session persistence
     public static final String IN_MEMORY = "in-memory";
@@ -42,8 +34,6 @@ public class SecurityConstants {
     public static final String DATABASE_ROLE_PROVIDER = "Database";
     public static final String ACTIVE_DIRECTORY_ROLE_PROVIDER = "Active Directory";
     public static final String LDAP_ROLE_PROVIDER = "LDAP";
-
-    public static final String PROVIDER_ID_SEPARATOR = ".";
 
     public static final String PROVIDER_TYPE = "providerType";
 }

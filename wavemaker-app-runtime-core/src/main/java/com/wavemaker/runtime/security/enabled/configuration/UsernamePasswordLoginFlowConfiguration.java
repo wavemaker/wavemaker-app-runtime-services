@@ -48,6 +48,8 @@ import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
 import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
 import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.AuthenticationMode;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, UsernamePasswordLoginFlowCondition.class})
@@ -86,11 +88,11 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
 
     @PostConstruct
     public void init() {
-        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("DEMO", logoutSuccessHandler());
-        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("DATABASE", logoutSuccessHandler());
-        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("LDAP", logoutSuccessHandler());
-        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("AD", logoutSuccessHandler());
-        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler("CUSTOM", logoutSuccessHandler());
+        for (AuthProviderType authProviderType : AuthProviderType.values()) {
+            if (authProviderType.getAuthenticationMode() == AuthenticationMode.USERNAME_PASSWORD) {
+                wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(authProviderType, logoutSuccessHandler());
+            }
+        }
     }
 
     @Bean(name = "usernamePasswordFlowRedirectStrategy")

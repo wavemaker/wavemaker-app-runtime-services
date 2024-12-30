@@ -27,19 +27,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.wavemaker.runtime.security.WMAuthentication;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 
 public class WMApplicationLogoutSuccessHandler implements LogoutSuccessHandler {
 
-    private Map<String, LogoutSuccessHandler> providerTypeVsLogoutSuccessHandler = new ConcurrentHashMap<>();
+    private final Map<AuthProviderType, LogoutSuccessHandler> providerTypeVsLogoutSuccessHandler = new ConcurrentHashMap<>();
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        SecurityProviders securityProvider = ((WMAuthentication) authentication).getProviderType();
-        this.providerTypeVsLogoutSuccessHandler.get(securityProvider.getProviderType()).onLogoutSuccess(request, response, authentication);
+        AuthProviderType authProviderType = ((WMAuthentication) authentication).getAuthProviderType();
+        LogoutSuccessHandler logoutSuccessHandler = this.providerTypeVsLogoutSuccessHandler.get(authProviderType);
+        if (logoutSuccessHandler != null) {
+            logoutSuccessHandler.onLogoutSuccess(request, response, authentication);
+        }
     }
 
-    public void registerLogoutSuccessHandler(String providerType, LogoutSuccessHandler logoutSuccessHandler) {
-        this.providerTypeVsLogoutSuccessHandler.put(providerType, logoutSuccessHandler);
+    public void registerLogoutSuccessHandler(AuthProviderType authProviderType, LogoutSuccessHandler logoutSuccessHandler) {
+        this.providerTypeVsLogoutSuccessHandler.put(authProviderType, logoutSuccessHandler);
     }
 }

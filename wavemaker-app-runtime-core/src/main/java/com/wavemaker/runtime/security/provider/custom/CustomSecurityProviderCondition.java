@@ -21,12 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.CUSTOM_PROVIDER;
 
 public class CustomSecurityProviderCondition implements Condition {
 
@@ -34,9 +32,8 @@ public class CustomSecurityProviderCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Environment environment = context.getEnvironment();
-        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(environment);
-        if (activeProviderTypes.contains(CUSTOM_PROVIDER)) {
+        Set<AuthProviderType> activeProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(AuthProviderType.CUSTOM)) {
             logger.info("Initializing CUSTOM beans as CUSTOM is selected as active security provider");
             return true;
         }

@@ -35,8 +35,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.wavemaker.app.security.models.config.ad.ActiveDirectoryProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
-import com.wavemaker.runtime.security.constants.ProviderOrder;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.ProviderOrder;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -61,7 +61,7 @@ public class ActiveDirectorySecurityProviderConfiguration {
     @Bean("adDelegatingAuthenticationProvider")
     @Order(ProviderOrder.AD_ORDER)
     public WMDelegatingAuthenticationProvider adDelegatingAuthenticationProvider(AuthenticationProvider adAuthProvider) {
-        return new WMDelegatingAuthenticationProvider(adAuthProvider, SecurityProviders.AD);
+        return new WMDelegatingAuthenticationProvider(adAuthProvider, AuthProviderType.AD);
     }
 
     @Bean(name = "authoritiesMapper")

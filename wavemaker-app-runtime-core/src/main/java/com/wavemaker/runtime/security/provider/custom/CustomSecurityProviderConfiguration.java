@@ -27,9 +27,9 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import com.wavemaker.runtime.security.WMCustomAuthenticationManager;
 import com.wavemaker.runtime.security.WMCustomAuthenticationProvider;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
-import com.wavemaker.runtime.security.constants.ProviderOrder;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.ProviderOrder;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, CustomSecurityProviderCondition.class})
@@ -49,7 +49,7 @@ public class CustomSecurityProviderConfiguration {
     @Bean(name = "customDelegatingAuthenticationProvider")
     @Order(ProviderOrder.CUSTOM_ORDER)
     public WMDelegatingAuthenticationProvider customDelegatingAuthenticationProvider(AuthenticationProvider wmCustomAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(wmCustomAuthenticationProvider, SecurityProviders.CUSTOM);
+        return new WMDelegatingAuthenticationProvider(wmCustomAuthenticationProvider, AuthProviderType.CUSTOM);
     }
 
     @Bean(name = "wmCustomAuthenticationManager")

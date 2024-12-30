@@ -23,17 +23,16 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.LDAP_PROVIDER;
 
 public class LdapSecurityProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(LdapSecurityProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
-        if (activeProviderTypes.contains(LDAP_PROVIDER)) {
+        Set<AuthProviderType> activeProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(AuthProviderType.LDAP)) {
             logger.info("Initializing LDAP beans as LDAP is selected as active security provider");
             return true;
         }

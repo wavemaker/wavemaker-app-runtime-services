@@ -20,25 +20,25 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import com.wavemaker.runtime.security.constants.SecurityConstants;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.filter.WMRequestResponseHolderFilter;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 
 public class WMDelegatingAuthenticationProvider implements AuthenticationProvider {
 
-    private AuthenticationProvider delegate;
+    private final AuthenticationProvider delegate;
 
-    private SecurityProviders providerType;
+    private final AuthProviderType authProviderType;
 
-    public WMDelegatingAuthenticationProvider(AuthenticationProvider authenticationProvider, SecurityProviders providerType) {
+    public WMDelegatingAuthenticationProvider(AuthenticationProvider authenticationProvider, AuthProviderType authProviderType) {
         this.delegate = authenticationProvider;
-        this.providerType = providerType;
+        this.authProviderType = authProviderType;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Authentication authenticate = delegate.authenticate(authentication);
         if (authenticate != null) {
-            WMRequestResponseHolderFilter.getCurrentThreadHttpServletRequest().setAttribute(SecurityConstants.PROVIDER_TYPE, providerType);
+            WMRequestResponseHolderFilter.getCurrentThreadHttpServletRequest().setAttribute(SecurityConstants.PROVIDER_TYPE, authProviderType);
         }
         return authenticate;
     }

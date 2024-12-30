@@ -48,10 +48,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.wavemaker.app.security.models.config.ldap.LdapProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
-import com.wavemaker.runtime.security.constants.ProviderOrder;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.ProviderOrder;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 
@@ -142,7 +142,7 @@ public class LdapSecurityProviderConfiguration {
     @Bean(name = "ldapDelegatingAuthenticationProvider")
     @Order(ProviderOrder.LDAP_ORDER)
     public WMDelegatingAuthenticationProvider ldapDelegatingAuthenticationProvider(AuthenticationProvider ldapAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(ldapAuthenticationProvider, SecurityProviders.LDAP);
+        return new WMDelegatingAuthenticationProvider(ldapAuthenticationProvider, AuthProviderType.LDAP);
     }
 
     @Bean(name = "authoritiesMapper")

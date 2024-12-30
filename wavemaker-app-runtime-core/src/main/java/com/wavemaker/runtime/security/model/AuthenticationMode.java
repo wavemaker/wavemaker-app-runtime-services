@@ -13,16 +13,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.runtime.security.constants;
+package com.wavemaker.runtime.security.model;
 
-public class ProviderOrder {
+public enum AuthenticationMode {
 
-    public static final int DEMO_ORDER = 10;
-    public static final int DATABASE_ORDER = 20;
-    public static final int LDAP_ORDER = 30;
-    public static final int AD_ORDER = 40;
-    public static final int CUSTOM_ORDER = 50;
-    public static final int OPENID_ORDER = 60;
-    public static final int SAML_ORDER = 70;
-    public static final int CAS_ORDER = 80;
+    USERNAME_PASSWORD,
+
+    SSO,
+
+    PRE_AUTHENTICATED;
 }

@@ -23,17 +23,16 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
-
-import static com.wavemaker.runtime.security.constants.SecurityConstants.JWS_PROVIDER;
 
 public class JWSProviderCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(JWSProviderCondition.class);
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        Set<String> activeProviderTypes = SecurityPropertyUtils.getActiveProviderTypes(context.getEnvironment());
-        if (activeProviderTypes.contains(JWS_PROVIDER)) {
+        Set<AuthProviderType> activeProviderTypes = SecurityPropertyUtils.getActiveAuthProviderTypes(context.getEnvironment());
+        if (activeProviderTypes.contains(AuthProviderType.JWS)) {
             logger.info("Initializing JWS beans as JWS is selected as active security provider");
             return true;
         }

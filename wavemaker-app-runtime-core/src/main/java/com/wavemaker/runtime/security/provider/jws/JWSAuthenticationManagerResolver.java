@@ -41,7 +41,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import com.wavemaker.app.security.models.jws.JWSConfiguration;
 import com.wavemaker.app.security.models.jws.JWSProviderConfiguration;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.provider.authoritiesprovider.JWSAuthoritiesProviderManager;
 
@@ -86,7 +86,7 @@ public class JWSAuthenticationManagerResolver implements AuthenticationManagerRe
                     jwtAuthenticationConverter.setPrincipalClaimName(principalClaimName);
                     JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
                     jwtAuthenticationProvider.setJwtAuthenticationConverter(jwtAuthenticationConverter);
-                    return new WMDelegatingAuthenticationProvider(new JWSAuthenticationProvider(jwtAuthenticationProvider), SecurityProviders.JWS)::authenticate;
+                    return new WMDelegatingAuthenticationProvider(new JWSAuthenticationProvider(jwtAuthenticationProvider), AuthProviderType.JWS)::authenticate;
                 });
         }
         return null;

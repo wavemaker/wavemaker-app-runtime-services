@@ -64,9 +64,8 @@ import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.constants.ProviderOrder;
-import com.wavemaker.runtime.security.constants.SecurityConstants;
-import com.wavemaker.runtime.security.constants.SecurityProviders;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.ProviderOrder;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.NullAuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -116,7 +115,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
 
     @PostConstruct
     public void init() {
-        this.wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(SecurityConstants.CAS_PROVIDER, logoutSuccessHandler());
+        this.wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(AuthProviderType.CAS, logoutSuccessHandler());
     }
 
     @Override
@@ -161,7 +160,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @Bean(name = "casDelegatingAuthenticationProvider")
     @Order(ProviderOrder.CAS_ORDER)
     public WMDelegatingAuthenticationProvider casDelegatingAuthenticationProvider(AuthenticationProvider casAuthenticationProvider) {
-        return new WMDelegatingAuthenticationProvider(casAuthenticationProvider, SecurityProviders.CAS);
+        return new WMDelegatingAuthenticationProvider(casAuthenticationProvider, AuthProviderType.CAS);
     }
 
     @Bean(name = "cas20ServiceTicketValidator")
