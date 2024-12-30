@@ -55,7 +55,7 @@ public class BrowserDelegatingLogoutFilter extends LogoutFilter {
         HttpServletResponse response = (HttpServletResponse) res;
         if (requiresLogout(request, response)) {
             logger.info("Request for logout");
-            WMAuthentication wmAuthentication = new WMAuthentication(SecurityContextHolder.getContext().getAuthentication());
+            WMAuthentication wmAuthentication = (WMAuthentication) SecurityContextHolder.getContext().getAuthentication();
             if (HttpRequestUtils.isAjaxRequest(request) && wmAuthentication.getAuthProviderType().isBrowserRedirectLogout()) {
                 logger.info("Redirecting to the same request uri {}", request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_OK);
