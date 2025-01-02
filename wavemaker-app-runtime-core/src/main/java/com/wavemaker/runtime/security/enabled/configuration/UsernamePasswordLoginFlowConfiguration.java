@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -46,14 +48,20 @@ import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.WMAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
 import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.model.AuthProvider;
 import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.model.AuthenticationMode;
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, UsernamePasswordLoginFlowCondition.class})
 public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfiguration {
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     @Lazy
@@ -86,11 +94,20 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     @Lazy
     private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
 
+    @Autowired
+    @Qualifier("appAuthenticationEntryPoint")
+    @Lazy
+    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+
     @PostConstruct
     public void init() {
         for (AuthProviderType authProviderType : AuthProviderType.values()) {
             if (authProviderType.getAuthenticationMode() == AuthenticationMode.USERNAME_PASSWORD) {
                 wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(authProviderType, logoutSuccessHandler());
+                Set<AuthProvider> authProviders = SecurityPropertyUtils.getAuthProviderForType(environment, authProviderType);
+                for (AuthProvider authProvider : authProviders) {
+                    appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, wmSecAuthEntryPoint());
+                }
             }
         }
     }

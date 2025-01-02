@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security.provider.cas;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
@@ -64,22 +65,24 @@ import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.model.AuthProviderType;
-import com.wavemaker.runtime.security.model.ProviderOrder;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.NullAuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.model.AuthProvider;
+import com.wavemaker.runtime.security.model.AuthProviderType;
+import com.wavemaker.runtime.security.model.ProviderOrder;
 import com.wavemaker.runtime.security.provider.cas.handler.WMCasAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, CASSecurityProviderCondition.class})
 public class CASSecurityProviderConfiguration implements WMSecurityConfiguration {
-
     @Autowired
     private Environment environment;
 
@@ -113,9 +116,18 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     @Qualifier("logoutSuccessHandler")
     private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
 
+    @Autowired
+    @Qualifier("appAuthenticationEntryPoint")
+    @Lazy
+    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+
     @PostConstruct
     public void init() {
         this.wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(AuthProviderType.CAS, logoutSuccessHandler());
+        Set<AuthProvider> authProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.CAS);
+        for (AuthProvider authProvider : authProviders) {
+            this.appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, wmSecAuthEntryPoint());
+        }
     }
 
     @Override
@@ -211,10 +223,10 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "casEntryPoint")
-    public WMAppEntryPoint wmSecAuthEntryPoint(CASProviderConfig casProviderConfig) {
+    public WMAppEntryPoint wmSecAuthEntryPoint() {
         WMCASAuthenticationEntryPoint authenticationEntryPoint = new WMCASAuthenticationEntryPoint();
-        authenticationEntryPoint.setServiceProperties(casServiceProperties(casProviderConfig));
-        authenticationEntryPoint.setLoginUrl(casProviderConfig.getLoginUrl());
+        authenticationEntryPoint.setServiceProperties(casServiceProperties(casProviderConfig()));
+        authenticationEntryPoint.setLoginUrl(casProviderConfig().getLoginUrl());
         return authenticationEntryPoint;
     }
 

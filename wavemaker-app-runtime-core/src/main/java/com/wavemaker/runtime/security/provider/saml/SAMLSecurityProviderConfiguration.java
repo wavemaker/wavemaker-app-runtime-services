@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -68,21 +70,27 @@ import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.app.security.models.config.saml.SAMLConfig;
 import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.model.AuthProvider;
+import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.roles.RuntimeDatabaseRoleMappingConfig;
 import com.wavemaker.runtime.security.provider.saml.handler.WMSamlAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSaml2LogoutRequestFilter;
 import com.wavemaker.runtime.security.provider.saml.logout.WMSamlRPInitiatedSuccessHandler;
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, SAMLSecurityProviderCondition.class})
 public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguration {
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private RelyingPartyRegistrationResolver relyingPartyRegistrationResolver;
@@ -131,9 +139,18 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     @Lazy
     private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
 
+    @Autowired
+    @Qualifier("appAuthenticationEntryPoint")
+    @Lazy
+    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+
     @PostConstruct
     public void init() {
         wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(AuthProviderType.SAML, saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver));
+        Set<AuthProvider> samlAuthProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.SAML);
+        for (AuthProvider authProvider : samlAuthProviders) {
+            this.appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, wmLoginUrlAuthenticationEntryPoint());
+        }
     }
 
     @Override

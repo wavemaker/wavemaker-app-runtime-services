@@ -69,8 +69,10 @@ import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthent
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
 import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.model.AuthProvider;
 import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.model.ProviderOrder;
 import com.wavemaker.runtime.security.provider.authoritiesprovider.OpenidAuthoritiesProviderManager;
@@ -112,20 +114,26 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Lazy
     private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
 
-    private Set<String> openIdActiveProviders;
+    @Autowired
+    @Qualifier("appAuthenticationEntryPoint")
+    @Lazy
+    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+
+    private Set<AuthProvider> openIdActiveProviders;
 
     @PostConstruct
     public void init() {
         DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
-        openIdActiveProviders = SecurityPropertyUtils.getProviderIds(environment, AuthProviderType.OPENID);
+        openIdActiveProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.OPENID);
 
-        openIdActiveProviders.forEach(providerId -> {
-            WMAppEntryPoint openIdAuthenticationEntryPoint = openIdAuthenticationEntryPoint(providerId);
-            String beanName = providerId + "OpenIdEntryPoint";
+        openIdActiveProviders.forEach(authProvider -> {
+            WMAppEntryPoint openIdAuthenticationEntryPoint = openIdAuthenticationEntryPoint(authProvider.getProviderId());
+            String beanName = authProvider.getProviderId() + "OpenIdEntryPoint";
             defaultListableBeanFactory.registerSingleton(beanName, openIdAuthenticationEntryPoint);
 
             //@PostConstruct is not being called so initializing bean
             defaultListableBeanFactory.initializeBean(openIdAuthenticationEntryPoint, beanName);
+            this.appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, openIdAuthenticationEntryPoint);
         });
 
         registerOpenidLogoutSuccessHandler();
@@ -204,7 +212,8 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Bean(name = "openIdProviderInfo")
     public List<OpenIdProviderConfig> openIdProviderInfoList() {
         List<OpenIdProviderConfig> openIdProviderInfoList = new ArrayList<>();
-        for (String providerId : openIdActiveProviders) {
+        for (AuthProvider authProvider : openIdActiveProviders) {
+            String providerId = authProvider.getProviderId();
             OpenIdProviderConfig openIdProviderConfig = new OpenIdProviderConfig();
             openIdProviderConfig.setProviderId(providerId);
             openIdProviderConfig.setClientId(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".clientId"));

@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security.utils;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
@@ -41,15 +42,9 @@ public class SecurityPropertyUtils {
         return authProviderTypeSet;
     }
 
-    public static Set<String> getProviderIds(Environment environment, AuthProviderType authProviderType) {
+    public static Set<AuthProvider> getAuthProviderForType(Environment environment, AuthProviderType authProviderType) {
         Set<AuthProvider> authProviders = getAuthProviders(environment);
-        Set<String> providerIds = new LinkedHashSet<>();
-        for (AuthProvider authProvider : authProviders) {
-            if (authProvider.getAuthProviderType() == authProviderType) {
-                providerIds.add(authProvider.getProviderId());
-            }
-        }
-        return providerIds;
+        return authProviders.stream().filter(authProvider -> authProvider.getAuthProviderType() == authProviderType).collect(Collectors.toSet());
     }
 
     public static Set<AuthProvider> getAuthProviders(Environment environment) {
@@ -60,24 +55,29 @@ public class SecurityPropertyUtils {
             Set<AuthProvider> authProviderSet = new LinkedHashSet<>();
             String[] activeProviders = activeProviderStr.split(",");
             for (String activeProvider : activeProviders) {
-                AuthProviderType authProviderType;
-                String providerId = null;
-                if (activeProvider.contains(PROVIDER_ID_SEPARATOR)) {
-                    String[] split = StringUtils.split(activeProvider, PROVIDER_ID_SEPARATOR);
-                    if (split.length != 2) {
-                        throw new WMRuntimeException("Invalid security provider " + activeProvider);
-                    }
-                    authProviderType = AuthProviderType.valueOf(split[0]);
-                    providerId = split[1];
-                } else {
-                    authProviderType = AuthProviderType.valueOf(activeProvider);
-                }
-                if (authProviderType.isMultiInstance() && StringUtils.isBlank(providerId)) {
-                    throw new WMRuntimeException("providerId is missing for " + authProviderType);
-                }
-                authProviderSet.add(new AuthProvider(authProviderType, providerId));
+                AuthProvider authProvider = getAuthProvider(activeProvider);
+                authProviderSet.add(authProvider);
             }
             return authProviderSet;
         }
+    }
+
+    public static AuthProvider getAuthProvider(String fullProviderId) {
+        AuthProviderType authProviderType;
+        String providerId = null;
+        if (fullProviderId.contains(PROVIDER_ID_SEPARATOR)) {
+            String[] split = StringUtils.split(fullProviderId, PROVIDER_ID_SEPARATOR);
+            if (split.length != 2) {
+                throw new WMRuntimeException("Invalid security provider " + fullProviderId);
+            }
+            authProviderType = AuthProviderType.valueOf(split[0]);
+            providerId = split[1];
+        } else {
+            authProviderType = AuthProviderType.valueOf(fullProviderId);
+        }
+        if (authProviderType.isMultiInstance() && StringUtils.isBlank(providerId)) {
+            throw new WMRuntimeException("providerId is missing for " + authProviderType);
+        }
+        return new AuthProvider(authProviderType, providerId);
     }
 }

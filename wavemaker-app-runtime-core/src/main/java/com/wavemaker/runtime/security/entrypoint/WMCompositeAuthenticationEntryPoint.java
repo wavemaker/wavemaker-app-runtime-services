@@ -15,7 +15,8 @@
 package com.wavemaker.runtime.security.entrypoint;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,10 +25,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import com.wavemaker.runtime.security.WMAuthenticationEntryPoint;
+import com.wavemaker.runtime.security.model.AuthProvider;
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 /**
  * Created by srujant on 2/8/18.
@@ -37,16 +41,30 @@ public class WMCompositeAuthenticationEntryPoint implements AuthenticationEntryP
     private static final Logger logger = LoggerFactory.getLogger(WMCompositeAuthenticationEntryPoint.class);
 
     @Autowired
-    private List<WMAppEntryPoint> authenticationEntryPointList;
+    private Environment environment;
+
+    private Map<AuthProvider, WMAppEntryPoint> authenticationEntryPoints = new ConcurrentHashMap<>();
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        if (authenticationEntryPointList.size() == 1) {
-            authenticationEntryPointList.get(0).commence(request, response, authException);
+        if (authenticationEntryPoints.size() == 1) {
+            authenticationEntryPoints.values().iterator().next().commence(request, response, authException);
         } else {
+            String providerId = request.getParameter("providerId");
+            if (providerId != null) {
+                AuthProvider authProvider = SecurityPropertyUtils.getAuthProvider(providerId);
+                if (authenticationEntryPoints.containsKey(authProvider)) {
+                    authenticationEntryPoints.get(authProvider).commence(request, response, authException);
+                    return;
+                }
+            }
             logger.info("As no other AuthenticationEntryPoint is configured, commencing the request to index.html");
             WMAuthenticationEntryPoint wmAuthenticationEntryPoint = new WMAuthenticationEntryPoint("/index.html");
             wmAuthenticationEntryPoint.commence(request, response, authException);
         }
+    }
+
+    public void registerAuthenticationEntryPoint(AuthProvider authProvider, WMAppEntryPoint authenticationEntryPoint) {
+        this.authenticationEntryPoints.put(authProvider, authenticationEntryPoint);
     }
 }
