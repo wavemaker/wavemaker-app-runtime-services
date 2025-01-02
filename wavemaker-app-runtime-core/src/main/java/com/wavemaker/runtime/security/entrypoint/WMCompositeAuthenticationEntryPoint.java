@@ -24,8 +24,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -39,9 +37,6 @@ import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 public class WMCompositeAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(WMCompositeAuthenticationEntryPoint.class);
-
-    @Autowired
-    private Environment environment;
 
     private Map<AuthProvider, WMAppEntryPoint> authenticationEntryPoints = new ConcurrentHashMap<>();
 
@@ -58,7 +53,7 @@ public class WMCompositeAuthenticationEntryPoint implements AuthenticationEntryP
                     return;
                 }
             }
-            logger.info("As no other AuthenticationEntryPoint is configured, commencing the request to index.html");
+            logger.info("As multiple AuthenticationEntryPoints is configured, commencing the request to index.html");
             WMAuthenticationEntryPoint wmAuthenticationEntryPoint = new WMAuthenticationEntryPoint("/index.html");
             wmAuthenticationEntryPoint.commence(request, response, authException);
         }
