@@ -27,7 +27,6 @@ public class JWSProviderConfig extends AbstractProviderConfig {
 
     @NotBlank
     private String providerId;
-    private boolean enabled;
     @NotBlank
     private String issuerUrl;
     @NotBlank
@@ -48,16 +47,6 @@ public class JWSProviderConfig extends AbstractProviderConfig {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getIssuerUrl() {
