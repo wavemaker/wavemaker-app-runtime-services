@@ -14,6 +14,9 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.wavemaker.app.security.models.SecurityProviderConfig;
 
 public abstract class AbstractProviderConfig implements SecurityProviderConfig {
@@ -29,4 +32,19 @@ public abstract class AbstractProviderConfig implements SecurityProviderConfig {
         this.enabled = enabled;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractProviderConfig that = (AbstractProviderConfig) o;
+
+        return new EqualsBuilder().append(getType(), that.getType()).append(getProviderId(), that.getProviderId()).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(getType()).append(getProviderId()).toHashCode();
+    }
 }
