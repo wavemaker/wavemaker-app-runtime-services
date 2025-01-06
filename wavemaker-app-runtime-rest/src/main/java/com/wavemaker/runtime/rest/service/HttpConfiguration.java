@@ -39,6 +39,7 @@ public class HttpConfiguration {
     private int maxTotalConnectionsPerRoute;
     private int connectionTimeToLive;
     private String[] tlsVersions;
+    private boolean requestBodyBufferingEnabled;
     private boolean appProxyEnabled;
     private String appProxyHost;
     private int appProxyPort;
@@ -66,6 +67,7 @@ public class HttpConfiguration {
         maxTotalConnectionsPerRoute = environment.getProperty("app.rest.maxConnectionsPerRoute", Integer.class, 50);
         connectionTimeToLive = environment.getProperty("app.rest.connectionTimeToLive", Integer.class, -1);
         tlsVersions = getTlsVersions(environment);
+        requestBodyBufferingEnabled = environment.getProperty("app.rest.requestBodyBufferingEnabled", Boolean.class, false);
 
         appProxyEnabled = environment.getProperty(AppPropertiesConstants.APP_PROXY_ENABLED, Boolean.class, false);
         appProxyHost = environment.getProperty(AppPropertiesConstants.APP_PROXY_HOST);
@@ -115,6 +117,10 @@ public class HttpConfiguration {
 
     public String[] getTlsVersions() {
         return tlsVersions;
+    }
+
+    public boolean isRequestBodyBufferingEnabled() {
+        return requestBodyBufferingEnabled;
     }
 
     public boolean isAppProxyEnabled() {

@@ -60,6 +60,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -134,7 +136,14 @@ public class RestConnector {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.putAll(httpRequestDetails.getHeaders());
 
-        wmRestTemplate.setRequestFactory(clientHttpRequestFactory);
+        ClientHttpRequestFactory requestFactory;
+        if (httpConfiguration.isRequestBodyBufferingEnabled()) {
+            requestFactory = new BufferingClientHttpRequestFactory(clientHttpRequestFactory);
+        } else {
+            requestFactory = clientHttpRequestFactory;
+        }
+
+        wmRestTemplate.setRequestFactory(requestFactory);
         wmRestTemplate.setErrorHandler(getExceptionHandler());
 
         HttpEntity requestEntity;
