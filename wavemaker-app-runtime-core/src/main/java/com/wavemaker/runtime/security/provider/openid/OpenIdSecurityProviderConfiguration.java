@@ -55,6 +55,7 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -68,10 +69,9 @@ import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
-import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
-import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.AuthenticationEntryPointRegistry;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.handler.logout.LogoutSuccessHandlerRegistry;
 import com.wavemaker.runtime.security.model.AuthProvider;
 import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.model.ProviderOrder;
@@ -110,14 +110,10 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     private SecurityContextRepository securityContextRepository;
 
     @Autowired
-    @Qualifier("logoutSuccessHandler")
-    @Lazy
-    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+    private LogoutSuccessHandlerRegistry logoutSuccessHandlerRegistry;
 
     @Autowired
-    @Qualifier("appAuthenticationEntryPoint")
-    @Lazy
-    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+    private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
 
     private Set<AuthProvider> openIdActiveProviders;
 
@@ -127,13 +123,13 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         openIdActiveProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.OPENID);
 
         openIdActiveProviders.forEach(authProvider -> {
-            WMAppEntryPoint openIdAuthenticationEntryPoint = openIdAuthenticationEntryPoint(authProvider.getProviderId());
+            AuthenticationEntryPoint openIdAuthenticationEntryPoint = openIdAuthenticationEntryPoint(authProvider.getProviderId());
             String beanName = authProvider.getProviderId() + "OpenIdEntryPoint";
             defaultListableBeanFactory.registerSingleton(beanName, openIdAuthenticationEntryPoint);
 
             //@PostConstruct is not being called so initializing bean
             defaultListableBeanFactory.initializeBean(openIdAuthenticationEntryPoint, beanName);
-            this.appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, openIdAuthenticationEntryPoint);
+            this.authenticationEntryPointRegistry.registerAuthenticationEntryPoint(authProvider, openIdAuthenticationEntryPoint);
         });
 
         registerOpenidLogoutSuccessHandler();
@@ -153,7 +149,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
             OAuth2LoginAuthenticationFilter.class);
     }
 
-    public WMAppEntryPoint openIdAuthenticationEntryPoint(String providerId) {
+    public AuthenticationEntryPoint openIdAuthenticationEntryPoint(String providerId) {
         OpenIdAuthenticationEntryPoint openIdAuthenticationEntryPoint = new OpenIdAuthenticationEntryPoint();
         openIdAuthenticationEntryPoint.setProviderId(providerId);
         return openIdAuthenticationEntryPoint;
@@ -288,6 +284,6 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     }
 
     private void registerOpenidLogoutSuccessHandler() {
-        this.wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(AuthProviderType.OPENID, wmOpenIdLogoutSuccessHandler());
+        this.logoutSuccessHandlerRegistry.registerLogoutSuccessHandler(AuthProviderType.OPENID, wmOpenIdLogoutSuccessHandler());
     }
 }

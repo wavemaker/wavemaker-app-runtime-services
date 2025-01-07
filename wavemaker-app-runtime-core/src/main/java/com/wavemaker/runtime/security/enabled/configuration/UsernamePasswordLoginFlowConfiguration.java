@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -47,10 +48,9 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.runtime.security.WMAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
-import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.AuthenticationEntryPointRegistry;
 import com.wavemaker.runtime.security.filter.WMBasicAuthenticationFilter;
-import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.handler.logout.LogoutSuccessHandlerRegistry;
 import com.wavemaker.runtime.security.model.AuthProvider;
 import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.model.AuthenticationMode;
@@ -90,23 +90,19 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     private SecurityContextRepository securityContextRepository;
 
     @Autowired
-    @Qualifier("logoutSuccessHandler")
-    @Lazy
-    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+    private LogoutSuccessHandlerRegistry logoutSuccessHandlerRegistry;
 
     @Autowired
-    @Qualifier("appAuthenticationEntryPoint")
-    @Lazy
-    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+    private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
 
     @PostConstruct
     public void init() {
         for (AuthProviderType authProviderType : AuthProviderType.values()) {
             if (authProviderType.getAuthenticationMode() == AuthenticationMode.USERNAME_PASSWORD) {
-                wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(authProviderType, logoutSuccessHandler());
+                logoutSuccessHandlerRegistry.registerLogoutSuccessHandler(authProviderType, logoutSuccessHandler());
                 Set<AuthProvider> authProviders = SecurityPropertyUtils.getAuthProviderForType(environment, authProviderType);
                 for (AuthProvider authProvider : authProviders) {
-                    appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, wmSecAuthEntryPoint());
+                    authenticationEntryPointRegistry.registerAuthenticationEntryPoint(authProvider, wmSecAuthEntryPoint());
                 }
             }
         }
@@ -126,7 +122,7 @@ public class UsernamePasswordLoginFlowConfiguration implements WMSecurityConfigu
     }
 
     @Bean(name = "WMSecAuthEntryPoint")
-    public WMAppEntryPoint wmSecAuthEntryPoint() {
+    public AuthenticationEntryPoint wmSecAuthEntryPoint() {
         return new WMAuthenticationEntryPoint("/index.html");
     }
 

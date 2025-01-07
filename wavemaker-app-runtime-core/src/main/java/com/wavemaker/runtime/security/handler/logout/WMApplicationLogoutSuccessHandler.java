@@ -16,13 +16,12 @@
 package com.wavemaker.runtime.security.handler.logout;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -31,18 +30,15 @@ import com.wavemaker.runtime.security.model.AuthProviderType;
 
 public class WMApplicationLogoutSuccessHandler implements LogoutSuccessHandler {
 
-    private final Map<AuthProviderType, LogoutSuccessHandler> providerTypeVsLogoutSuccessHandler = new ConcurrentHashMap<>();
+    @Autowired
+    private LogoutSuccessHandlerRegistry logoutSuccessHandlerRegistry;
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         AuthProviderType authProviderType = ((WMAuthentication) authentication).getAuthProviderType();
-        LogoutSuccessHandler logoutSuccessHandler = this.providerTypeVsLogoutSuccessHandler.get(authProviderType);
+        LogoutSuccessHandler logoutSuccessHandler = this.logoutSuccessHandlerRegistry.getLogoutSuccessHandler(authProviderType);
         if (logoutSuccessHandler != null) {
             logoutSuccessHandler.onLogoutSuccess(request, response, authentication);
         }
-    }
-
-    public void registerLogoutSuccessHandler(AuthProviderType authProviderType, LogoutSuccessHandler logoutSuccessHandler) {
-        this.providerTypeVsLogoutSuccessHandler.put(authProviderType, logoutSuccessHandler);
     }
 }

@@ -49,6 +49,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -115,12 +116,14 @@ import com.wavemaker.runtime.security.csrf.handler.WMCsrfTokenResponseWriterAuth
 import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlComparator;
 import com.wavemaker.runtime.security.enabled.configuration.comparator.InterceptUrlStringComparator;
 import com.wavemaker.runtime.security.enabled.configuration.models.NamedSecurityFilter;
+import com.wavemaker.runtime.security.entrypoint.AuthenticationEntryPointRegistry;
 import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
 import com.wavemaker.runtime.security.filter.WMRequestResponseHolderFilter;
 import com.wavemaker.runtime.security.filter.WMTokenBasedPreAuthenticatedProcessingFilter;
 import com.wavemaker.runtime.security.handler.WMApplicationAuthenticationSuccessHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationRedirectionHandler;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessRedirectionHandler;
+import com.wavemaker.runtime.security.handler.logout.LogoutSuccessHandlerRegistry;
 import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
 import com.wavemaker.runtime.security.provider.saml.BrowserDelegatingLogoutFilter;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
@@ -224,10 +227,14 @@ public class SecurityEnabledBaseConfiguration {
         return new WMCsrfFilter(csrfTokenRepository(), csrfSecurityRequestMatcher());
     }
 
-    //TODO Change the return type to generic to override beans from xml
     @Bean(name = "appAuthenticationEntryPoint")
-    public WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint() {
+    public AuthenticationEntryPoint appAuthenticationEntryPoint() {
         return new WMCompositeAuthenticationEntryPoint();
+    }
+
+    @Bean(name = "authenticationEntryPointRegistry")
+    public AuthenticationEntryPointRegistry authenticationEntryPointRegistry() {
+        return new AuthenticationEntryPointRegistry();
     }
 
     @Bean(name = "sessionFixationProtectionStrategy")
@@ -478,6 +485,11 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "logoutSuccessHandler")
     public LogoutSuccessHandler wmApplicationLogoutSuccessHandler() {
         return new WMApplicationLogoutSuccessHandler();
+    }
+
+    @Bean(name = "logoutSuccessHandlerRegistry")
+    public LogoutSuccessHandlerRegistry logoutSuccessHandlerRegistry() {
+        return new LogoutSuccessHandlerRegistry();
     }
 
     private void authorizeHttpRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry) {

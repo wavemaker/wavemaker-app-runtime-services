@@ -50,6 +50,7 @@ import org.springframework.security.saml2.provider.service.web.authentication.Sa
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseResolver;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
@@ -72,10 +73,9 @@ import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
-import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
-import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.AuthenticationEntryPointRegistry;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.handler.logout.LogoutSuccessHandlerRegistry;
 import com.wavemaker.runtime.security.model.AuthProvider;
 import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
@@ -135,21 +135,17 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     private Saml2LogoutRequestResolver saml2LogoutRequestResolver;
 
     @Autowired
-    @Qualifier("logoutSuccessHandler")
-    @Lazy
-    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+    private LogoutSuccessHandlerRegistry logoutSuccessHandlerRegistry;
 
     @Autowired
-    @Qualifier("appAuthenticationEntryPoint")
-    @Lazy
-    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+    private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
 
     @PostConstruct
     public void init() {
-        wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(AuthProviderType.SAML, saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver));
+        logoutSuccessHandlerRegistry.registerLogoutSuccessHandler(AuthProviderType.SAML, saml2RelyingPartyInitiatedLogoutSuccessHandler(saml2LogoutRequestResolver));
         Set<AuthProvider> samlAuthProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.SAML);
         for (AuthProvider authProvider : samlAuthProviders) {
-            this.appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, wmLoginUrlAuthenticationEntryPoint());
+            this.authenticationEntryPointRegistry.registerAuthenticationEntryPoint(authProvider, wmLoginUrlAuthenticationEntryPoint());
         }
     }
 
@@ -214,7 +210,7 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     }
 
     @Bean(name = "wmLoginUrlAuthenticationEntryPoint")
-    public WMAppEntryPoint wmLoginUrlAuthenticationEntryPoint() {
+    public AuthenticationEntryPoint wmLoginUrlAuthenticationEntryPoint() {
         return new WMSAMLEntryPoint("/saml2/authenticate/saml");
     }
 

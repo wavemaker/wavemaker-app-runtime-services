@@ -50,6 +50,7 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -68,10 +69,9 @@ import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.core.NullAuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
-import com.wavemaker.runtime.security.entrypoint.WMAppEntryPoint;
-import com.wavemaker.runtime.security.entrypoint.WMCompositeAuthenticationEntryPoint;
+import com.wavemaker.runtime.security.entrypoint.AuthenticationEntryPointRegistry;
 import com.wavemaker.runtime.security.handler.WMAuthenticationSuccessHandler;
-import com.wavemaker.runtime.security.handler.logout.WMApplicationLogoutSuccessHandler;
+import com.wavemaker.runtime.security.handler.logout.LogoutSuccessHandlerRegistry;
 import com.wavemaker.runtime.security.model.AuthProvider;
 import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.model.ProviderOrder;
@@ -113,20 +113,17 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     private SecurityContextRepository securityContextRepository;
 
     @Autowired
-    @Qualifier("logoutSuccessHandler")
-    private WMApplicationLogoutSuccessHandler wmApplicationLogoutSuccessHandler;
+    private LogoutSuccessHandlerRegistry logoutSuccessHandlerRegistry;
 
     @Autowired
-    @Qualifier("appAuthenticationEntryPoint")
-    @Lazy
-    private WMCompositeAuthenticationEntryPoint appAuthenticationEntryPoint;
+    private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
 
     @PostConstruct
     public void init() {
-        this.wmApplicationLogoutSuccessHandler.registerLogoutSuccessHandler(AuthProviderType.CAS, logoutSuccessHandler());
+        this.logoutSuccessHandlerRegistry.registerLogoutSuccessHandler(AuthProviderType.CAS, logoutSuccessHandler());
         Set<AuthProvider> authProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.CAS);
         for (AuthProvider authProvider : authProviders) {
-            this.appAuthenticationEntryPoint.registerAuthenticationEntryPoint(authProvider, wmSecAuthEntryPoint());
+            this.authenticationEntryPointRegistry.registerAuthenticationEntryPoint(authProvider, wmSecAuthEntryPoint());
         }
     }
 
@@ -223,7 +220,7 @@ public class CASSecurityProviderConfiguration implements WMSecurityConfiguration
     }
 
     @Bean(name = "casEntryPoint")
-    public WMAppEntryPoint wmSecAuthEntryPoint() {
+    public AuthenticationEntryPoint wmSecAuthEntryPoint() {
         WMCASAuthenticationEntryPoint authenticationEntryPoint = new WMCASAuthenticationEntryPoint();
         authenticationEntryPoint.setServiceProperties(casServiceProperties(casProviderConfig()));
         authenticationEntryPoint.setLoginUrl(casProviderConfig().getLoginUrl());
