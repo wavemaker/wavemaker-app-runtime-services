@@ -157,8 +157,8 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
 
     @Bean(name = "oauth2LoginAuthenticationFilter")
     public Filter openIdLoginAuthenticationFilter() {
-        OpenIdLoginAuthenticationFilter authenticationFilter = new OpenIdLoginAuthenticationFilter(inMemoryRegistrationRepository(),
-            inMemoryOAuth2AuthorizedClientService(), "/oauth2/code/*");
+        OpenIdLoginAuthenticationFilter authenticationFilter = new OpenIdLoginAuthenticationFilter(clientRegistrationRepository(),
+            oAuth2AuthorizedClientService(), "/oauth2/code/*");
         authenticationFilter.setAuthorizationRequestRepository(
             (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository());
         authenticationFilter.setAuthenticationManager(authenticationManager);
@@ -181,15 +181,15 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return new DefaultRedirectStrategy();
     }
 
-    @Bean(name = "inMemoryOAuth2AuthorizedClientService")
-    public OAuth2AuthorizedClientService inMemoryOAuth2AuthorizedClientService() {
-        return new InMemoryOAuth2AuthorizedClientService(inMemoryRegistrationRepository());
+    @Bean(name = "oAuth2AuthorizedClientService")
+    public OAuth2AuthorizedClientService oAuth2AuthorizedClientService() {
+        return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository());
     }
 
     @Bean(name = "authorizationRequestRedirectFilter")
     public Filter openIDAuthorizationRequestRedirectFilter() {
         OpenIDAuthorizationRequestRedirectFilter openIDAuthorizationRequestRedirectFilter = new OpenIDAuthorizationRequestRedirectFilter(
-            inMemoryRegistrationRepository(), "/auth/oauth2");
+            clientRegistrationRepository(), "/auth/oauth2");
         openIDAuthorizationRequestRedirectFilter.setAuthorizationRequestRepository(
             (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository());
         return openIDAuthorizationRequestRedirectFilter;
@@ -200,8 +200,8 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
 
-    @Bean(name = "inMemoryRegistrationRepository")
-    public ClientRegistrationRepository inMemoryRegistrationRepository() {
+    @Bean(name = "clientRegistrationRepository")
+    public ClientRegistrationRepository clientRegistrationRepository() {
         return new InMemoryRegistrationRepository();
     }
 
