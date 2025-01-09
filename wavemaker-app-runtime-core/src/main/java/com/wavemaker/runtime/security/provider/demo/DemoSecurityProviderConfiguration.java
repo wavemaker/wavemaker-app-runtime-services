@@ -71,9 +71,9 @@ public class DemoSecurityProviderConfiguration {
         return daoAuthenticationProvider;
     }
 
-    @Bean(name = "databaseDelegatingAuthenticationProvider")
+    @Bean(name = "demoDelegatingAuthenticationProvider")
     @Order(ProviderOrder.DEMO_ORDER)
-    public WMDelegatingAuthenticationProvider databaseDelegatingAuthenticationProvider(AuthenticationProvider demoAuthenticationProvider) {
+    public WMDelegatingAuthenticationProvider demoDelegatingAuthenticationProvider(AuthenticationProvider demoAuthenticationProvider) {
         return new WMDelegatingAuthenticationProvider(demoAuthenticationProvider, AuthProviderType.DEMO);
     }
 }
