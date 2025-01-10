@@ -42,15 +42,21 @@ public class OpenidAuthoritiesProviderManager {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public AuthoritiesProvider getAuthoritiesProvider(String providerId, String roleProvider) {
-        return this.authoritiesProviders.computeIfAbsent(providerId, authoritiesProvider -> {
-            if (SecurityConstants.OPENID_PROVIDER.equals(roleProvider)) {
-                return getOpenidAuthoritiesProvider(providerId);
-            } else if ("Database".equals(roleProvider)) {
-                return getDatabaseAuthoritiesProvider(providerId);
-            }
-            return null;
-        });
+    public AuthoritiesProvider getAuthoritiesProvider(String providerId) {
+        boolean roleMappingEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.openId." + providerId +
+            ".roleMappingEnabled", Boolean.class));
+        String roleProvider = environment.getProperty("security.providers.openId." + providerId + ".roleProvider");
+        if (roleMappingEnabled) {
+            return this.authoritiesProviders.computeIfAbsent(providerId, authoritiesProvider -> {
+                if (SecurityConstants.OPENID_PROVIDER.equals(roleProvider)) {
+                    return getOpenidAuthoritiesProvider(providerId);
+                } else if ("Database".equals(roleProvider)) {
+                    return getDatabaseAuthoritiesProvider(providerId);
+                }
+                return null;
+            });
+        }
+        return null;
     }
 
     private AuthoritiesProvider getOpenidAuthoritiesProvider(String providerId) {

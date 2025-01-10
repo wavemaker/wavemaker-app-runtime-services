@@ -46,7 +46,8 @@ public class OpenIdUserService extends OidcUserService {
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
-        AuthoritiesProvider authoritiesProvider = getAuthoritiesProvider(userRequest.getClientRegistration().getRegistrationId());
+        AuthoritiesProvider authoritiesProvider = this.openidAuthoritiesProviderManager.getAuthoritiesProvider(
+            userRequest.getClientRegistration().getRegistrationId());
         if (authoritiesProvider != null) {
             OpenIdAuthenticationContext openIdAuthenticationContext = new OpenIdAuthenticationContext(oidcUser.getName(), oidcUser);
             List<GrantedAuthority> grantedAuthorities = authoritiesProvider.loadAuthorities(openIdAuthenticationContext);
@@ -61,16 +62,6 @@ public class OpenIdUserService extends OidcUserService {
             }
         }
         return oidcUser;
-    }
-
-    private AuthoritiesProvider getAuthoritiesProvider(String providerId) {
-        boolean roleMappingEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.openId." + providerId +
-            ".roleMappingEnabled", Boolean.class));
-        String roleProvider = environment.getProperty("security.providers.openId." + providerId + ".roleProvider");
-        if (roleMappingEnabled) {
-            return this.openidAuthoritiesProviderManager.getAuthoritiesProvider(providerId, roleProvider);
-        }
-        return null;
     }
 
 }
