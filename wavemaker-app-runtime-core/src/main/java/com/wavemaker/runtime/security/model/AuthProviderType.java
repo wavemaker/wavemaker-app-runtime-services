@@ -22,11 +22,11 @@ public enum AuthProviderType {
     LDAP(AuthenticationMode.USERNAME_PASSWORD, false, true, false),
     AD(AuthenticationMode.USERNAME_PASSWORD, false, false, false),
     CUSTOM(AuthenticationMode.USERNAME_PASSWORD, false, false, false),
-    OPENID(AuthenticationMode.SSO, false, true, false),
+    OPENID(AuthenticationMode.SSO, true, true, false),
     SAML(AuthenticationMode.SSO, false, false, true),
     CAS(AuthenticationMode.SSO, false, false, false),
     JWS(AuthenticationMode.PRE_AUTHENTICATED, true, false, false),
-    OPAQUE_TOKEN(AuthenticationMode.PRE_AUTHENTICATED, true, false, false);
+    OPAQUE_TOKEN(AuthenticationMode.PRE_AUTHENTICATED, false, false, false);
 
     private final AuthenticationMode authenticationMode;
     private final boolean multiInstance;
