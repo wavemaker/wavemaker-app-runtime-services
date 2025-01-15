@@ -15,8 +15,6 @@
 
 package com.wavemaker.runtime.security.provider.openid;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +63,6 @@ import org.springframework.security.web.context.SecurityContextRepository;
 
 import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
-import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 import com.wavemaker.runtime.security.authenticationprovider.WMDelegatingAuthenticationProvider;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -115,12 +112,10 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Autowired
     private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
 
-    private Set<AuthProvider> openIdActiveProviders;
-
     @PostConstruct
     public void init() {
         DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
-        openIdActiveProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.OPENID);
+        Set<AuthProvider> openIdActiveProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.OPENID);
 
         openIdActiveProviders.forEach(authProvider -> {
             AuthenticationEntryPoint openIdAuthenticationEntryPoint = openIdAuthenticationEntryPoint(authProvider.getProviderId());
@@ -205,38 +200,9 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return new InMemoryRegistrationRepository();
     }
 
-    @Bean(name = "openIdProviderInfo")
-    public List<OpenIdProviderConfig> openIdProviderInfoList() {
-        List<OpenIdProviderConfig> openIdProviderInfoList = new ArrayList<>();
-        for (AuthProvider authProvider : openIdActiveProviders) {
-            String providerId = authProvider.getProviderId();
-            OpenIdProviderConfig openIdProviderConfig = new OpenIdProviderConfig();
-            openIdProviderConfig.setProviderId(providerId);
-            openIdProviderConfig.setClientId(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".clientId"));
-            openIdProviderConfig.setClientSecret(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".clientSecret"));
-            openIdProviderConfig.setAuthorizationUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".authorizationUrl"));
-            openIdProviderConfig.setJwkSetUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".jwkSetUrl"));
-            openIdProviderConfig.setLogoutUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".logoutUrl"));
-            openIdProviderConfig.setTokenUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".tokenUrl"));
-            openIdProviderConfig.setUserInfoUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".userInfoUrl"));
-            openIdProviderConfig.setRedirectUrlTemplate("{baseUrl}/oauth2/code/{registrationId}");
-            openIdProviderConfig.setUserNameAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".userNameAttributeName"));
-            String scopes = environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".scopes");
-            List<String> scopesList = new ArrayList<>();
-            if (scopes != null) {
-                Collections.addAll(scopesList, scopes.split(","));
-            }
-            openIdProviderConfig.setScopes(scopesList);
-            openIdProviderInfoList.add(openIdProviderConfig);
-        }
-        return openIdProviderInfoList;
-    }
-
-    @Bean(name = "openIdProviderRuntimeConfig")
-    public OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig() {
-        OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig = new OpenIdProviderRuntimeConfig();
-        openIdProviderRuntimeConfig.setOpenIdProviderConfigList(openIdProviderInfoList());
-        return openIdProviderRuntimeConfig;
+    @Bean(name = "openIdProviderRuntimeRegistry")
+    public OpenIdProviderRuntimeRegistry openIdProviderRuntimeRegistry() {
+        return new OpenIdProviderRuntimeRegistry();
     }
 
     @Bean(name = "openIdAuthenticationSuccessHandler")

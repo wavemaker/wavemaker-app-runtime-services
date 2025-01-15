@@ -15,11 +15,9 @@
 package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.annotation.PostConstruct;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -27,7 +25,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 
@@ -35,44 +32,35 @@ import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
  * Created by srujant on 30/7/18.
  */
 public class InMemoryRegistrationRepository implements ClientRegistrationRepository {
-    private Map<String, ClientRegistration> registrations;
+
+    private final Map<String, ClientRegistration> registrations = new ConcurrentHashMap<>();
 
     @Autowired
-    private OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig;
-
-    @PostConstruct
-    public void init() {
-        registrations = new HashMap<>();
-        String openIdScope = "openid";
-        if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderConfigList())) {
-            for (OpenIdProviderConfig openIdProviderConfig : openIdProviderRuntimeConfig.getOpenIdProviderConfigList()) {
-                List<String> scopes = openIdProviderConfig.getScopes();
-                if (!scopes.contains(openIdScope)) {
-                    scopes.add(openIdScope);
-                }
-
-                ClientRegistration client = ClientRegistration.withRegistrationId(openIdProviderConfig.getProviderId())
-                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                    .authorizationUri(openIdProviderConfig.getAuthorizationUrl())
-                    .tokenUri(openIdProviderConfig.getTokenUrl())
-                    .jwkSetUri(openIdProviderConfig.getJwkSetUrl())
-                    .userInfoUri(openIdProviderConfig.getUserInfoUrl())
-                    .scope(Arrays.copyOf(scopes.toArray(), scopes.size(), String[].class))
-                    .redirectUri(openIdProviderConfig.getRedirectUrlTemplate())
-                    .clientId(openIdProviderConfig.getClientId())
-                    .clientSecret(openIdProviderConfig.getClientSecret())
-                    .clientName(openIdProviderConfig.getProviderId())
-                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                    .userNameAttributeName(openIdProviderConfig.getUserNameAttributeName())
-                    .build();
-                registrations.put(openIdProviderConfig.getProviderId(), client);
-            }
-        }
-    }
+    private OpenIdProviderRuntimeRegistry openIdProviderRuntimeRegistry;
 
     @Override
     public ClientRegistration findByRegistrationId(String registrationId) {
         Assert.hasText(registrationId, "registrationId cannot be empty");
-        return this.registrations.get(registrationId);
+        return registrations.computeIfAbsent(registrationId, this::buildClientRegistration);
+    }
+
+    private ClientRegistration buildClientRegistration(String registrationId) {
+        OpenIdProviderConfig openIdProviderConfig = openIdProviderRuntimeRegistry.getOpenIdProviderConfig(registrationId);
+        List<String> scopes = openIdProviderConfig.getScopes();
+
+        return ClientRegistration.withRegistrationId(openIdProviderConfig.getProviderId())
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationUri(openIdProviderConfig.getAuthorizationUrl())
+            .tokenUri(openIdProviderConfig.getTokenUrl())
+            .jwkSetUri(openIdProviderConfig.getJwkSetUrl())
+            .userInfoUri(openIdProviderConfig.getUserInfoUrl())
+            .scope(Arrays.copyOf(scopes.toArray(), scopes.size(), String[].class))
+            .redirectUri(openIdProviderConfig.getRedirectUrlTemplate())
+            .clientId(openIdProviderConfig.getClientId())
+            .clientSecret(openIdProviderConfig.getClientSecret())
+            .clientName(openIdProviderConfig.getProviderId())
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .userNameAttributeName(openIdProviderConfig.getUserNameAttributeName())
+            .build();
     }
 }

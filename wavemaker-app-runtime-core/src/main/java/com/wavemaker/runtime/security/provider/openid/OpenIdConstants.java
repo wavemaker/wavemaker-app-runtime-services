@@ -49,4 +49,6 @@ public class OpenIdConstants {
 
     public static final String REDIRECT_PAGE = "redirectPage";
 
+    public static final String PROVIDER_ID = "providerId";
+    public static final String OPEN_ID_SCOPE = "openid";
 }

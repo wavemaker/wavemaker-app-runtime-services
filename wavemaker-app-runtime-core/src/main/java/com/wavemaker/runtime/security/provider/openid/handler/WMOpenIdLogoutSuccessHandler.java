@@ -28,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
-import org.springframework.util.CollectionUtils;
 
 import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 import com.wavemaker.commons.json.JSONUtils;
@@ -36,16 +35,16 @@ import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
-import com.wavemaker.runtime.security.provider.openid.OpenIdProviderRuntimeConfig;
+import com.wavemaker.runtime.security.provider.openid.OpenIdProviderRuntimeRegistry;
 
 public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
-    private Logger logger = LoggerFactory.getLogger(WMOpenIdLogoutSuccessHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(WMOpenIdLogoutSuccessHandler.class);
 
     @Autowired
-    private OpenIdProviderRuntimeConfig openIdProviderRuntimeConfig;
+    private OpenIdProviderRuntimeRegistry openIdProviderRuntimeRegistry;
 
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private static final String QUESTION_MARK = "?";
     private static final String QUERY_PARAM_DELIMITER = "&";
     private static final String EQUALS = "=";
@@ -76,17 +75,10 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
      **/
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String logoutUrl = null;
-        if (openIdProviderRuntimeConfig != null && !CollectionUtils.isEmpty(openIdProviderRuntimeConfig.getOpenIdProviderConfigList())) {
-            Object providerId = ((WMAuthentication) authentication).getAttributes().get("providerId").getValue();
-            for (OpenIdProviderConfig openIdProviderConfig : openIdProviderRuntimeConfig.getOpenIdProviderConfigList()) {
-                if (openIdProviderConfig.getProviderId().equals(providerId)) {
-                    logoutUrl = openIdProviderConfig.getLogoutUrl();
-                    break;
-                }
-            }
-        }
-        if (StringUtils.isNotBlank(logoutUrl) && authentication != null) {
+        String providerId = (String) ((WMAuthentication) authentication).getAttributes().get(OpenIdConstants.PROVIDER_ID).getValue();
+        OpenIdProviderConfig openIdProviderConfig = openIdProviderRuntimeRegistry.getOpenIdProviderConfig(providerId);
+        String logoutUrl = openIdProviderConfig.getLogoutUrl();
+        if (StringUtils.isNotBlank(logoutUrl)) {
             StringBuilder targetUrl = new StringBuilder()
                 .append(logoutUrl).append(QUESTION_MARK)
                 .append(postLogoutUrlQueryParam(request))

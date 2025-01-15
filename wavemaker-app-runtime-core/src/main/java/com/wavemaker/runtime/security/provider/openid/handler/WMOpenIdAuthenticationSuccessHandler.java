@@ -44,7 +44,7 @@ public class WMOpenIdAuthenticationSuccessHandler implements WMAuthenticationSuc
             });
             String[] authenticationRequestSplit = request.getServletPath().split("/");
             String openIdProvider = authenticationRequestSplit[authenticationRequestSplit.length - 1];
-            authentication.addAttribute("providerId", openIdProvider, Attribute.AttributeScope.SERVER_ONLY);
+            authentication.addAttribute(OpenIdConstants.PROVIDER_ID, openIdProvider, Attribute.AttributeScope.SERVER_ONLY);
             authentication.addAttribute(OpenIdConstants.ID_TOKEN_VALUE, oidcUser.getIdToken().getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
             OAuth2AccessToken accessToken = oAuth2LoginAuthenticationToken.getAccessToken();
             if (accessToken != null) {
