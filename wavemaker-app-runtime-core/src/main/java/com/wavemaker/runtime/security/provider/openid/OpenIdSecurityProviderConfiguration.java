@@ -200,9 +200,9 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return new InMemoryRegistrationRepository();
     }
 
-    @Bean(name = "openIdProviderRuntimeRegistry")
-    public OpenIdProviderRuntimeRegistry openIdProviderRuntimeRegistry() {
-        return new OpenIdProviderRuntimeRegistry();
+    @Bean(name = "openIdProviderConfigRegistry")
+    public OpenIdProviderConfigRegistry openIdProviderConfigRegistry() {
+        return new OpenIdProviderConfigRegistry();
     }
 
     @Bean(name = "openIdAuthenticationSuccessHandler")

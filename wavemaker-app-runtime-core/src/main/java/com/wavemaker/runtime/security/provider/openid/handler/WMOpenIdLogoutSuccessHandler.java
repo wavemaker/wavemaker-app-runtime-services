@@ -35,14 +35,14 @@ import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.security.Attribute;
 import com.wavemaker.runtime.security.WMAuthentication;
 import com.wavemaker.runtime.security.provider.openid.OpenIdConstants;
-import com.wavemaker.runtime.security.provider.openid.OpenIdProviderRuntimeRegistry;
+import com.wavemaker.runtime.security.provider.openid.OpenIdProviderConfigRegistry;
 
 public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(WMOpenIdLogoutSuccessHandler.class);
 
     @Autowired
-    private OpenIdProviderRuntimeRegistry openIdProviderRuntimeRegistry;
+    private OpenIdProviderConfigRegistry openIdProviderConfigRegistry;
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private static final String QUESTION_MARK = "?";
@@ -76,7 +76,7 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String providerId = (String) ((WMAuthentication) authentication).getAttributes().get(OpenIdConstants.PROVIDER_ID).getValue();
-        OpenIdProviderConfig openIdProviderConfig = openIdProviderRuntimeRegistry.getOpenIdProviderConfig(providerId);
+        OpenIdProviderConfig openIdProviderConfig = openIdProviderConfigRegistry.getOpenIdProviderConfig(providerId);
         String logoutUrl = openIdProviderConfig.getLogoutUrl();
         if (StringUtils.isNotBlank(logoutUrl)) {
             StringBuilder targetUrl = new StringBuilder()

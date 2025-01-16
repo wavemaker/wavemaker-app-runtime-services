@@ -36,7 +36,7 @@ public class InMemoryRegistrationRepository implements ClientRegistrationReposit
     private final Map<String, ClientRegistration> registrations = new ConcurrentHashMap<>();
 
     @Autowired
-    private OpenIdProviderRuntimeRegistry openIdProviderRuntimeRegistry;
+    private OpenIdProviderConfigRegistry openIdProviderConfigRegistry;
 
     @Override
     public ClientRegistration findByRegistrationId(String registrationId) {
@@ -45,7 +45,7 @@ public class InMemoryRegistrationRepository implements ClientRegistrationReposit
     }
 
     private ClientRegistration buildClientRegistration(String registrationId) {
-        OpenIdProviderConfig openIdProviderConfig = openIdProviderRuntimeRegistry.getOpenIdProviderConfig(registrationId);
+        OpenIdProviderConfig openIdProviderConfig = openIdProviderConfigRegistry.getOpenIdProviderConfig(registrationId);
         List<String> scopes = openIdProviderConfig.getScopes();
 
         return ClientRegistration.withRegistrationId(openIdProviderConfig.getProviderId())

@@ -15,6 +15,7 @@
 
 package com.wavemaker.runtime.security.utils;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,12 +35,17 @@ public class SecurityPropertyUtils {
     }
 
     public static Set<AuthProviderType> getActiveAuthProviderTypes(Environment environment) {
-        Set<AuthProviderType> authProviderTypeSet = new LinkedHashSet<>();
-        Set<AuthProvider> authProviders = getAuthProviders(environment);
-        for (AuthProvider authProvider : authProviders) {
-            authProviderTypeSet.add(authProvider.getAuthProviderType());
+        String explicitlyActivatedAuthProviderTypesStr = environment.getProperty("security.activeAuthProviderTypes");
+        if (StringUtils.isBlank(explicitlyActivatedAuthProviderTypesStr)) {
+            Set<AuthProviderType> authProviderTypeSet = new LinkedHashSet<>();
+            Set<AuthProvider> authProviders = getAuthProviders(environment);
+            for (AuthProvider authProvider : authProviders) {
+                authProviderTypeSet.add(authProvider.getAuthProviderType());
+            }
+            return authProviderTypeSet;
+        } else {
+            return Arrays.stream(explicitlyActivatedAuthProviderTypesStr.split(",")).map(AuthProviderType::valueOf).collect(Collectors.toSet());
         }
-        return authProviderTypeSet;
     }
 
     public static Set<AuthProvider> getAuthProviderForType(Environment environment, AuthProviderType authProviderType) {

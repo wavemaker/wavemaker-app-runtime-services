@@ -34,7 +34,7 @@ import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 /**
  * Created by srujant on 30/7/18.
  */
-public class OpenIdProviderRuntimeRegistry {
+public class OpenIdProviderConfigRegistry {
 
     @Autowired
     private Environment environment;
@@ -48,10 +48,7 @@ public class OpenIdProviderRuntimeRegistry {
     }
 
     protected OpenIdProviderConfig constructOpenIdProviderConfig(String providerId) {
-        Set<AuthProvider> openIdActiveProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.OPENID);
-        if (openIdActiveProviders.stream().map(AuthProvider::getProviderId).noneMatch(Predicate.isEqual(providerId))) {
-            throw new WMRuntimeException("No open id provider found with id:" + providerId);
-        }
+        validateProviderIdIsActive(providerId);
         OpenIdProviderConfig openIdProviderConfig = new OpenIdProviderConfig();
         openIdProviderConfig.setProviderId(providerId);
         openIdProviderConfig.setClientId(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".clientId"));
@@ -74,5 +71,12 @@ public class OpenIdProviderRuntimeRegistry {
         }
         openIdProviderConfig.setScopes(scopesList);
         return openIdProviderConfig;
+    }
+
+    protected void validateProviderIdIsActive(String providerId) {
+        Set<AuthProvider> openIdActiveProviders = SecurityPropertyUtils.getAuthProviderForType(environment, AuthProviderType.OPENID);
+        if (openIdActiveProviders.stream().map(AuthProvider::getProviderId).noneMatch(Predicate.isEqual(providerId))) {
+            throw new WMRuntimeException("No open id provider found with id:" + providerId);
+        }
     }
 }
