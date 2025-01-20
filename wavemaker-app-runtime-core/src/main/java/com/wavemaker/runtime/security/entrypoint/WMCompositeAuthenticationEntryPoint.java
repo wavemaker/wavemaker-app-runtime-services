@@ -42,7 +42,7 @@ public class WMCompositeAuthenticationEntryPoint implements AuthenticationEntryP
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        AuthenticationEntryPoint authenticationEntryPoint = authenticationEntryPointRegistry.getDefaultAuthenticationEntryPoint();
+        AuthenticationEntryPoint authenticationEntryPoint = authenticationEntryPointRegistry.getUniqueAuthenticationEntryPoint();
         if (authenticationEntryPoint == null) {
             String providerId = request.getParameter("providerId");
             if (providerId != null) {

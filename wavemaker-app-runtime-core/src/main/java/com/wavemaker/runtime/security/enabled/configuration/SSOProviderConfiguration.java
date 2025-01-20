@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.List;
-import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 
@@ -33,9 +32,7 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.model.AuthProvider;
-import com.wavemaker.runtime.security.model.AuthenticationMode;
-import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
+import com.wavemaker.runtime.security.entrypoint.AuthenticationEntryPointRegistry;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, SSOProviderCondition.class})
@@ -52,9 +49,12 @@ public class SSOProviderConfiguration implements WMSecurityConfiguration {
     @Lazy
     private SessionTimeoutConfig sessionTimeoutConfig;
 
+    @Autowired
+    private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
+
     @PostConstruct
     public void init() {
-        if (isSingleSSOasActiveProvider()) {
+        if (isUniqueAuthenticationEntryPoint()) {
             loginConfig.setType(LoginType.SSO);
             sessionTimeoutConfig.setType(LoginType.SSO);
         }
@@ -70,8 +70,7 @@ public class SSOProviderConfiguration implements WMSecurityConfiguration {
         //no common Filters
     }
 
-    private boolean isSingleSSOasActiveProvider() {
-        Set<AuthProvider> authProviders = SecurityPropertyUtils.getAuthProviders(environment);
-        return authProviders.size() == 1 && authProviders.iterator().next().getAuthProviderType().getAuthenticationMode() == AuthenticationMode.SSO;
+    private boolean isUniqueAuthenticationEntryPoint() {
+        return authenticationEntryPointRegistry.getUniqueAuthenticationEntryPoint() != null;
     }
 }

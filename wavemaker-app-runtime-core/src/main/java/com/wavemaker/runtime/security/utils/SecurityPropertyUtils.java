@@ -17,7 +17,9 @@ package com.wavemaker.runtime.security.utils;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,41 +33,55 @@ public class SecurityPropertyUtils {
 
     private static final String PROVIDER_ID_SEPARATOR = ".";
 
+    private static final Map<Environment, Set<AuthProvider>> authProvidersMap = new ConcurrentHashMap<>();
+
     private SecurityPropertyUtils() {
     }
 
     public static Set<AuthProviderType> getActiveAuthProviderTypes(Environment environment) {
         String explicitlyActivatedAuthProviderTypesStr = environment.getProperty("security.activeAuthProviderTypes");
-        if (StringUtils.isBlank(explicitlyActivatedAuthProviderTypesStr)) {
+        if (StringUtils.isNotBlank(explicitlyActivatedAuthProviderTypesStr)) {
+            return Arrays.stream(explicitlyActivatedAuthProviderTypesStr.split(",")).map(AuthProviderType::valueOf).collect(Collectors.toSet());
+        } else {
             Set<AuthProviderType> authProviderTypeSet = new LinkedHashSet<>();
-            Set<AuthProvider> authProviders = getAuthProviders(environment);
+            Set<AuthProvider> authProviders = getAllAuthProviders(environment);
             for (AuthProvider authProvider : authProviders) {
                 authProviderTypeSet.add(authProvider.getAuthProviderType());
             }
             return authProviderTypeSet;
-        } else {
-            return Arrays.stream(explicitlyActivatedAuthProviderTypesStr.split(",")).map(AuthProviderType::valueOf).collect(Collectors.toSet());
         }
     }
 
     public static Set<AuthProvider> getAuthProviderForType(Environment environment, AuthProviderType authProviderType) {
-        Set<AuthProvider> authProviders = getAuthProviders(environment);
+        Set<AuthProvider> authProviders = getActiveAuthProviders(environment);
         return authProviders.stream().filter(authProvider -> authProvider.getAuthProviderType() == authProviderType).collect(Collectors.toSet());
     }
 
-    public static Set<AuthProvider> getAuthProviders(Environment environment) {
-        String activeProviderStr = environment.getProperty("security.activeProviders");
-        if (StringUtils.isBlank(activeProviderStr)) {
-            return new LinkedHashSet<>();
-        } else {
+    public static Set<AuthProvider> getActiveAuthProviders(Environment environment) {
+        Set<AuthProviderType> activeAuthProviderTypes = getActiveAuthProviderTypes(environment);
+        Set<AuthProvider> authProviders = getAllAuthProviders(environment);
+        Set<AuthProvider> activeAuthProviders = new LinkedHashSet<>();
+        for (AuthProvider authProvider : authProviders) {
+            if (activeAuthProviderTypes.contains(authProvider.getAuthProviderType())) {
+                activeAuthProviders.add(authProvider);
+            }
+        }
+        return activeAuthProviders;
+    }
+
+    private static Set<AuthProvider> getAllAuthProviders(Environment environment) {
+        return authProvidersMap.computeIfAbsent(environment, e -> {
+            String activeProviderStr = e.getProperty("security.activeProviders");
             Set<AuthProvider> authProviderSet = new LinkedHashSet<>();
-            String[] activeProviders = activeProviderStr.split(",");
-            for (String activeProvider : activeProviders) {
-                AuthProvider authProvider = getAuthProvider(activeProvider);
-                authProviderSet.add(authProvider);
+            if (StringUtils.isNotBlank(activeProviderStr)) {
+                String[] activeProviders = activeProviderStr.split(",");
+                for (String activeProvider : activeProviders) {
+                    AuthProvider authProvider = getAuthProvider(activeProvider);
+                    authProviderSet.add(authProvider);
+                }
             }
             return authProviderSet;
-        }
+        });
     }
 
     public static AuthProvider getAuthProvider(String fullProviderId) {

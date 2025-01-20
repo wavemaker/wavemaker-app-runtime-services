@@ -34,7 +34,7 @@ public class AuthenticationEntryPointRegistry {
         return authenticationEntryPoints.get(authProvider);
     }
 
-    public AuthenticationEntryPoint getDefaultAuthenticationEntryPoint() {
+    public AuthenticationEntryPoint getUniqueAuthenticationEntryPoint() {
         if (authenticationEntryPoints.size() == 1) {
             return authenticationEntryPoints.values().iterator().next();
         }
