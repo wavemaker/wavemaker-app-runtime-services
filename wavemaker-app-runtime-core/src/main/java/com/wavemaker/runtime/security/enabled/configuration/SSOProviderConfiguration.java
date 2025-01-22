@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.enabled.configuration;
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 
@@ -32,7 +33,9 @@ import com.wavemaker.app.security.models.Permission;
 import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.SessionTimeoutConfig;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
-import com.wavemaker.runtime.security.entrypoint.AuthenticationEntryPointRegistry;
+import com.wavemaker.runtime.security.model.AuthProvider;
+import com.wavemaker.runtime.security.model.AuthenticationMode;
+import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
 
 @Configuration
 @Conditional({SecurityEnabledCondition.class, SSOProviderCondition.class})
@@ -49,12 +52,9 @@ public class SSOProviderConfiguration implements WMSecurityConfiguration {
     @Lazy
     private SessionTimeoutConfig sessionTimeoutConfig;
 
-    @Autowired
-    private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
-
     @PostConstruct
     public void init() {
-        if (isUniqueAuthenticationEntryPoint()) {
+        if (isSingleSSOAsActiveProvider()) {
             loginConfig.setType(LoginType.SSO);
             sessionTimeoutConfig.setType(LoginType.SSO);
         }
@@ -70,7 +70,18 @@ public class SSOProviderConfiguration implements WMSecurityConfiguration {
         //no common Filters
     }
 
-    private boolean isUniqueAuthenticationEntryPoint() {
-        return authenticationEntryPointRegistry.getUniqueAuthenticationEntryPoint() != null;
+    private boolean isSingleSSOAsActiveProvider() {
+        Set<AuthProvider> authProviders = SecurityPropertyUtils.getActiveAuthProviders(environment);
+        int ssoProvidersCount = 0;
+        for (AuthProvider authProvider : authProviders) {
+            AuthenticationMode authenticationMode = authProvider.getAuthProviderType().getAuthenticationMode();
+            if (authenticationMode == AuthenticationMode.USERNAME_PASSWORD) {
+                return false;
+            }
+            if (authenticationMode == AuthenticationMode.SSO) {
+                ssoProvidersCount++;
+            }
+        }
+        return ssoProvidersCount == 1;
     }
 }
