@@ -17,8 +17,6 @@ package com.wavemaker.runtime.security.provider.database.authorities;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
-
 import org.hibernate.Session;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,16 +38,6 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     private String rolePrefix = "ROLE_";
     private static final String LOGGED_IN_USERNAME = ":LOGGED_IN_USERNAME";
 
-    @PostConstruct
-    protected void init() {
-        if (authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
-            authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, COLON_USERNAME);
-        }
-        if (authoritiesByUsernameQuery.contains(Q_MARK)) {
-            authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(Q_MARK, COLON_USERNAME);
-        }
-    }
-
     @Override
     public List<GrantedAuthority> loadAuthorities(AuthenticationContext authenticationContext) {
         return getTransactionTemplate()
@@ -62,6 +50,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     public void setAuthoritiesByUsernameQuery(final String authoritiesByUsernameQuery) {
         this.authoritiesByUsernameQuery = authoritiesByUsernameQuery;
+        updateAuthoritiesByUsernameQuery();
     }
 
     public String getRolePrefix() {
@@ -70,6 +59,15 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     public void setRolePrefix(final String rolePrefix) {
         this.rolePrefix = rolePrefix;
+    }
+
+    private void updateAuthoritiesByUsernameQuery() {
+        if (authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
+            authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, COLON_USERNAME);
+        }
+        if (authoritiesByUsernameQuery.contains(Q_MARK)) {
+            authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(Q_MARK, COLON_USERNAME);
+        }
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(final Session session, final String username) {
