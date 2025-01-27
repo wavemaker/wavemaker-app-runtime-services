@@ -22,6 +22,7 @@ import com.wavemaker.app.security.models.config.cas.CASProviderConfig;
 import com.wavemaker.app.security.models.config.custom.CustomProviderConfig;
 import com.wavemaker.app.security.models.config.database.DatabaseProviderConfig;
 import com.wavemaker.app.security.models.config.demo.DemoProviderConfig;
+import com.wavemaker.app.security.models.config.dmp.DmpProviderConfig;
 import com.wavemaker.app.security.models.config.jws.JWSProviderConfig;
 import com.wavemaker.app.security.models.config.ldap.LdapProviderConfig;
 import com.wavemaker.app.security.models.config.opaque.OpaqueTokenProviderConfig;
@@ -45,6 +46,7 @@ import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
     @JsonSubTypes.Type(value = SAMLProviderConfig.class, name = SAMLProviderConfig.SAML),
     @JsonSubTypes.Type(value = JWSProviderConfig.class, name = JWSProviderConfig.JWS),
     @JsonSubTypes.Type(value = OpaqueTokenProviderConfig.class, name = OpaqueTokenProviderConfig.OPAQUE_TOKEN),
+    @JsonSubTypes.Type(value = DmpProviderConfig.class, name = DmpProviderConfig.DMP),
 })
 public interface SecurityProviderConfig {
     String getType();

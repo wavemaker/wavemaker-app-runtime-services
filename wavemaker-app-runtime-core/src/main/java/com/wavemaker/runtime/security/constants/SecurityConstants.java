@@ -31,6 +31,7 @@ public class SecurityConstants {
     public static final String OPAQUE_PROVIDER = "OPAQUE_TOKEN";
     public static final String JWS_PROVIDER = "JWS";
     public static final String CUSTOM_PROVIDER = "CUSTOM";
+    public static final String DMP_PROVIDER = "DMP";
 
     //session persistence
     public static final String IN_MEMORY = "in-memory";

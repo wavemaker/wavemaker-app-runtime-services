@@ -28,6 +28,7 @@ import static com.wavemaker.runtime.security.constants.SecurityConstants.CAS_PRO
 import static com.wavemaker.runtime.security.constants.SecurityConstants.CUSTOM_PROVIDER;
 import static com.wavemaker.runtime.security.constants.SecurityConstants.DATABASE_PROVIDER;
 import static com.wavemaker.runtime.security.constants.SecurityConstants.DEMO_PROVIDER;
+import static com.wavemaker.runtime.security.constants.SecurityConstants.DMP_PROVIDER;
 import static com.wavemaker.runtime.security.constants.SecurityConstants.JWS_PROVIDER;
 import static com.wavemaker.runtime.security.constants.SecurityConstants.LDAP_PROVIDER;
 import static com.wavemaker.runtime.security.constants.SecurityConstants.OPAQUE_PROVIDER;
@@ -51,7 +52,7 @@ public class SecurityPropertyUtils {
     public static void validateActiveProviders(Environment environment) {
         Set<String> activeProviders = getActiveProviders(environment);
         boolean validActiveProviders = !activeProviders.isEmpty() && Set.of(DEMO_PROVIDER, DATABASE_PROVIDER, LDAP_PROVIDER, AD_PROVIDER, CAS_PROVIDER, SAML_PROVIDER,
-            OPENID_PROVIDER, OPAQUE_PROVIDER, JWS_PROVIDER, CUSTOM_PROVIDER).containsAll(activeProviders);
+            OPENID_PROVIDER, OPAQUE_PROVIDER, JWS_PROVIDER, CUSTOM_PROVIDER, DMP_PROVIDER).containsAll(activeProviders);
         if (!validActiveProviders) {
             throw new IllegalStateException("Invalid value for the security.activeProviders " + activeProviders);
         }
