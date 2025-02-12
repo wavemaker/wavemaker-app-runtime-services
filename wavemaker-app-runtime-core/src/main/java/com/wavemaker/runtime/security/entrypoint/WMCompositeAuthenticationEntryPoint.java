@@ -53,7 +53,12 @@ public class WMCompositeAuthenticationEntryPoint implements AuthenticationEntryP
         }
         if (authenticationEntryPoint == null) {
             logger.info("As multiple AuthenticationEntryPoints is configured, commencing the request to index.html");
-            authenticationEntryPoint = new WMAuthenticationEntryPoint("/index.html");
+            String redirectPage = request.getParameter("redirectTo");
+            String loginFormUrl = "/index.html";
+            if (redirectPage != null) {
+                loginFormUrl = loginFormUrl + "?redirectTo=" + redirectPage;
+            }
+            authenticationEntryPoint = new WMAuthenticationEntryPoint(loginFormUrl);
         }
         authenticationEntryPoint.commence(request, response, authException);
     }
