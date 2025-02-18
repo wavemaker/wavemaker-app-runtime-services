@@ -26,7 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.DatabaseRoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleAttributeNameMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.security.constants.SecurityConstants;
 import com.wavemaker.runtime.security.model.AuthProvider;
 import com.wavemaker.runtime.security.model.AuthProviderType;
 import com.wavemaker.runtime.security.utils.SecurityPropertyUtils;
@@ -70,6 +74,22 @@ public class OpenIdProviderConfigRegistry {
             scopesList.add(openIdScope);
         }
         openIdProviderConfig.setScopes(scopesList);
+        boolean roleMappingEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.openId." + providerId + ".roleMappingEnabled", Boolean.class));
+        if (roleMappingEnabled) {
+            openIdProviderConfig.setRoleMappingEnabled(roleMappingEnabled);
+            String roleProvider = environment.getProperty("security.providers.openId." + providerId + ".roleProvider");
+            if (SecurityConstants.OPENID_PROVIDER.equals(roleProvider)) {
+                RoleAttributeNameMappingConfig roleAttributeNameMappingConfig = new RoleAttributeNameMappingConfig();
+                roleAttributeNameMappingConfig.setRoleAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".roleAttributeName"));
+                openIdProviderConfig.setRoleMappingConfig(roleAttributeNameMappingConfig);
+            } else if ("Database".equals(roleProvider)) {
+                DatabaseRoleMappingConfig databaseRoleMappingConfig = new DatabaseRoleMappingConfig();
+                databaseRoleMappingConfig.setModelName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".database.modelName"));
+                databaseRoleMappingConfig.setQueryType(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".database.queryType", RoleQueryType.class));
+                databaseRoleMappingConfig.setRoleQuery(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".database.rolesByUsernameQuery"));
+                openIdProviderConfig.setRoleMappingConfig(databaseRoleMappingConfig);
+            }
+        }
         return openIdProviderConfig;
     }
 

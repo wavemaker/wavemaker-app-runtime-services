@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.security.provider.authoritiesprovider;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.wavemaker.runtime.security.constants.SecurityConstants;
+import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.DatabaseRoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleAttributeNameMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.provider.database.authorities.DefaultAuthoritiesProviderImpl;
 import com.wavemaker.runtime.security.provider.openid.IdentityProviderUserAuthoritiesProvider;
+import com.wavemaker.runtime.security.provider.openid.OpenIdProviderConfigRegistry;
 
 public class OpenidAuthoritiesProviderManager {
 
@@ -42,16 +46,18 @@ public class OpenidAuthoritiesProviderManager {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private OpenIdProviderConfigRegistry openIdProviderConfigRegistry;
+
     public AuthoritiesProvider getAuthoritiesProvider(String providerId) {
-        boolean roleMappingEnabled = Boolean.TRUE.equals(environment.getProperty("security.providers.openId." + providerId +
-            ".roleMappingEnabled", Boolean.class));
-        String roleProvider = environment.getProperty("security.providers.openId." + providerId + ".roleProvider");
-        if (roleMappingEnabled) {
+        OpenIdProviderConfig openIdProviderConfig = openIdProviderConfigRegistry.getOpenIdProviderConfig(providerId);
+        if (openIdProviderConfig.isRoleMappingEnabled()) {
+            RoleMappingConfig roleMappingConfig = openIdProviderConfig.getRoleMappingConfig();
             return this.authoritiesProviders.computeIfAbsent(providerId, authoritiesProvider -> {
-                if (SecurityConstants.OPENID_PROVIDER.equals(roleProvider)) {
-                    return getOpenidAuthoritiesProvider(providerId);
-                } else if ("Database".equals(roleProvider)) {
-                    return getDatabaseAuthoritiesProvider(providerId);
+                if (roleMappingConfig instanceof RoleAttributeNameMappingConfig roleAttributeNameMappingConfig) {
+                    return getOpenidAuthoritiesProvider(roleAttributeNameMappingConfig);
+                } else if (roleMappingConfig instanceof DatabaseRoleMappingConfig databaseRoleMappingConfig) {
+                    return getDatabaseAuthoritiesProvider(databaseRoleMappingConfig);
                 }
                 return null;
             });
@@ -59,21 +65,21 @@ public class OpenidAuthoritiesProviderManager {
         return null;
     }
 
-    private AuthoritiesProvider getOpenidAuthoritiesProvider(String providerId) {
+    private AuthoritiesProvider getOpenidAuthoritiesProvider(RoleAttributeNameMappingConfig roleAttributeNameMappingConfig) {
         IdentityProviderUserAuthoritiesProvider identityProviderUserAuthoritiesProvider = new IdentityProviderUserAuthoritiesProvider();
-        identityProviderUserAuthoritiesProvider.setRoleAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".roleAttributeName"));
+        identityProviderUserAuthoritiesProvider.setRoleAttributeName(roleAttributeNameMappingConfig.getRoleAttributeName());
         return identityProviderUserAuthoritiesProvider;
     }
 
-    private AuthoritiesProvider getDatabaseAuthoritiesProvider(String providerId) {
+    private AuthoritiesProvider getDatabaseAuthoritiesProvider(DatabaseRoleMappingConfig databaseRoleMappingConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
 
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations)
-            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".database.modelName") + "Template"));
+            applicationContext.getBean(databaseRoleMappingConfig.getModelName() + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager)
-            applicationContext.getBean(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".database.modelName") + "TransactionManager"));
-        defaultAuthoritiesProvider.setHql(Objects.equals(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".database.queryType"), "HQL"));
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".database.rolesByUsernameQuery"));
+            applicationContext.getBean(databaseRoleMappingConfig.getModelName() + "TransactionManager"));
+        defaultAuthoritiesProvider.setHql(databaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(databaseRoleMappingConfig.getRoleQuery());
         return defaultAuthoritiesProvider;
     }
 }
