@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateOperations;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -36,12 +35,7 @@ import com.wavemaker.runtime.security.provider.openid.OpenIdProviderConfigRegist
 
 public class OpenidAuthoritiesProviderManager {
 
-    private static final String SECURITY_PROVIDERS_OPEN_ID = "security.providers.openId.";
-
     private Map<String, AuthoritiesProvider> authoritiesProviders = new ConcurrentHashMap<>();
-
-    @Autowired
-    private Environment environment;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -74,10 +68,9 @@ public class OpenidAuthoritiesProviderManager {
     private AuthoritiesProvider getDatabaseAuthoritiesProvider(DatabaseRoleMappingConfig databaseRoleMappingConfig) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
 
-        defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations)
-            applicationContext.getBean(databaseRoleMappingConfig.getModelName() + "Template"));
-        defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager)
-            applicationContext.getBean(databaseRoleMappingConfig.getModelName() + "TransactionManager"));
+        String modelName = databaseRoleMappingConfig.getModelName();
+        defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext.getBean(modelName + "Template"));
+        defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext.getBean(modelName + "TransactionManager"));
         defaultAuthoritiesProvider.setHql(databaseRoleMappingConfig.getQueryType() == RoleQueryType.HQL);
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(databaseRoleMappingConfig.getRoleQuery());
         return defaultAuthoritiesProvider;

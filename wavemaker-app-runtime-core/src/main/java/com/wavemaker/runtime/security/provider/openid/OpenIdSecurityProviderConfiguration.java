@@ -202,7 +202,7 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
 
     @Bean(name = "openIdProviderConfigRegistry")
     public OpenIdProviderConfigRegistry openIdProviderConfigRegistry() {
-        return new OpenIdProviderConfigRegistry();
+        return new DefaultOpenIdProviderConfigRegistry();
     }
 
     @Bean(name = "openIdAuthenticationSuccessHandler")
