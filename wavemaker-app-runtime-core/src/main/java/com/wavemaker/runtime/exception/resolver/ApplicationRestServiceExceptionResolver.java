@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2022-2023 WaveMaker, Inc.
+ * Copyright (C) 2024-2025 WaveMaker, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     protected ModelAndView doResolveException(
         HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
-        logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
+        logger.error("Error occurred while serving the request with url {} and method {}", request.getRequestURI(),request.getMethod(), ex);
 
         // Validator Errors/ Invalid data validated at controller level
         if (ex instanceof MethodArgumentTypeMismatchException) {
