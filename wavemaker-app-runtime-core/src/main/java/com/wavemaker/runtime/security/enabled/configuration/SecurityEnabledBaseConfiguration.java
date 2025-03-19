@@ -48,6 +48,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.authentication.AuthenticationManagerBeanDefinitionParser;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.FilterInvocation;
@@ -137,7 +138,7 @@ import com.wavemaker.runtime.webprocess.filter.LoginProcessFilter;
 @Conditional(SecurityEnabledCondition.class)
 public class SecurityEnabledBaseConfiguration {
 
-    @Autowired
+    @Autowired(required = false)
     @Lazy
     private List<WMDelegatingAuthenticationProvider> authenticationProvidersList;
 
@@ -172,7 +173,9 @@ public class SecurityEnabledBaseConfiguration {
     @Bean(name = "authenticationManager")
     public AuthenticationManager authenticationManager() {
         try {
-            return new ProviderManager(authenticationProvidersList.stream().map(authenticationProvider -> (AuthenticationProvider) authenticationProvider).toList());
+            return authenticationProvidersList.isEmpty() ?
+                new ProviderManager(new AuthenticationManagerBeanDefinitionParser.NullAuthenticationProvider()) :
+                new ProviderManager(authenticationProvidersList.stream().map(authenticationProvider -> (AuthenticationProvider) authenticationProvider).toList());
         } catch (Exception e) {
             throw new WMRuntimeException(e);
         }
@@ -401,13 +404,13 @@ public class SecurityEnabledBaseConfiguration {
      * prefix should be always lowercase,if it is in camelcase @ConfigurationProperties is unable to read the properties
      */
     @Bean
-    @ConfigurationProperties(prefix = "security.intercepturls")
+    @ConfigurationProperties(prefix = "security.intercept-urls")
     public List<SecurityInterceptUrlEntry> securityInterceptUrlList() {
         return new ArrayList<>();
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "security.approles")
+    @ConfigurationProperties(prefix = "security.app-roles")
     public List<Role> roleList() {
         return new ArrayList<>();
     }
@@ -424,7 +427,7 @@ public class SecurityEnabledBaseConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "security.general.customfilters")
+    @ConfigurationProperties(prefix = "security.general.custom-filters")
     public List<CustomFilter> customFilterList() {
         return new ArrayList<>();
     }

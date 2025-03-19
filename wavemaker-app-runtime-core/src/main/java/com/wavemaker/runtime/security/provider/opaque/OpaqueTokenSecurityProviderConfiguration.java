@@ -95,7 +95,7 @@ public class OpaqueTokenSecurityProviderConfiguration implements WMSecurityConfi
 
     @Bean(name = "opaqueRuntimeDatabaseRoleMappingConfig")
     @Conditional(OpaqueDatabaseRoleProviderCondition.class)
-    @ConfigurationProperties("security.providers.opaqueToken.database")
+    @ConfigurationProperties("security.providers.opaque-token.database")
     public RuntimeDatabaseRoleMappingConfig runtimeDatabaseRoleMappingConfig() {
         return new RuntimeDatabaseRoleMappingConfig();
     }

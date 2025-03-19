@@ -49,13 +49,13 @@ public class JWSAuthoritiesProviderManager {
 
     private AuthoritiesProvider getDatabaseAuthoritiesProvider(String providerId) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(Objects.equals(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".queryType"), RoleQueryType.HQL));
+        defaultAuthoritiesProvider.setHql(Objects.equals(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".database.queryType"), RoleQueryType.HQL));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
-        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".rolesByUsernameQuery"));
+        defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".database.rolesByUsernameQuery"));
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext
-            .getBean(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".modelName") + "Template"));
+            .getBean(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".database.modelName") + "Template"));
         defaultAuthoritiesProvider.setTransactionManager((PlatformTransactionManager) applicationContext
-            .getBean(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".modelName") + "TransactionManager"));
+            .getBean(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".database.modelName") + "TransactionManager"));
         return defaultAuthoritiesProvider;
     }
 }
