@@ -33,6 +33,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.util.HttpRequestUtils;
+
 public class ContentSecurityPolicyFilter extends GenericFilterBean {
 
     @Value("${security.general.csp.enabled}")
@@ -89,7 +91,8 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     }
 
     private boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest);
+        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest) ||
+            !HttpRequestUtils.isAjaxRequest(httpServletRequest);
     }
 
     private String generateRandomNonce(int length) {
