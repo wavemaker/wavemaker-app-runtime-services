@@ -74,9 +74,7 @@ public class BaseSecurityConfiguration {
 
     @Bean(name = "wmFrameOptionsFilter")
     public Filter wmFrameOptionsFilter() {
-        WMFrameOptionsHeaderFilter wmFrameOptionsHeaderFilter = new WMFrameOptionsHeaderFilter();
-        wmFrameOptionsHeaderFilter.setFrameOptions(frameOptions());
-        return wmFrameOptionsHeaderFilter;
+        return new WMFrameOptionsHeaderFilter(frameOptions());
     }
 
     @Bean(name = "frameOptions")
