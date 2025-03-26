@@ -26,6 +26,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -112,6 +113,9 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
     @Autowired
     private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
 
+    @Value("${security.providers.openId.stateLessAuthorizationRequest:false}")
+    private boolean stateLessAuthorizationRequest;
+
     @PostConstruct
     public void init() {
         DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
@@ -192,7 +196,11 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
 
     @Bean(name = "openIDAuthorizationRequestRepository")
     public AuthorizationRequestRepository<? extends OAuth2AuthorizationRequest> openIDAuthorizationRequestRepository() {
-        return new HttpSessionOAuth2AuthorizationRequestRepository();
+        if (stateLessAuthorizationRequest) {
+            return new StatelessAuthorizationRequestRepository();
+        } else {
+            return new HttpSessionOAuth2AuthorizationRequestRepository();
+        }
     }
 
     @Bean(name = "clientRegistrationRepository")
