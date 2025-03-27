@@ -244,10 +244,10 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>build-initialization</id>
+                        <id>pre-compile actions</id>
                         <phase>initialize</phase>
                         <goals>
-                            <goal>build-initialization</goal>
+                            <goal>pre-compile</goal>
                         </goals>
                     </execution>
                     <execution>
@@ -320,7 +320,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven.mavenWarPlugin.version}</version>
                 <configuration>
-                    <packagingExcludes>${maven.war.packagingExcludes}, ${maven.war.ngPackagingExcludes}</packagingExcludes>
+                    <warSourceExcludes>README.md</warSourceExcludes>
                     <webResources>
                         <resource>
                             <directory>target/ui-build/output-files</directory>
@@ -488,6 +488,5 @@
         <profile.props.file>development.properties</profile.props.file>
         <wavemaker.app.build.version>@version@</wavemaker.app.build.version>
         <wavemaker.app.runtime.services.version>@version@</wavemaker.app.runtime.services.version>
-        <maven.war.packagingExcludes>README.md</maven.war.packagingExcludes>
     </properties>
 </project>
