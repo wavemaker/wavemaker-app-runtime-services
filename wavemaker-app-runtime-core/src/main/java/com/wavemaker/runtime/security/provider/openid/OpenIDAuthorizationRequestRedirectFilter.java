@@ -16,7 +16,6 @@ package com.wavemaker.runtime.security.provider.openid;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +25,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.text.StringSubstitutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -45,6 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.wavemaker.commons.auth.oauth2.OAuth2Helper;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
+import com.wavemaker.runtime.security.provider.openid.util.OpenIdUtils;
 
 /**
  * Filter class to redirect the request to the OpenId authentication provider configured in the application.
@@ -134,7 +133,7 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         }
 
         String appPath = HttpRequestUtils.getApplicationBaseUrl(request);
-        String redirectUrl = this.getRedirectUri(clientRegistration, appPath);
+        String redirectUrl = OpenIdUtils.getRedirectUri(clientRegistration.getRegistrationId(), appPath);
 
         Map<String, Object> additionalParameters = new HashMap<>();
         additionalParameters.put(OpenIdConstants.REGISTRATION_ID, clientRegistration.getRegistrationId());
@@ -188,19 +187,6 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
             logger.debug("Authorization Request failed: " + failed, failed);
         }
         response.sendError(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
-    }
-
-    private String getRedirectUri(ClientRegistration clientRegistration, String appPath) {
-        String redirectUrl;
-        String studioUrl = RuntimeEnvironment.getStudioUrl();
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(studioUrl)) {
-            redirectUrl = studioUrl + OpenIdConstants.REDIRECT_URL;
-        } else {
-            redirectUrl = new StringBuilder(appPath).append(OpenIdConstants.REDIRECT_URL).toString();
-        }
-        Map<String, String> valuesMap = Collections.singletonMap(OpenIdConstants.REGISTRATION_ID_URI_VARIABLE_NAME, clientRegistration.getRegistrationId());
-        redirectUrl = StringSubstitutor.replace(redirectUrl, valuesMap);
-        return redirectUrl;
     }
 
 }
