@@ -56,6 +56,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         "displayName",
         "dateFormat",
         "timeFormat",
+        "template",
         "preferBrowserLang",
         "allowedFileUploadExtensions"};
 
@@ -96,7 +97,9 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
                 Properties properties = PropertiesFileUtils.loadFromXml(appPropertiesFile);
                 Map<String, Object> appProperties = new HashMap<>();
                 for (String s : uiProperties) {
-                    appProperties.put(s, properties.get(s));
+                    if (properties.containsKey(s)) {
+                        appProperties.put(s, properties.getProperty(s));
+                    }
                 }
                 if ("APPLICATION".equals(getApplicationType(appProperties))) {
                     appProperties.put("securityEnabled", securityService.isSecurityEnabled());
