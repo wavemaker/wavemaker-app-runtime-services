@@ -147,9 +147,16 @@ public class RestInvocationHandler implements InvocationHandler {
                 httpRequestData.getHttpHeaders().addIfAbsent(headerName, headerValue);
             });
         String[] split = method.getAnnotation(RequestLine.class).value().split(" ");
-        HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId,
-            split[1].contains("?") ? split[1].subSequence(0, split[1].indexOf("?")).toString() : split[1],
-            split[0],
+        String path = "";
+        if (split.length > 1) {
+            String relativePath = split[1];
+            if (relativePath.contains("?")) {
+                path = relativePath.subSequence(0, relativePath.indexOf("?")).toString();
+            } else {
+                path = relativePath;
+            }
+        }
+        HttpResponseDetails responseDetails = restRuntimeService.executeRestCall(serviceId, path, split[0],
             httpRequestData, RestExecutor.getRequestContextThreadLocal(), encodingMode);
 
         try {
