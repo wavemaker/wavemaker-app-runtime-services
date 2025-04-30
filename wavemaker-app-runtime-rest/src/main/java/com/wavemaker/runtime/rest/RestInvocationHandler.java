@@ -41,10 +41,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
 
-import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.rest.WmFileSystemResource;
 import com.wavemaker.runtime.commons.WMObjectMapper;
+import com.wavemaker.runtime.rest.exception.RestInvocationFailedException;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.model.Message;
@@ -161,7 +161,8 @@ public class RestInvocationHandler implements InvocationHandler {
 
         try {
             if (method.getReturnType() != void.class) {
-                if (responseDetails.getStatusCode() >= 200 && responseDetails.getStatusCode() < 300) {
+                int statusCode = responseDetails.getStatusCode();
+                if (statusCode >= 200 && statusCode < 300) {
                     if (method.getGenericReturnType() instanceof ParameterizedType) {
                         return WMObjectMapper.getInstance().readValue(responseDetails.getBody(),
                             WMObjectMapper.getInstance().getTypeFactory()
@@ -171,8 +172,9 @@ public class RestInvocationHandler implements InvocationHandler {
                     }
                     return WMObjectMapper.getInstance().readValue(responseDetails.getBody(), method.getReturnType());
                 } else {
-                    logger.error(IOUtils.toString(responseDetails.getBody(), Charset.defaultCharset()));
-                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.$RestServiceInvocationError"), responseDetails.getStatusCode());
+                    String body = IOUtils.toString(responseDetails.getBody(), Charset.defaultCharset());
+                    logger.info("Request {} failed with statusCode {} and response body {}", path, statusCode, body);
+                    throw new RestInvocationFailedException(statusCode, body);
                 }
 
             }
