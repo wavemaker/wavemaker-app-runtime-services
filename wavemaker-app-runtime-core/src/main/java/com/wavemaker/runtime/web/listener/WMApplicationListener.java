@@ -136,6 +136,11 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic activeThemeFilter = registerDelegatingFilterProxyFilter(servletContext, "activeThemeReplacementFilter");
         activeThemeFilter.addMappingForUrlPatterns(null, true, "/*");
 
+        FilterRegistration.Dynamic baseHrefReplacementFilter = registerDelegatingFilterProxyFilter(servletContext, "baseHrefReplacementFilter");
+        baseHrefReplacementFilter.addMappingForUrlPatterns(null, true, "/*");
+
+        FilterRegistration.Dynamic ngRoutingFilter = registerDelegatingFilterProxyFilter(servletContext, "ngRoutingFilter");
+        ngRoutingFilter.addMappingForUrlPatterns(null, true, "/*");
     }
 
     private FilterRegistration.Dynamic registerFilter(ServletContext servletContext, String filterName, Filter filter) {

@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.runtime.RuntimeEnvironment;
+import com.wavemaker.runtime.web.matcher.RequestMatcherConfig;
 import com.wavemaker.runtime.web.wrapper.CDNUrlReplacementServletResponseWrapper;
 
 public class CDNUrlReplacementFilter extends GenericFilterBean {
@@ -44,8 +44,6 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
     private static final String DEFAULT_CDN_URL = ".";
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
 
-    private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
-    private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
     private String cdnUrl;
     @Value("${app.build.ui.mode}")
     private String buildMode;
@@ -74,7 +72,7 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        if (requestMatches(httpServletRequest)) {
+        if (RequestMatcherConfig.matchesIndexAndPageRequest(httpServletRequest)) {
             cdnUrlReplacementFilterLogger.debug("Replacing _cdnUrl_ placeholder with the value : {}", cdnUrl);
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
             CDNUrlReplacementServletResponseWrapper cdnUrlReplacementServletResponseWrapper = new CDNUrlReplacementServletResponseWrapper(httpServletResponse);
@@ -88,9 +86,5 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
             return;
         }
         chain.doFilter(servletRequest, servletResponse);
-    }
-
-    protected boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest);
     }
 }

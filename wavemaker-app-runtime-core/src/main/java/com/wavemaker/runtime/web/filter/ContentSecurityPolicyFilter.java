@@ -30,10 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.wavemaker.commons.util.HttpRequestUtils;
+import com.wavemaker.runtime.web.matcher.RequestMatcherConfig;
 
 public class ContentSecurityPolicyFilter extends GenericFilterBean {
 
@@ -43,15 +42,13 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     @Value("${security.general.csp.policy}")
     private String cspPolicy;
 
+    public static final int LENGTH = 12;
     private boolean nonceReplacementNeeded;
 
     private static final String NONCE_VALUE_PATTERN = "\\$\\{NONCE_VALUE\\}";
     private static final String NONCE_PLACEHOLDER = "${NONCE_VALUE}";
     private static final String CSP_HEADER = "Content-Security-Policy";
     private static final Logger logger = LoggerFactory.getLogger(ContentSecurityPolicyFilter.class);
-
-    private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
-    private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
 
     @Override
     protected void initFilterBean() {
@@ -69,10 +66,10 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        if (cspEnabled && requestMatches(httpServletRequest)) {
+        if (cspEnabled && RequestMatcherConfig.matchesIndexHtmlRequest(httpServletRequest)) {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             if (nonceReplacementNeeded) {
-                String nonce = generateRandomNonce(12);
+                String nonce = generateRandomNonce();
                 httpServletResponse.addHeader(CSP_HEADER, cspPolicy.replace(NONCE_PLACEHOLDER, nonce));
                 CSPResponseWrapper cspResponseWrapper = new CSPResponseWrapper(httpServletResponse);
                 chain.doFilter(httpServletRequest, cspResponseWrapper);
@@ -90,12 +87,7 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
         chain.doFilter(request, response);
     }
 
-    private boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest) ||
-            !HttpRequestUtils.isAjaxRequest(httpServletRequest);
-    }
-
-    private String generateRandomNonce(int length) {
-        return RandomStringUtils.randomAlphanumeric(length);
+    private String generateRandomNonce() {
+        return RandomStringUtils.secureStrong().nextAlphanumeric(LENGTH);
     }
 }

@@ -28,10 +28,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.runtime.service.AppRuntimeServiceImpl;
+import com.wavemaker.runtime.web.matcher.RequestMatcherConfig;
 import com.wavemaker.runtime.web.wrapper.ActiveThemeReplacementServletResponseWrapper;
 
 public class ActiveThemeReplacementFilter extends GenericFilterBean {
@@ -39,21 +39,21 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveThemeReplacementFilter.class);
 
-    private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
-    private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
     @Autowired
     private AppRuntimeServiceImpl appRuntimeService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        if (requestMatches(httpServletRequest)) {
+        if (RequestMatcherConfig.matchesIndexAndPageRequest(httpServletRequest)) {
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
             ActiveThemeReplacementServletResponseWrapper activeThemeReplacementServletResponseWrapper =
                 new ActiveThemeReplacementServletResponseWrapper(httpServletResponse);
             chain.doFilter(httpServletRequest, activeThemeReplacementServletResponseWrapper);
             String response = new String(activeThemeReplacementServletResponseWrapper.getByteArray());
-            response = response.replace(ACTIVE_THEME_PLACEHOLDER, appRuntimeService.getActiveTheme());
+            String activeTheme = appRuntimeService.getActiveTheme();
+            logger.debug("Replacing activeTheme placeholder with the value : {}", activeTheme);
+            response = response.replace(ACTIVE_THEME_PLACEHOLDER, activeTheme);
             httpServletResponse.setContentLengthLong(response.getBytes().length);
             PrintWriter writer = httpServletResponse.getWriter();
             writer.write(response);
@@ -61,9 +61,5 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
             return;
         }
         chain.doFilter(servletRequest, servletResponse);
-    }
-
-    protected boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest);
     }
 }
