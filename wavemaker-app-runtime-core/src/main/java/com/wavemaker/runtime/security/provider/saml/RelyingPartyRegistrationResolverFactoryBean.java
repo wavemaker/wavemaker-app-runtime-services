@@ -34,7 +34,6 @@ import java.security.cert.X509Certificate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
@@ -44,17 +43,15 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 
 import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
+import com.wavemaker.app.security.models.saml.MetadataSource;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
-import com.wavemaker.app.security.models.saml.MetadataSource;
 
 public class RelyingPartyRegistrationResolverFactoryBean implements FactoryBean<RelyingPartyRegistrationResolver> {
 
     @Autowired
     private Environment environment;
-    @Value("${security.providers.saml.entityBaseURL:#{null}}")
-    private String applicationUri;
     @Autowired
     private SAMLProviderConfig samlProviderConfig;
 
@@ -64,11 +61,12 @@ public class RelyingPartyRegistrationResolverFactoryBean implements FactoryBean<
     private static final String PROVIDERS_SAML_IDP_METADATA_SOURCE = "security.providers.saml.idpMetadataSource";
     private static final String PROVIDERS_SAML_IDP_METADATA_FILE = "security.providers.saml.idpMetadataFile";
     private static final String PROVIDERS_SAML_IDP_METADATA_URL = "security.providers.saml.idpMetadataUrl";
+    private static final String PROVIDERS_SAML_ENTITY_BASE_URL = "security.providers.saml.entityBaseURL";
 
     @Override
     public RelyingPartyRegistrationResolver getObject() throws Exception {
         WMRelyingPartyRegistrationResolver relyingPartyRegistrationResolver = new WMRelyingPartyRegistrationResolver(relyingPartyRegistrations());
-        relyingPartyRegistrationResolver.setApplicationUri(applicationUri);
+        relyingPartyRegistrationResolver.setApplicationUri(environment.getProperty(PROVIDERS_SAML_ENTITY_BASE_URL, "#{null}"));
         return relyingPartyRegistrationResolver;
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2022-2023 WaveMaker, Inc.
+ * Copyright (C) 2024-2025 WaveMaker, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.runtime.data.datasource;
 
-/**
- * Created by kishorer on 17/12/15.
- */
-public enum DataSourceType {
-    WM_MANAGED_DATASOURCE,
-    JNDI_DATASOURCE;
+package com.wavemaker.app.security.models.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface FrameworkProfileProperty {
+    String value();
+
+    String defaultRef() default "";
 }

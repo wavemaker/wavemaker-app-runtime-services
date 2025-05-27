@@ -70,6 +70,7 @@ import com.wavemaker.app.security.models.SecurityInterceptUrlEntry;
 import com.wavemaker.app.security.models.config.rolemapping.RoleQueryType;
 import com.wavemaker.app.security.models.config.saml.SAMLConfig;
 import com.wavemaker.app.security.models.config.saml.SAMLProviderConfig;
+import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.security.config.WMSecurityConfiguration;
 import com.wavemaker.runtime.security.core.AuthoritiesProvider;
 import com.wavemaker.runtime.security.enabled.configuration.SecurityEnabledCondition;
@@ -162,7 +163,12 @@ public class SAMLSecurityProviderConfiguration implements WMSecurityConfiguratio
     @Bean(name = "samlConfig")
     public SAMLConfig samlConfig(SAMLProviderConfig samlProviderConfig) {
         SAMLConfig samlConfig = new SAMLConfig();
-        samlConfig.setValidateType(samlProviderConfig.getUrlValidateType());
+        //TODO : handle ProfileOverriddenProperties from environment
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            samlConfig.setValidateType(SAMLConfig.ValidateType.RELAXED);
+        } else {
+            samlConfig.setValidateType(samlProviderConfig.getUrlValidateType());
+        }
         samlConfig.setIdpMetadataUrl(samlProviderConfig.getIdpMetadataUrl());
         samlConfig.setIdpMetadataFileLocation(samlProviderConfig.getIdpMetadataFile());
         samlConfig.setMetadataSource(samlProviderConfig.getIdpMetadataSource());
