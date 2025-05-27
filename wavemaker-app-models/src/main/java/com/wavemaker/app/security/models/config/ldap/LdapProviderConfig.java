@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.ldap;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
@@ -38,19 +37,19 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     private String testDn;
     private String testPassword;
 
-    @NonProfilizableProperty("${security.providers.ldap.rootDn}")
+    @ProfilizableProperty("${security.providers.ldap.rootDn}")
     private String rootDn;
 
     @ProfilizableProperty("${security.providers.ldap.userSearchPattern}")
     private String userDnPattern;
 
-    @ProfilizableProperty(value = "${security.providers.ldap.roleMappingEnabled}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ldap.roleMappingEnabled}")
     private boolean roleMappingEnabled;
 
     @ProfilizableProperty("${security.providers.ldap.groupSearchBase}")
     private String groupSearchBase;
 
-    @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}")
     private String roleProvider;
 
     private RoleMappingConfig roleMappingConfig;

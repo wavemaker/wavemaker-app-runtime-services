@@ -16,7 +16,6 @@ package com.wavemaker.app.security.models;
 
 import jakarta.validation.constraints.NotEmpty;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 /**
@@ -28,11 +27,11 @@ public class CSRFConfig {
     private boolean enforceCsrfSecurity;
 
     @NotEmpty
-    @NonProfilizableProperty("${security.general.xsrf.headerName}")
+    @ProfilizableProperty("${security.general.xsrf.headerName}")
     private String headerName;
 
     @NotEmpty
-    @NonProfilizableProperty("${security.general.xsrf.cookieName}")
+    @ProfilizableProperty("${security.general.xsrf.cookieName}")
     private String cookieName;
 
     public boolean isEnforceCsrfSecurity() {

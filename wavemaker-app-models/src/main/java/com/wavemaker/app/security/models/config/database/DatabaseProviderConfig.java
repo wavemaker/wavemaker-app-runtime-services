@@ -16,7 +16,7 @@ package com.wavemaker.app.security.models.config.database;
 
 import jakarta.validation.constraints.NotBlank;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 
 /**
@@ -26,7 +26,7 @@ public class DatabaseProviderConfig extends AbstractProviderConfig {
 
     public static final String DATABASE = "DATABASE";
 
-    @NonProfilizableProperty(value = "${security.providers.database.modelName}")
+    @ProfilizableProperty(value = "${security.providers.database.modelName}")
     @NotBlank
     private String modelName;
 
@@ -60,7 +60,7 @@ public class DatabaseProviderConfig extends AbstractProviderConfig {
 
     private boolean useRolesQuery;
 
-    @NonProfilizableProperty(value = "${security.providers.database.rolesByUsernameQuery:null}")
+    @ProfilizableProperty(value = "${security.providers.database.rolesByUsernameQuery}")
     private String rolesByUsernameQuery;
 
     private String tenantIdField;
@@ -69,10 +69,10 @@ public class DatabaseProviderConfig extends AbstractProviderConfig {
 
     private String tenantIdPropertyName;
 
-    @NonProfilizableProperty(value = "${security.providers.database.queryType:HQL}")
+    @ProfilizableProperty(value = "${security.providers.database.queryType}")
     private String queryType;
 
-    @NonProfilizableProperty("${security.providers.database.usersByUsernameQuery}")
+    @ProfilizableProperty("${security.providers.database.usersByUsernameQuery}")
     private String usersByUsernameQuery;
 
     @Override

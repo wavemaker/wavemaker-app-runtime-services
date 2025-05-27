@@ -237,6 +237,20 @@
     <bean id="deleteMethodInvocationHandler" class="com.wavemaker.runtime.data.aop.DeleteMethodInvocationHandler"/>
 
     <bean id="restExecutor" class="com.wavemaker.runtime.rest.RestExecutor"/>
+    <bean class="com.wavemaker.commons.properties.EnvironmentRegisteringPropertySourcesPlaceHolderConfigurer"
+          id="runtimePropertySourcesPlaceHolderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath:db-runtime.properties</value>
+            </list>
+        </property>
+        <property name="propertySourceName" value="runtimeFrameworkProperties"/>
+    </bean>
+
+    <bean class="com.wavemaker.runtime.core.props.AppPropertySourcesPlaceHolderConfigurer" id="appPropertySourcesPlaceHolderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
 
     <beans profile="wm_preview">
         <bean id="querycontroller" class="com.wavemaker.runtime.data.controller.QueryTestRunController"/>

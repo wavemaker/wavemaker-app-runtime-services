@@ -31,6 +31,4 @@ import org.springframework.core.annotation.AliasFor;
 public @interface ProfilizableProperty {
     @AliasFor(annotation = Value.class)
     String value();
-
-    boolean autoUpdate() default false;
 }

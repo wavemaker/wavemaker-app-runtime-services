@@ -16,7 +16,7 @@ package com.wavemaker.app.security.models.config.custom;
 
 import jakarta.validation.Valid;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
+import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 
 /**
@@ -27,7 +27,7 @@ public class CustomProviderConfig extends AbstractProviderConfig {
     public static final String CUSTOM = "CUSTOM";
 
     @Valid
-    @NonProfilizableProperty(value = "${security.providers.custom.class}")
+    @ProfilizableProperty(value = "${security.providers.custom.class}")
     private String fqCustomAuthenticationManagerClassName;
 
     @Override

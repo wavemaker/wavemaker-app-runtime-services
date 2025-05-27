@@ -16,12 +16,14 @@
 package com.wavemaker.runtime.core.props;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
 
 import jakarta.servlet.ServletContext;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.core.io.Resource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringValueResolver;
 import org.springframework.web.context.ServletContextAware;
 
@@ -29,14 +31,17 @@ import com.wavemaker.commons.properties.EnvironmentRegisteringPropertySourcesPla
 import com.wavemaker.commons.util.DefaultYamlProcessor;
 import com.wavemaker.commons.util.StringUtils;
 import com.wavemaker.commons.util.SystemUtils;
+import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 import com.wavemaker.runtime.data.util.DataServiceUtils;
 
 public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegisteringPropertySourcesPlaceHolderConfigurer implements ServletContextAware {
 
+    private static final String DEVELOPMENT = "development";
+    private static final String APPLICATION_YAML = "application.yaml";
     private ServletContext servletContext;
 
-    private Resource[] yamlLocations;
+    private Environment environment;
 
     @Override
     protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
@@ -53,8 +58,16 @@ public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegister
 
     @Override
     protected void loadProperties(Properties props) throws IOException {
+        String activeProfile = environment.getProperty("spring.profiles.active");
         DefaultYamlProcessor defaultYamlProcessor = new DefaultYamlProcessor();
-        defaultYamlProcessor.setResources(yamlLocations);
+        String filePath;
+        if (RuntimeEnvironment.isTestRunEnvironment() || org.apache.commons.lang3.StringUtils.isBlank(activeProfile)
+            || Objects.equals(activeProfile, DEVELOPMENT)) {
+            filePath = APPLICATION_YAML;
+        } else {
+            filePath = "application-" + activeProfile + ".yaml";
+        }
+        defaultYamlProcessor.setResources(new ClassPathResource(filePath));
         props.putAll(defaultYamlProcessor.getProperties());
         super.loadProperties(props);
     }
@@ -96,7 +109,9 @@ public class AppPropertySourcesPlaceHolderConfigurer extends EnvironmentRegister
         this.servletContext = servletContext;
     }
 
-    public void setYamlLocations(Resource[] yamlLocations) {
-        this.yamlLocations = yamlLocations;
+    @Override
+    public void setEnvironment(Environment environment) {
+        super.setEnvironment(environment);
+        this.environment = environment;
     }
 }

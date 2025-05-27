@@ -16,7 +16,6 @@ package com.wavemaker.app.security.models;
 
 import jakarta.validation.constraints.NotNull;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 /**
@@ -27,11 +26,11 @@ public class XSSConfig {
     @ProfilizableProperty("${security.general.xss.enabled}")
     private boolean enforceXssSecurity;
 
-    @NonProfilizableProperty("${security.general.xss.policyFile}")
+    @ProfilizableProperty("${security.general.xss.policyFile}")
     private String policyFile;
 
     @NotNull
-    @NonProfilizableProperty("${security.general.xss.filterStrategy}")
+    @ProfilizableProperty("${security.general.xss.filterStrategy}")
     private XSSFilterStrategy xssFilterStrategy;
     @NotNull
     private XSSPolicyType policyType;

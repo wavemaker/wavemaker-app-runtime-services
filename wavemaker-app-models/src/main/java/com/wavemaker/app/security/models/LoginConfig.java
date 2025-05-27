@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 /**
@@ -28,13 +27,13 @@ import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
  */
 public class LoginConfig {
     @NotNull
-    @NonProfilizableProperty("${security.general.login.type}")
+    @ProfilizableProperty("${security.general.login.type}")
     private LoginType type;
 
-    @NonProfilizableProperty("${security.general.login.pageName}")
+    @ProfilizableProperty("${security.general.login.pageName}")
     private String pageName;
 
-    @ProfilizableProperty(value = "${security.general.cookie.maxAge:-1}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.cookie.maxAge}")
     private int cookieMaxAge;
 
     @ProfilizableProperty("${security.general.cookie.path}")

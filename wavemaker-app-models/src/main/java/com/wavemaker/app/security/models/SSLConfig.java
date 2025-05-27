@@ -17,7 +17,6 @@ package com.wavemaker.app.security.models;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 
 /**
@@ -30,10 +29,10 @@ public class SSLConfig {
     @ProfilizableProperty(value = "${security.general.ssl.port}")
     private int sslPort = 443;
 
-    @ProfilizableProperty(value = "${security.general.ssl.enabled}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.general.ssl.enabled}")
     private boolean useSSL;
 
-    @NonProfilizableProperty("${security.general.ssl.excludedUrls:#{null}}")
+    @ProfilizableProperty("${security.general.ssl.excludedUrls:#{null}}")
     private String excludedUrls;
 
     public boolean isUseSSL() {

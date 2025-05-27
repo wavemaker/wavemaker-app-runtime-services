@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.ad;
 
-import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
@@ -35,16 +34,16 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.ad.userSearchPattern}")
     private String userSearchPattern;
 
-    @NonProfilizableProperty("${security.providers.ad.testUsername}")
+    @ProfilizableProperty("${security.providers.ad.testUsername}")
     private String testUsername;
 
-    @NonProfilizableProperty("${security.providers.ad.testPassword}")
+    @ProfilizableProperty("${security.providers.ad.testPassword}")
     private String testPassword;
 
-    @ProfilizableProperty(value = "${security.providers.ad.roleMappingEnabled}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ad.roleMappingEnabled}")
     private boolean roleMappingEnabled;
 
-    @ProfilizableProperty(value = "${security.providers.ad.roleProvider}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ad.roleProvider}")
     private String roleProvider;
 
     private RoleMappingConfig roleMappingConfig;

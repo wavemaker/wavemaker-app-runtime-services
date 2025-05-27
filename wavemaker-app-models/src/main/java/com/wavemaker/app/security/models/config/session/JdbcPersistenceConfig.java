@@ -23,7 +23,7 @@ public class JdbcPersistenceConfig implements PersistenceConfig {
 
     public static final String JDBC = "JDBC";
     @NotEmpty
-    @ProfilizableProperty(value = "${security.session.jdbc.serviceName}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.session.jdbc.serviceName}")
     public String serviceName;
 
     public String getServiceName() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2022-2023 WaveMaker, Inc.
+ * Copyright (C) 2024-2025 WaveMaker, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.AliasFor;
-
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Value("")
-public @interface NonProfilizableProperty {
-    @AliasFor(annotation = Value.class)
+public @interface FrameworkProfileProperty {
     String value();
+
+    String defaultRef() default "";
 }

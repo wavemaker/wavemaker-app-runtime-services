@@ -30,7 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.data.constants.DBType;
+import com.wavemaker.app.db.constants.DBType;
 import com.wavemaker.runtime.data.datasource.WMDataSource;
 
 public class JdbcSessionScriptInitializer {
@@ -56,8 +56,7 @@ public class JdbcSessionScriptInitializer {
                 LOGGER.debug("Skipping SPRING_SESSION table creation as it already exists");
             } else {
                 ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
-                ClassPathResource classPathResource =
-                    new ClassPathResource("org/springframework/session/jdbc/schema-" + extractDbType(dataSource.getConnection().getMetaData().getURL()) + ".sql");
+                ClassPathResource classPathResource = new ClassPathResource(getSchemaFileFromJdbcUrl(dataSource.getConnection().getMetaData().getURL()));
                 LOGGER.debug("executing sql script from resource: {}", classPathResource.getPath());
                 resourceDatabasePopulator.addScript(classPathResource);
                 resourceDatabasePopulator.execute(dataSource);
@@ -67,7 +66,7 @@ public class JdbcSessionScriptInitializer {
         }
     }
 
-    private String extractDbType(String url) {
+    private String getSchemaFileFromJdbcUrl(String url) {
         String[] connectionUrl = url.split(":");
         String jdbcProtocol = connectionUrl[1];
         DBType[] dbTypes = DBType.values();
@@ -75,7 +74,7 @@ public class JdbcSessionScriptInitializer {
             List<String> supportedJdbcProtocols = dbType.getSupportedJdbcProtocols();
             for (String supportedJdbcProtocol : supportedJdbcProtocols) {
                 if (Objects.equals(jdbcProtocol, supportedJdbcProtocol)) {
-                    return dbType.getSpringSessionSchemaType();
+                    return dbType.getSpringSessionSchemaCreationFile();
                 }
             }
         }
