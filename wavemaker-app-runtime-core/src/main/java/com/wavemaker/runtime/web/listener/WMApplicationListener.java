@@ -15,6 +15,8 @@
 
 package com.wavemaker.runtime.web.listener;
 
+import java.util.Set;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.MultipartConfigElement;
@@ -136,6 +138,12 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic activeThemeFilter = registerDelegatingFilterProxyFilter(servletContext, "activeThemeReplacementFilter");
         activeThemeFilter.addMappingForUrlPatterns(null, true, "/*");
 
+        Set<String> resourcePaths = servletContext.getResourcePaths("/_next");
+        if (resourcePaths != null && !resourcePaths.isEmpty()) {
+            FilterRegistration.Dynamic reactRoutingFilter = registerDelegatingFilterProxyFilter(servletContext, "reactRoutingFilter");
+            logger.debug("Registering React filter : {} ", reactRoutingFilter);
+            reactRoutingFilter.addMappingForUrlPatterns(null, true, "/*");
+        }
     }
 
     private FilterRegistration.Dynamic registerFilter(ServletContext servletContext, String filterName, Filter filter) {

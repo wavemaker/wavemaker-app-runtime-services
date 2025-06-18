@@ -72,6 +72,7 @@
 
     <bean id="activeThemeReplacementFilter" class="com.wavemaker.runtime.web.filter.ActiveThemeReplacementFilter"/>
 
+    <bean id="reactRoutingFilter" class="com.wavemaker.runtime.web.filter.ReactRoutingFilter"/>
     <bean id="formContentFilter" class="org.springframework.web.filter.FormContentFilter"/>
 
     <bean id="cacheFilterConfigFactory" class="com.wavemaker.runtime.filter.etag.CacheFilterConfigFactoryBean"/>
