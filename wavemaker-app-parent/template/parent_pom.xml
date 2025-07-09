@@ -459,7 +459,8 @@
             <!-- Added this, to avoid spring-jcl and commons-logging and use jcl-over-slf4j as alternative which bridges the logging to slf4j -->
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-jcl</artifactId>
+		<artifactId>spring-jcl</artifactId>
+	        <version>${springFramework.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
