@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
@@ -47,6 +48,20 @@ public class HttpResponseUtils {
                 }
                 return httpCookieList;
             }
+        }
+        return httpCookieList;
+    }
+
+    public static List<HttpCookie> getCookies(ResponseEntity httpResponseDetails) {
+        List<HttpCookie> httpCookieList = new ArrayList<>();
+        Map<String, List<String>> responseHeaders = httpResponseDetails.getHeaders();
+        List<String> setCookieHeaderValues = responseHeaders.get(SET_COOKIE_HEADER);
+        if (CollectionUtils.isNotEmpty(setCookieHeaderValues)) {
+            for (String setCookieHeaderValue : setCookieHeaderValues) {
+                List<HttpCookie> httpCookies = HttpCookie.parse(setCookieHeaderValue);
+                httpCookieList.addAll(httpCookies);
+            }
+            return httpCookieList;
         }
         return httpCookieList;
     }
