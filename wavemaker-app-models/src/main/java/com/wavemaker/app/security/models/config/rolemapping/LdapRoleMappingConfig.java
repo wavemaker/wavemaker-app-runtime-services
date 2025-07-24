@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(as = LdapRoleMappingConfig.class)
 public class LdapRoleMappingConfig implements RoleMappingConfig {
 
+    public static final String LDAP_ROLE = "LDAP_ROLE";
+
     private String groupRoleAttribute;
 
     private String groupSearchFilter;
@@ -38,5 +40,10 @@ public class LdapRoleMappingConfig implements RoleMappingConfig {
 
     public void setGroupSearchFilter(String groupSearchFilter) {
         this.groupSearchFilter = groupSearchFilter;
+    }
+
+    @Override
+    public String getType() {
+        return LDAP_ROLE;
     }
 }

@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(as = ActiveDirectoryRoleMappingConfig.class)
 public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
+
+    public static final String AD_ROLE = "AD_ROLE";
     private String groupRoleAttribute;
 
     public String getGroupRoleAttribute() {
@@ -29,4 +31,8 @@ public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
         this.groupRoleAttribute = groupRoleAttribute;
     }
 
+    @Override
+    public String getType() {
+        return AD_ROLE;
+    }
 }

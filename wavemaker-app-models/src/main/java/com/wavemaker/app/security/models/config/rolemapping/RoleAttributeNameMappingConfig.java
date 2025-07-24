@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(as = RoleAttributeNameMappingConfig.class)
 public class RoleAttributeNameMappingConfig implements RoleMappingConfig {
 
+    public static final String ROLE_ATTR_NAME = "ROLE_ATTR_NAME";
+
     @NotBlank
     private String roleAttributeName;
 
@@ -33,5 +35,10 @@ public class RoleAttributeNameMappingConfig implements RoleMappingConfig {
 
     public void setRoleAttributeName(String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
+    }
+
+    @Override
+    public String getType() {
+        return ROLE_ATTR_NAME;
     }
 }

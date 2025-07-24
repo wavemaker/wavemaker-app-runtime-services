@@ -14,11 +14,21 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.rolemapping;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * Created by jvenugopal on 12-05-2016.
  */
-@JsonDeserialize(using = RoleMappingConfigDeSerializer.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true, include = JsonTypeInfo.As.EXISTING_PROPERTY)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = ActiveDirectoryRoleMappingConfig.class, name = ActiveDirectoryRoleMappingConfig.AD_ROLE),
+    @JsonSubTypes.Type(value = DatabaseRoleMappingConfig.class, name = DatabaseRoleMappingConfig.DB_ROLE),
+    @JsonSubTypes.Type(value = RoleAttributeNameMappingConfig.class, name = RoleAttributeNameMappingConfig.ROLE_ATTR_NAME),
+    @JsonSubTypes.Type(value = LdapRoleMappingConfig.class, name = LdapRoleMappingConfig.LDAP_ROLE),
+})
 public interface RoleMappingConfig {
+    String getType();
 }

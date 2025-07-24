@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(as = DatabaseRoleMappingConfig.class)
 public class DatabaseRoleMappingConfig implements RoleMappingConfig {
 
+    public static final String DB_ROLE = "DATABASE_ROLE";
+
     @NotBlank
     private String modelName;
 
@@ -128,5 +130,10 @@ public class DatabaseRoleMappingConfig implements RoleMappingConfig {
 
     public void setQueryType(RoleQueryType queryType) {
         this.queryType = queryType;
+    }
+
+    @Override
+    public String getType() {
+        return DB_ROLE;
     }
 }
