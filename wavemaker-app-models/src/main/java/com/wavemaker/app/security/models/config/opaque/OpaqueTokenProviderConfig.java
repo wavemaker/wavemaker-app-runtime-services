@@ -18,10 +18,14 @@ package com.wavemaker.app.security.models.config.opaque;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(title = "Opaque Token Security provider")
 public class OpaqueTokenProviderConfig extends AbstractProviderConfig {
 
     public static final String OPAQUE_TOKEN = "OPAQUE_TOKEN";
@@ -42,6 +46,7 @@ public class OpaqueTokenProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.opaqueToken.roleMappingEnabled}")
     private boolean roleMappingEnabled;
     @Valid
+    @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types DatabaseRoleMappingConfig, RoleAttributeNameMappingConfig")
     private RoleMappingConfig roleMappingConfig;
 
     @Override

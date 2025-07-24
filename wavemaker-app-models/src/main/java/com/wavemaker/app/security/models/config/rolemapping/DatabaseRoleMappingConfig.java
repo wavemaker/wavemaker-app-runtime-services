@@ -18,10 +18,13 @@ import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Created by jvenugopal on 12-05-2016.
  */
 @JsonDeserialize(as = DatabaseRoleMappingConfig.class)
+@Schema(title = "DatabaseRoleMappingConfig")
 public class DatabaseRoleMappingConfig implements RoleMappingConfig {
 
     public static final String DB_ROLE = "DATABASE_ROLE";

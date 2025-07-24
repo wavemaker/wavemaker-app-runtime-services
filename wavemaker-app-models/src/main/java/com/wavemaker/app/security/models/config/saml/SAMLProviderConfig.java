@@ -15,14 +15,18 @@
 package com.wavemaker.app.security.models.config.saml;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 import com.wavemaker.app.security.models.saml.MetadataSource;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Created by ArjunSahasranam on 17/10/16.
  */
+@Schema(title = "SAML Security provider")
 public class SAMLProviderConfig extends AbstractProviderConfig {
     public static final String SAML = "SAML";
 
@@ -57,6 +61,7 @@ public class SAMLProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.saml.maxAuthenticationAge}")
     private int maxAuthenticationAge = 7200;
 
+    @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types DatabaseRoleMappingConfig, RoleAttributeNameMappingConfig")
     private RoleMappingConfig roleMappingConfig;
 
     @JsonIgnore

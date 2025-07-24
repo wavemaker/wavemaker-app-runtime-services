@@ -16,18 +16,24 @@ package com.wavemaker.app.security.models.config.custom;
 
 import jakarta.validation.Valid;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Created by venuj on 20-05-2014.
  */
+
+@Schema(title = "Custom Security Provider")
 public class CustomProviderConfig extends AbstractProviderConfig {
 
     public static final String CUSTOM = "CUSTOM";
 
     @Valid
     @NonProfilizableProperty(value = "${security.providers.custom.class}")
+    @JsonPropertyDescription("class name with package is passed to this field, and that class has the logic to authenticate the user.")
     private String fqCustomAuthenticationManagerClassName;
 
     @Override

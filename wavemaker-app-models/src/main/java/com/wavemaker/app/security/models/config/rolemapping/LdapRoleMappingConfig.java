@@ -17,7 +17,10 @@ package com.wavemaker.app.security.models.config.rolemapping;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @JsonDeserialize(as = LdapRoleMappingConfig.class)
+@Schema(title = "LdapRoleMappingConfig")
 public class LdapRoleMappingConfig implements RoleMappingConfig {
 
     public static final String LDAP_ROLE = "LDAP_ROLE";

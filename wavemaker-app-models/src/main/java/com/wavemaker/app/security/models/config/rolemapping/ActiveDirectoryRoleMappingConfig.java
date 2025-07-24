@@ -17,7 +17,10 @@ package com.wavemaker.app.security.models.config.rolemapping;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @JsonDeserialize(as = ActiveDirectoryRoleMappingConfig.class)
+@Schema(title = "ActiveDirectoryRoleMappingConfig")
 public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
 
     public static final String AD_ROLE = "AD_ROLE";
