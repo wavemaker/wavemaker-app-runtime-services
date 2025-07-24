@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(title = "ActiveDirectoryRoleMappingConfig")
 public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
 
-    public static final String AD_ROLE = "AD_ROLE";
+    public static final String ROLE_MAPPING_AD = "ROLE_MAPPING_AD";
     private String groupRoleAttribute;
 
     public String getGroupRoleAttribute() {
@@ -36,6 +36,6 @@ public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
 
     @Override
     public String getType() {
-        return AD_ROLE;
+        return ROLE_MAPPING_AD;
     }
 }

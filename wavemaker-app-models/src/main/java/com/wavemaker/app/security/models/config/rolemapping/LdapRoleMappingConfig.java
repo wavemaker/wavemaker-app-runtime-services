@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(title = "LdapRoleMappingConfig")
 public class LdapRoleMappingConfig implements RoleMappingConfig {
 
-    public static final String LDAP_ROLE = "LDAP_ROLE";
+    public static final String ROLE_MAPPING_LDAP = "ROLE_MAPPING_LDAP";
 
     private String groupRoleAttribute;
 
@@ -47,6 +47,6 @@ public class LdapRoleMappingConfig implements RoleMappingConfig {
 
     @Override
     public String getType() {
-        return LDAP_ROLE;
+        return ROLE_MAPPING_LDAP;
     }
 }

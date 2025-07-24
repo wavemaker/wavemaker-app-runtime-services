@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(title = "DatabaseRoleMappingConfig")
 public class DatabaseRoleMappingConfig implements RoleMappingConfig {
 
-    public static final String DB_ROLE = "DATABASE_ROLE";
+    public static final String ROLE_MAPPING_DATABASE = "ROLE_MAPPING_DATABASE";
 
     @NotBlank
     private String modelName;
@@ -137,6 +137,6 @@ public class DatabaseRoleMappingConfig implements RoleMappingConfig {
 
     @Override
     public String getType() {
-        return DB_ROLE;
+        return ROLE_MAPPING_DATABASE;
     }
 }

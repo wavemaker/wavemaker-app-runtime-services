@@ -24,10 +24,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true, include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = ActiveDirectoryRoleMappingConfig.class, name = ActiveDirectoryRoleMappingConfig.AD_ROLE),
-    @JsonSubTypes.Type(value = DatabaseRoleMappingConfig.class, name = DatabaseRoleMappingConfig.DB_ROLE),
-    @JsonSubTypes.Type(value = RoleAttributeNameMappingConfig.class, name = RoleAttributeNameMappingConfig.ROLE_ATTR_NAME),
-    @JsonSubTypes.Type(value = LdapRoleMappingConfig.class, name = LdapRoleMappingConfig.LDAP_ROLE),
+    @JsonSubTypes.Type(value = ActiveDirectoryRoleMappingConfig.class, name = ActiveDirectoryRoleMappingConfig.ROLE_MAPPING_AD),
+    @JsonSubTypes.Type(value = DatabaseRoleMappingConfig.class, name = DatabaseRoleMappingConfig.ROLE_MAPPING_DATABASE),
+    @JsonSubTypes.Type(value = RoleAttributeNameMappingConfig.class, name = RoleAttributeNameMappingConfig.ROLE_MAPPING_ATTR_NAME),
+    @JsonSubTypes.Type(value = LdapRoleMappingConfig.class, name = LdapRoleMappingConfig.ROLE_MAPPING_LDAP),
 })
 public interface RoleMappingConfig {
     String getType();

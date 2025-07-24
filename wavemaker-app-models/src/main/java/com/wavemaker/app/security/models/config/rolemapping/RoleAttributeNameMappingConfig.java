@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(title = "RoleAttributeNameMappingConfig")
 public class RoleAttributeNameMappingConfig implements RoleMappingConfig {
 
-    public static final String ROLE_ATTR_NAME = "ROLE_ATTR_NAME";
+    public static final String ROLE_MAPPING_ATTR_NAME = "ROLE_MAPPING_ATTR_NAME";
 
     @NotBlank
     private String roleAttributeName;
@@ -42,6 +42,6 @@ public class RoleAttributeNameMappingConfig implements RoleMappingConfig {
 
     @Override
     public String getType() {
-        return ROLE_ATTR_NAME;
+        return ROLE_MAPPING_ATTR_NAME;
     }
 }
