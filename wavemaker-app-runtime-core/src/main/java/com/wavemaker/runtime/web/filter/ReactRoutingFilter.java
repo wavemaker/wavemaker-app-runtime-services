@@ -34,15 +34,16 @@ import org.springframework.web.util.UrlPathHelper;
 public class ReactRoutingFilter extends GenericFilterBean {
 
     private static final Logger reactRoutelogger = LoggerFactory.getLogger(ReactRoutingFilter.class);
-    private final AntPathRequestMatcher pagePathMatcher = new AntPathRequestMatcher("/page/*");
+    private final AntPathRequestMatcher pagePathMatcher = new AntPathRequestMatcher("/react-pages/*");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         if (requestMatches(httpRequest)) {
             String uri = new UrlPathHelper().getPathWithinApplication(httpRequest);
-            boolean endsWithHtml = uri.toLowerCase().endsWith(".html");
-            if (!endsWithHtml) {
+            String fileName = uri.substring(uri.lastIndexOf('/') + 1);
+            boolean hasExtension = fileName.contains(".");
+            if (!hasExtension) {
                 String htmlPath = uri + ".html";
                 File htmlFile = new File(getServletContext().getRealPath(htmlPath));
                 if (htmlFile.isFile()) {

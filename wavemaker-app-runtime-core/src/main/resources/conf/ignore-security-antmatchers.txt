@@ -10,6 +10,7 @@
 /**/*.css
 /ng-bundle/**
 /rn-bundle/**
+/react-pages/**
 /config.json
 /types.js
 /pages/Common/**
