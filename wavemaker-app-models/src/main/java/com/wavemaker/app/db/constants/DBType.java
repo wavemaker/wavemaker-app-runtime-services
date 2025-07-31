@@ -13,7 +13,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.wavemaker.studio.core.data.constants;
+package com.wavemaker.app.db.constants;
 
 import java.util.HashMap;
 import java.util.List;

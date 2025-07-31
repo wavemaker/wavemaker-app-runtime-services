@@ -30,7 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.studio.core.data.constants.DBType;
+import com.wavemaker.app.db.constants.DBType;
 import com.wavemaker.runtime.data.datasource.WMDataSource;
 
 public class JdbcSessionScriptInitializer {

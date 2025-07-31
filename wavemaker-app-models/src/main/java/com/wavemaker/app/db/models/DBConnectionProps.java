@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.wavemaker.studio.core.props;
+package com.wavemaker.app.db.models;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ import com.wavemaker.app.db.constants.DataSourceType;
 import com.wavemaker.app.db.util.DBUtils;
 import com.wavemaker.app.security.models.annotation.FrameworkProfileProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
-import com.wavemaker.studio.core.data.constants.DBType;
+import com.wavemaker.app.db.constants.DBType;
 
 /**
  * @author Sunil Kumar
