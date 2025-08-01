@@ -3,6 +3,7 @@
 /app.variables.json
 /login.html
 /favicon.png
+/favicon.ico
 /print.css
 /wmProperties.js
 /**/*.js

@@ -70,6 +70,10 @@ public class AppRuntimeController {
         if (allowedFileUploadExtensions == null) {
             applicationProperties.put(FileUploadConstants.ALLOWED_FILE_UPLOAD_EXTENSIONS, FileUploadConstants.DEFAULT_ALLOWED_FILE_UPLOAD_EXTENSIONS);
         }
+        Object enableSkipToMainContent = applicationProperties.get("enableSkipToMainContent");
+        if (enableSkipToMainContent == null) {
+            applicationProperties.put("enableSkipToMainContent", "false");
+        }
         response.getWriter().write("var _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
         response.getWriter().flush();
     }
