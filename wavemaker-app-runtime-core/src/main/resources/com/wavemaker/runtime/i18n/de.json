@@ -82,5 +82,7 @@
   "MESSAGE_FOLDER_UPLOADS_NOT_ALLOWED": "Ordner-Uploads sind nicht zulässig",
   "MESSAGE_FILE_UPLOAD_FAILED": "Datei-Upload fehlgeschlagen",
   "LABEL_CLEAR_DATE": "klar",
-  "LABEL_TODAY_DATE": "Heute"
+  "LABEL_TODAY_DATE": "Heute",
+  "LABEL_SKIP_TO_MAIN_CONTENT": "Zum Hauptinhalt springen",
+  "LABEL_ITEMS_PER_PAGE": "Artikel pro Seite"
 }
