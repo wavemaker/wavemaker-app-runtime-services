@@ -18,11 +18,16 @@ import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Created by jvenugopal on 12-05-2016.
  */
 @JsonDeserialize(as = RoleAttributeNameMappingConfig.class)
+@Schema(title = "RoleAttributeNameMappingConfig")
 public class RoleAttributeNameMappingConfig implements RoleMappingConfig {
+
+    public static final String ROLE_MAPPING_ATTR_NAME = "ROLE_MAPPING_ATTR_NAME";
 
     @NotBlank
     private String roleAttributeName;
@@ -33,5 +38,10 @@ public class RoleAttributeNameMappingConfig implements RoleMappingConfig {
 
     public void setRoleAttributeName(String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
+    }
+
+    @Override
+    public String getType() {
+        return ROLE_MAPPING_ATTR_NAME;
     }
 }
