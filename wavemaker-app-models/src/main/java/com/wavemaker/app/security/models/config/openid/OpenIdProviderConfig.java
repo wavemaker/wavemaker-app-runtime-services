@@ -18,13 +18,17 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.openid.validator.ValidateScopes;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Created by srujant on 30/7/18.
  */
+@Schema(title = "OpenId Security provider")
 public class OpenIdProviderConfig extends AbstractProviderConfig {
 
     public static final String OPENID = "OPENID";
@@ -44,6 +48,7 @@ public class OpenIdProviderConfig extends AbstractProviderConfig {
     private String logoutUrl;
 
     private boolean roleMappingEnabled;
+    @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types DatabaseRoleMappingConfig, RoleAttributeNameMappingConfig")
     private RoleMappingConfig roleMappingConfig;
 
     @Override

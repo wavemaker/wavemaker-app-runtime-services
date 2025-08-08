@@ -11,5 +11,6 @@ dependencies {
     implementation(appDependenciesLibs.jakarta.validationApi)
     implementation(appDependenciesLibs.spring.beans)
     implementation(appDependenciesLibs.spring.boot)
+    implementation(appDependenciesLibs.swagger.core)
     implementation(projects.wavemakerCommonsUtil)
 }

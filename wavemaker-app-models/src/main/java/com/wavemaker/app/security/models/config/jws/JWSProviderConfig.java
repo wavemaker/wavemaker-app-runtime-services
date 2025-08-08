@@ -18,9 +18,13 @@ package com.wavemaker.app.security.models.config.jws;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(title = "JWS Security provider")
 public class JWSProviderConfig extends AbstractProviderConfig {
 
     public static final String JWS = "JWS";
@@ -33,6 +37,7 @@ public class JWSProviderConfig extends AbstractProviderConfig {
     private String principalClaimName;
     private boolean roleMappingEnabled;
     @Valid
+    @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types DatabaseRoleMappingConfig, RoleAttributeNameMappingConfig")
     private RoleMappingConfig roleMappingConfig;
 
     @Override

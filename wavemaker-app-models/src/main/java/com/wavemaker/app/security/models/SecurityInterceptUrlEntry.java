@@ -14,6 +14,8 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models;
 
+import java.util.Arrays;
+
 import com.wavemaker.app.web.http.HttpMethod;
 
 public class SecurityInterceptUrlEntry {
@@ -77,4 +79,13 @@ public class SecurityInterceptUrlEntry {
         this.httpMethod = httpMethod;
     }
 
+    @Override
+    public String toString() {
+        return "SecurityInterceptUrlEntry{" +
+            "urlPattern='" + urlPattern + '\'' +
+            ", permission=" + permission +
+            ", roles=" + Arrays.toString(roles) +
+            ", httpMethod=" + httpMethod +
+            '}';
+    }
 }
