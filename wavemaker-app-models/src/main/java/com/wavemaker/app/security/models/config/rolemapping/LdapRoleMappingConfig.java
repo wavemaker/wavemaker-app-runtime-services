@@ -17,8 +17,13 @@ package com.wavemaker.app.security.models.config.rolemapping;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @JsonDeserialize(as = LdapRoleMappingConfig.class)
+@Schema(title = "LdapRoleMappingConfig")
 public class LdapRoleMappingConfig implements RoleMappingConfig {
+
+    public static final String ROLE_MAPPING_LDAP = "ROLE_MAPPING_LDAP";
 
     private String groupRoleAttribute;
 
@@ -38,5 +43,10 @@ public class LdapRoleMappingConfig implements RoleMappingConfig {
 
     public void setGroupSearchFilter(String groupSearchFilter) {
         this.groupSearchFilter = groupSearchFilter;
+    }
+
+    @Override
+    public String getType() {
+        return ROLE_MAPPING_LDAP;
     }
 }

@@ -18,11 +18,16 @@ import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Created by jvenugopal on 12-05-2016.
  */
 @JsonDeserialize(as = DatabaseRoleMappingConfig.class)
+@Schema(title = "DatabaseRoleMappingConfig")
 public class DatabaseRoleMappingConfig implements RoleMappingConfig {
+
+    public static final String ROLE_MAPPING_DATABASE = "ROLE_MAPPING_DATABASE";
 
     @NotBlank
     private String modelName;
@@ -128,5 +133,10 @@ public class DatabaseRoleMappingConfig implements RoleMappingConfig {
 
     public void setQueryType(RoleQueryType queryType) {
         this.queryType = queryType;
+    }
+
+    @Override
+    public String getType() {
+        return ROLE_MAPPING_DATABASE;
     }
 }

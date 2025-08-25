@@ -19,9 +19,13 @@ import jakarta.validation.constraints.NotBlank;
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * @author Frankie Fu
  */
+
+@Schema(title = "Database Security provider")
 public class DatabaseProviderConfig extends AbstractProviderConfig {
 
     public static final String DATABASE = "DATABASE";

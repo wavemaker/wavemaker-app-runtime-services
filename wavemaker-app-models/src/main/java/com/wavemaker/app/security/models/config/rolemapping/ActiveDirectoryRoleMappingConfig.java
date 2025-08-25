@@ -17,8 +17,13 @@ package com.wavemaker.app.security.models.config.rolemapping;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @JsonDeserialize(as = ActiveDirectoryRoleMappingConfig.class)
+@Schema(title = "ActiveDirectoryRoleMappingConfig")
 public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
+
+    public static final String ROLE_MAPPING_AD = "ROLE_MAPPING_AD";
     private String groupRoleAttribute;
 
     public String getGroupRoleAttribute() {
@@ -29,4 +34,8 @@ public class ActiveDirectoryRoleMappingConfig implements RoleMappingConfig {
         this.groupRoleAttribute = groupRoleAttribute;
     }
 
+    @Override
+    public String getType() {
+        return ROLE_MAPPING_AD;
+    }
 }
