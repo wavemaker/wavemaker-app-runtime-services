@@ -14,13 +14,18 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.ldap;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * @author Frankie Fu
  */
+@Schema(title = "LDAP Security provider")
 public class LdapProviderConfig extends AbstractProviderConfig {
 
     public static final String LDAP = "LDAP";
@@ -37,7 +42,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     private String testDn;
     private String testPassword;
 
-    @ProfilizableProperty("${security.providers.ldap.rootDn}")
+    @NonProfilizableProperty("${security.providers.ldap.rootDn}")
     private String rootDn;
 
     @ProfilizableProperty("${security.providers.ldap.userSearchPattern}")
@@ -52,6 +57,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}")
     private String roleProvider;
 
+    @JsonPropertyDescription("For roleMappingConfig, there can only be two allowed types DatabaseRoleMappingConfig, LdapRoleMappingConfig")
     private RoleMappingConfig roleMappingConfig;
 
     @Override

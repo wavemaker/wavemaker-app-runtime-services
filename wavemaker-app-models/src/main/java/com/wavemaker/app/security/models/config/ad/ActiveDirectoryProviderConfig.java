@@ -14,11 +14,15 @@
  ******************************************************************************/
 package com.wavemaker.app.security.models.config.ad;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(title = "Active Directory Security Provider")
 public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
 
     public static final String DIRECTORY = "AD";
@@ -47,6 +51,7 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty(value = "${security.providers.ad.roleProvider}")
     private String roleProvider;
 
+    @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types ActiveDirectoryRoleMappingConfig, DatabaseRoleMappingConfig")
     private RoleMappingConfig roleMappingConfig;
 
     @Override

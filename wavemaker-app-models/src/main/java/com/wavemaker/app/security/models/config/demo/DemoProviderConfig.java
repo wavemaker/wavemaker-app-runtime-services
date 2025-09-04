@@ -23,10 +23,13 @@ import jakarta.validation.constraints.NotEmpty;
 import com.wavemaker.app.security.models.DemoUser;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * @author Ed Callahan
  * @author Frankie Fu
  */
+@Schema(title = "Demo Security provider")
 public class DemoProviderConfig extends AbstractProviderConfig {
 
     public static final String DEMO = "DEMO";
