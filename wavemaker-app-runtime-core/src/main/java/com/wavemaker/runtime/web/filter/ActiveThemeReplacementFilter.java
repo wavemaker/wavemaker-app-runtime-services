@@ -25,24 +25,20 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.wavemaker.runtime.service.AppRuntimeServiceImpl;
+import com.wavemaker.runtime.service.AppRuntimeService;
 import com.wavemaker.runtime.web.wrapper.ActiveThemeReplacementServletResponseWrapper;
 
 public class ActiveThemeReplacementFilter extends GenericFilterBean {
     private static final String ACTIVE_THEME_PLACEHOLDER = "_activeTheme_";
 
-    private static final Logger logger = LoggerFactory.getLogger(ActiveThemeReplacementFilter.class);
-
     private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
     private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
     @Autowired
-    private AppRuntimeServiceImpl appRuntimeService;
+    private AppRuntimeService appRuntimeService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
