@@ -29,4 +29,8 @@ public interface AppRuntimeService {
     String getApplicationType();
 
     InputStream getValidations(HttpServletResponse response);
+
+    boolean isPrismApp();
+
+    String getActiveTheme();
 }

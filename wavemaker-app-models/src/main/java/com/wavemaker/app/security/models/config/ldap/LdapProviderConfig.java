@@ -55,6 +55,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     private String groupSearchBase;
 
     @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}", autoUpdate = true)
+    @JsonPropertyDescription("Role provider can be 'Database' or 'LDAP'")
     private String roleProvider;
 
     @JsonPropertyDescription("For roleMappingConfig, there can only be two allowed types DatabaseRoleMappingConfig, LdapRoleMappingConfig")
