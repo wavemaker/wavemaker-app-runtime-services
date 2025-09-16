@@ -338,15 +338,15 @@
     <profiles>
         <profile>
             <id>development</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <profile.props.file>development.properties</profile.props.file>
             </properties>
         </profile>
         <profile>
             <id>deployment</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <profile.props.file>deployment.properties</profile.props.file>
             </properties>
@@ -459,8 +459,8 @@
             <!-- Added this, to avoid spring-jcl and commons-logging and use jcl-over-slf4j as alternative which bridges the logging to slf4j -->
             <dependency>
                 <groupId>org.springframework</groupId>
-		<artifactId>spring-jcl</artifactId>
-	        <version>${springFramework.version}</version>
+                <artifactId>spring-jcl</artifactId>
+                <version>${springFramework.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -497,7 +497,7 @@
         <maven.codehausMojoBuildHelperMavenPlugin.version>3.6.0</maven.codehausMojoBuildHelperMavenPlugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.lib.directory>${basedir}/lib</project.lib.directory>
-        <profile.props.file>development.properties</profile.props.file>
+        <profile.props.file>deployment.properties</profile.props.file>
         <wavemaker.app.build.version>@version@</wavemaker.app.build.version>
         <wavemaker.app.runtime.services.version>@version@</wavemaker.app.runtime.services.version>
         <maven.war.packagingExcludes>README.md</maven.war.packagingExcludes>
