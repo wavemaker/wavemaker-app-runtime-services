@@ -55,7 +55,7 @@ public class InMemoryRegistrationRepository implements ClientRegistrationReposit
             .jwkSetUri(openIdProviderConfig.getJwkSetUrl())
             .userInfoUri(openIdProviderConfig.getUserInfoUrl())
             .scope(Arrays.copyOf(scopes.toArray(), scopes.size(), String[].class))
-            .redirectUri(openIdProviderConfig.getRedirectUrlTemplate())
+            .redirectUri("{baseUrl}/oauth2/code/{registrationId}")
             .clientId(openIdProviderConfig.getClientId())
             .clientSecret(openIdProviderConfig.getClientSecret())
             .clientName(openIdProviderConfig.getProviderId())

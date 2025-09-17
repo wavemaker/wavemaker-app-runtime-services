@@ -63,7 +63,6 @@ public class DefaultOpenIdProviderConfigRegistry implements OpenIdProviderConfig
         openIdProviderConfig.setLogoutUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".logoutUrl"));
         openIdProviderConfig.setTokenUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".tokenUrl"));
         openIdProviderConfig.setUserInfoUrl(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".userInfoUrl"));
-        openIdProviderConfig.setRedirectUrlTemplate("{baseUrl}/oauth2/code/{registrationId}");
         openIdProviderConfig.setUserNameAttributeName(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".userNameAttributeName"));
         String scopes = environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".scopes");
         List<String> scopesList = new ArrayList<>();

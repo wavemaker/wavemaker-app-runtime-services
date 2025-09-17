@@ -43,7 +43,6 @@ public class OpenIdProviderConfig extends AbstractProviderConfig {
     private String userInfoUrl;
     @ValidateScopes
     private List<@NotBlank String> scopes;
-    private String redirectUrlTemplate;
     private String userNameAttributeName;
     private String logoutUrl;
 
@@ -119,14 +118,6 @@ public class OpenIdProviderConfig extends AbstractProviderConfig {
 
     public void setScopes(List<String> scopes) {
         this.scopes = scopes;
-    }
-
-    public String getRedirectUrlTemplate() {
-        return redirectUrlTemplate;
-    }
-
-    public void setRedirectUrlTemplate(String redirectUrlTemplate) {
-        this.redirectUrlTemplate = redirectUrlTemplate;
     }
 
     public String getUserNameAttributeName() {

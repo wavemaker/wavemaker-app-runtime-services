@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -76,55 +77,60 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
 
     @PostConstruct
     public void init() {
-        InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("themes-config.json");
-        if (resourceAsStream != null) {
-            try {
-                activeTheme = new ObjectMapper().readTree(resourceAsStream).get("activeTheme").asText();
-            } catch (IOException e) {
-                logger.error("Error while reading themes-config.json file", e);
-                throw new WMRuntimeException(e);
+        File appPropertiesFile = appFileSystem.getClassPathFile(APP_PROPERTIES);
+        Properties properties = PropertiesFileUtils.loadFromXml(appPropertiesFile);
+        Map<String, Object> appProperties = new HashMap<>();
+        for (String s : uiProperties) {
+            if (properties.containsKey(s)) {
+                appProperties.put(s, properties.getProperty(s));
             }
-            logger.info("Detected active theme as : {}", activeTheme);
-        } else {
-            logger.warn("themes-config.json file not found in classpath");
-            throw new WMRuntimeException("themes-config.json file not found in classpath");
         }
+        if ("APPLICATION".equals(getApplicationType(appProperties))) {
+            appProperties.put("securityEnabled", securityService.isSecurityEnabled());
+            appProperties.put("xsrf_header_name", securityService.getAppSecurityInfo().getCsrfHeaderName());
+            appProperties.put("xsrf_cookie_name", securityService.getAppSecurityInfo().getCsrfCookieName());
+        }
+        appProperties
+            .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
+        appProperties.put("isTestRuntime", RuntimeEnvironment.isTestRunEnvironment());
+        this.applicationProperties = appProperties;
+
+        if (!isPrismApp()) {
+            InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("themes-config.json");
+            if (resourceAsStream != null) {
+                try {
+                    activeTheme = new ObjectMapper().readTree(resourceAsStream).get("activeTheme").asText();
+                } catch (IOException e) {
+                    logger.error("Error while reading themes-config.json file", e);
+                    throw new WMRuntimeException(e);
+                }
+                logger.info("Detected active theme as : {}", activeTheme);
+            } else {
+                logger.warn("themes-config.json file not found in classpath");
+                throw new WMRuntimeException("themes-config.json file not found in classpath");
+            }
+        }
+        appProperties.put("activeTheme", activeTheme);
     }
 
     @Override
     public Map<String, Object> getApplicationProperties() {
-        synchronized (this) {
-            if (applicationProperties == null) {
-                File appPropertiesFile = appFileSystem.getClassPathFile(APP_PROPERTIES);
-                Properties properties = PropertiesFileUtils.loadFromXml(appPropertiesFile);
-                Map<String, Object> appProperties = new HashMap<>();
-                for (String s : uiProperties) {
-                    if (properties.containsKey(s)) {
-                        appProperties.put(s, properties.getProperty(s));
-                    }
-                }
-                if ("APPLICATION".equals(getApplicationType(appProperties))) {
-                    appProperties.put("securityEnabled", securityService.isSecurityEnabled());
-                    appProperties.put("xsrf_header_name", securityService.getAppSecurityInfo().getCsrfHeaderName());
-                    appProperties.put("xsrf_cookie_name", securityService.getAppSecurityInfo().getCsrfCookieName());
-                }
-                appProperties
-                    .put("supportedLanguages", getSupportedLocales(appFileSystem.getWebappI18nLocaleFileNames()));
-                appProperties.put("isTestRuntime", RuntimeEnvironment.isTestRunEnvironment());
-                appProperties.put("activeTheme", getActiveTheme());
-                this.applicationProperties = appProperties;
-            }
-        }
         return new HashMap<>(applicationProperties);
     }
 
+    @Override
+    public boolean isPrismApp() {
+        return Objects.equals(applicationProperties.get("template"), "PRISM");
+    }
+
+    @Override
     public String getActiveTheme() {
         return activeTheme;
     }
 
     @Override
     public String getApplicationType() {
-        return getApplicationType(getApplicationProperties());
+        return getApplicationType(applicationProperties);
     }
 
     private String getApplicationType(Map<String, Object> appProperties) {

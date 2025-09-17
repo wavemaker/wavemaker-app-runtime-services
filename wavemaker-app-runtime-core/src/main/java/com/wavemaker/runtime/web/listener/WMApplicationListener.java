@@ -50,10 +50,9 @@ public class WMApplicationListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         AppRuntimeService appRuntimeService = WMAppContext.getInstance().getSpringBean("appRuntimeService");
-        String applicationType = appRuntimeService.getApplicationType();
         ServletContext servletContext = sce.getServletContext();
         registerServlets(servletContext);
-        registerFilters(servletContext, applicationType);
+        registerFilters(servletContext, appRuntimeService);
     }
 
     private void registerServlets(ServletContext servletContext) {
@@ -81,8 +80,8 @@ public class WMApplicationListener implements ServletContextListener {
         prefabWebContentServlet.addMapping("/app/prefabs/*");
     }
 
-    private void registerFilters(ServletContext servletContext, String applicationType) {
-
+    private void registerFilters(ServletContext servletContext, AppRuntimeService appRuntimeService) {
+        String applicationType = appRuntimeService.getApplicationType();
         FilterRegistration.Dynamic throwableTranslationFilter = registerDelegatingFilterProxyFilter(servletContext, "throwableTranslationFilter");
         throwableTranslationFilter.addMappingForUrlPatterns(null, false, "/*");
 
@@ -135,8 +134,10 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic cdnUrlReplacementFilter = registerDelegatingFilterProxyFilter(servletContext, "cdnUrlReplacementFilter");
         cdnUrlReplacementFilter.addMappingForUrlPatterns(null, true, "/*");
 
-        FilterRegistration.Dynamic activeThemeFilter = registerDelegatingFilterProxyFilter(servletContext, "activeThemeReplacementFilter");
-        activeThemeFilter.addMappingForUrlPatterns(null, true, "/*");
+        if (!appRuntimeService.isPrismApp()) {
+            FilterRegistration.Dynamic activeThemeFilter = registerDelegatingFilterProxyFilter(servletContext, "activeThemeReplacementFilter");
+            activeThemeFilter.addMappingForUrlPatterns(null, true, "/*");
+        }
 
         Set<String> resourcePaths = servletContext.getResourcePaths("/_next");
         if (resourcePaths != null && !resourcePaths.isEmpty()) {
