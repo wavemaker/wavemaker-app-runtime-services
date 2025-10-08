@@ -17,12 +17,10 @@ package com.wavemaker.runtime.prefab.context;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 import jakarta.servlet.ServletContext;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -37,6 +35,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.DefaultYamlProcessor;
 import com.wavemaker.commons.util.PropertiesFileUtils;
+import com.wavemaker.runtime.prefab.util.AppRuntimePropertiesUtils;
 import com.wavemaker.runtime.prefab.core.Prefab;
 
 /**
@@ -50,12 +49,13 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
         setId(prefab.getName());
         setParent(parent);
         ClassLoader prefabClassLoader = prefab.getClassLoader();
+        setClassLoader(prefabClassLoader);
 
         // This removes the parent properties added and creates new property sources,
         // as we want this context to have its own property sources and not get the parent properties
-        setEnvironment(loadEnvironment(parent, prefabClassLoader));
+        String activeProfile = parent.getEnvironment().getProperty("spring.profiles.active");
+        setEnvironment(loadEnvironment(activeProfile, prefabClassLoader));
 
-        setClassLoader(prefabClassLoader);
         setServletContext(servletContext);
         setDisplayName("Prefab Context [" + prefab.getName() + "]");
         setConfigLocations("classpath:prefab-springapp.xml");
@@ -68,34 +68,29 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
         }
     }
 
-    private static ConfigurableEnvironment loadEnvironment(ApplicationContext applicationContext, ClassLoader prefabClassLoader) {
+    private static ConfigurableEnvironment loadEnvironment(String activeProfile, ClassLoader prefabClassLoader) {
         log.info("Preparing environment for prefab context");
         ConfigurableEnvironment configurableEnvironment = new StandardServletEnvironment();
         MutablePropertySources propertySources = configurableEnvironment.getPropertySources();
 
-        loadPrefabOverriddenProperties(prefabClassLoader, getPrefabOverriddenPropertiesFile(applicationContext), propertySources);
+        loadPrefabOverriddenProperties(activeProfile, prefabClassLoader, propertySources);
         loadPrefabBundleProperties(prefabClassLoader, propertySources);
         return configurableEnvironment;
     }
 
-    private static String getPrefabOverriddenPropertiesFile(ApplicationContext applicationContext) {
-        String activeProfile = applicationContext.getEnvironment().getProperty("spring.profiles.active");
-        String prefabOverriddenPropertiesFile;
-        if (StringUtils.isBlank(activeProfile) || Objects.equals(activeProfile, "development") || Objects.equals(activeProfile, "wm_preview")) {
-            prefabOverriddenPropertiesFile = "prefab-overridden.properties";
-        } else {
-            prefabOverriddenPropertiesFile = "prefab-overridden-" + activeProfile + ".properties";
-        }
-        return prefabOverriddenPropertiesFile;
-    }
+    private static void loadPrefabOverriddenProperties(String activeProfile, ClassLoader prefabClassLoader, MutablePropertySources propertySources) {
+        String prefabPropertiesPath = AppRuntimePropertiesUtils.resolvePrefabPropertiesPath(activeProfile, prefabClassLoader);
 
-    private static void loadPrefabOverriddenProperties(ClassLoader prefabClassLoader, String prefabOverriddenPropertiesFile, MutablePropertySources propertySources) {
         Properties properties;
-        try (InputStream inputStream = prefabClassLoader.getResourceAsStream(prefabOverriddenPropertiesFile)) {
+        try (InputStream inputStream = prefabClassLoader.getResourceAsStream(prefabPropertiesPath)) {
+            if (inputStream == null) {
+                throw new WMRuntimeException("Prefab properties file not found: " + prefabPropertiesPath);
+            }
             properties = PropertiesFileUtils.loadProperties(inputStream);
         } catch (Exception e) {
             throw new WMRuntimeException(e);
         }
+
         Map<String, Object> propertyMap = buildPropertyMap(properties);
         propertySources.addLast(new MapPropertySource("appPrefabOverriddenPropertySource", propertyMap));
     }

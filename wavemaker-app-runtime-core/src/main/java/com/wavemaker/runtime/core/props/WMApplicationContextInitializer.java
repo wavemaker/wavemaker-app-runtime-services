@@ -17,14 +17,10 @@ package com.wavemaker.runtime.core.props;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,11 +32,11 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.DefaultYamlProcessor;
 import com.wavemaker.commons.util.PropertiesFileUtils;
+import com.wavemaker.runtime.prefab.util.AppRuntimePropertiesUtils;
 
 public class WMApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(WMApplicationContextInitializer.class);
-    private static final String CLASSPATH_APPLICATION_YAML = "classpath:application.yaml";
 
     @Override
     public void initialize(ConfigurableWebApplicationContext applicationContext) {
@@ -71,8 +67,9 @@ public class WMApplicationContextInitializer implements ApplicationContextInitia
     }
 
     private void registerApplicationPropertySource(ConfigurableWebApplicationContext applicationContext) {
-        String applicationYamlFile = getPropertiesFile(applicationContext);
-        Resource applicationPropertiesResource = applicationContext.getResource(applicationYamlFile);
+        String activeProfile = applicationContext.getEnvironment().getProperty("spring.profiles.active");
+        String applicationYamlFile = AppRuntimePropertiesUtils.resolveApplicationYamlPath(activeProfile, applicationContext.getClassLoader());
+        Resource applicationPropertiesResource = applicationContext.getResource("classpath:" + applicationYamlFile);
         if (!applicationPropertiesResource.exists()) {
             throw new WMRuntimeException(
                 "Failed to register application property source. The properties file " + applicationYamlFile + " is not found");
@@ -82,47 +79,6 @@ public class WMApplicationContextInitializer implements ApplicationContextInitia
         Properties properties = defaultYamlProcessor.getProperties();
         applicationContext.getEnvironment().getPropertySources()
             .addLast(new MapPropertySource("applicationPropertySource", buildPropertyMap(properties)));
-    }
-
-    private static String getPropertiesFile(ConfigurableWebApplicationContext applicationContext) {
-        String activeProfile = applicationContext.getEnvironment().getProperty("spring.profiles.active");
-        boolean applicationYamlFound = resourceExists(applicationContext, CLASSPATH_APPLICATION_YAML);
-        if (StringUtils.isBlank(activeProfile)) {
-            logger.info("Spring Active profile Set to ''");
-            if (applicationYamlFound) {
-                logger.info("No Active profile set, Using application.yaml as property source");
-                return CLASSPATH_APPLICATION_YAML;
-            }
-        } else {
-            logger.info("Spring Active profile Set to '{}'", activeProfile);
-            String profileYaml = "classpath:application-" + activeProfile + ".yaml";
-            if (resourceExists(applicationContext, profileYaml)) {
-                logger.info("Found {} in web application, using it as property source", profileYaml);
-                return profileYaml;
-            } else if (applicationYamlFound) {
-                logger.warn("Found application.yaml on classpath. Loading properties from 'application.yaml' with profile '{}'", activeProfile);
-                return CLASSPATH_APPLICATION_YAML;
-            }
-        }
-
-        Resource[] resources = null;
-        try {
-            resources = applicationContext.getResources("classpath*:application-*.yaml");
-        } catch (IOException e) {
-            throw new WMRuntimeException(e);
-        }
-
-        if (resources.length == 0) {
-            throw new WMRuntimeException("Missing " + CLASSPATH_APPLICATION_YAML + " file.");
-        }
-        List<String> availableProfiles = Arrays.stream(resources)
-            .map(Resource::getFilename)
-            .filter(Objects::nonNull)
-            .map(filename -> filename.replace("application-", "").replace(".yaml", ""))
-            .toList();
-
-        throw new WMRuntimeException(
-            "Expected spring.profiles.active property to be set with one of the values [" + String.join(",", availableProfiles) + "]");
     }
 
     private void registerRuntimeFrameworkPropertySource(ConfigurableWebApplicationContext applicationContext) {
@@ -153,9 +109,5 @@ public class WMApplicationContextInitializer implements ApplicationContextInitia
             propertyMap.put(name, prefabYamlProperties.getProperty(name));
         }
         return propertyMap;
-    }
-
-    private static boolean resourceExists(ConfigurableWebApplicationContext ctx, String location) {
-        return ctx.getResource(location).exists();
     }
 }
