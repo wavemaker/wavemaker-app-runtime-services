@@ -106,7 +106,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.12.1</version>
+                    <version>${maven.mavenSitePlugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -382,7 +382,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-project-info-reports-plugin</artifactId>
-                        <version>3.8.0</version>
+                        <version>${maven.mavenInfoReportsPlugin.version}</version>
                         <reportSets>
                             <reportSet>
                                 <reports>
@@ -487,14 +487,16 @@
         <maven.compiler.release>${java.required.version}</maven.compiler.release>
         <maven.eclipseLifecycleMappingPlugin.version>1.0.0</maven.eclipseLifecycleMappingPlugin.version>
         <maven.mavenAntrunPlugin.version>3.1.0</maven.mavenAntrunPlugin.version>
-        <maven.mavenCleanPlugin.version>3.4.0</maven.mavenCleanPlugin.version>
-        <maven.mavenCompilerPlugin.version>3.13.0</maven.mavenCompilerPlugin.version>
-        <maven.mavenEnforcerPlugin.version>3.5.0</maven.mavenEnforcerPlugin.version>
+        <maven.mavenCleanPlugin.version>3.5.0</maven.mavenCleanPlugin.version>
+        <maven.mavenCompilerPlugin.version>3.14.1</maven.mavenCompilerPlugin.version>
+        <maven.mavenEnforcerPlugin.version>3.6.1</maven.mavenEnforcerPlugin.version>
+        <maven.mavenInfoReportsPlugin.version>3.9.0</maven.mavenInfoReportsPlugin.version>
         <maven.mavenResourcesPlugin.version>3.3.1</maven.mavenResourcesPlugin.version>
+        <maven.mavenSitePlugin.version>3.21.0</maven.mavenSitePlugin.version>
         <maven.mavenWarPlugin.version>3.4.0</maven.mavenWarPlugin.version>
         <maven.minimum.required.version>3.8.1</maven.minimum.required.version>
         <maven.propertiesMavenPlugin.version>1.2.1</maven.propertiesMavenPlugin.version>
-        <maven.codehausMojoBuildHelperMavenPlugin.version>3.6.0</maven.codehausMojoBuildHelperMavenPlugin.version>
+        <maven.codehausMojoBuildHelperMavenPlugin.version>3.6.1</maven.codehausMojoBuildHelperMavenPlugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.lib.directory>${basedir}/lib</project.lib.directory>
         <profile.props.file>deployment.properties</profile.props.file>
