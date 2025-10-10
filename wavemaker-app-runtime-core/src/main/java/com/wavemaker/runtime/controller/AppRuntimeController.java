@@ -74,7 +74,7 @@ public class AppRuntimeController {
         if (enableSkipToMainContent == null) {
             applicationProperties.put("enableSkipToMainContent", "false");
         }
-        response.getWriter().write("var _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
+        response.getWriter().write("const _WM_APP_PROPERTIES = " + JSONUtils.toJSON(applicationProperties, true) + ";");
         response.getWriter().flush();
     }
 
