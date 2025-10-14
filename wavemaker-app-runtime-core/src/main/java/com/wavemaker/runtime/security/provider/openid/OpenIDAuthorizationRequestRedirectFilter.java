@@ -147,6 +147,9 @@ public class OpenIDAuthorizationRequestRedirectFilter extends OncePerRequestFilt
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(request.getParameter(OpenIdConstants.REDIRECT_PAGE))) {
             stateObject.put(OpenIdConstants.REDIRECT_PAGE, request.getParameter(OpenIdConstants.REDIRECT_PAGE));
         }
+        if (!request.getQueryString().isBlank()) {
+            stateObject.put("additionalParameters", request.getQueryString());
+        }
         String encodedState = OAuth2Helper.getStateParameterValue(stateObject);
 
         OAuth2AuthorizationRequest authorizationRequest = builder
