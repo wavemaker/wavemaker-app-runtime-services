@@ -14,8 +14,6 @@
  ******************************************************************************/
 package com.wavemaker.runtime.connector.processor;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -38,10 +36,14 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.type.AnnotationMetadata;
 
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.DefaultYamlProcessor;
 import com.wavemaker.runtime.connector.annotation.WMConnector;
 import com.wavemaker.runtime.connector.factorybean.ConnectorFactoryBean;
+import com.wavemaker.commons.util.AppRuntimePropertiesUtils;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -50,7 +52,6 @@ import com.wavemaker.runtime.connector.factorybean.ConnectorFactoryBean;
 
 public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcessor, EnvironmentAware {
 
-    private static final String APP_PROPERTIES = "/app.properties";
     private static final String CONNECTOR_PROPERTY_PREFIX = "connector.";
     private static final String CONNECTOR_PROPERTY_SEPARATOR = ".";
     private static final String DEFAULT_CONNECTOR_CONFIGURATION_ID = "default";
@@ -103,7 +104,7 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
                                     values.addIndexedArgumentValue(2, field.getType());
                                     Properties properties = loadProperties(wmConnector.name(), configurationId);
                                     values.addIndexedArgumentValue(3, properties);
-                                    boolean primary = configurationId.equals(DEFAULT_CONNECTOR_CONFIGURATION_ID) ? true : false;
+                                    boolean primary = configurationId.equals(DEFAULT_CONNECTOR_CONFIGURATION_ID);
                                     // when there are two beans of same connector with one has qualifier and one doesn't
                                     bd.setPrimary(primary);
                                     bd.setConstructorArgumentValues(values);
@@ -162,19 +163,22 @@ public class ConnectorBeanFactoryPostProcessor implements BeanFactoryPostProcess
     }
 
     private Properties loadProperties(String connectorName, String connectorId) {
-        InputStream is = null;
 
-        Properties prop;
-        try {
-            prop = new Properties();
-            is = this.getClass().getResourceAsStream(APP_PROPERTIES);
-            prop.load(is);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read app.properties file from classpath", e);
+        String activeProfile = environment.getProperty("spring.profiles.active");
+        String applicationYamlFile = AppRuntimePropertiesUtils.resolveApplicationYamlPath(activeProfile, this.getClass().getClassLoader());
+
+        DefaultYamlProcessor defaultYamlProcessor = new DefaultYamlProcessor();
+        defaultYamlProcessor.setResources(new ClassPathResource(applicationYamlFile));
+        Properties properties = defaultYamlProcessor.getProperties();
+
+        if (properties.isEmpty()) {
+            throw new WMRuntimeException("Connector properties not found for the connector : " + connectorName);
         }
+
         Properties filteredProperties = new Properties();
         String prefix = CONNECTOR_PROPERTY_PREFIX + connectorName + CONNECTOR_PROPERTY_SEPARATOR + connectorId + CONNECTOR_PROPERTY_SEPARATOR;
-        for (String key : prop.stringPropertyNames()) {
+
+        for (String key : properties.stringPropertyNames()) {
             if (key.startsWith(prefix)) {
                 filteredProperties.setProperty(key.substring(prefix.length()), environment.getProperty(key));
             }

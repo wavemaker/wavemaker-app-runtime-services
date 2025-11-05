@@ -32,7 +32,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.DefaultYamlProcessor;
 import com.wavemaker.commons.util.PropertiesFileUtils;
-import com.wavemaker.runtime.prefab.util.AppRuntimePropertiesUtils;
+import com.wavemaker.commons.util.AppRuntimePropertiesUtils;
 
 public class WMApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 
