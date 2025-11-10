@@ -2,6 +2,7 @@ stages:
         - jira_feature_dev
         - jira_next_release
         - jira_hotfix_release
+        - jira_preprod_release
         - jira_verification_merge
 
 jira_feature_dev:
@@ -10,7 +11,6 @@ jira_feature_dev:
       - jira
   only:
       - /^feature.*$/
-      - /^dev.*$/
         
   script:
     - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_RELEASE_VERSION"
@@ -21,7 +21,7 @@ jira_next_release:
   tags:
       - jira
   only:
-    - next-release
+    - "$NEXT_RELEASE_BRANCH"
 
   script:
     - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_RELEASE_VERSION"
@@ -32,10 +32,20 @@ jira_hotfix_release:
   tags:
       - jira
   only:
-    - hotfix
+    - "$HOTFIX_BRANCH"
   script:
     - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_HOT_FIX_VERSION"
     - python3 /home/gitlab-runner/jira-ci-scripts/jira_connection.py "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" 5 "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_HOT_FIX_VERSION"
+
+jira_preprod_release:
+  stage: jira_preprod_release
+  tags:
+      - jira
+  only:
+    - "$PREPOD_BRANCH"
+  script:
+    - echo "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_PREPOD_VERSION"
+    - python3 /home/gitlab-runner/jira-ci-scripts/jira_connection.py "$CI_COMMIT_MESSAGE" "$CI_COMMIT_BRANCH" "$JIRA_MSG" "$TOKEN" 5 "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$NEXT_PREPOD_VERSION"      
 
 jira_verification_merge:
   stage: jira_verification_merge
