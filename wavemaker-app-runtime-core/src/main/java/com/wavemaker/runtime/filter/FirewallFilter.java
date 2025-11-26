@@ -38,7 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.firewall.FirewalledRequest;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
-import com.wavemaker.runtime.data.util.UrlParserUtils;
+import com.wavemaker.runtime.util.UrlParserUtils;
 
 
 /*
