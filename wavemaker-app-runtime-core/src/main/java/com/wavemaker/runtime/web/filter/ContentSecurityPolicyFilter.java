@@ -43,6 +43,9 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     @Value("${security.general.csp.policy}")
     private String cspPolicy;
 
+    @Value("${app.enableCSPForRootRequestOnly:false}")
+    private boolean enableCSPForRootRequestOnly;
+
     private boolean nonceReplacementNeeded;
 
     private static final String NONCE_VALUE_PATTERN = "\\$\\{NONCE_VALUE\\}";
@@ -91,8 +94,13 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
     }
 
     private boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest) ||
-            !HttpRequestUtils.isAjaxRequest(httpServletRequest);
+        if (this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest)) {
+            return true;
+        }
+        if (!enableCSPForRootRequestOnly && !HttpRequestUtils.isAjaxRequest(httpServletRequest)) {
+            return true;
+        }
+        return false;
     }
 
     private String generateRandomNonce(int length) {
