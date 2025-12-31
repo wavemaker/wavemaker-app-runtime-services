@@ -95,6 +95,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
                 LOGGER.warn("Prefab: [{}] could not be loaded", prefabDir.getName(), e);
             }
         }
+        //TODO handle profileOverriddenProperty
         if (!prefabsConfig.isLazyInitPrefabs()) {
             prefabInstaller.installPrefabs();
         }

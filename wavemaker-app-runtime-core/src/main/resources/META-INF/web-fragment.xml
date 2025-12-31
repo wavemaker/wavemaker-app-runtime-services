@@ -40,7 +40,7 @@
 
     <context-param>
         <param-name>contextInitializerClasses</param-name>
-        <param-value>com.wavemaker.runtime.core.props.WMApplicationContextInitializer,com.wavemaker.runtime.security.DefaultBootStrapPropertySourceInitializer</param-value>
+        <param-value>com.wavemaker.runtime.core.props.WMApplicationContextInitializer</param-value>
     </context-param>
 
     <mime-mapping>

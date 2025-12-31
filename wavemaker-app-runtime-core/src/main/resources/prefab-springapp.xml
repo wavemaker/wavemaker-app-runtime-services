@@ -6,22 +6,4 @@
     <import resource="classpath:project-rest-service.xml"/>
     <import resource="classpath:prefab-dispatcher-servlet.xml"/>
     <import resource="classpath*:prefab/service_*.spring.xml"/>
-
-    <bean class="com.wavemaker.runtime.core.props.AppPropertySourcesPlaceHolderConfigurer" id="prefabPropertySourcesPlaceHolderConfigurer">
-        <property name="propertySourceName" value="prefabPropertiesPropertySource"/>
-        <property name="locations">
-            <list>
-                <value>classpath:prefab-app.properties</value>
-                <value>classpath:app.properties</value>
-                <value>classpath*:prefab-conf/*.properties</value>
-            </list>
-        </property>
-        <property name="yamlLocations">
-            <list>
-                <value>classpath*:conf/securityService.yaml</value>
-            </list>
-        </property>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <property name="ignoreResourceNotFound" value="true"/>
-    </bean>
 </beans>

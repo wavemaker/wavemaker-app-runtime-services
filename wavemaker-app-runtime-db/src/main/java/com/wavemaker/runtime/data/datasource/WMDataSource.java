@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jndi.JndiTemplate;
 
+import com.wavemaker.app.db.constants.DataSourceType;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**

@@ -48,13 +48,13 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.ldap.userSearchPattern}")
     private String userDnPattern;
 
-    @ProfilizableProperty(value = "${security.providers.ldap.roleMappingEnabled}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ldap.roleMappingEnabled}")
     private boolean roleMappingEnabled;
 
     @ProfilizableProperty("${security.providers.ldap.groupSearchBase}")
     private String groupSearchBase;
 
-    @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ldap.roleProvider}")
     @JsonPropertyDescription("Role provider can be 'Database' or 'LDAP'")
     private String roleProvider;
 

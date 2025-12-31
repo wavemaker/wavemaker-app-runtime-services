@@ -50,7 +50,7 @@ public class CASProviderConfig extends AbstractProviderConfig {
     @ProfilizableProperty("${security.providers.cas.artifactParameter}")
     private String artifactParameter;
 
-    @ProfilizableProperty(value = "${security.providers.cas.roleMappingEnabled}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.cas.roleMappingEnabled}")
     private boolean roleMappingEnabled;
 
     @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types RoleAttributeNameMappingConfig, DatabaseRoleMappingConfig")

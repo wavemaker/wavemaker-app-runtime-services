@@ -45,10 +45,10 @@ public class ActiveDirectoryProviderConfig extends AbstractProviderConfig {
     @NonProfilizableProperty("${security.providers.ad.testPassword}")
     private String testPassword;
 
-    @ProfilizableProperty(value = "${security.providers.ad.roleMappingEnabled}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ad.roleMappingEnabled}")
     private boolean roleMappingEnabled;
 
-    @ProfilizableProperty(value = "${security.providers.ad.roleProvider}", autoUpdate = true)
+    @ProfilizableProperty(value = "${security.providers.ad.roleProvider}")
     private String roleProvider;
 
     @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types ActiveDirectoryRoleMappingConfig, DatabaseRoleMappingConfig")

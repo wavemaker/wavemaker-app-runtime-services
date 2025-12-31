@@ -12,6 +12,7 @@ dependencies {
     implementation(enforcedPlatform(appDependenciesLibs.boms.jackson.get().toString()))
     implementation(projects.wavemakerCommonsUtil)
     implementation(projects.wavemakerAppRuntimeCommons)
+    implementation(projects.wavemakerAppModels)
     implementation(appDependenciesLibs.slf4j.api)
     implementation(appDependenciesLibs.commons.lang3)
     implementation(appDependenciesLibs.guava)
