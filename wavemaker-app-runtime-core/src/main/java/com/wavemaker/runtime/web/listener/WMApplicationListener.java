@@ -68,7 +68,7 @@ public class WMApplicationListener implements ServletContextListener {
         servicesServlet.setInitParameter("detectAllHandlerExceptionResolvers", "false");
         servicesServlet.setMultipartConfig(multipartConfigElement);
         servicesServlet.addMapping("/services/*");
-
+        servicesServlet.setAsyncSupported(Boolean.TRUE.equals(environment.getProperty("app.servlet.asyncSupported", Boolean.class)));
         ServletRegistration.Dynamic prefabsServlet = registerServlet(servletContext, "prefabs", new PrefabControllerServlet());
         prefabsServlet.setLoadOnStartup(1);
         prefabsServlet.setInitParameter("contextClass", "org.springframework.web.context.support.AnnotationConfigWebApplicationContext");
