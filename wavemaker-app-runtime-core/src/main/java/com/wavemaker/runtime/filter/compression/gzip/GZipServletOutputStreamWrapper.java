@@ -30,6 +30,7 @@ public class GZipServletOutputStreamWrapper extends ServletOutputStream {
 
     private GZipServletResponseWrapper responseWrapper;
     private OutputStream outputStream;
+    private GZIPOutputStream gzipOutputStream;
     private boolean streamInitialized;
 
     public GZipServletOutputStreamWrapper(GZipServletResponseWrapper responseWrapper, OutputStream outputStream) throws IOException {
@@ -59,20 +60,27 @@ public class GZipServletOutputStreamWrapper extends ServletOutputStream {
 
     @Override
     public void close() throws IOException {
-        getOutputStream().close();
+        if (!streamInitialized) {
+            return;
+        }
+        if (gzipOutputStream != null) {
+            gzipOutputStream.finish();
+            gzipOutputStream.flush();
+        }
+        outputStream.flush();
     }
 
     private OutputStream getOutputStream() throws IOException {
         if (!streamInitialized) {
             initStream();
         }
-        return outputStream;
+        return gzipOutputStream != null ? gzipOutputStream : outputStream;
     }
 
     private synchronized void initStream() throws IOException {
         if (responseWrapper.isCompressionEnabled()) {
             responseWrapper.setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
-            outputStream = new GZIPOutputStream(outputStream);
+            gzipOutputStream = new GZIPOutputStream(outputStream);
         } else {
             responseWrapper.setContentLengthLong(responseWrapper.getOriginalContentLength());
         }
