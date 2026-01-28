@@ -14,6 +14,7 @@
  ******************************************************************************/
 package com.wavemaker.runtime.prefab.context;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +34,9 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.AppRuntimePropertiesUtils;
 import com.wavemaker.commons.util.DefaultYamlProcessor;
 import com.wavemaker.commons.util.PropertiesFileUtils;
-import com.wavemaker.commons.util.AppRuntimePropertiesUtils;
 import com.wavemaker.runtime.prefab.core.Prefab;
 
 /**
@@ -54,7 +55,7 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
         // This removes the parent properties added and creates new property sources,
         // as we want this context to have its own property sources and not get the parent properties
         String activeProfile = parent.getEnvironment().getProperty("spring.profiles.active");
-        setEnvironment(loadEnvironment(activeProfile, prefabClassLoader));
+        setEnvironment(loadEnvironment(activeProfile, prefabClassLoader, parent));
 
         setServletContext(servletContext);
         setDisplayName("Prefab Context [" + prefab.getName() + "]");
@@ -68,13 +69,13 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
         }
     }
 
-    private static ConfigurableEnvironment loadEnvironment(String activeProfile, ClassLoader prefabClassLoader) {
+    private static ConfigurableEnvironment loadEnvironment(String activeProfile, ClassLoader prefabClassLoader, ApplicationContext applicationContext) {
         log.info("Preparing environment for prefab context");
         ConfigurableEnvironment configurableEnvironment = new StandardServletEnvironment();
         MutablePropertySources propertySources = configurableEnvironment.getPropertySources();
-
         loadPrefabOverriddenProperties(activeProfile, prefabClassLoader, propertySources);
         loadPrefabBundleProperties(prefabClassLoader, propertySources);
+        registerRuntimeFrameworkPropertySource(propertySources, applicationContext);
         return configurableEnvironment;
     }
 
@@ -107,6 +108,27 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
         Properties prefabYamlProperties = defaultYamlProcessor.getProperties();
         Map<String, Object> propertyMap = buildPropertyMap(prefabYamlProperties);
         propertySources.addLast(new MapPropertySource("prefabBundlePropertySource", propertyMap));
+    }
+
+    private static void registerRuntimeFrameworkPropertySource(MutablePropertySources propertySources, ApplicationContext applicationContext) {
+
+        try {
+            Resource[] contextResources = applicationContext.getResources("classpath*:default-runtime-overrides/*.properties");
+            if (contextResources.length == 0) {
+                throw new WMRuntimeException("Resource [classpath*:default-runtime-overrides/*.properties] not found.");
+            }
+            Properties properties = new Properties();
+            for (Resource resource : contextResources) {
+                try (InputStream in = resource.getInputStream()) {
+                    properties.putAll(PropertiesFileUtils.loadProperties(in));
+                } catch (IOException e) {
+                    throw new WMRuntimeException("Failed to load properties from " + resource.getFilename(), e);
+                }
+            }
+            propertySources.addLast(new MapPropertySource("runtimeFrameworkPropertySource", buildPropertyMap(properties)));
+        } catch (IOException e) {
+            throw new WMRuntimeException("Failed to register runtimeFrameworkPropertySource.", e);
+        }
     }
 
     private static Map<String, Object> buildPropertyMap(Properties prefabYamlProperties) {
