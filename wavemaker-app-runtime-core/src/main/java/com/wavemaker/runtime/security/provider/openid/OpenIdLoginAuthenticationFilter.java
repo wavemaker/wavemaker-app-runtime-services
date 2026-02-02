@@ -112,7 +112,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
 
         this.authorizationRequestRepository.removeAuthorizationRequest(request, response);
 
-        String registrationId = (String) authorizationRequest.getAdditionalParameters().get(OpenIdConstants.REGISTRATION_ID);
+        String registrationId = authorizationRequest.getAttribute(OpenIdConstants.REGISTRATION_ID);
         ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration == null) {
             OAuth2Error oauth2Error = new OAuth2Error(CLIENT_REGISTRATION_NOT_FOUND_ERROR_CODE,

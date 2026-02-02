@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -34,6 +35,9 @@ import com.wavemaker.app.security.models.config.openid.OpenIdProviderConfig;
 public class InMemoryRegistrationRepository implements ClientRegistrationRepository {
 
     private final Map<String, ClientRegistration> registrations = new ConcurrentHashMap<>();
+
+    @Value("${security.provider.openId.requireProofKey:true}")
+    private boolean requireProofKey;
 
     @Autowired
     private OpenIdProviderConfigRegistry openIdProviderConfigRegistry;
@@ -61,6 +65,7 @@ public class InMemoryRegistrationRepository implements ClientRegistrationReposit
             .clientName(openIdProviderConfig.getProviderId())
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .userNameAttributeName(openIdProviderConfig.getUserNameAttributeName())
+            .clientSettings(ClientRegistration.ClientSettings.builder().requireProofKey(requireProofKey).build())
             .build();
     }
 }

@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security.provider.openid;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
@@ -49,7 +50,9 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -112,6 +115,9 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
 
     @Autowired
     private AuthenticationEntryPointRegistry authenticationEntryPointRegistry;
+
+    @Autowired
+    private List<Consumer<OAuth2AuthorizationRequest.Builder>> authorizationRequestCustomizers;
 
     @Value("${security.providers.openId.stateLessAuthorizationRequest:false}")
     private boolean stateLessAuthorizationRequest;
@@ -187,11 +193,20 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
 
     @Bean(name = "authorizationRequestRedirectFilter")
     public Filter openIDAuthorizationRequestRedirectFilter() {
-        OpenIDAuthorizationRequestRedirectFilter openIDAuthorizationRequestRedirectFilter = new OpenIDAuthorizationRequestRedirectFilter(
-            clientRegistrationRepository(), "/auth/oauth2");
-        openIDAuthorizationRequestRedirectFilter.setAuthorizationRequestRepository(
+        DefaultOAuth2AuthorizationRequestResolver defaultOAuth2AuthorizationRequestResolver =
+            new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository(), "/auth/oauth2");
+
+        defaultOAuth2AuthorizationRequestResolver.setAuthorizationRequestCustomizer(builder ->
+            authorizationRequestCustomizers.forEach(consumer -> consumer.accept(builder))
+        );
+
+        OAuth2AuthorizationRequestRedirectFilter oAuth2AuthorizationRequestRedirectFilter =
+            new OAuth2AuthorizationRequestRedirectFilter(defaultOAuth2AuthorizationRequestResolver);
+
+        oAuth2AuthorizationRequestRedirectFilter.setAuthorizationRequestRepository(
             (AuthorizationRequestRepository<OAuth2AuthorizationRequest>) openIDAuthorizationRequestRepository());
-        return openIDAuthorizationRequestRedirectFilter;
+
+        return oAuth2AuthorizationRequestRedirectFilter;
     }
 
     @Bean(name = "openIDAuthorizationRequestRepository")

@@ -23,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.entrypoint.SSOEntryPoint;
@@ -31,7 +32,7 @@ import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND
 import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
 
 /**
- * Authentication entryPoint to redirect application to {@link OpenIDAuthorizationRequestRedirectFilter}.
+ * Authentication entryPoint to redirect application to {@link OAuth2AuthorizationRequestRedirectFilter}.
  * Request is commenced to this entryPoint if OpenId security is configured in the application.
  *
  * Created by srujant on 2/8/18.
