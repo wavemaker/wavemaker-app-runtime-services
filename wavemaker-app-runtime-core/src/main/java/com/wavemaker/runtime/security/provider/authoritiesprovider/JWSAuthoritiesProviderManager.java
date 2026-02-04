@@ -49,7 +49,7 @@ public class JWSAuthoritiesProviderManager {
 
     private AuthoritiesProvider getDatabaseAuthoritiesProvider(String providerId) {
         DefaultAuthoritiesProviderImpl defaultAuthoritiesProvider = new DefaultAuthoritiesProviderImpl();
-        defaultAuthoritiesProvider.setHql(Objects.equals(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".database.queryType"), RoleQueryType.HQL));
+        defaultAuthoritiesProvider.setHql(Objects.equals(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".database.queryType"), RoleQueryType.HQL.name()));
         defaultAuthoritiesProvider.setRolePrefix("ROLE_");
         defaultAuthoritiesProvider.setAuthoritiesByUsernameQuery(environment.getProperty(SECURITY_PROVIDERS_JWS + providerId + ".database.rolesByUsernameQuery"));
         defaultAuthoritiesProvider.setHibernateTemplate((HibernateOperations) applicationContext
