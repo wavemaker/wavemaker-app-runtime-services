@@ -97,7 +97,7 @@ public class ContentSecurityPolicyFilter extends GenericFilterBean {
         if (this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest)) {
             return true;
         }
-        if (!enableCSPForRootRequestOnly && !HttpRequestUtils.isAjaxRequest(httpServletRequest)) {
+        if (!enableCSPForRootRequestOnly && HttpRequestUtils.isBrowserNavigation(httpServletRequest)) {
             return true;
         }
         return false;

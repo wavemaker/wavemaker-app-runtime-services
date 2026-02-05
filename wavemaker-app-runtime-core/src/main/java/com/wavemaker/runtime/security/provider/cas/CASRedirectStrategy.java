@@ -52,7 +52,7 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
 
             LOGGER.info("CAS logout redirect url is {}", url);
             String casRedirectUrl = stringBuilder.toString();
-            if (HttpRequestUtils.isAjaxRequest(request)) {
+            if (!HttpRequestUtils.isBrowserNavigation(request)) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(JSONUtils.toJSON(new StringWrapper(casRedirectUrl)));
                 response.getWriter().flush();

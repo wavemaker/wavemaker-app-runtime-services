@@ -69,7 +69,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
     @Override
     public final void commence(final HttpServletRequest servletRequest, final HttpServletResponse response,
                                final AuthenticationException authenticationException) throws IOException, ServletException {
-        if (HttpRequestUtils.isAjaxRequest(servletRequest)) {
+        if (!HttpRequestUtils.isBrowserNavigation(servletRequest)) {
             response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
