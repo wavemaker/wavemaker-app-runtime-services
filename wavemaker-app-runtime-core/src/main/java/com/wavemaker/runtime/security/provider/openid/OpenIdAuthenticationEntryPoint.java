@@ -43,7 +43,7 @@ public class OpenIdAuthenticationEntryPoint implements SSOEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        if (HttpRequestUtils.isAjaxRequest(request)) {
+        if (!HttpRequestUtils.isBrowserNavigation(request)) {
             response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {

@@ -54,7 +54,7 @@ public class WMCsrfTokenResponseWriterAuthenticationSuccessHandler implements Au
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         Optional<CsrfToken> csrfTokenOptional = getCsrfToken(request);
-        if (HttpRequestUtils.isAjaxRequest(request)) {
+        if (!HttpRequestUtils.isBrowserNavigation(request)) {
             request.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
             response.setHeader(CACHE_CONTROL, NO_CACHE);

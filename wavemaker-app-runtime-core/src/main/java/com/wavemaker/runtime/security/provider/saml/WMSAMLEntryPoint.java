@@ -46,7 +46,7 @@ public class WMSAMLEntryPoint extends LoginUrlAuthenticationEntryPoint implement
     public void commence(final HttpServletRequest request,
                          final HttpServletResponse response,
                          final AuthenticationException e) throws IOException, ServletException {
-        if (HttpRequestUtils.isAjaxRequest(request)) {
+        if (!HttpRequestUtils.isBrowserNavigation(request)) {
             response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {

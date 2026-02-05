@@ -66,7 +66,7 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
         IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (frameOptions.isEnabled() && !HttpRequestUtils.isAjaxRequest(httpServletRequest)) {
+        if (frameOptions.isEnabled() && HttpRequestUtils.isBrowserNavigation(httpServletRequest)) {
             contentSecurityPolicyHeaderWriter.writeHeaders(httpServletRequest, httpServletResponse);
         }
         chain.doFilter(request, response);
