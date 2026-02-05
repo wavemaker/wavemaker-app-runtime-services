@@ -36,7 +36,7 @@ public class RestRuntimeController {
     public void handleRequest(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws Exception {
         String pathInfo = httpServletRequest.getPathInfo();
         String[] split = pathInfo.split("/");
-        if (split.length < 3) {
+        if (split.length < 2) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.rest.service.url"));
         }
         final String serviceId = split[1];
@@ -44,9 +44,9 @@ public class RestRuntimeController {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.serviceId"));
         }
         final String path = pathInfo.replaceFirst("/" + serviceId, "");
-        if (StringUtils.isBlank(path)) {
-            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.path"));
-        }
+//        if (StringUtils.isBlank(path)) {
+//            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.path"));
+//        }
 
         try {
             restRuntimeService.executeRestCall(serviceId, path, httpServletRequest, httpServletResponse, EncodingMode.TEMPLATE_AND_VALUES);
