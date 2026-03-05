@@ -3,7 +3,7 @@ plugins {
     `antlr`
 }
 
-group ="com.wavemaker.runtime"
+group ="ai.wavemaker.runtime"
 
 dependencies {
     implementation(enforcedPlatform(appDependenciesLibs.boms.slf4j.get().toString()))

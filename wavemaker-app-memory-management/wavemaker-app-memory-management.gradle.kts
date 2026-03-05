@@ -1,7 +1,7 @@
 plugins {
     `java-library-maven-publish`
 }
-group = "com.wavemaker.app"
+group = "ai.wavemaker.app"
 
 dependencies {
     compileOnly(enforcedPlatform(appDependenciesLibs.boms.slf4j.get().toString()))
