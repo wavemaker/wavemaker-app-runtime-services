@@ -16,8 +16,11 @@ package com.wavemaker.app.security.models.config.saml;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.wavemaker.app.security.models.annotation.AllowedSubTypes;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.DatabaseRoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleAttributeNameMappingConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 import com.wavemaker.app.security.models.saml.MetadataSource;
 
@@ -62,6 +65,7 @@ public class SAMLProviderConfig extends AbstractProviderConfig {
     private int maxAuthenticationAge = 7200;
 
     @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types DatabaseRoleMappingConfig, RoleAttributeNameMappingConfig")
+    @AllowedSubTypes({RoleAttributeNameMappingConfig.class, DatabaseRoleMappingConfig.class})
     private RoleMappingConfig roleMappingConfig;
 
     @JsonIgnore

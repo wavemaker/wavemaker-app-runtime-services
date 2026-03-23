@@ -19,7 +19,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.wavemaker.app.security.models.annotation.AllowedSubTypes;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.DatabaseRoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleAttributeNameMappingConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,6 +41,7 @@ public class JWSProviderConfig extends AbstractProviderConfig {
     private boolean roleMappingEnabled;
     @Valid
     @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types DatabaseRoleMappingConfig, RoleAttributeNameMappingConfig")
+    @AllowedSubTypes({RoleAttributeNameMappingConfig.class, DatabaseRoleMappingConfig.class})
     private RoleMappingConfig roleMappingConfig;
 
     @Override

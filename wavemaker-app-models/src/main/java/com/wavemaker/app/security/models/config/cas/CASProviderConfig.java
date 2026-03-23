@@ -17,8 +17,11 @@ package com.wavemaker.app.security.models.config.cas;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.wavemaker.app.security.models.annotation.AllowedSubTypes;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.DatabaseRoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleAttributeNameMappingConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,6 +57,7 @@ public class CASProviderConfig extends AbstractProviderConfig {
     private boolean roleMappingEnabled;
 
     @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types RoleAttributeNameMappingConfig, DatabaseRoleMappingConfig")
+    @AllowedSubTypes({RoleAttributeNameMappingConfig.class, DatabaseRoleMappingConfig.class})
     private RoleMappingConfig roleMappingConfig;
 
     private List<String> attributes;

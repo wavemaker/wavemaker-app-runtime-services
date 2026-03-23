@@ -15,9 +15,12 @@
 package com.wavemaker.app.security.models.config.ldap;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.wavemaker.app.security.models.annotation.AllowedSubTypes;
 import com.wavemaker.app.security.models.annotation.NonProfilizableProperty;
 import com.wavemaker.app.security.models.annotation.ProfilizableProperty;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
+import com.wavemaker.app.security.models.config.rolemapping.DatabaseRoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.LdapRoleMappingConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,6 +62,7 @@ public class LdapProviderConfig extends AbstractProviderConfig {
     private String roleProvider;
 
     @JsonPropertyDescription("For roleMappingConfig, there can only be two allowed types DatabaseRoleMappingConfig, LdapRoleMappingConfig")
+    @AllowedSubTypes({LdapRoleMappingConfig.class, DatabaseRoleMappingConfig.class})
     private RoleMappingConfig roleMappingConfig;
 
     @Override

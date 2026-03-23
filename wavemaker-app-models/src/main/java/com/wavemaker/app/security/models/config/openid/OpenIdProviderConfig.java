@@ -19,8 +19,11 @@ import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.wavemaker.app.security.models.annotation.AllowedSubTypes;
 import com.wavemaker.app.security.models.config.AbstractProviderConfig;
 import com.wavemaker.app.security.models.config.openid.validator.ValidateScopes;
+import com.wavemaker.app.security.models.config.rolemapping.DatabaseRoleMappingConfig;
+import com.wavemaker.app.security.models.config.rolemapping.RoleAttributeNameMappingConfig;
 import com.wavemaker.app.security.models.config.rolemapping.RoleMappingConfig;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -48,6 +51,7 @@ public class OpenIdProviderConfig extends AbstractProviderConfig {
 
     private boolean roleMappingEnabled;
     @JsonPropertyDescription("For roleMappingConfig, there can be only two allowed types DatabaseRoleMappingConfig, RoleAttributeNameMappingConfig")
+    @AllowedSubTypes({DatabaseRoleMappingConfig.class, RoleAttributeNameMappingConfig.class})
     private RoleMappingConfig roleMappingConfig;
 
     @Override
