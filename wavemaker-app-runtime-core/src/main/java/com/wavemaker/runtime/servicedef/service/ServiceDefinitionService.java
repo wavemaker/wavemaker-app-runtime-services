@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
@@ -100,10 +101,29 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     @Autowired
     private PrefabsConfig prefabsConfig;
 
+    /**
+     * To support pre 11.11 versions UI apps which doesn't have migrated operation id's
+     */
+    @Value("${app.backward-compatibility.rest.servicedefs-operationId.enabled:false}")
+    private boolean operationIdBackwardCompatibility;
+
+    /**
+     * Valid only if {@link operationIdBackwardCompatibility } is enabled.
+     * service names to support backward compatibility of operation id's.
+     * Empty or null indicates all services
+     */
+    @Value("${app.backward-compatibility.rest.servicedefs-operationId.service-names:}")
+    private String backwardCompatibilitySupportedServiceIdsConfig;
+
+    private List<String> backwardCompatibilitySupportedServiceIds = new ArrayList<>();
+
     private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionService.class);
 
     @Override
     public void onApplicationEvent(final PrefabsLoadedEvent event) {
+        if (StringUtils.isNotBlank(backwardCompatibilitySupportedServiceIdsConfig)) {
+            backwardCompatibilitySupportedServiceIds = List.of(this.backwardCompatibilitySupportedServiceIdsConfig.split(","));
+        }
         loadServiceDefinitions();
         if (!prefabsConfig.isLazyInitPrefabs()) {
             loadPrefabsServiceDefinitions();
@@ -231,10 +251,50 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     private Map<String, ServiceDefinition> getServiceDefinition(Resource resource, PropertyResolver propertyResolver) {
         try {
             Reader reader = propertyPlaceHolderReplacementHelper.getPropertyReplaceReader(resource.getInputStream(), propertyResolver);
-            return serviceDefinitionHelper.build(reader);
+            Map<String, ServiceDefinition> stringServiceDefinitionMap = serviceDefinitionHelper.build(reader);
+            if (operationIdBackwardCompatibility && stringServiceDefinitionMap.size() == 1) {
+                for (Map.Entry<String, ServiceDefinition> entry : stringServiceDefinitionMap.entrySet()) {
+                    String serviceId = getServiceId(resource);
+                    if (isRestServiceResource(resource, serviceId) && backwardCompatibilityNeededForService(serviceId)) {
+                        ServiceDefinition originalServiceDef = entry.getValue();
+                        String newOperationId = originalServiceDef.getId()
+                            .replaceAll("(.*)_invoke$", "$1_RestServiceVirtualController-invoke");
+                        ServiceDefinition serviceDefinition = ServiceDefinition.getNewInstance();
+                        serviceDefinition.setId(newOperationId);
+                        serviceDefinition.setCrudOperationId(originalServiceDef.getCrudOperationId());
+                        serviceDefinition.setService(originalServiceDef.getService());
+                        serviceDefinition.setController("RestServiceVirtualController");
+                        serviceDefinition.setWmServiceOperationInfo(originalServiceDef.getWmServiceOperationInfo());
+                        serviceDefinition.setType(originalServiceDef.getType());
+                        serviceDefinition.setOperationType(originalServiceDef.getOperationType());
+                        stringServiceDefinitionMap.put(newOperationId, serviceDefinition);
+                    }
+                }
+            }
+            return stringServiceDefinitionMap;
         } catch (IOException e) {
             throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.service.definition.generation.failure"), e, resource.getFilename());
         }
+    }
+
+    private String getServiceId(Resource resource) {
+        String serviceDefFileName = resource.getFilename();
+        if (serviceDefFileName != null) {
+            return serviceDefFileName.substring(0, serviceDefFileName.indexOf("-service-definitions.json"));
+        }
+        return "";
+    }
+
+    private boolean isRestServiceResource(Resource resource, String serviceId) {
+        try {
+            return resource.createRelative("../" + serviceId + "_apiTarget.json").exists();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean backwardCompatibilityNeededForService(String serviceId) {
+        return backwardCompatibilitySupportedServiceIds.isEmpty() || backwardCompatibilitySupportedServiceIds.contains(serviceId);
     }
 
     private void runInPrefabClassLoader(final Prefab prefab, Runnable runnable) {
