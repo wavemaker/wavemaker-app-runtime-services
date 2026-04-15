@@ -39,13 +39,16 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationProvider;
 import org.springframework.security.oauth2.client.endpoint.AbstractOAuth2AuthorizationGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.client.endpoint.RestClientAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.oidc.authentication.OidcAuthorizationCodeAuthenticationProvider;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
@@ -236,10 +239,31 @@ public class OpenIdSecurityProviderConfiguration implements WMSecurityConfigurat
         return oidcAuthorizationCodeAuthenticationProvider;
     }
 
+    @Bean
+    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient() {
+        return new RestClientAuthorizationCodeTokenResponseClient();
+    }
+
+    @Bean
+    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
+        return new DefaultOAuth2UserService();
+    }
+
+    @Bean
+    public AuthenticationProvider oAuth2LoginAuthenticationProvider() {
+        return new OAuth2LoginAuthenticationProvider(oAuth2AccessTokenResponseClient(), oAuth2UserService());
+    }
+
     @Bean(name = "openIdDelegatingAuthenticationProvider")
     @Order(ProviderOrder.OPENID_ORDER)
     public WMDelegatingAuthenticationProvider openIdDelegatingAuthenticationProvider(AuthenticationProvider openIdAuthenticationProvider) {
         return new WMDelegatingAuthenticationProvider(openIdAuthenticationProvider, AuthProviderType.OPENID);
+    }
+
+    @Bean(name = "oAuth2DelegatingAuthenticationProvider")
+    @Order(ProviderOrder.OPENID_ORDER)
+    public WMDelegatingAuthenticationProvider oAuth2DelegatingAuthenticationProvider(AuthenticationProvider oAuth2LoginAuthenticationProvider) {
+        return new WMDelegatingAuthenticationProvider(oAuth2LoginAuthenticationProvider, AuthProviderType.OPENID);
     }
 
     @Bean(name = "openIdUserService")

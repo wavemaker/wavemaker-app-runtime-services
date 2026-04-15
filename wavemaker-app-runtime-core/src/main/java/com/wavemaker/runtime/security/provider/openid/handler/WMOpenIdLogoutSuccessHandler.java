@@ -77,6 +77,10 @@ public class WMOpenIdLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String providerId = (String) ((WMAuthentication) authentication).getAttributes().get(OpenIdConstants.PROVIDER_ID).getValue();
         OpenIdProviderConfig openIdProviderConfig = openIdProviderConfigRegistry.getOpenIdProviderConfig(providerId);
+        if (authentication.getAuthorities().stream()
+            .anyMatch(a -> "ROLE_OAUTH2_USER".equals(a.getAuthority()))) {
+            return null;
+        }
         String logoutUrl = openIdProviderConfig.getLogoutUrl();
         if (StringUtils.isNotBlank(logoutUrl)) {
             StringBuilder targetUrl = new StringBuilder()

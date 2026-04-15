@@ -69,10 +69,10 @@ public class DefaultOpenIdProviderConfigRegistry implements OpenIdProviderConfig
         if (scopes != null) {
             Collections.addAll(scopesList, scopes.split(","));
         }
-        String openIdScope = OpenIdConstants.OPEN_ID_SCOPE;
-        if (!scopesList.contains(openIdScope)) {
-            scopesList.add(openIdScope);
-        }
+//        String openIdScope = OpenIdConstants.OPEN_ID_SCOPE;
+//        if (!scopesList.contains(openIdScope)) {
+//            scopesList.add(openIdScope);
+//        }
         openIdProviderConfig.setScopes(scopesList);
         boolean roleMappingEnabled = Boolean.TRUE.equals(environment.getProperty(SECURITY_PROVIDERS_OPEN_ID + providerId + ".roleMappingEnabled", Boolean.class));
         if (roleMappingEnabled) {

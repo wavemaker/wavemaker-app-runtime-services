@@ -38,14 +38,15 @@ public class WMOpenIdAuthenticationSuccessHandler implements WMAuthenticationSuc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, WMAuthentication authentication) throws IOException, ServletException {
         if (authentication.getAuthProviderType() == AuthProviderType.OPENID) {
             OAuth2LoginAuthenticationToken oAuth2LoginAuthenticationToken = (OAuth2LoginAuthenticationToken) authentication.getAuthenticationSource();
-            OidcUser oidcUser = (OidcUser) oAuth2LoginAuthenticationToken.getPrincipal();
-            oidcUser.getClaims().entrySet().stream().forEach(entry -> {
-                authentication.addAttribute(entry.getKey(), entry.getValue(), Attribute.AttributeScope.ALL);
-            });
+            if (oAuth2LoginAuthenticationToken.getPrincipal() instanceof OidcUser oidcUser) {
+                oidcUser.getClaims().entrySet().stream().forEach(entry -> {
+                    authentication.addAttribute(entry.getKey(), entry.getValue(), Attribute.AttributeScope.ALL);
+                });
+                authentication.addAttribute(OpenIdConstants.ID_TOKEN_VALUE, oidcUser.getIdToken().getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
+            }
             String[] authenticationRequestSplit = request.getServletPath().split("/");
             String openIdProvider = authenticationRequestSplit[authenticationRequestSplit.length - 1];
             authentication.addAttribute(OpenIdConstants.PROVIDER_ID, openIdProvider, Attribute.AttributeScope.SERVER_ONLY);
-            authentication.addAttribute(OpenIdConstants.ID_TOKEN_VALUE, oidcUser.getIdToken().getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
             OAuth2AccessToken accessToken = oAuth2LoginAuthenticationToken.getAccessToken();
             if (accessToken != null) {
                 authentication.addAttribute(OpenIdConstants.ACCESS_TOKEN_VALUE, accessToken.getTokenValue(), Attribute.AttributeScope.SERVER_ONLY);
