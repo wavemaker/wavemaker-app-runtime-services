@@ -145,6 +145,12 @@ public class WMApplicationListener implements ServletContextListener {
             logger.debug("Registering React filter : {} ", reactRoutingFilter);
             reactRoutingFilter.addMappingForUrlPatterns(null, true, "/*");
         }
+
+        if (RuntimeEnvironment.isTestRunEnvironment()) {
+            FilterRegistration.Dynamic reactPreviewFilter = registerDelegatingFilterProxyFilter(servletContext, "reactPreviewFilter");
+            logger.info("Registering ReactPreview filter : {} ", reactPreviewFilter);
+            reactPreviewFilter.addMappingForUrlPatterns(null, true, "/*");
+        }
     }
 
     private FilterRegistration.Dynamic registerFilter(ServletContext servletContext, String filterName, Filter filter) {
