@@ -17,6 +17,7 @@ package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.stream.Stream;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,8 +36,10 @@ import com.wavemaker.runtime.web.wrapper.ActiveThemeReplacementServletResponseWr
 public class ActiveThemeReplacementFilter extends GenericFilterBean {
     private static final String ACTIVE_THEME_PLACEHOLDER = "_activeTheme_";
 
-    private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
-    private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
+    private final AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
+    private final AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
+    private final AntPathRequestMatcher reactPreviewPathMatcher = new AntPathRequestMatcher("/react-preview/**");
+
     @Autowired
     private AppRuntimeService appRuntimeService;
 
@@ -60,6 +63,6 @@ public class ActiveThemeReplacementFilter extends GenericFilterBean {
     }
 
     protected boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest);
+        return Stream.of(this.indexPathMatcher, this.rootPathMatcher, this.reactPreviewPathMatcher).anyMatch(antPathRequestMatcher -> antPathRequestMatcher.matches(httpServletRequest));
     }
 }

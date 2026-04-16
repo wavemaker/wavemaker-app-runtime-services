@@ -18,6 +18,7 @@ package com.wavemaker.runtime.web.filter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
@@ -44,20 +44,21 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
     private static final String DEFAULT_CDN_URL = ".";
     private static final Logger cdnUrlReplacementFilterLogger = LoggerFactory.getLogger(CDNUrlReplacementFilter.class);
 
-    private AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
-    private AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
+    private final AntPathRequestMatcher indexPathMatcher = new AntPathRequestMatcher("/index.html");
+    private final AntPathRequestMatcher rootPathMatcher = new AntPathRequestMatcher("/");
+    private final AntPathRequestMatcher reactPreviewPathMatcher = new AntPathRequestMatcher("/react-preview/**");
     private String cdnUrl;
-    @Value("${app.build.ui.mode}")
-    private String buildMode;
+
     @Autowired
     private Environment environment;
 
     @Override
     protected void initFilterBean() throws ServletException {
         super.initFilterBean();
+        String uiBuildType = getServletContext().getInitParameter("uiBuildType");
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             cdnUrl = getServletContext().getInitParameter("cdnUrl");
-        } else if (Objects.equals(buildMode, "wm")) {
+        } else if (Objects.equals(uiBuildType, "wm")) {
             cdnUrl = DEFAULT_CDN_URL;
         } else {
             cdnUrl = environment.getProperty(AppPropertiesConstants.APP_CDN_URL);
@@ -91,6 +92,6 @@ public class CDNUrlReplacementFilter extends GenericFilterBean {
     }
 
     protected boolean requestMatches(HttpServletRequest httpServletRequest) {
-        return this.indexPathMatcher.matches(httpServletRequest) || this.rootPathMatcher.matches(httpServletRequest);
+        return Stream.of(this.indexPathMatcher, this.rootPathMatcher, this.reactPreviewPathMatcher).anyMatch(antPathRequestMatcher -> antPathRequestMatcher.matches(httpServletRequest));
     }
 }
