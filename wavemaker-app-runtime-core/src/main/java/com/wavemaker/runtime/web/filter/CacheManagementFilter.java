@@ -16,7 +16,6 @@ package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -25,11 +24,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.commons.web.filter.EtagFilter;
-import com.wavemaker.runtime.filter.etag.CacheFilterConfig;
 import com.wavemaker.runtime.web.SkipEtagHttpServletResponseWrapper;
 
 /**
@@ -37,31 +37,23 @@ import com.wavemaker.runtime.web.SkipEtagHttpServletResponseWrapper;
  */
 public class CacheManagementFilter extends GenericFilterBean {
 
+    private static final RequestMatcher cacheRequestMatcher = new AntPathRequestMatcher("/ng-bundle/**", HttpMethod.GET.name());
+
+    private static final RequestMatcher cacheExclusionRequestMatcher = new AntPathRequestMatcher("/ng-bundle/path_mapping.json", HttpMethod.GET.name());
+
+    private static final RequestMatcher etagRequestMatcher = new AntPathRequestMatcher("/**", HttpMethod.GET.name());
+
     @Autowired
     private EtagFilter etagFilter;
-
-    @Autowired
-    private CacheFilterConfig cacheFilterConfig;
-
-    private RequestMatcher cacheRequestMatcher;
-    private RequestMatcher cacheExclusionRequestMatcher;
-    private RequestMatcher etagRequestMatcher;
-
-    @PostConstruct
-    private void init() {
-        cacheRequestMatcher = cacheFilterConfig.getCacheRequestMatcher();
-        cacheExclusionRequestMatcher = cacheFilterConfig.getCacheExclusionRequestMatcher();
-        etagRequestMatcher = cacheFilterConfig.getEtagRequestMatcher();
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (matches(httpServletRequest, cacheRequestMatcher) && !matches(httpServletRequest, cacheExclusionRequestMatcher)) {
+        if (cacheRequestMatcher.matches(httpServletRequest) && !cacheExclusionRequestMatcher.matches(httpServletRequest)) {
             httpServletResponse.addHeader("Cache-Control", "public, max-age=31536000");
             chain.doFilter(request, new SkipEtagHttpServletResponseWrapper(httpServletResponse));
-        } else if (matches(httpServletRequest, etagRequestMatcher)) {
+        } else if (etagRequestMatcher.matches(httpServletRequest)) {
             etagFilter.doFilter(request, response, chain);
         } else {
             httpServletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
@@ -70,9 +62,4 @@ public class CacheManagementFilter extends GenericFilterBean {
             chain.doFilter(request, response);
         }
     }
-
-    private boolean matches(HttpServletRequest httpServletRequest, RequestMatcher requestMatcher) {
-        return requestMatcher == null ? false : requestMatcher.matches(httpServletRequest);
-    }
-
 }
