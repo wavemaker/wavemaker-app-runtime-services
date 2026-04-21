@@ -38,6 +38,8 @@ import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResponse;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -59,6 +61,7 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
     private OAuth2AuthorizedClientService authorizedClientService;
     private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository =
         new HttpSessionOAuth2AuthorizationRequestRepository();
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     /**
      * Constructs an {@code OAuth2LoginAuthenticationFilter} using the provided parameters.
@@ -92,15 +95,14 @@ public class OpenIdLoginAuthenticationFilter extends AbstractAuthenticationProce
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException, IOException, ServletException {
 
-        if (!this.authorizationResponseSuccess(request) && !this.authorizationResponseError(request)) {
-            OAuth2Error oauth2Error = new OAuth2Error(OAuth2ErrorCodes.INVALID_REQUEST);
-            throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
-        }
-
         OAuth2AuthorizationRequest authorizationRequest = this.authorizationRequestRepository.loadAuthorizationRequest(request);
 
         if (authorizationRequest == null) {
-            OAuth2Error oauth2Error = new OAuth2Error(AUTHORIZATION_REQUEST_NOT_FOUND_ERROR_CODE);
+            redirectStrategy.sendRedirect(request, response, "/");
+            return null;
+        }
+        if (!this.authorizationResponseSuccess(request) && !this.authorizationResponseError(request)) {
+            OAuth2Error oauth2Error = new OAuth2Error(OAuth2ErrorCodes.INVALID_REQUEST);
             throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
         }
 
