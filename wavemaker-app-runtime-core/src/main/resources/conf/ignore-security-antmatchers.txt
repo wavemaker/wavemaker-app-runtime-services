@@ -12,6 +12,7 @@
 /rn-bundle/**
 /_next/**
 /react-pages/**
+/react-preview/**
 /config.json
 /types.js
 /pages/Common/**
