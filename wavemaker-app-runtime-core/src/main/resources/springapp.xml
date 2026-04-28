@@ -74,6 +74,7 @@
 
     <bean id="reactRoutingFilter" class="com.wavemaker.runtime.web.filter.ReactRoutingFilter"/>
     <bean id="reactPreviewFilter" class="com.wavemaker.runtime.web.filter.ReactPreviewFilter"/>
+    <bean id="uiBuildTypeSectionToggleFilter" class="com.wavemaker.runtime.web.filter.UiBuildTypeSectionToggleFilter"/>
     <bean id="formContentFilter" class="org.springframework.web.filter.FormContentFilter"/>
 
     <bean id="eTagFilter" class="com.wavemaker.commons.web.filter.EtagFilter"/>
