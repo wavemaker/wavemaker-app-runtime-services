@@ -147,6 +147,10 @@ public class WMApplicationListener implements ServletContextListener {
         }
 
         if (RuntimeEnvironment.isTestRunEnvironment()) {
+            FilterRegistration.Dynamic uiBuildTypeSectionToggleFilter = registerDelegatingFilterProxyFilter(servletContext, "uiBuildTypeSectionToggleFilter");
+            logger.info("Registering UiBuildTypeSectionToggleFilter filter : {} ", uiBuildTypeSectionToggleFilter);
+            uiBuildTypeSectionToggleFilter.addMappingForUrlPatterns(null, true, "/*");
+
             FilterRegistration.Dynamic reactPreviewFilter = registerDelegatingFilterProxyFilter(servletContext, "reactPreviewFilter");
             logger.info("Registering ReactPreview filter : {} ", reactPreviewFilter);
             reactPreviewFilter.addMappingForUrlPatterns(null, true, "/*");
