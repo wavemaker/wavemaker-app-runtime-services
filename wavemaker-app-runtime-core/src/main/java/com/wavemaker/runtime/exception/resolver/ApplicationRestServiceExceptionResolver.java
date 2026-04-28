@@ -29,8 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.GenericJDBCException;
 import org.hibernate.exception.SQLGrammarException;
-import org.hibernate.validator.internal.engine.path.NodeImpl;
-import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -149,8 +147,11 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             for (ConstraintViolation<?> constraintViolation : constraintViolations) {
                 String paramName = "";
                 Path propertyPath = constraintViolation.getPropertyPath();
-                if (propertyPath != null && propertyPath instanceof PathImpl pathImpl) {
-                    NodeImpl leafNode = pathImpl.getLeafNode();
+                if (propertyPath != null) {
+                    Path.Node leafNode = null;
+                    for (Path.Node node : propertyPath) {
+                        leafNode = node;
+                    }
                     if (leafNode != null) {
                         paramName = leafNode.getName();
                     }
