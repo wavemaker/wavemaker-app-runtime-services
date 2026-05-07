@@ -1,7 +1,7 @@
 plugins {
     `java-library-maven-publish`
 }
-group = "com.wavemaker.app"
+group = "ai.wavemaker.app"
 
 dependencies {
     implementation(enforcedPlatform(appDependenciesLibs.boms.jackson.get().toString()))

@@ -2,7 +2,7 @@ plugins {
     `java-library-maven-publish`
 }
 
-group ="com.wavemaker.runtime"
+group ="ai.wavemaker.runtime"
 
 val loggingCapabilityConfiguration: Configuration by configurations.creating
 val runtimeLibDependencies: Configuration by configurations.creating {

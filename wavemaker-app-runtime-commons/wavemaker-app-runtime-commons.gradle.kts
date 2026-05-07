@@ -2,7 +2,7 @@ plugins {
     `java-library-maven-publish`
 }
 
-group ="com.wavemaker.runtime"
+group ="ai.wavemaker.runtime"
 
 dependencies {
     implementation(enforcedPlatform(appDependenciesLibs.boms.springFramework.get().toString()))
