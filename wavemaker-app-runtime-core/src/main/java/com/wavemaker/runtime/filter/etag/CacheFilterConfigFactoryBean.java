@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -32,12 +30,6 @@ import org.springframework.util.CollectionUtils;
  */
 public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConfig> {
 
-    @Value("${app.build.ui.mode}")
-    private String buildMode;
-
-    @Value("${app.build.ui.ng.config}")
-    private String buildArgs;
-
     private List<String> angularCachedContentPath = Arrays.asList("/ng-bundle/**");
 
     private List<String> angularCacheExclusionPath = Arrays.asList("/ng-bundle/path_mapping.json");
@@ -47,10 +39,8 @@ public class CacheFilterConfigFactoryBean implements FactoryBean<CacheFilterConf
     @Override
     public CacheFilterConfig getObject() throws Exception {
         CacheFilterConfig cacheFilterConfig = new CacheFilterConfig();
-        if ("angular".equals(buildMode) && StringUtils.isNotBlank(buildArgs)) {
-            cacheFilterConfig.setCacheRequestMatcher(getOrRequestMatcher(angularCachedContentPath));
-            cacheFilterConfig.setCacheExclusionRequestMatcher(getOrRequestMatcher(angularCacheExclusionPath));
-        }
+        cacheFilterConfig.setCacheRequestMatcher(getOrRequestMatcher(angularCachedContentPath));
+        cacheFilterConfig.setCacheExclusionRequestMatcher(getOrRequestMatcher(angularCacheExclusionPath));
         cacheFilterConfig.setEtagRequestMatcher(getOrRequestMatcher(etagContentPath));
         return cacheFilterConfig;
     }
