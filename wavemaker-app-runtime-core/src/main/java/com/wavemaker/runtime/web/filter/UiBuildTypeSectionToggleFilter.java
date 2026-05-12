@@ -17,6 +17,7 @@ package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +41,7 @@ public class UiBuildTypeSectionToggleFilter extends GenericFilterBean {
 
     private static final String UI_BUILD_TYPE_ANGULAR = "angular";
     private static final String UI_BUILD_TYPE_REACT = "react";
+    private static final String UI_BUILD_TYPE_WM = "wm";
 
     // Captures everything between <!-- Angular Start --> and <!-- Angular end --> (case-insensitive)
     private static final Pattern ANGULAR_SECTION_PATTERN = Pattern.compile(
@@ -92,7 +94,7 @@ public class UiBuildTypeSectionToggleFilter extends GenericFilterBean {
     }
 
     private boolean isKnownBuildType(String uiBuildType) {
-        return UI_BUILD_TYPE_ANGULAR.equals(uiBuildType) || UI_BUILD_TYPE_REACT.equals(uiBuildType);
+        return List.of(UI_BUILD_TYPE_ANGULAR, UI_BUILD_TYPE_REACT, UI_BUILD_TYPE_WM).contains(uiBuildType);
     }
 
     private String uncommentBlocksForBuildType(String content, String uiBuildType) {
@@ -100,6 +102,7 @@ public class UiBuildTypeSectionToggleFilter extends GenericFilterBean {
             content = uncommentSection(content, REACT_SECTION_PATTERN);
             content = commentSection(content, ANGULAR_SECTION_PATTERN);
         } else {
+            // angular and wm both activate the Angular section
             content = uncommentSection(content, ANGULAR_SECTION_PATTERN);
             content = commentSection(content, REACT_SECTION_PATTERN);
         }
