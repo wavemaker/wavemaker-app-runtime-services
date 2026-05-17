@@ -102,16 +102,8 @@ public class WMApplicationListener implements ServletContextListener {
         FilterRegistration.Dynamic httpPutFormContentFilter = registerDelegatingFilterProxyFilter(servletContext, "formContentFilter");
         httpPutFormContentFilter.addMappingForUrlPatterns(null, false, "/*");
 
-        if (applicationType.equals(APPLICATION)) {
-            FilterRegistration.Dynamic wmCompressionFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompressionFilter");
-            wmCompressionFilter.addMappingForUrlPatterns(null, false, "/*");
-        }
-
         FilterRegistration.Dynamic springEncodingFilter = registerDelegatingFilterProxyFilter(servletContext, "springEncodingFilter");
         springEncodingFilter.addMappingForUrlPatterns(null, false, "/*");
-
-        FilterRegistration.Dynamic cacheManagementFilter = registerDelegatingFilterProxyFilter(servletContext, "cacheManagementFilter");
-        cacheManagementFilter.addMappingForUrlPatterns(null, false, "/*");
 
         if (applicationType.equals(APPLICATION)) {
             FilterRegistration.Dynamic wmCompositeSecurityFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompositeSecurityFilter");
@@ -130,6 +122,14 @@ public class WMApplicationListener implements ServletContextListener {
                 springSecurityFilterChain.addMappingForUrlPatterns(null, true, "/*");
             }
         }
+
+        if (applicationType.equals(APPLICATION)) {
+            FilterRegistration.Dynamic wmCompressionFilter = registerDelegatingFilterProxyFilter(servletContext, "wmCompressionFilter");
+            wmCompressionFilter.addMappingForUrlPatterns(null, true, "/*");
+        }
+
+        FilterRegistration.Dynamic cacheManagementFilter = registerDelegatingFilterProxyFilter(servletContext, "cacheManagementFilter");
+        cacheManagementFilter.addMappingForUrlPatterns(null, true, "/*");
 
         FilterRegistration.Dynamic cdnUrlReplacementFilter = registerDelegatingFilterProxyFilter(servletContext, "cdnUrlReplacementFilter");
         cdnUrlReplacementFilter.addMappingForUrlPatterns(null, true, "/*");
